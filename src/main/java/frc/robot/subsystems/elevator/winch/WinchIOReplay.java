@@ -1,5 +1,3 @@
 package frc.robot.subsystems.elevator.winch;
 
-public class WinchIOReplay implements WinchIO {
-    
-}
+public class WinchIOReplay implements WinchIO {}

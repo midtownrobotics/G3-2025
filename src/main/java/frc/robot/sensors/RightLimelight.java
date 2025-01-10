@@ -1,3 +1,5 @@
 package frc.robot.sensors;
 
-public class RightLimelight {}
+public class RightLimelight {
+  // getVisionObservation()
+}

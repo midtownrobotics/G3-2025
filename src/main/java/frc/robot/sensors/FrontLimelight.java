@@ -1,3 +1,12 @@
 package frc.robot.sensors;
 
-public class FrontLimelight {}
+public class FrontLimelight {
+  // enum: Pipeline
+
+  // getVisionObservation()
+  // getAlgaeOffset()
+  // getReefBranch()
+
+  // setPipeLine(pipeline)
+  // getPipeLine()
+}

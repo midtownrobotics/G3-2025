@@ -1,3 +1,5 @@
 package frc.robot.sensors;
 
-public class IntakeSensor {}
+public class IntakeSensor {
+  // isCoralDetected()
+}
