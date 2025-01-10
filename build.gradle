@@ -4,6 +4,7 @@ plugins {
     id "com.peterabeles.gversion" version "1.10"
     id "com.diffplug.spotless" version "6.12.0"
     id "io.freefair.lombok" version "8.4"
+    id "checkstyle"
 }
 
 java {
@@ -97,6 +98,10 @@ test {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
+checkstyle {
+    configFile = file("config/checkstyle/checkstyle.xml")
+}
+
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
@@ -168,4 +173,17 @@ spotless {
         indentWithSpaces(2)
         endWithNewline()
     }
+}
+
+// Limit checkstyle scope
+tasks.checkstyleMain {
+    source = files(
+        'src/main/java/frc/robot',
+        'src/main/java/frc/lib/team1648'
+    )
+}
+
+// Require checksyle check
+tasks.build {
+    dependsOn tasks.checkstyleMain
 }
