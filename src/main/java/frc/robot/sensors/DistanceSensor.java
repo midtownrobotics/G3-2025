@@ -1,5 +1,3 @@
 package frc.robot.sensors;
 
-public class DistanceSensor {
-    
-}
+public class DistanceSensor {}

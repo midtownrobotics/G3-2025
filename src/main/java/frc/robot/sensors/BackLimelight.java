@@ -1,5 +1,3 @@
 package frc.robot.sensors;
 
-public class BackLimelight {
-    
-}
+public class BackLimelight {}
