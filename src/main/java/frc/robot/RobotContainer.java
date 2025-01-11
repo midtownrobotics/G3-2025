@@ -8,10 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class RobotContainer {
+  /** RobotContainer initialization */
   public RobotContainer() {
     configureBindings();
   }
 
+  /** Configures bindings to oi */
   private void configureBindings() {}
 
   public Command getAutonomousCommand() {

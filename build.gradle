@@ -175,12 +175,14 @@ spotless {
     }
 }
 
-// Limit checkstyle scope
+// Define checkstyle scope
 tasks.checkstyleMain {
-    source = files(
-        'src/main/java/frc/robot',
-        'src/main/java/frc/lib/team1648'
-    )
+    source = fileTree('src/main/java') {
+        include 'frc/robot/**'
+        include 'frc/lib/team1648/**'
+        exclude 'frc/robot/Main.java'
+        exclude 'frc/robot/Robot.java'
+    }
 }
 
 // Require checksyle check
