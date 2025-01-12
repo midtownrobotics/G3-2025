@@ -2,13 +2,20 @@ package frc.lib.team1648;
 
 import java.util.HashSet;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.TimestampedDoubleArray;
+import frc.robot.sensors.VisionObservation;
 
 // getters and setters based on
 // https://docs.limelightvision.io/docs/docs-limelight/apis/complete-networktables-api
@@ -60,23 +67,48 @@ public class Limelight {
         };
     }
 
-    // private Pose3d toPose3d(double[] data) {
-    //     if (data.length < 6) {
-    //         return new Pose3d();
-    //     }
-
-    //     Translation2d tran2d = new Translation2d(data[0], data[1]);
-    //     Rotation2d r2d = Rotation2d.fromDegrees(data[5]);
-
-    //     return new Pose3d(
-    //         new Translation3d(data[0], data[1], data[2]),
-    //         new Rotation3d(
-    //             Units.degreesToRadians(data[4]),
-    //             Units.degreesToRadians(data[4]),
-    //             Units.degreesToRadians(data[5])
-    //         )
-    //     );
-    // }
+    public VisionObservation getBotPoseEstimate() {
+        DoubleArrayEntry poseEntry = table.getDoubleArrayTopic("botpose_wpiblue").getEntry(null);
+        
+        TimestampedDoubleArray tsValue = poseEntry.getAtomic();
+        double[] poseArray = tsValue.value;
+        long timestamp = tsValue.timestamp;
+        
+        if (poseArray.length == 0) {
+            // Handle the case where no data is available
+            return null; // or some default PoseEstimate
+        }
+        
+        var pose = toPose2d(poseArray);
+        double latency = poseArray[6];
+        int tagCount = (int)poseArray[7];
+        // double tagSpan = poseArray[8];
+        double tagDist = poseArray[9];
+        // double tagArea = poseArray[10];
+        
+        // Convert server timestamp from microseconds to seconds and adjust for latency
+        double adjustedTimestamp = (timestamp / 1000000.0) - (latency / 1000.0);
+    
+        int[] rawFiducialIds = new int[tagCount];
+        int valsPerFiducial = 7;
+        int expectedTotalVals = 11 + valsPerFiducial * tagCount;
+    
+        if (poseArray.length != expectedTotalVals) {
+            // Don't populate fiducials
+        } else {
+            for(int i = 0; i < tagCount; i++) {
+                int baseIndex = 11 + (i * valsPerFiducial);
+                int id = (int)poseArray[baseIndex];
+                rawFiducialIds[i] = id;
+            }
+        }
+        Stddevs stddevs = getMegatagStddevs();
+        Matrix<N3, N1> stddevMatrix = new Matrix<N3, N1>(Nat.N3(), Nat.N1());
+        stddevMatrix.set(0, 0, stddevs.x);
+        stddevMatrix.set(0, 1, stddevs.y);
+        stddevMatrix.set(0, 2, Math.toRadians(stddevs.yaw));
+        return new VisionObservation(pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix);
+    }
 
     private void flush() {
         NetworkTableInstance.getDefault().flush();
@@ -90,6 +122,7 @@ public class Limelight {
         return get(key).getInteger(0);
     }
 
+    @SuppressWarnings("unused")
     private double getDouble(String key) {
         return get(key).getDouble(0);
     }
@@ -98,6 +131,7 @@ public class Limelight {
         return get(key).getString("");
     }
 
+    @SuppressWarnings("unused")
     private long[] getLongArray(String key) {
         return get(key).getIntegerArray((long[])null);
     }
@@ -106,6 +140,7 @@ public class Limelight {
         return get(key).getDoubleArray((double[])null);
     }
 
+    @SuppressWarnings("unused")
     private String[] getStringArray(String key) {
         return get(key).getStringArray(null);
     }
@@ -115,21 +150,25 @@ public class Limelight {
         return value;
     }
 
+    @SuppressWarnings("unused")
     private double set(String key, double value) {
         get(key).setDouble(value);
         return value;
     }
 
+    @SuppressWarnings("unused")
     private String set(String key, String value) {
         get(key).setString(value);
         return value;
     }
 
+    @SuppressWarnings("unused")
     private long[] set(String key, long[] value) {
         get(key).setIntegerArray(value);
         return value;
     }
 
+    @SuppressWarnings("unused")
     private Long[] set(String key, Long[] value) {
         get(key).setIntegerArray(value);
         return value;
@@ -140,11 +179,12 @@ public class Limelight {
         return value;
     }
 
+    @SuppressWarnings("unused")
     private Double[] set(String key, Double[] value) {
         get(key).setDoubleArray(value);
         return value;
     }
-
+    
     // begin the barrage of getters
     
     // use this method to index to get other stuff
@@ -192,38 +232,6 @@ public class Limelight {
         return (int)getStats()[9];
     }
 
-    // public double getTargetClassIndexDetector() {
-    //     return getStats()[10];
-    // }
-
-    // public double getTargetClassIndexClassifier() {
-    //     return getStats()[11];
-    // }
-
-    // public double getTargetLongSidePixels() {
-    //     return getStats()[12];
-    // }
-
-    // public double getTargetShortSidePixels() {
-    //     return getStats()[13];
-    // }
-
-    // public double getTargetHorizontalExtentPixels() {
-    //     return getStats()[14];
-    // }
-
-    // public double targetVerticalExtendPixels() {
-    //     return getStats()[15];
-    // }
-
-    // public double targetSkewDegrees() {
-    //     return getStats()[16];
-    // }
-
-    // public double getPipeLatency() {
-    //     return getDouble("tl");
-    // }
-
     public double getTotalLatency() {
         return getTargetLatency() + getCaptureLatency();
     }
@@ -236,65 +244,17 @@ public class Limelight {
         return getString("getpipetype");
     }
 
-    // public String getJsonDump() {
-    //     return getString("json");
-    // }
-
-    // public String getDetectorClass() {
-    //     return getString("tclass");
-    // }
-
-    // public double[] getAvgColorUnderCrosshair() {
-    //     return getDoubleArray("tc");
-    // }
-
-    // public double getHeartbeat() {
-    //     return getDouble("hb");
-    // }
-
-    // public double[] getCrosshairs() {
-    //     return getDoubleArray("crosshairs");
-    // }
-
-    // public String getPipeClassName() {
-    //     return getString("tcclass");
-    // }
-
-    // public String getPipeDetectorName() {
-    //     return getString("tdclass");
-    // }
-
-    // AprilTag stuff
-
-    // public double[] getBotPose() {
-    //     return getDoubleArray("botpose");
-    // }
+    // Apriltag stuff
 
     public Pose2d getBotPoseBlue() {
         double[] res = getDoubleArray("botpose_wpiblue");
         return toPose2d(res);
     }
-
-    // public double[] getBotPoseRed() {
-    //     return getDoubleArray("botpose_wpired");
-    // }
-
-    // public double[] getBotPoseMegatag() {
-    //     return getDoubleArray("botpose_orb");
-    // }
     
     public Pose2d getBotPoseMegatagBlue() {
         double[] res = getDoubleArray("botpose_wpiblue");
         return toPose2d(res);
     }
-
-    // public double[] getBotPoseMegatagRed() {
-    //     return getDoubleArray("botpose_orb_wpired");
-    // }
-
-    // public double[] getCamPoseInTargetSpace() {
-    //     return getDoubleArray("camerapose_targetspace");
-    // }
 
     public Pose2d getTargetPoseInCamSpace() {
         return toPose2d(getDoubleArray("targetpose_cameraspace"));
@@ -303,14 +263,6 @@ public class Limelight {
     public Pose2d getTargetPoseInRobotSpace() {
         return toPose2d(getDoubleArray("targetpose_robotspace"));
     }
-
-    // public double[] getBotPoseInTargetSpace() {
-    //     return getDoubleArray("botpose_targetspace");
-    // }
-
-    // public double[] getCamPoseInRobotSpace() {
-    //     return getDoubleArray("camerapose_robotspace");
-    // }
 
     public long getAprilTagId() {
         return getLong("tid");
@@ -353,6 +305,7 @@ public class Limelight {
 
     public void setCamPoseInRobotSpace(Pose3d coords) {
         set("camerapose_robotspace_set", pose3dToArray(coords));
+        flush();
     }
 
     public void setTargetId(long id) {
@@ -368,10 +321,6 @@ public class Limelight {
         set("fiducial_id_filters_set", ids);
     }
 
-    // public double[] setPOIOffset(double[] offsetXYZ) {
-    //     set("fiducial_offset_set", offsetXYZ);
-    // }
-
     // camera controls
 
     public enum LedState {
@@ -381,10 +330,6 @@ public class Limelight {
         ON;
     }
 
-    // public byte setLedState(long state) {
-    //     return (byte)set("ledMode", state);
-    // }
-
     public void setLedState(LedState state) {
         set("ledMode", state.ordinal());
     }
@@ -392,21 +337,6 @@ public class Limelight {
     public void setPipeline(long pipeline) {
         set("pipeline", pipeline);
     }
-
-    // public enum StreamingMode {
-    //     STANDARD,
-    //     PiPMAIN,
-    //     PiPSECONDARY;
-    // }
-
-    // public byte setStreamingMode(long mode) {
-    //     return (byte)set("stream", mode);
-    // }
-
-    // public StreamingMode setStreamingMode(StreamingMode mode) {
-    //     set("stream", mode.ordinal());
-    //     return mode;
-    // }
 
     public void setCrop(double[] x0x1y0y1) {
         set("crop", x0x1y0y1);
