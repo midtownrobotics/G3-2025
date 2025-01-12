@@ -17,9 +17,8 @@ import frc.robot.sensors.VisionObservation;
 import java.util.HashSet;
 
 /**
- * The Limelight class interacts with the Limelight Vision processing system
- * to retrieve and process data related to the robot's pose, vision targets,
- * and camera settings.
+ * The Limelight class interacts with the Limelight Vision processing system to retrieve and process
+ * data related to the robot's pose, vision targets, and camera settings.
  */
 public class Limelight {
 
@@ -31,7 +30,7 @@ public class Limelight {
 
   /**
    * Constructor that initializes the Limelight object with a given name.
-   * 
+   *
    * @param name The name of the Limelight instance.
    */
   public Limelight(String name) {
@@ -44,7 +43,7 @@ public class Limelight {
 
   /**
    * Converts an array of doubles into a Pose2d object.
-   * 
+   *
    * @param data The array of doubles containing pose data.
    * @return A Pose2d object representing the pose.
    */
@@ -61,7 +60,7 @@ public class Limelight {
 
   /**
    * Converts a Pose2d object into a corresponding array of doubles.
-   * 
+   *
    * @param pose The Pose2d object to convert.
    * @return A double array representing the pose.
    */
@@ -71,7 +70,7 @@ public class Limelight {
 
   /**
    * Converts a Pose3d object into a corresponding array of doubles.
-   * 
+   *
    * @param pose The Pose3d object to convert.
    * @return A double array representing the 3D pose.
    */
@@ -88,9 +87,9 @@ public class Limelight {
 
   /**
    * Retrieves the estimated bot pose from the Limelight system.
-   * 
-   * @return A VisionObservation containing the pose and associated data,
-   *         or null if no pose data is available.
+   *
+   * @return A VisionObservation containing the pose and associated data, or null if no pose data is
+   *     available.
    */
   public VisionObservation getBotPoseEstimate() {
     DoubleArrayEntry poseEntry = table.getDoubleArrayTopic("botpose_wpiblue").getEntry(null);
@@ -135,16 +134,14 @@ public class Limelight {
         pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix);
   }
 
-  /**
-   * Flushes the network tables to send any updates to the Limelight system.
-   */
+  /** Flushes the network tables to send any updates to the Limelight system. */
   private void flush() {
     NetworkTableInstance.getDefault().flush();
   }
 
   /**
    * Retrieves a network table entry for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @return The corresponding NetworkTableEntry.
    */
@@ -154,7 +151,7 @@ public class Limelight {
 
   /**
    * Retrieves a long value from the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @return The long value from the network table.
    */
@@ -164,7 +161,7 @@ public class Limelight {
 
   /**
    * Retrieves a double value from the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @return The double value from the network table.
    */
@@ -175,7 +172,7 @@ public class Limelight {
 
   /**
    * Retrieves a string value from the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @return The string value from the network table.
    */
@@ -185,7 +182,7 @@ public class Limelight {
 
   /**
    * Retrieves a long array value from the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @return The long array value from the network table.
    */
@@ -196,7 +193,7 @@ public class Limelight {
 
   /**
    * Retrieves a double array value from the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @return The double array value from the network table.
    */
@@ -206,7 +203,7 @@ public class Limelight {
 
   /**
    * Retrieves a string array value from the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @return The string array value from the network table.
    */
@@ -217,7 +214,7 @@ public class Limelight {
 
   /**
    * Sets a long value in the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @param value The value to set.
    * @return The value that was set.
@@ -229,7 +226,7 @@ public class Limelight {
 
   /**
    * Sets a double value in the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @param value The value to set.
    * @return The value that was set.
@@ -242,7 +239,7 @@ public class Limelight {
 
   /**
    * Sets a string value in the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @param value The value to set.
    * @return The value that was set.
@@ -255,7 +252,7 @@ public class Limelight {
 
   /**
    * Sets a long array value in the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @param value The array of long values to set.
    * @return The array that was set.
@@ -268,7 +265,7 @@ public class Limelight {
 
   /**
    * Sets a Long array value in the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @param value The array of Long values to set.
    * @return The array that was set.
@@ -281,7 +278,7 @@ public class Limelight {
 
   /**
    * Sets a double array value in the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @param value The array of double values to set.
    * @return The array that was set.
@@ -293,7 +290,7 @@ public class Limelight {
 
   /**
    * Sets a Double array value in the network table for a given key.
-   * 
+   *
    * @param key The key for the network table entry.
    * @param value The array of Double values to set.
    * @return The array that was set.
@@ -308,7 +305,7 @@ public class Limelight {
 
   /**
    * Retrieves various statistics from the Limelight system.
-   * 
+   *
    * @return A double array of statistics.
    */
   public double[] getStats() {
@@ -317,7 +314,7 @@ public class Limelight {
 
   /**
    * Checks if a target is currently seen by the Limelight camera.
-   * 
+   *
    * @return true if a target is seen, false otherwise.
    */
   public boolean isTargetSeen() {
@@ -326,7 +323,7 @@ public class Limelight {
 
   /**
    * Retrieves the number of targets detected by the Limelight system.
-   * 
+   *
    * @return The number of targets detected.
    */
   public int getTargetCount() {
@@ -335,7 +332,7 @@ public class Limelight {
 
   /**
    * Retrieves the latency in the target detection process.
-   * 
+   *
    * @return The target latency in seconds.
    */
   public double getTargetLatency() {
@@ -344,7 +341,7 @@ public class Limelight {
 
   /**
    * Retrieves the latency in capturing the target.
-   * 
+   *
    * @return The capture latency in seconds.
    */
   public double getCaptureLatency() {
@@ -353,7 +350,7 @@ public class Limelight {
 
   /**
    * Retrieves the horizontal offset of the detected target from the camera center.
-   * 
+   *
    * @return The horizontal offset in pixels.
    */
   public double getHorizontalOffset() {
@@ -362,7 +359,7 @@ public class Limelight {
 
   /**
    * Retrieves the vertical offset of the detected target from the camera center.
-   * 
+   *
    * @return The vertical offset in pixels.
    */
   public double getVerticalOffset() {
@@ -371,7 +368,7 @@ public class Limelight {
 
   /**
    * Retrieves the horizontal offset from the principal pixel.
-   * 
+   *
    * @return The horizontal offset in pixels.
    */
   public double getHorizontalOffsetFromPrincipalPixel() {
@@ -380,7 +377,7 @@ public class Limelight {
 
   /**
    * Retrieves the vertical offset from the principal pixel.
-   * 
+   *
    * @return The vertical offset in pixels.
    */
   public double getVerticalOffsetFromPrincipalPixel() {
@@ -389,7 +386,7 @@ public class Limelight {
 
   /**
    * Retrieves the area of the detected target.
-   * 
+   *
    * @return The target area in pixels.
    */
   public double getTargetArea() {
@@ -398,7 +395,7 @@ public class Limelight {
 
   /**
    * Retrieves the ID of the detected target.
-   * 
+   *
    * @return The target ID.
    */
   public int getTargetId() {
@@ -407,7 +404,7 @@ public class Limelight {
 
   /**
    * Retrieves the total latency (target + capture latency).
-   * 
+   *
    * @return The total latency in seconds.
    */
   public double getTotalLatency() {
@@ -416,7 +413,7 @@ public class Limelight {
 
   /**
    * Retrieves the current pipeline index.
-   * 
+   *
    * @return The pipeline index.
    */
   public byte getPipeIndex() {
@@ -425,7 +422,7 @@ public class Limelight {
 
   /**
    * Retrieves the current pipeline type.
-   * 
+   *
    * @return The pipeline type as a string.
    */
   public String getPipeType() {
@@ -436,7 +433,7 @@ public class Limelight {
 
   /**
    * Retrieves the bot pose for the blue team from the Limelight system.
-   * 
+   *
    * @return A Pose2d object representing the bot pose.
    */
   public Pose2d getBotPoseBlue() {
@@ -446,7 +443,7 @@ public class Limelight {
 
   /**
    * Retrieves the bot pose for the Megatag blue team from the Limelight system.
-   * 
+   *
    * @return A Pose2d object representing the bot pose.
    */
   public Pose2d getBotPoseMegatagBlue() {
@@ -456,7 +453,7 @@ public class Limelight {
 
   /**
    * Retrieves the target pose in camera space.
-   * 
+   *
    * @return A Pose2d object representing the target pose in camera space.
    */
   public Pose2d getTargetPoseInCamSpace() {
@@ -465,7 +462,7 @@ public class Limelight {
 
   /**
    * Retrieves the target pose in robot space.
-   * 
+   *
    * @return A Pose2d object representing the target pose in robot space.
    */
   public Pose2d getTargetPoseInRobotSpace() {
@@ -474,21 +471,19 @@ public class Limelight {
 
   /**
    * Retrieves the AprilTag ID.
-   * 
+   *
    * @return The AprilTag ID.
    */
   public long getAprilTagId() {
     return getLong("tid");
   }
 
-  /**
-   * A record class that holds standard deviation values for x, y, z, roll, pitch, and yaw.
-   */
+  /** A record class that holds standard deviation values for x, y, z, roll, pitch, and yaw. */
   public record Stddevs(double x, double y, double z, double roll, double pitch, double yaw) {}
 
   /**
    * Retrieves the standard deviations for Megatags from the Limelight system.
-   * 
+   *
    * @return An Stddevs object containing standard deviations for the Megatag data.
    */
   public Stddevs getMegatagStddevs() {
@@ -498,7 +493,7 @@ public class Limelight {
 
   /**
    * Retrieves the standard deviations for the second Megatag from the Limelight system.
-   * 
+   *
    * @return An Stddevs object containing standard deviations for the second Megatag.
    */
   public Stddevs getMegatag2Stddevs() {
@@ -508,7 +503,7 @@ public class Limelight {
 
   /**
    * Sets the camera pose in robot space.
-   * 
+   *
    * @param coords The Pose3d representing the camera pose in robot space.
    */
   public void setCamPoseInRobotSpace(Pose3d coords) {
@@ -518,7 +513,7 @@ public class Limelight {
 
   /**
    * Sets the target ID in the Limelight system.
-   * 
+   *
    * @param id The target ID to set.
    */
   public void setTargetId(long id) {
@@ -527,7 +522,7 @@ public class Limelight {
 
   /**
    * Sets the robot's yaw orientation.
-   * 
+   *
    * @param yaw The Rotation2d representing the robot's yaw.
    */
   public void setRobotYaw(Rotation2d yaw) {
@@ -537,16 +532,14 @@ public class Limelight {
 
   /**
    * Sets the valid fiducial IDs in the Limelight system.
-   * 
+   *
    * @param ids The array of valid fiducial IDs.
    */
   public void setValidFiducialIds(double[] ids) {
     set("fiducial_id_filters_set", ids);
   }
 
-  /**
-   * Enum representing the different LED states for the Limelight camera.
-   */
+  /** Enum representing the different LED states for the Limelight camera. */
   public enum LedState {
     CURRENTPIPELINE,
     OFF,
@@ -556,7 +549,7 @@ public class Limelight {
 
   /**
    * Sets the LED state for the Limelight camera.
-   * 
+   *
    * @param state The LED state to set.
    */
   public void setLedState(LedState state) {
@@ -565,7 +558,7 @@ public class Limelight {
 
   /**
    * Sets the pipeline index for the Limelight camera.
-   * 
+   *
    * @param pipeline The pipeline index to set.
    */
   public void setPipeline(long pipeline) {
@@ -574,7 +567,7 @@ public class Limelight {
 
   /**
    * Sets the crop area for the Limelight camera.
-   * 
+   *
    * @param x0x1y0y1 The array representing the crop area in the format [x0, x1, y0, y1].
    */
   public void setCrop(double[] x0x1y0y1) {

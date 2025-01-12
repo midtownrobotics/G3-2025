@@ -3,9 +3,9 @@ package frc.robot.sensors;
 import frc.lib.team1648.Limelight;
 
 /**
- * The BackLimelight class provides an interface to interact with the Limelight
- * camera for vision processing. It wraps the Limelight class to obtain the bot's
- * pose estimate and vision observations from the camera.
+ * The BackLimelight class provides an interface to interact with the Limelight camera for vision
+ * processing. It wraps the Limelight class to obtain the bot's pose estimate and vision
+ * observations from the camera.
  */
 public class BackLimelight {
 
@@ -21,8 +21,8 @@ public class BackLimelight {
   }
 
   /**
-   * Retrieves the vision observation from the Limelight camera, which includes
-   * the bot's pose estimate and other vision-related data.
+   * Retrieves the vision observation from the Limelight camera, which includes the bot's pose
+   * estimate and other vision-related data.
    *
    * @return A {@link VisionObservation} containing the bot's pose estimate and related data.
    */

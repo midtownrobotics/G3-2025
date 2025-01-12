@@ -3,30 +3,27 @@ package frc.robot.sensors;
 import frc.lib.team1648.Limelight;
 
 /**
- * The CoralLimelight class interacts with the Limelight camera, specifically 
- * for controlling and reading data from the camera while using different 
- * pipelines such as Coral and AprilTag.
+ * The CoralLimelight class interacts with the Limelight camera, specifically for controlling and
+ * reading data from the camera while using different pipelines such as Coral and AprilTag.
  */
 public class CoralLimelight {
 
   private Limelight limelight;
 
-  /**
-   * Enum representing the different pipelines that can be used by the Limelight camera.
-   */
+  /** Enum representing the different pipelines that can be used by the Limelight camera. */
   public enum Pipeline {
-    CORAL,    // Pipeline used for Coral processing.
+    CORAL, // Pipeline used for Coral processing.
     APRILTAG; // Pipeline used for AprilTag processing.
   }
 
   private Pipeline currentPipeline;
 
   /**
-   * Retrieves the horizontal offset for the Coral pipeline. If the current pipeline 
-   * is set to AprilTag or no target is seen, it returns {@code null}.
+   * Retrieves the horizontal offset for the Coral pipeline. If the current pipeline is set to
+   * AprilTag or no target is seen, it returns {@code null}.
    *
-   * @return The horizontal offset (in degrees) of the target relative to the Limelight,
-   *         or {@code null} if no target is seen or if the pipeline is set to AprilTag.
+   * @return The horizontal offset (in degrees) of the target relative to the Limelight, or {@code
+   *     null} if no target is seen or if the pipeline is set to AprilTag.
    */
   public Integer getCoralOffset() {
     // Check if the current pipeline is AprilTag or no target is seen
