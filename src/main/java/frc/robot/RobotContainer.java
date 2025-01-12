@@ -6,15 +6,112 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.controls.Controls;
+import frc.robot.controls.MatchXboxControls;
 
-public class RobotContainer {
+public class RobotContainer {    
+  
+  private final Controls controls;
+
   /** RobotContainer initialization */
   public RobotContainer() {
+    controls = new MatchXboxControls(0, 1);
     configureBindings();
   }
 
   /** Configures bindings to oi */
-  private void configureBindings() {}
+  private void configureBindings() {
+
+    // Driver
+
+    controls.resetDriveHeading().onTrue(new InstantCommand(() -> {
+        // Logic to reset the drive heading
+    }));
+
+    controls.driveBrake().onTrue(new InstantCommand(() -> {
+        // Logic to activate drivetrain brakes ("X" Mode)
+    }));
+
+    controls.gamePieceLock().onTrue(new InstantCommand(() -> {
+        // Logic to lock onto a game piece
+    }));
+
+    controls.leftPositionLock().onTrue(new InstantCommand(() -> {
+        // Logic to lock onto the left position on the reef
+    }));
+
+    controls.rightPositionLock().onTrue(new InstantCommand(() -> {
+        // Logic to lock onto the right position on the reef
+    }));
+
+    controls.reefAlgaePositionLock().onTrue(new InstantCommand(() -> {
+        // Logic to lock onto the true right position for algae intake
+    }));
+
+    // Operator
+
+    controls.groundIntakeCoral().onTrue(new InstantCommand(() -> {
+        // Logic to intake coral from the ground
+    }));
+
+    controls.groundVomitCoral().onTrue(new InstantCommand(() -> {
+        // Logic to vomit coral from the ground
+    }));
+
+    controls.sourceIntakeCoral().onTrue(new InstantCommand(() -> {
+        // Logic to intake coral from the source
+    }));
+
+    controls.sourceVomitCoral().onTrue(new InstantCommand(() -> {
+        // Logic to vomit coral from the source
+    }));
+
+    // Operator Controls for Algae
+    controls.groundIntakeAlgae().onTrue(new InstantCommand(() -> {
+        // Logic to intake algae from the ground
+    }));
+
+    controls.groundVomitAlgae().onTrue(new InstantCommand(() -> {
+        // Logic to vomit algae from the ground
+    }));
+
+    controls.stackedIntakeAlgae().onTrue(new InstantCommand(() -> {
+        // Logic to intake stacked algae
+    }));
+
+    controls.stackedVomitAlgae().onTrue(new InstantCommand(() -> {
+        // Logic to vomit stacked algae
+    }));
+
+    controls.prepareScoreAlgae().onTrue(new InstantCommand(() -> {
+        // Logic to prepare for scoring algae
+    }));
+
+    controls.prepareScoreCoral().onTrue(new InstantCommand(() -> {
+        // Logic to prepare for scoring coral
+    }));
+
+    controls.handoffCoral().onTrue(new InstantCommand(() -> {
+        // Logic to hand off coral
+    }));
+
+    controls.scoreGamePiece().onTrue(new InstantCommand(() -> {
+        // Logic to score a game piece
+    }));
+
+    controls.climb().onTrue(new InstantCommand(() -> {
+        // Logic to activate the climbing mechanism
+    }));
+
+    controls.panic().onTrue(new InstantCommand(() -> {
+        // Logic for the emergency panic mode
+    }));
+
+    controls.setManualMode().onTrue(new InstantCommand(() -> {
+        // Logic to switch the robot to manual mode
+    }));
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

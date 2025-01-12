@@ -1,6 +1,8 @@
 package frc.robot.subsystems.coral_intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import lombok.Getter;
+import lombok.Setter;
 
 public class CoralIntake extends SubsystemBase {
   public enum State {
@@ -15,6 +17,8 @@ public class CoralIntake extends SubsystemBase {
     TUNING,
     MANUAL
   }
+
+  private @Getter @Setter State currentState = State.STOW;
 
   @Override
   public void periodic() {

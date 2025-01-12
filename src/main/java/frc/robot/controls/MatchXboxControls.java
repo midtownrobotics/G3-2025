@@ -88,19 +88,16 @@ public class MatchXboxControls implements Controls {
   private Trigger vomit() {
     return operatorController.leftTrigger();
   }
-  ;
 
   /** Ground coral trigger. */
   private Trigger groundCoral() {
     return operatorController.b();
   }
-  ;
 
   /** Source coral trigger. */
   private Trigger sourceCoral() {
     return DoublePressTracker.doublePress(groundCoral());
   }
-  ;
 
   /** Ground algae trigger. */
   private Trigger groundAlgae() {

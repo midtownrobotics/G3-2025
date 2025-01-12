@@ -2,6 +2,9 @@ package frc.robot.subsystems.algae_claw;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.littletonrobotics.junction.Logger;
 
 public class AlgaeClaw extends SubsystemBase {
@@ -19,6 +22,8 @@ public class AlgaeClaw extends SubsystemBase {
     TUNING,
     MANUAL
   }
+
+  private @Getter @Setter State currentState = State.STOW;
 
   @Override
   public void periodic() {
