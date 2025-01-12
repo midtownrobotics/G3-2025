@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.utils.Constants;
 import lombok.Getter;
@@ -80,15 +81,26 @@ public class WinchIOKraken implements WinchIO {
   public void updateInputs(WinchInputs inputs) {
     inputs.left.updateInputs(leftMotor);
     inputs.right.updateInputs(rightMotor);
+    inputs.position = Units.Meter.of(rotationToMeter(leftMotor.getPosition().getValue()));
   }
 
   /**
-   * converts distance unit to kraken rotations
+   * Converts distance unit to kraken rotations
    *
    * @param m
    * @return
    */
   public double meterToRotation(Distance m) {
     return m.in(Units.Meter) / (2 * Math.PI * WHEEL_RADIUS.in(Units.Meter)) * GEARING;
+  }
+
+  /**
+   * Converts kraken rotation to distance
+   *
+   * @param a
+   * @return
+   */
+  public double rotationToMeter(Angle a) {
+    return (2 * Math.PI * WHEEL_RADIUS.in(Units.Meter) * a.in(Units.Rotation)) / GEARING;
   }
 }

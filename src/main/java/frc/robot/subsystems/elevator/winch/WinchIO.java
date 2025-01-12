@@ -9,6 +9,7 @@ public interface WinchIO {
   public class WinchInputs {
     public KrakenInputsAutoLogged left;
     public KrakenInputsAutoLogged right;
+    public Distance position;
   }
 
   /**
