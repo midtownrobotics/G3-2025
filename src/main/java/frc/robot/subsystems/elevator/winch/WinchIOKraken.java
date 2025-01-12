@@ -24,15 +24,10 @@ public class WinchIOKraken implements WinchIO {
   @Getter private TalonFX leftMotor;
   @Getter private TalonFX rightMotor;
 
-  /**
-   * Contructor for real winch with Krakens
-   *
-   * @param leftMotor
-   * @param rightMotor
-   */
-  public WinchIOKraken(TalonFX leftMotor, TalonFX rightMotor) {
-    this.leftMotor = leftMotor;
-    this.rightMotor = rightMotor;
+  /** Contructor for real winch with Krakens */
+  public WinchIOKraken(int leftMotorID, int rightMotorID) {
+    leftMotor = new TalonFX(leftMotorID);
+    rightMotor = new TalonFX(rightMotorID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
     // Scoring Slot
     krakenConfig.Slot0 =

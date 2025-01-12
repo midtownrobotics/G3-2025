@@ -9,15 +9,44 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
+import frc.robot.subsystems.algae_claw.AlgaeClaw;
+import frc.robot.subsystems.algae_claw.wrist.WristIO;
+import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
+import frc.robot.subsystems.coral_intake.CoralIntake;
+import frc.robot.subsystems.coral_outtake.CoralOuttake;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.winch.WinchIO;
+import frc.robot.subsystems.elevator.winch.WinchIOKraken;
+import frc.robot.subsystems.superstructure.Superstructure;
 
 public class RobotContainer {
 
   private final Controls controls;
 
+  @SuppressWarnings("unused")
+  private final Superstructure superstructure;
+
+  private final AlgaeClaw algaeClaw;
+  private final CoralIntake coralIntake;
+  private final CoralOuttake coralOuttake;
+  private final Elevator elevator;
+
   /** RobotContainer initialization */
   public RobotContainer() {
     controls = new MatchXboxControls(0, 1);
     configureBindings();
+
+    WristIO wristIO = new WristIOKraken();
+    algaeClaw = new AlgaeClaw(wristIO);
+
+    coralIntake = new CoralIntake();
+
+    coralOuttake = new CoralOuttake();
+
+    WinchIO winchIO = new WinchIOKraken(0, 0);
+    elevator = new Elevator(winchIO);
+
+    superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator);
   }
 
   /** Configures bindings to oi */

@@ -1,7 +1,10 @@
 package frc.robot.subsystems.algae_claw;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
+import frc.robot.subsystems.algae_claw.wrist.WristIO;
+import frc.robot.subsystems.algae_claw.wrist.WristInputsAutoLogged;
 import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
@@ -24,6 +27,19 @@ public class AlgaeClaw extends SubsystemBase {
 
   private @Getter @Setter State currentState = State.STOW;
 
+  private WristIO wristIO;
+
+  private WristInputsAutoLogged wristInputs = new WristInputsAutoLogged();
+
+  /** Constructor for algae claw. */
+  public AlgaeClaw(WristIO wristIO) {
+    this.wristIO = wristIO;
+  }
+
+  public Angle getPosition() {
+    return wristInputs.wristPosition;
+  }
+
   @Override
   public void periodic() {
     double timestamp = RobotTime.getTimestampSeconds();
@@ -37,9 +53,5 @@ public class AlgaeClaw extends SubsystemBase {
 
     super.periodic();
   }
-
-  // setState()
-  // getState()
-
   // senseAlgae()
 }
