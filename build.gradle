@@ -146,6 +146,7 @@ spotless {
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
+        importOrder()
     }
     groovyGradle {
         target fileTree(".") {
@@ -162,7 +163,7 @@ spotless {
             include "**/*.json"
             exclude "**/build/**", "**/build-*/**", "/.vscode/**"
         }
-        gson().indentWithSpaces(2)
+        gson().indentWithSpaces(4)
     }
     format "misc", {
         target fileTree(".") {
@@ -170,7 +171,7 @@ spotless {
             exclude "**/build/**", "**/build-*/**"
         }
         trimTrailingWhitespace()
-        indentWithSpaces(2)
+        indentWithSpaces(4)
         endWithNewline()
     }
 }
