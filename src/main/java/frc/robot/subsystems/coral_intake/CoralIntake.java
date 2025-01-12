@@ -7,9 +7,11 @@ import lombok.Setter;
 public class CoralIntake extends SubsystemBase {
   public enum State {
     STOW,
-    VOMIT,
     START_POSITION,
-    INTAKING,
+    GROUND_INTAKE,
+    SOURCE_INTAKE,
+    GROUND_VOMIT,
+    SOURCE_VOMIT,
     HANDOFF,
     REVERSE_HANDOFF,
     STATION_INTAKE,
