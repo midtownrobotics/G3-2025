@@ -38,22 +38,12 @@ public class RollerIOKraken implements RollerIO {
     topRoller.getConfigurator().apply(krakenConfig);
     bottomRoller.getConfigurator().apply(krakenConfig);
   }
-
-  /**
-   * Sets the speed of the rollers from 0-1
-   * 
-   * @param speed
-   */
-
-  public void setSpeed(double speed) {
-    topRoller.set(speed);
-    bottomRoller.set(speed);
-  }
+ 
 
   @Override
   public void setVoltage(int voltage) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
+    topRoller.setVoltage(voltage);
+    bottomRoller.setVoltage(voltage);
   }
 
   @Override
