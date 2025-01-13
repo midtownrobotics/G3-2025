@@ -5,14 +5,12 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-import frc.robot.utils.Constants;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
+import frc.robot.utils.Constants;
 import lombok.Getter;
 
 public class WristIOKraken implements WristIO {

@@ -5,7 +5,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -38,7 +37,7 @@ public class RollerIOKraken implements RollerIO {
     topRoller.getConfigurator().apply(krakenConfig);
     bottomRoller.getConfigurator().apply(krakenConfig);
   }
- 
+
 
   @Override
   public void setVoltage(int voltage) {
