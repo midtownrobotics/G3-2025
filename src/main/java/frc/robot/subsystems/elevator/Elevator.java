@@ -1,10 +1,12 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
   public enum State {
@@ -34,7 +36,7 @@ public class Elevator extends SubsystemBase {
   }
 
   private @Getter @Setter State state;
-  private WinchInputsAutoLogged winchInputs;
+  private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
 
   private @Getter WinchIO winch;
 
@@ -50,6 +52,8 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double timestamp = RobotTime.getTimestampSeconds();
+    Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
     winch.updateInputs(winchInputs);
 
     switch (getState()) {

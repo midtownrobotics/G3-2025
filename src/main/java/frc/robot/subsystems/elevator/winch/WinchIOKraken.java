@@ -74,9 +74,9 @@ public class WinchIOKraken implements WinchIO {
 
   @Override
   public void updateInputs(WinchInputs inputs) {
-    inputs.left.updateInputs(leftMotor);
-    inputs.right.updateInputs(rightMotor);
-    inputs.position = Units.Meter.of(rotationToMeter(leftMotor.getPosition().getValue()));
+    // inputs.left.updateInputs(leftMotor);
+    // inputs.right.updateInputs(rightMotor);
+    // inputs.position = Units.Meter.of(rotationToMeter(leftMotor.getPosition().getValue()));
   }
 
   /**

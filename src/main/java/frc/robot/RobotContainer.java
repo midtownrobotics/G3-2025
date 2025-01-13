@@ -37,11 +37,11 @@ public class RobotContainer {
     configureBindings();
 
     WristIO wristIO = new WristIOKraken();
-    algaeClaw = new AlgaeClaw(wristIO);
+    algaeClaw = new AlgaeClaw(null, wristIO);
 
-    coralIntake = new CoralIntake();
+    coralIntake = new CoralIntake(null, null, null);
 
-    coralOuttake = new CoralOuttake();
+    coralOuttake = new CoralOuttake(null);
 
     WinchIO winchIO = new WinchIOKraken(0, 0);
     elevator = new Elevator(winchIO);

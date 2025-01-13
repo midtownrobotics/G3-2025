@@ -1,8 +1,12 @@
 package frc.robot.subsystems.coral_outtake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team1648.RobotTime;
+import frc.robot.subsystems.coral_outtake.roller.RollerIO;
+import frc.robot.subsystems.coral_outtake.roller.RollerInputsAutoLogged;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.Logger;
 
 public class CoralOuttake extends SubsystemBase {
 
@@ -17,10 +21,26 @@ public class CoralOuttake extends SubsystemBase {
   }
 
   private @Getter @Setter State currentState = State.IDLE;
+  private final RollerIO rollerIO;
+  private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
+
+  /**
+   * Initializes Coral Outtake
+   * @param rollerIO
+   */
+  public CoralOuttake(RollerIO rollerIO) {
+    this.rollerIO = rollerIO;
+  }
 
   @Override
   public void periodic() {
+    double timestamp = RobotTime.getTimestampSeconds();
+    rollerIO.updateInputs(rollerInputs);
+    Logger.processInputs(getName() + "/roller", rollerInputs);
+
     // state switch case
-    super.periodic();
+
+
+    Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 }

@@ -3,10 +3,13 @@ package frc.robot.subsystems.algae_claw;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
+import frc.robot.subsystems.algae_claw.roller.RollerIO;
+import frc.robot.subsystems.algae_claw.roller.RollerInputsAutoLogged;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristInputsAutoLogged;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class AlgaeClaw extends SubsystemBase {
@@ -27,31 +30,36 @@ public class AlgaeClaw extends SubsystemBase {
 
   private @Getter @Setter State currentState = State.STOW;
 
-  private WristIO wristIO;
-
-  private WristInputsAutoLogged wristInputs = new WristInputsAutoLogged();
+  private final RollerIO rollerIO;
+  private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
+  private final WristIO wristIO;
+  private final WristInputsAutoLogged wristInputs = new WristInputsAutoLogged();
 
   /** Constructor for algae claw. */
-  public AlgaeClaw(WristIO wristIO) {
+  public AlgaeClaw(RollerIO rollerIO, WristIO wristIO) {
+    this.rollerIO = rollerIO;
     this.wristIO = wristIO;
   }
 
+  @AutoLogOutput
   public Angle getPosition() {
-    return wristInputs.wristPosition;
+    return null;
   }
 
   @Override
   public void periodic() {
     double timestamp = RobotTime.getTimestampSeconds();
 
+    Logger.processInputs(getName() + "/roller", rollerInputs);
+    Logger.processInputs(getName() + "/wrist", wristInputs);
+    rollerIO.updateInputs(rollerInputs);
+    wristIO.updateInputs(wristInputs);
+
     // state switch case
 
     // record outputs
-
-    Logger.recordOutput(
-        getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
-
-    super.periodic();
+    Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
+
   // senseAlgae()
 }
