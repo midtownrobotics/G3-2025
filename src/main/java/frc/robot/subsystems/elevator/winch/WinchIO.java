@@ -26,8 +26,6 @@ public interface WinchIO {
     public WinchMotorInputsAutoLogged left = new WinchMotorInputsAutoLogged();
     public WinchMotorInputsAutoLogged right = new WinchMotorInputsAutoLogged();
     public Angle absolutePosition = Units.Radians.zero();
-
-
   }
 
   /**
