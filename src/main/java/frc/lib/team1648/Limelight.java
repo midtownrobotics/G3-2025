@@ -422,7 +422,7 @@ public class Limelight {
 
   /**
    * Retrieves the angle of the 0-1 line of the target box (vertical is 0 degrees)
-   * 
+   *
    *
    * @return The length of the short side.
    */

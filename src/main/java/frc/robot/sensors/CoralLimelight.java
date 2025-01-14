@@ -1,6 +1,5 @@
 package frc.robot.sensors;
 
-import org.opencv.core.Mat;
 
 import frc.lib.team1648.Limelight;
 import frc.robot.utils.Constants;
@@ -56,6 +55,10 @@ public class CoralLimelight {
     return currentPipeline;
   }
 
+  /**
+   * Estimates if the piece is being intaked head on or on the side. Returns null if not in the correct mode.
+   * @return
+   */
   public Boolean isHeadOn() {
     // Check if the current pipeline is AprilTag or no target is seen
     if (currentPipeline != Pipeline.CORAL || !limelight.isTargetSeen()) {
@@ -66,7 +69,7 @@ public class CoralLimelight {
 
     // find the longest side
     boolean longestSideIs0To1;
-    
+
     double[][] corners = limelight.getCorners();
 
     longestSideIs0To1 = Math.hypot(
@@ -78,7 +81,7 @@ public class CoralLimelight {
       );
 
     double angle = limelight.getTargetBoxSkewDegrees();
-    
+
     if (longestSideIs0To1 && Math.abs(angle+0) < Constants.HEAD_ON_ANGLE_ERROR) {
       return true;
     } else if (!longestSideIs0To1 && Math.abs(angle+90) < Constants.HEAD_ON_ANGLE_ERROR) {
