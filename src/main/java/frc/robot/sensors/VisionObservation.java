@@ -10,5 +10,6 @@ public record VisionObservation(
     double timestamp,
     int tagCount,
     double avgTagDist,
-    int[] fiducialId,
-    Matrix<N3, N1> stddevs) {}
+    int[] fiducialIds,
+    Matrix<N3, N1> stddevs
+) {}
