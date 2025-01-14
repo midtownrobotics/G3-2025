@@ -13,7 +13,7 @@ import lombok.Getter;
 
 public class BeltIONeo550 implements BeltIO {
 
-  @Getter SparkMax beltMotor;
+  private @Getter SparkMax beltMotor;
 
   public BeltIONeo550(int beltMotorID) {
     beltMotor = new SparkMax(beltMotorID, MotorType.kBrushless);
