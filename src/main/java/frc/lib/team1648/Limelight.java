@@ -403,6 +403,50 @@ public class Limelight {
   }
 
   /**
+   * Retrieves the length of the long side of the detected target.
+   *
+   * @return The length of the long side.
+   */
+  public double getTargetLongSide() {
+    return getStats()[12];
+  }
+
+  /**
+   * Retrieves the length of the short side of the detected target.
+   *
+   * @return The length of the short side.
+   */
+  public double getTargetShortSide() {
+    return getStats()[13];
+  }
+
+  /**
+   * Retrieves the angle of the 0-1 line of the target box (vertical is 0 degrees)
+   *
+   *
+   * @return The length of the short side.
+   */
+  public double getTargetBoxSkewDegrees() {
+    return getStats()[16];
+  }
+
+  /**
+   * Retrieves corners of the target box.
+   *
+   * @return Corner XYs in the form {{x0, y0}, ... , {x4, y4}}
+   */
+  public double[][] getCorners() {
+    double[] tcornxy = getDoubleArray("tcornxy");
+    if (tcornxy == null) return null;
+
+    double[][] res = new double[tcornxy.length/2][2];
+    for (int i = 0; i < tcornxy.length; i += 2) {
+      res[i>>1][i&1] = tcornxy[i];
+    }
+    return res;
+  }
+
+  /**
    * Retrieves the total latency (target + capture latency).
    *
    * @return The total latency in seconds.
