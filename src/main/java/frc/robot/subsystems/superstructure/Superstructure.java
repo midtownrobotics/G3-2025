@@ -92,7 +92,7 @@ public class Superstructure extends SubsystemBase {
           if (!possibleCoralIntakeStates.contains(priorityToCoralIntakeState.get(priority))) continue;
 
           if (!isCoralIntakeOutside() && isAlgaeClawBlockingIntake()) {
-            if (!tryMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
+            if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
             moveAlgaeClawOutside(possibleAlgaeClawStates);
           }
 
@@ -107,7 +107,7 @@ public class Superstructure extends SubsystemBase {
           if (!possibleAlgaeClawStates.contains(priorityToAlgaeClawState.get(priority)) || !possibleElevatorStates.contains(priorityToElevatorState.get(priority))) continue;
 
           if (!isCoralIntakeOutside()) {
-            if (!tryMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
+            if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
 
             moveCoralIntakeOutside(possibleCoralIntakeStates);
           }
@@ -120,7 +120,7 @@ public class Superstructure extends SubsystemBase {
           if (!possibleAlgaeClawStates.contains(AlgaeClaw.State.PROCESSOR_PREPARE) || !possibleElevatorStates.contains(Elevator.State.PROCESSOR)) continue;
 
           if (!isCoralIntakeOutside()) {
-            if (!tryMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
+            if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
 
             moveCoralIntakeOutside(possibleCoralIntakeStates);
           }
@@ -133,8 +133,8 @@ public class Superstructure extends SubsystemBase {
           if (!possibleAlgaeClawStates.contains(AlgaeClaw.State.BARGE_PREPARE_BACK) || !possibleElevatorStates.contains(Elevator.State.BARGE)) continue;
 
           if (!isCoralIntakeOutside()) {
-            if (!tryMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
-            if (!tryMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
+            if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
+            if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
 
             moveCoralIntakeOutside(possibleCoralIntakeStates);
             moveAlgaeClawOutside(possibleAlgaeClawStates);
@@ -148,8 +148,8 @@ public class Superstructure extends SubsystemBase {
           if (!possibleElevatorStates.contains(coralModeToElevatorState.get(controls.getCoralMode()))) continue;
 
           if (!isCoralIntakeOutside()) {
-            if (!tryMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
-            if (!tryMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
+            if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
+            if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
 
             moveCoralIntakeOutside(possibleCoralIntakeStates);
             moveAlgaeClawOutside(possibleAlgaeClawStates);
@@ -166,10 +166,10 @@ public class Superstructure extends SubsystemBase {
           if (!possibleCoralOuttakeStates.contains(CoralOuttake.State.HANDOFF) || !possibleElevatorStates.contains(Elevator.State.HANDOFF)) continue;
 
           if (isElevatorExtended()) {
-            if (!tryMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
+            if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
 
             if (!isCoralIntakeOutside()) {
-              if (!tryMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
+              if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
 
               moveAlgaeClawOutside(possibleAlgaeClawStates);
             }
@@ -184,7 +184,7 @@ public class Superstructure extends SubsystemBase {
           if (!possibleCoralIntakeStates.contains(CoralIntake.State.HANDOFF)) continue;
 
           if (isCoralIntakeOutside()) {
-            if (!tryMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
+            if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
 
             moveAlgaeClawOutside(possibleAlgaeClawStates);
           }
@@ -226,8 +226,8 @@ public class Superstructure extends SubsystemBase {
   }
 
   private final Set<AlgaeClaw.State> insideAlgaeClawStates = Set.of(AlgaeClaw.State.BARGE_SHOOT_BACK, AlgaeClaw.State.BARGE_SHOOT_FRONT, AlgaeClaw.State.START_POSITION, AlgaeClaw.State.STOW);
-
-  private boolean tryMoveAlgaeClawOutside(Set<AlgaeClaw.State> possibleStates) {
+  
+  private boolean canMoveAlgaeClawOutside(Set<AlgaeClaw.State> possibleStates) {
     return isAnyPossibleStates(possibleStates, insideAlgaeClawStates);
   }
   private void moveAlgaeClawOutside(Set<AlgaeClaw.State> possibleStates) {
@@ -236,7 +236,7 @@ public class Superstructure extends SubsystemBase {
 
   private final Set<CoralIntake.State> insideCoralIntakeStates = Set.of(CoralIntake.State.STOW, CoralIntake.State.HANDOFF, CoralIntake.State.REVERSE_HANDOFF);
 
-  private boolean tryMoveCoralIntakeOutside(Set<CoralIntake.State> possibleStates) {
+  private boolean canMoveCoralIntakeOutside(Set<CoralIntake.State> possibleStates) {
     return isAnyPossibleStates(possibleStates, insideCoralIntakeStates);
   }
   private void moveCoralIntakeOutside(Set<CoralIntake.State> possibleStates) {
