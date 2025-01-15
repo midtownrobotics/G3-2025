@@ -17,6 +17,10 @@ public interface RollerIO {
     public Current supplyCurrent = Units.Amps.zero();
     public Temperature temperature = Units.Fahrenheit.zero();
   }
+
+
+
+
   /**
    * Set motor output voltage
    *
