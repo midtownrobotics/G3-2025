@@ -36,7 +36,7 @@ public class RobotContainer {
     controls = new MatchXboxControls(0, 1);
     configureBindings();
 
-    WristIO wristIO = new WristIOKraken();
+    WristIO wristIO = new WristIOKraken(0, 0);
     algaeClaw = new AlgaeClaw(null, wristIO);
 
     coralIntake = new CoralIntake(null, null, null);
