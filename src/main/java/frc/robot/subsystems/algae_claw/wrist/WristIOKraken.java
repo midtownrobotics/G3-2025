@@ -1,10 +1,8 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -19,6 +17,7 @@ public class WristIOKraken implements WristIO {
   @Getter private DutyCycleEncoder encoder;
   @Getter private PIDController wristPID;
 
+  /** Constructor for wristIO for kraken motors. */
   public WristIOKraken(int wristMotorID, int encoderID) {
     wristMotor = new TalonFX(wristMotorID);
     encoder = new DutyCycleEncoder(new DigitalInput(encoderID));
@@ -26,21 +25,12 @@ public class WristIOKraken implements WristIO {
     wristPID = new PIDController(0, 0, 0);
 
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
-    krakenConfig.Slot0 =
-        new Slot0Configs()
-            .withKP(0)
-            .withKI(0)
-            .withKD(0)
-            .withKS(0)
-            .withKG(0)
-            .withKA(0)
-            .withKV(0)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
+            .withSupplyCurrentLimitEnable(true)
             .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT)
-            .withSupplyCurrentLowerLimit(40)
+            .withSupplyCurrentLowerLimit(Constants.KRAKEN_CURRENT_LOWER_LIMIT)
             .withSupplyCurrentLowerTime(1);
 
     wristMotor.getConfigurator().apply(krakenConfig);

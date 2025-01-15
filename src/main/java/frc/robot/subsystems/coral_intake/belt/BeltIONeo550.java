@@ -1,12 +1,11 @@
 package frc.robot.subsystems.coral_intake.belt;
 
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.Units;
 import frc.robot.utils.Constants;
 import lombok.Getter;
@@ -15,12 +14,13 @@ public class BeltIONeo550 implements BeltIO {
 
   private @Getter SparkMax beltMotor;
 
+  /** Constructor for beltIO for Neo550 motors. */
   public BeltIONeo550(int beltMotorID) {
     beltMotor = new SparkMax(beltMotorID, MotorType.kBrushless);
     beltMotor.configure(new SparkMaxConfig().smartCurrentLimit((int) Constants.NEO_550_CURRENT_LIMIT.in(Units.Amps))
-    .idleMode(IdleMode.kBrake), 
-    
-    ResetMode.kResetSafeParameters, 
+    .idleMode(IdleMode.kBrake),
+
+    ResetMode.kResetSafeParameters,
     PersistMode.kNoPersistParameters);
   }
 
