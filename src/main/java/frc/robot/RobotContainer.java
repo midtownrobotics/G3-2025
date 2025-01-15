@@ -46,7 +46,7 @@ public class RobotContainer {
     WinchIO winchIO = new WinchIOKraken(0, 0);
     elevator = new Elevator(winchIO);
 
-    superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator);
+    superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
   }
 
   /** Configures bindings to oi */

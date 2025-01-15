@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevator;
 
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
@@ -11,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 public class Elevator extends SubsystemBase {
   public enum State {
     STOW(0),
+    HANDOFF(0),
     L1(0),
     L2(0),
     L3(0),
@@ -20,6 +22,7 @@ public class Elevator extends SubsystemBase {
     CLIMB(0),
     STATION(0),
     ALGAE_GROUND(0),
+    ALGAE_STACKED(0),
     TUNING(0),
     MANUAL(0);
 
@@ -92,5 +95,9 @@ public class Elevator extends SubsystemBase {
         // getWinch().setPosition(STOW);
         break;
     }
+  }
+
+  public Distance getPosition() {
+    return null;
   }
 }

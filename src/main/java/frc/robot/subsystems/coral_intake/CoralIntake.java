@@ -1,5 +1,6 @@
 package frc.robot.subsystems.coral_intake;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
@@ -17,9 +18,8 @@ public class CoralIntake extends SubsystemBase {
     STOW,
     START_POSITION,
     GROUND_INTAKE,
-    SOURCE_INTAKE,
     GROUND_VOMIT,
-    SOURCE_VOMIT,
+    STATION_VOMIT,
     HANDOFF,
     REVERSE_HANDOFF,
     STATION_INTAKE,
@@ -62,6 +62,10 @@ public class CoralIntake extends SubsystemBase {
     // state switch case
 
     Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+  }
+
+  public Angle getPivotPosition() {
+    return null;
   }
 
   // setState()
