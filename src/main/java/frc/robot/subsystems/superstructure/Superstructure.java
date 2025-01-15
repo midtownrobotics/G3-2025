@@ -226,7 +226,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   private final Set<AlgaeClaw.State> insideAlgaeClawStates = Set.of(AlgaeClaw.State.BARGE_SHOOT_BACK, AlgaeClaw.State.BARGE_SHOOT_FRONT, AlgaeClaw.State.START_POSITION, AlgaeClaw.State.STOW);
-  
+
   private boolean tryMoveAlgaeClawOutside(Set<AlgaeClaw.State> possibleStates) {
     return isAnyPossibleStates(possibleStates, insideAlgaeClawStates);
   }
