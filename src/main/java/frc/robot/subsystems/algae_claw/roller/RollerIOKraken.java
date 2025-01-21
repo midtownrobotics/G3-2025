@@ -1,11 +1,9 @@
 package frc.robot.subsystems.algae_claw.roller;
 
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -51,7 +49,7 @@ public class RollerIOKraken implements RollerIO {
     supplyCurrent.setUpdateFrequency(50);
     torqueCurrent.setUpdateFrequency(50);
     temperature.setUpdateFrequency(50);
-    
+
     roller.optimizeBusUtilization();
   }
 

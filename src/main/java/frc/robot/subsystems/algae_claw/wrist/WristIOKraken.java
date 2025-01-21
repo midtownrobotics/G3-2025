@@ -60,7 +60,7 @@ public class WristIOKraken implements WristIO {
     supplyCurrent.setUpdateFrequency(50);
     torqueCurrent.setUpdateFrequency(50);
     temperature.setUpdateFrequency(50);
-    
+
     wristMotor.optimizeBusUtilization();
   }
 
@@ -77,6 +77,6 @@ public class WristIOKraken implements WristIO {
     inputs.appliedVoltage = voltage.getValue();
     inputs.supplyCurrent = supplyCurrent.getValue();
     inputs.torqueCurrent = torqueCurrent.getValue();
-    inputs.temperature = temperature.getValue(); 
+    inputs.temperature = temperature.getValue();
   }
 }
