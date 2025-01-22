@@ -17,7 +17,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Torque;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 import lombok.Getter;

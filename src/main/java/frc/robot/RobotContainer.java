@@ -18,6 +18,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.utils.RobotViz;
 
 public class RobotContainer {
 
@@ -47,6 +48,10 @@ public class RobotContainer {
     elevator = new Elevator(winchIO);
 
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
+
+    new RobotViz(() -> {
+      return null;
+    }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition(), () -> algaeClaw.getPosition());
   }
 
   /** Configures bindings to oi */
