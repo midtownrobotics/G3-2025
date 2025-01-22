@@ -1,0 +1,48 @@
+{
+    "name": "G3-2025",
+    "disableSimplification": false,
+    "rotations": [
+      {"axis": "x", "degrees": 90},
+      {"axis": "z", "degrees": 180}
+    ],
+    "position": [0, 0, 0],
+    "cameras": [
+    ],
+    "components": [
+      {
+        "zeroedRotations": [
+          {"axis": "x", "degrees": 90},
+          {"axis": "z", "degrees": 90}
+        ],
+        "zeroedPosition": [-0.23, 0, -0.228]
+      },
+      {
+        "zeroedRotations": [
+          {"axis": "x", "degrees": 90},
+          {"axis": "z", "degrees": 180}
+        ],
+        "zeroedPosition": [0, 0, 0]
+      },
+      {
+        "zeroedRotations": [
+          {"axis": "x", "degrees": 90},
+          {"axis": "z", "degrees": 180}
+        ],
+        "zeroedPosition": [0, 0, 0]
+      },
+      {
+        "zeroedRotations": [
+          {"axis": "x", "degrees": 90},
+          {"axis": "z", "degrees": 180}
+        ],
+        "zeroedPosition": [0, 0, 0]
+      },
+      {
+        "zeroedRotations": [
+          {"axis": "x", "degrees": 90},
+          {"axis": "z", "degrees": 180}
+        ],
+        "zeroedPosition": [-0.175, 0, -0.375]
+      }
+    ]
+  }
