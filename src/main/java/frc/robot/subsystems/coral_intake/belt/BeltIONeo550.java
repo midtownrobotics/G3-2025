@@ -31,7 +31,10 @@ public class BeltIONeo550 implements BeltIO {
 
   @Override
   public void updateInputs(BeltInputs inputs) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
+    inputs.position = Units.Rotations.of(beltMotor.getAbsoluteEncoder().getPosition());
+    inputs.velocity = Units.RPM.of(beltMotor.getAbsoluteEncoder().getVelocity());
+    inputs.appliedVoltage = Units.Volts.of(beltMotor.getBusVoltage());
+    inputs.supplyCurrent = Units.Amps.of(beltMotor.getOutputCurrent());
+    inputs.temperature = Units.Celsius.of(beltMotor.getMotorTemperature());
   }
 }

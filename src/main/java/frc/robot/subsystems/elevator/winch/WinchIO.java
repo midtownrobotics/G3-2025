@@ -18,7 +18,7 @@ public interface WinchIO {
     public Voltage appliedVoltage = Units.Volt.zero();
     public Current supplyCurrent = Units.Amp.zero();
     public Current torqueCurrent = Units.Amp.zero();
-    public Temperature tempFahrenheit = Units.Fahrenheit.zero();
+    public Temperature temperature = Units.Kelvin.zero();
   }
 
   @AutoLog

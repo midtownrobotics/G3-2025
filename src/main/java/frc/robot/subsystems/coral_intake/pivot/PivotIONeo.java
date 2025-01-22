@@ -40,7 +40,10 @@ public class PivotIONeo implements PivotIO {
 
   @Override
   public void updateInputs(PivotInputs inputs) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
+    inputs.position = Units.Rotations.of(pivotMotor.getAbsoluteEncoder().getPosition());
+    inputs.velocity = Units.RPM.of(pivotMotor.getAbsoluteEncoder().getVelocity());
+    inputs.appliedVoltage = Units.Volts.of(pivotMotor.getBusVoltage());
+    inputs.supplyCurrent = Units.Amps.of(pivotMotor.getOutputCurrent());
+    inputs.temperature = Units.Celsius.of(pivotMotor.getMotorTemperature());
   }
 }
