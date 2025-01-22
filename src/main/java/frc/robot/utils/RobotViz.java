@@ -20,6 +20,7 @@ public class RobotViz extends VirtualSubsystem {
     private final Supplier<Distance> elevatorPosition;
     private final Supplier<Angle> clawPosition;
 
+    /** Constructor for RobotViz */
     public RobotViz(Supplier<Pose2d> robotPose, Supplier<Angle> intakePosition, Supplier<Distance> elevatorPosition, Supplier<Angle> clawPosition) {
         this.robotPose = robotPose;
         this.intakePosition = intakePosition;
