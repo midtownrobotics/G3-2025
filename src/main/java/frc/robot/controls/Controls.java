@@ -42,6 +42,8 @@ public interface Controls {
   public Trigger groundVomitCoral();
   /** Intake a coral from the source. */
   public Trigger sourceIntakeCoral();
+  /** Vomit a coral from the source. */
+  public Trigger sourceVomitCoral();
 
   /** Intake algae from the ground. */
   public Trigger groundIntakeAlgae();
@@ -74,4 +76,16 @@ public interface Controls {
 
   /** Switches the robot to manual mode. */
   public Trigger setManualMode();
+
+  // Manual Controls
+
+  public double getElevatorAxis();
+  public Trigger wristForward();
+  public Trigger wristBackward();
+  public Trigger outtakeShoot();
+  public Trigger algaeClawIntake();
+  public Trigger coralForward();
+  public Trigger coralBackward();
+  public Trigger coralIntakeRun();
+  public Trigger coralIntakeReverse();
 }

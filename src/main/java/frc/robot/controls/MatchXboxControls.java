@@ -1,5 +1,7 @@
 package frc.robot.controls;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -10,6 +12,11 @@ public class MatchXboxControls implements Controls {
 
   private final IOProtectionXboxController driverController;
   private final IOProtectionXboxController operatorController;
+
+  private boolean manualMode;
+
+  private BooleanSupplier getManualMode = () -> manualMode;
+  private BooleanSupplier getNotManualMode = () -> !manualMode;
 
   /** Initalizes Xbox controls for matches. */
   public MatchXboxControls(int driverPort, int operatorPort) {
@@ -86,85 +93,87 @@ public class MatchXboxControls implements Controls {
 
   /** Vomit trigger. */
   private Trigger vomit() {
-    return operatorController.leftTrigger();
+    return operatorController.leftTrigger().and(getNotManualMode);
   }
 
   /** Ground coral trigger. */
   private Trigger groundCoral() {
-    return operatorController.b();
+    return operatorController.b().and(getNotManualMode);
   }
 
   /** Source coral trigger. */
   private Trigger sourceCoral() {
-    return DoublePressTracker.doublePress(groundCoral());
+    return DoublePressTracker.doublePress(groundCoral()).and(getNotManualMode);
   }
 
   /** Ground algae trigger. */
   private Trigger groundAlgae() {
-    return operatorController.a();
+    return operatorController.a().and(getNotManualMode);
   }
 
   /** Stacked algae trigger. */
   private Trigger stackedAlgae() {
-    return DoublePressTracker.doublePress(groundAlgae());
+    return DoublePressTracker.doublePress(groundAlgae()).and(getNotManualMode);
   }
 
   @Override
   public Trigger groundIntakeCoral() {
-    return groundCoral().and(vomit().negate());
+    return groundCoral().and(vomit().negate()).and(getNotManualMode);
   }
 
   @Override
   public Trigger groundVomitCoral() {
-    return groundCoral().and(vomit());
+    return groundCoral().and(vomit()).and(getNotManualMode);
   }
 
   @Override
   public Trigger sourceIntakeCoral() {
-    return sourceCoral().and(vomit().negate());
+    return sourceCoral().and(vomit().negate()).and(getNotManualMode);
+  }
+
+  @Override
+  public Trigger sourceVomitCoral() {
+    return sourceCoral().and(vomit()).and(getNotManualMode);
   }
 
   @Override
   public Trigger groundIntakeAlgae() {
-    return groundAlgae().and(vomit().negate());
+    return groundAlgae().and(vomit().negate()).and(getNotManualMode);
   }
 
   @Override
   public Trigger groundVomitAlgae() {
-    return groundAlgae().and(vomit());
+    return groundAlgae().and(vomit()).and(getNotManualMode);
   }
 
   @Override
   public Trigger stackedIntakeAlgae() {
-    return stackedAlgae().and(vomit().negate());
+    return stackedAlgae().and(vomit().negate()).and(getNotManualMode);
   }
 
   @Override
   public Trigger stackedVomitAlgae() {
-    return stackedAlgae().and(vomit());
+    return stackedAlgae().and(vomit()).and(getNotManualMode);
   }
 
   @Override
   public Trigger prepareScoreAlgae() {
-    return operatorController.leftBumper();
+    return operatorController.leftBumper().and(getNotManualMode);
   }
 
   @Override
   public Trigger prepareScoreCoral() {
-    return operatorController.rightBumper();
+    return operatorController.rightBumper().and(getNotManualMode);
   }
 
   @Override
   public Trigger handoffCoral() {
-    return new Trigger(
-        () -> {
-          return true;
-        });
+    return new Trigger(() -> true).and(getNotManualMode);
   }
 
   @Override
   public Trigger scoreGamePiece() {
-    return operatorController.rightTrigger();
+    return operatorController.rightTrigger().and(getNotManualMode);
   }
 
   private CoralMode currentCoralMode = CoralMode.L4;
@@ -176,14 +185,16 @@ public class MatchXboxControls implements Controls {
             new InstantCommand(
                 () -> {
                   currentCoralMode = currentCoralMode.increment();
-                }));
+                }))
+        .and(getNotManualMode);
     operatorController
         .povDown()
         .onTrue(
             new InstantCommand(
                 () -> {
                   currentCoralMode = currentCoralMode.decrement();
-                }));
+                }))
+        .and(getNotManualMode);
   }
 
   @Override
@@ -200,14 +211,16 @@ public class MatchXboxControls implements Controls {
             new InstantCommand(
                 () -> {
                   currentAlgaeMode = AlgaeMode.PROCESSOR;
-                }));
+                }))
+        .and(getNotManualMode);
     operatorController
         .axisLessThan(XboxController.Axis.kLeftY.value, -0.3)
         .onTrue(
             new InstantCommand(
                 () -> {
                   currentAlgaeMode = AlgaeMode.BARGE;
-                }));
+                }))
+        .and(getNotManualMode);
   }
 
   @Override
@@ -217,16 +230,63 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger climb() {
-    return operatorController.y();
+    return operatorController.y().and(getNotManualMode);
   }
 
   @Override
   public Trigger panic() {
-    return DoublePressTracker.doublePress(operatorController.x());
+    return DoublePressTracker.doublePress(operatorController.x()).and(getNotManualMode);
   }
+
+  // Manual Controls
 
   @Override
   public Trigger setManualMode() {
     return operatorController.back();
   }
+
+  @Override
+  public double getElevatorAxis() {
+    return operatorController.getLeftY();
+  };
+
+  @Override
+  public Trigger wristForward() {
+    return operatorController.povUp().and(getManualMode);
+  };
+
+  @Override
+  public Trigger wristBackward() {
+    return operatorController.povDown().and(getManualMode);
+  };
+
+  @Override
+  public Trigger outtakeShoot() {
+    return operatorController.y().and(getManualMode);
+  };
+
+  @Override
+  public Trigger algaeClawIntake() {
+    return operatorController.x().and(getManualMode);
+  };
+
+  @Override
+  public Trigger coralForward() {
+    return operatorController.axisLessThan(XboxController.Axis.kRightY.value, -0.55).and(getManualMode);
+  };
+
+  @Override
+  public Trigger coralBackward() {
+    return operatorController.axisGreaterThan(XboxController.Axis.kRightY.value, 0.55).and(getManualMode);
+  };
+
+  @Override
+  public Trigger coralIntakeRun() {
+    return operatorController.leftBumper().and(getManualMode);
+  };
+
+  @Override
+  public Trigger coralIntakeReverse() {
+    return operatorController.rightBumper().and(getManualMode);
+  };
 }

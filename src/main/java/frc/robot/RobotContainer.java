@@ -175,6 +175,70 @@ public class RobotContainer {
                 () -> {
                   superstructure.disable(priority);
                 }));
+
+    controls
+        .wristForward()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                    // Logic for wrist forward action
+                }));
+    
+    controls
+        .wristBackward()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                    // Logic for wrist backward action
+                }));
+    
+    controls
+        .outtakeShoot()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                    // Logic for outtake shoot action
+                }));
+    
+    controls
+        .algaeClawIntake()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                    // Logic for algae claw intake action
+                }));
+    
+    controls
+        .coralForward()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                    // Logic for coral forward action
+                }));
+    
+    controls
+        .coralBackward()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                    // Logic for coral backward action
+                }));
+    
+    controls
+        .coralIntakeRun()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                    // Logic for coral intake run action
+                }));
+    
+    controls
+        .coralIntakeReverse()
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                    // Logic for coral intake reverse action
+                }));
   }
 
   public Command getAutonomousCommand() {
