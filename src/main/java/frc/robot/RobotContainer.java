@@ -46,7 +46,7 @@ public class RobotContainer {
     WinchIO winchIO = new WinchIOKraken(0, 0);
     elevator = new Elevator(winchIO);
 
-    coralIntake = new CoralIntake(null, null, null, elevator::getPosition, coralOuttake::getRollerVoltage);
+    coralIntake = new CoralIntake(null, null, null, elevator::getPosition);
 
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
 
