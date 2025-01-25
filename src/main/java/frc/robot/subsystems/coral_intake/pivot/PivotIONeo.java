@@ -3,6 +3,9 @@ package frc.robot.subsystems.coral_intake.pivot;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import static edu.wpi.first.units.Units.Radians;
+
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -18,6 +21,9 @@ public class PivotIONeo implements PivotIO {
   private @Getter SparkMax pivotMotor;
   private @Getter DutyCycleEncoder encoder;
   private @Getter PIDController pivotPID;
+
+  private final Angle maxAngle = Radians.of(0);
+  private final Angle minAngle = Radians.of(0);
 
   /** Constructor for pivotIO for Neo motors. */
   public PivotIONeo(int pivotMotorID, int ecoderID) {
