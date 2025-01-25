@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
-import frc.robot.subsystems.algae_claw.roller.RollerIO;
-import frc.robot.subsystems.algae_claw.roller.RollerIOKraken;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
 import frc.robot.subsystems.coral_intake.CoralIntake;

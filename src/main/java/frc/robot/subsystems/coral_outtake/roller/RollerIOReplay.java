@@ -11,5 +11,5 @@ public class RollerIOReplay implements RollerIO {
 
     @Override
     public void updateInputs(RollerInputs inputs) {
-        
+
     }}
