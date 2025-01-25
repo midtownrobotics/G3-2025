@@ -2,7 +2,7 @@ package frc.robot.sensors;
 
 
 import frc.lib.team1648.Limelight;
-import frc.robot.utils.Constants;
+import frc.robot.subsystems.coral_outtake.CoralOuttakeConstants;
 
 /**
  * The CoralLimelight class interacts with the Limelight camera, specifically for controlling and
@@ -82,9 +82,9 @@ public class CoralLimelight {
 
     double angle = limelight.getTargetBoxSkewDegrees();
 
-    if (longestSideIs0To1 && Math.abs(angle+0) < Constants.HEAD_ON_ANGLE_ERROR) {
+    if (longestSideIs0To1 && Math.abs(angle+0) < CoralOuttakeConstants.HEAD_ON_ANGLE_ERROR) {
       return true;
-    } else if (!longestSideIs0To1 && Math.abs(angle+90) < Constants.HEAD_ON_ANGLE_ERROR) {
+    } else if (!longestSideIs0To1 && Math.abs(angle+90) < CoralOuttakeConstants.HEAD_ON_ANGLE_ERROR) {
       return true;
     } else {
       return false;

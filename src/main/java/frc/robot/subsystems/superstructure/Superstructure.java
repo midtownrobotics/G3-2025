@@ -44,9 +44,7 @@ public class Superstructure extends SubsystemBase {
 
   private Map<Priority, CoralIntake.State> priorityToCoralIntakeState = Map.ofEntries(
     Map.entry(Priority.GROUND_INTAKE_CORAL, CoralIntake.State.GROUND_INTAKE),
-    Map.entry(Priority.GROUND_VOMIT_CORAL, CoralIntake.State.GROUND_VOMIT),
-    Map.entry(Priority.STATION_INTAKE_CORAL, CoralIntake.State.STATION_INTAKE),
-    Map.entry(Priority.STATION_VOMIT_CORAL, CoralIntake.State.STATION_VOMIT)
+    Map.entry(Priority.GROUND_VOMIT_CORAL, CoralIntake.State.GROUND_VOMIT)
   );
 
   private Map<Priority, AlgaeClaw.State> priorityToAlgaeClawState = Map.ofEntries(

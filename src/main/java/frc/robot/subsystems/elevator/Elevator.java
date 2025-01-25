@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevator;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
@@ -26,15 +27,15 @@ public class Elevator extends SubsystemBase {
     TUNING(0),
     MANUAL(0);
 
-    private @Getter int height;
+    private @Getter Distance height;
 
     /**
-     * State has height value associated
+     * State has meter height value associated
      *
      * @param height assign -1 if no height associated
      */
     private State(int height) {
-      this.height = height;
+      this.height = Units.Meters.of(height);
     }
   }
 

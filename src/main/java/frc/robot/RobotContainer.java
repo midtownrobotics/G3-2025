@@ -14,11 +14,13 @@ import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_outtake.CoralOuttake;
+import frc.robot.subsystems.coral_outtake.roller.RollerIOBag;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.RobotViz;
+import lombok.Getter;
 
 public class RobotContainer {
 
@@ -27,10 +29,10 @@ public class RobotContainer {
   @SuppressWarnings("unused")
   private final Superstructure superstructure;
 
-  private final AlgaeClaw algaeClaw;
-  private final CoralIntake coralIntake;
-  private final CoralOuttake coralOuttake;
-  private final Elevator elevator;
+  @Getter private final AlgaeClaw algaeClaw;
+  @Getter private final CoralIntake coralIntake;
+  @Getter private final CoralOuttake coralOuttake;
+  @Getter private final Elevator elevator;
 
   /** RobotContainer initialization */
   public RobotContainer() {
@@ -40,12 +42,15 @@ public class RobotContainer {
     WristIO wristIO = new WristIOKraken(0, 0);
     algaeClaw = new AlgaeClaw(null, wristIO, null);
 
-    coralIntake = new CoralIntake(null, null, null);
-
-    coralOuttake = new CoralOuttake(null);
 
     WinchIO winchIO = new WinchIOKraken(0, 0);
     elevator = new Elevator(winchIO);
+
+    coralIntake = new CoralIntake(null, null, null, elevator::getPosition);
+    
+    RollerIOBag rollerIO = new RollerIOBag(0);
+    
+    coralOuttake = new CoralOuttake(rollerIO, elevator::getPosition);
 
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
 

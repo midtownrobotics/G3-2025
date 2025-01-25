@@ -26,11 +26,18 @@ public interface RollerIO {
    *
    * @param voltage
    */
-  public void setVoltage(int voltage);
+  public void setVoltage(Voltage voltage);
   /**
    * Update input class for Roller
    *
    * @param inputs
    */
   public void updateInputs(RollerInputs inputs);
+
+  /**
+   * Return Voltage that is being applied to the rollers
+   *
+   * @return voltage
+   */
+  public Voltage getVoltage ();
 }
