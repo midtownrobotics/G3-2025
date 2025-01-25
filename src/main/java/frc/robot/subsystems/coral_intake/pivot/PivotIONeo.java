@@ -23,7 +23,6 @@ public class PivotIONeo implements PivotIO {
   private @Getter DutyCycleEncoder encoder;
   private @Getter PIDController pivotPID;
 
-  private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
 
   /** Constructor for pivotIO for Neo motors. */
   public PivotIONeo(int pivotMotorID, int ecoderID) {
@@ -41,7 +40,6 @@ public class PivotIONeo implements PivotIO {
 
   @Override
   public void setPosition(Angle position) {
-    position = pivotConstraint.clamp(position);
     pivotMotor.setVoltage(pivotPID.calculate(encoder.get(), position.in(Units.Rotations)));
   }
 
