@@ -3,11 +3,15 @@ package frc.robot.subsystems.elevator;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team1648.Constraint;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import lombok.Getter;
 import lombok.Setter;
+
+import static edu.wpi.first.units.Units.Inches;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
