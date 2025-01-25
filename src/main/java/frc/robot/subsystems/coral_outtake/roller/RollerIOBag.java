@@ -28,7 +28,7 @@ public class RollerIOBag implements RollerIO {
     }
 
     @Override
-    public void setVoltage(int voltage) {
+    public void setVoltage(Voltage voltage) {
         rollerMotor.setVoltage(voltage);
     }
 

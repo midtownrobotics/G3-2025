@@ -5,7 +5,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class RollerIOSim implements RollerIO {
 
     @Override
-    public void setVoltage(int voltage) {
+    public void setVoltage(Voltage voltage) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
     }
