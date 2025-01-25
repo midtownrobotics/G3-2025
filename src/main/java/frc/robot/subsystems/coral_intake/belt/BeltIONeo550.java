@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -25,7 +26,7 @@ public class BeltIONeo550 implements BeltIO {
   }
 
   @Override
-  public void setVoltage(int voltage) {
+  public void setVoltage(Voltage voltage) {
     beltMotor.setVoltage(voltage);
   }
 

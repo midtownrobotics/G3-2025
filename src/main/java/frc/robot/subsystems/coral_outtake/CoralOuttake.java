@@ -1,4 +1,6 @@
 package frc.robot.subsystems.coral_outtake;
+
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -84,5 +86,9 @@ public AngularVelocity getRollerSpeed() {
     }
 
     Logger.recordOutput(getName() + "/latencyPeriodicSec", Timer.getFPGATimestamp() - timestamp);
+  }
+
+  public Voltage getRollerVoltage() {
+    return rollerIO.getVoltage();
   }
 }
