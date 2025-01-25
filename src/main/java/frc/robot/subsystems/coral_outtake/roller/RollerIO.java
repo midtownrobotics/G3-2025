@@ -34,5 +34,10 @@ public interface RollerIO {
    */
   public void updateInputs(RollerInputs inputs);
 
+  /**
+   * Return Voltage that is being applied to the rollers
+   *
+   * @return voltage
+   */
   public Voltage getVoltage ();
 }
