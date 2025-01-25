@@ -1,5 +1,7 @@
 package frc.robot.subsystems.elevator;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -8,8 +10,6 @@ import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import lombok.Getter;
 import lombok.Setter;
-
-import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
   public enum State {
@@ -63,39 +63,44 @@ public class Elevator extends SubsystemBase {
 
     switch (getState()) {
       case ALGAE_GROUND:
-        winch.setPosition(State.ALGAE_GROUND.height);
+        winch.setScorePosition(State.ALGAE_GROUND.height);
+        break;
+      case ALGAE_STACKED:
+        winch.setScorePosition(State.ALGAE_STACKED.height);
         break;
       case BARGE:
-        winch.setPosition(State.BARGE.height);
+        winch.setScorePosition(State.BARGE.height);
+        break;
+      case HANDOFF:
+        winch.setScorePosition(State.HANDOFF.height);
         break;
       case CLIMB:
+        winch.setClimbPosition(State.CLIMB.height);
         break;
       case L1:
-        winch.setPosition(State.L1.height);
+        winch.setScorePosition(State.L1.height);
         break;
       case L2:
-        winch.setPosition(State.L2.height);
+        winch.setScorePosition(State.L2.height);
         break;
       case L3:
-        winch.setPosition(State.L3.height);
+        winch.setScorePosition(State.L3.height);
         break;
       case L4:
-        winch.setPosition(State.L4.height);
-        break;
-      case MANUAL:
+        winch.setScorePosition(State.L4.height);
         break;
       case PROCESSOR:
-        winch.setPosition(State.PROCESSOR.height);
+        winch.setScorePosition(State.PROCESSOR.height);
         break;
       case STATION:
-        winch.setPosition(State.STATION.height);
+        winch.setScorePosition(State.STATION.height);
         break;
       case STOW:
-        winch.setPosition(State.STOW.height);
+        winch.setScorePosition(State.STOW.height);
         break;
       case TUNING:
         break;
-      default:
+      case MANUAL:
         break;
     }
   }
