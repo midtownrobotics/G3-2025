@@ -4,22 +4,22 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
 import lombok.Getter;
 
-public class Constraints<T extends Measure<Unit>> {
+public class Constraint<T extends Measure<?>> {
     @Getter
     T min;
     @Getter
     T max;
 
-    public Constraints(T min, T max) {
+    public Constraint(T min, T max) {
         this.min = min;
         this.max = max;
     }
 
     public T clamp(T value) {
-        if (value.gt(max)) {
+        if (value.baseUnitMagnitude() > max.baseUnitMagnitude()) {
             return max;
         }
-        if (value.lt(min)) {
+        if (value.baseUnitMagnitude() < min.baseUnitMagnitude()) {
             return min;
         }
         return value;

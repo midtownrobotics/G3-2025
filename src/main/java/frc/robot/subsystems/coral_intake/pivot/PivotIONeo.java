@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.lib.team1648.Constraint;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -22,8 +23,7 @@ public class PivotIONeo implements PivotIO {
   private @Getter DutyCycleEncoder encoder;
   private @Getter PIDController pivotPID;
 
-  private final Angle maxAngle = Radians.of(0);
-  private final Angle minAngle = Radians.of(0);
+  private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
 
   /** Constructor for pivotIO for Neo motors. */
   public PivotIONeo(int pivotMotorID, int ecoderID) {
@@ -41,6 +41,7 @@ public class PivotIONeo implements PivotIO {
 
   @Override
   public void setPosition(Angle position) {
+    position = pivotConstraint.clamp(position);
     pivotMotor.setVoltage(pivotPID.calculate(encoder.get(), position.in(Units.Rotations)));
   }
 
