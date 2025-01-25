@@ -1,29 +1,23 @@
 package frc.robot.subsystems.coral_intake;
 
-import edu.wpi.first.units.Unit;
-import edu.wpi.first.units.Units;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.roller.RollerIO;
 import frc.robot.subsystems.coral_intake.roller.RollerInputsAutoLogged;
-import frc.robot.subsystems.superstructure.Superstructure;
+import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;
-
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Volts;
-
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
@@ -40,13 +34,13 @@ public class CoralIntake extends SubsystemBase {
     MANUAL(0,0,0);
 
     private @Getter Angle angle;
-    private @Getter Voltage rollerVoltage; 
+    private @Getter Voltage rollerVoltage;
     private @Getter Voltage beltVoltage;
 
     /**
      * State has angle, beltVoltage, and rollerVoltage associated.
      *
-     * @param angle 
+     * @param angle
      * @param rollerVoltage
      * @param beltVoltage
      */
@@ -61,7 +55,7 @@ public class CoralIntake extends SubsystemBase {
   private @Getter @Setter State currentState = State.STOW;
 
   private final Distance handoffElevatorPosition = Distance.ofBaseUnits(0, Inches);
-
+  private final Angle pivotOffset = Radians.of(0);
 
   private final BeltIO beltIO;
   private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
@@ -101,21 +95,6 @@ public class CoralIntake extends SubsystemBase {
     Voltage desiredRollerVoltage = currentState.getRollerVoltage();
 
     switch (currentState) {
-      case STOW:
-        pivotIO.setPosition(desiredAngle);
-        beltIO.setVoltage(desiredBeltVoltage);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        break;
-      case GROUND_INTAKE:
-        pivotIO.setPosition(desiredAngle);
-        beltIO.setVoltage(desiredBeltVoltage);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        break;
-      case GROUND_VOMIT:
-        pivotIO.setPosition(desiredAngle);
-        beltIO.setVoltage(desiredBeltVoltage);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        break;
       case HANDOFF:
         rollerIO.setVoltage(desiredRollerVoltage);
         pivotIO.setPosition(desiredAngle);
@@ -124,33 +103,18 @@ public class CoralIntake extends SubsystemBase {
         }
         beltIO.setVoltage(desiredBeltVoltage);
         break;
-      case REVERSE_HANDOFF:
-        pivotIO.setPosition(desiredAngle);
-        beltIO.setVoltage(desiredBeltVoltage);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        break;
-      case CLIMB:
-        pivotIO.setPosition(desiredAngle);
-        beltIO.setVoltage(desiredBeltVoltage);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        break;
-      case TUNING:
-        pivotIO.setPosition(desiredAngle);
-        beltIO.setVoltage(desiredBeltVoltage);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        break;
-      case MANUAL:
+      default:
         pivotIO.setPosition(desiredAngle);
         beltIO.setVoltage(desiredBeltVoltage);
         rollerIO.setVoltage(desiredRollerVoltage);
         break;
     }
 
-    Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    Logger.recordOutput(getName() + "/latencyPeriodicSec", Timer.getFPGATimestamp() - timestamp);
   }
 
   public Angle getPivotPosition() {
-    return null;
+    return pivotInputs.absolutePosition.plus(pivotOffset);
   }
 
   // setState()
