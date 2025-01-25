@@ -24,7 +24,7 @@ public interface BeltIO {
    *
    * @param voltage
    */
-  public void setVoltage(int voltage);
+  public void setVoltage(Voltage voltage);
   /**
    * Update input class for Belt
    *

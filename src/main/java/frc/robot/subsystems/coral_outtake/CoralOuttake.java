@@ -1,5 +1,6 @@
 package frc.robot.subsystems.coral_outtake;
 
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.coral_outtake.roller.RollerIO;
@@ -42,5 +43,9 @@ public class CoralOuttake extends SubsystemBase {
 
 
     Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+  }
+
+  public Voltage getRollerVoltage() {
+    return rollerIO.getVoltage();
   }
 }

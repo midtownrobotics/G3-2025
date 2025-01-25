@@ -33,4 +33,6 @@ public interface RollerIO {
    * @param inputs
    */
   public void updateInputs(RollerInputs inputs);
+
+  public Voltage getVoltage ();
 }

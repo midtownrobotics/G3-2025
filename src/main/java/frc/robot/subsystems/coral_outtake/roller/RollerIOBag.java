@@ -4,9 +4,14 @@ package frc.robot.subsystems.coral_outtake.roller;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import static edu.wpi.first.units.Units.Volt;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 
 public class RollerIOBag implements RollerIO {
@@ -27,6 +32,10 @@ public class RollerIOBag implements RollerIO {
     @Override
     public void setVoltage(int voltage) {
         rollerMotor.setVoltage(voltage);
+    }
+
+    public Voltage getVoltage() {
+        return Voltage.ofBaseUnits(rollerMotor.getAppliedOutput()*rollerMotor.getBusVoltage(), Volts);
     }
 
     @Override
