@@ -3,6 +3,9 @@ package frc.robot.subsystems.algae_claw.roller;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -55,8 +58,9 @@ public class RollerIOKraken implements RollerIO {
 
 
   @Override
-  public void setVoltage(int voltage) {
-    roller.setVoltage(voltage);
+  public void setVoltage(Voltage voltage) {
+    VoltageOut request = new VoltageOut(voltage);
+    roller.setControl(request);
   }
 
   @Override
