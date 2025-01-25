@@ -8,6 +8,7 @@ import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
@@ -40,8 +41,8 @@ public class Elevator extends SubsystemBase {
   }
 
   private @Getter @Setter State state;
-  private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
 
+  private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
   private @Getter WinchIO winch;
 
   /**
@@ -62,38 +63,39 @@ public class Elevator extends SubsystemBase {
 
     switch (getState()) {
       case ALGAE_GROUND:
-        // getWinch().setPosition(ALGAE_GROUND)
+        winch.setPosition(State.ALGAE_GROUND.height);
         break;
       case BARGE:
-        // getWinch().setPosition(BARGE)
+        winch.setPosition(State.BARGE.height);
         break;
       case CLIMB:
         break;
       case L1:
-        // getWinch().setPosition(L1);
+        winch.setPosition(State.L1.height);
         break;
       case L2:
-        // getWinch().setPosition(L2);
+        winch.setPosition(State.L2.height);
         break;
       case L3:
-        // getWinch().setPosition(L3);
+        winch.setPosition(State.L3.height);
         break;
       case L4:
-        // getWinch().setPosition(L4);
+        winch.setPosition(State.L4.height);
         break;
       case MANUAL:
         break;
       case PROCESSOR:
-        // getWinch().setPosition(PROCESSOR);
+        winch.setPosition(State.PROCESSOR.height);
         break;
       case STATION:
-        // getWinch().setPosition(STATION);
+        winch.setPosition(State.STATION.height);
+        break;
+      case STOW:
+        winch.setPosition(State.STOW.height);
         break;
       case TUNING:
         break;
       default:
-      case STOW:
-        // getWinch().setPosition(STOW);
         break;
     }
   }

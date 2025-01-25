@@ -15,4 +15,16 @@ public class WinchIOReplay implements WinchIO {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
   }
+
+  @Override
+  public void setPIDSlot(PIDSlot pidSlot) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setPIDSlot'");
+  }
+
+  @Override
+  public PIDSlot getPIDSlot() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getPIDSlot'");
+  }
 }

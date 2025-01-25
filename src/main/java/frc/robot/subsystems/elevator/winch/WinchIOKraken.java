@@ -26,6 +26,8 @@ public class WinchIOKraken implements WinchIO {
   private static final double GEARING = 12;
   private static final Distance WHEEL_RADIUS = Units.Inches.of(1);
 
+  private PIDSlot pidSlot;
+
   @Getter private TalonFX leftMotor;
   @Getter private TalonFX rightMotor;
 
@@ -45,6 +47,10 @@ public class WinchIOKraken implements WinchIO {
 
   /** Contructor for real winch with Krakens */
   public WinchIOKraken(int leftMotorID, int rightMotorID) {
+
+    // Set default PID slot.
+    pidSlot = PIDSlot.SCORING;
+
     leftMotor = new TalonFX(leftMotorID);
     rightMotor = new TalonFX(rightMotorID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
@@ -119,8 +125,18 @@ public class WinchIOKraken implements WinchIO {
 
     double p = meterToRotation(position);
 
-    PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(0);
+    PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(pidSlot.getSlot());
     leftMotor.setControl(leftRequest);
+  }
+
+  @Override
+  public void setPIDSlot(PIDSlot slot) {
+    pidSlot = slot;
+  }
+
+  @Override
+  public PIDSlot getPIDSlot() {
+    return pidSlot;
   }
 
   @Override

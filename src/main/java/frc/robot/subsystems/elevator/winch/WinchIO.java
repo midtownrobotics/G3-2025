@@ -7,6 +7,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import lombok.Getter;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface WinchIO {
@@ -28,12 +30,28 @@ public interface WinchIO {
     public Angle absolutePosition = Units.Radians.zero();
   }
 
+  public enum PIDSlot {
+    SCORING(0),
+    CLIMBING(1);
+
+    private @Getter int slot;
+
+
+    PIDSlot(int slot) {
+      this.slot = slot;
+    }
+  }
+
   /**
    * Updates PID loop to follow new target position
    *
    * @param position
    */
   public void setPosition(Distance position);
+
+  public void setPIDSlot(PIDSlot pidSlot);
+
+  public PIDSlot getPIDSlot();
 
   /**
    * Updates input class for Winch
