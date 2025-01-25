@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 
 public class RollerIOBag implements RollerIO {
@@ -25,7 +26,7 @@ public class RollerIOBag implements RollerIO {
     }
 
     @Override
-    public void setVoltage(int voltage) {
+    public void setVoltage(Voltage voltage) {
         rollerMotor.setVoltage(voltage);
     }
 

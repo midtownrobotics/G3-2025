@@ -14,6 +14,7 @@ import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_outtake.CoralOuttake;
+import frc.robot.subsystems.coral_outtake.roller.RollerIOBag;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
@@ -42,10 +43,11 @@ public class RobotContainer {
 
     coralIntake = new CoralIntake(null, null, null);
 
-    coralOuttake = new CoralOuttake(null);
-
     WinchIO winchIO = new WinchIOKraken(0, 0);
     elevator = new Elevator(winchIO);
+
+    RollerIOBag rollerIO = new RollerIOBag(0);
+    coralOuttake = new CoralOuttake(rollerIO, elevator::getPosition);
 
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
 
