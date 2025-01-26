@@ -1,6 +1,5 @@
 package frc.robot.subsystems.elevator.winch;
 
-
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;

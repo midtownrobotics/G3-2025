@@ -56,7 +56,6 @@ public class ClawConstraint implements Constraint<Angle>{
         if (lt(max, current) && lt(target, min)) {
             return current.plus(otherError.div(2));
         }
-
         if (lt(current, min) && lt(max, target)) {
             return current.plus(otherError.div(2));
         }
