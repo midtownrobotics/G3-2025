@@ -20,27 +20,32 @@ import lombok.Setter;
 public class AlgaeClaw extends SubsystemBase {
   public enum State {
     STOW(0, 0),
-    VOMIT(0, 0),
+    VOMIT(0, 7),
     START_POSITION(0, 0),
-    GROUND_INTAKE(0, 0),
-    GROUND_VOMIT(0, 0),
-    REEF_INTAKE(0, 0),
-    BARGE_SHOOT_FRONT(0, 0),
-    BARGE_SHOOT_BACK(0, 0),
+    GROUND_INTAKE(0, -7),
+    GROUND_VOMIT(0, 7),
+    REEF_INTAKE(0, -7),
+    BARGE_SHOOT_FRONT(0, 7),
+    BARGE_SHOOT_BACK(0, 7),
     BARGE_PREPARE_FRONT(0, 0),
     BARGE_PREPARE_BACK(0, 0),
-    PROCESSOR_SHOOT(0, 0),
+    PROCESSOR_SHOOT(0, 7),
     PROCESSOR_PREPARE(0, 0),
-    STACKED_ALGAE_INTAKE(0, 0),
-    STACKED_ALGAE_VOMIT(0, 0),
+    STACKED_ALGAE_INTAKE(0, -7),
+    STACKED_ALGAE_VOMIT(0, 7),
     CLIMB(0, 0),
-    TUNING(0, 0),
-    MANUAL(0, 0);
+    TUNING(),
+    MANUAL();
 
     @Getter
     private final Angle angle;
     @Getter
     private final Voltage rollerVoltage;
+
+    private State() {
+      this.angle = null;
+      this.rollerVoltage = null;
+    }
 
     private State(double angle, double rollerVoltage) {
       this.angle = Units.Radians.of(angle);
@@ -95,10 +100,6 @@ public class AlgaeClaw extends SubsystemBase {
     rollerIO.updateInputs(rollerInputs);
     wristIO.updateInputs(wristInputs);
 
-    if (!hasAlgae) {
-      if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = true; }
-    }
-
     // state switch case
     switch (currentState) {
       case BARGE_PREPARE_BACK:
@@ -112,12 +113,16 @@ public class AlgaeClaw extends SubsystemBase {
       case BARGE_SHOOT_BACK:
         rollerIO.setVoltage(currentState.getRollerVoltage());
         wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
-        if (hasAlgae) { hasAlgae = false; }
+        if (hasAlgae) {
+          if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = false; }
+        }
         break;
       case BARGE_SHOOT_FRONT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
         wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
-        if (hasAlgae) { hasAlgae = false; }
+        if (hasAlgae) {
+          if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = false; }
+        }
         break;
       case CLIMB:
         rollerIO.setVoltage(currentState.getRollerVoltage());
@@ -126,11 +131,16 @@ public class AlgaeClaw extends SubsystemBase {
       case GROUND_INTAKE:
         rollerIO.setVoltage(currentState.getRollerVoltage());
         wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
+        if (!hasAlgae) {
+          if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = true; }
+        }
         break;
       case GROUND_VOMIT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
         wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
-        if (hasAlgae) { hasAlgae = false; }
+        if (hasAlgae) {
+          if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = false; }
+        }
         break;
       case MANUAL:
         rollerIO.setVoltage(currentState.getRollerVoltage());
@@ -143,20 +153,30 @@ public class AlgaeClaw extends SubsystemBase {
       case PROCESSOR_SHOOT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
         wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
-        if (hasAlgae) { hasAlgae = false; }
+        if (hasAlgae) {
+          if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = false; }
+        }
         break;
       case REEF_INTAKE:
         rollerIO.setVoltage(currentState.getRollerVoltage());
         wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
+        if (!hasAlgae) {
+          if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = true; }
+        }
         break;
       case STACKED_ALGAE_INTAKE:
         rollerIO.setVoltage(currentState.getRollerVoltage());
         wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
+        if (!hasAlgae) {
+          if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = true; }
+        }
         break;
       case STACKED_ALGAE_VOMIT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
         wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
-        if (hasAlgae) { hasAlgae = false; }
+        if (hasAlgae) {
+          if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = false; }
+        }
         break;
       case START_POSITION:
         rollerIO.setVoltage(currentState.getRollerVoltage());
@@ -174,7 +194,9 @@ public class AlgaeClaw extends SubsystemBase {
       case VOMIT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
         wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
-        if (hasAlgae) { hasAlgae = false; }
+        if (hasAlgae) {
+          if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = false; }
+        }
         break;
     }
 
