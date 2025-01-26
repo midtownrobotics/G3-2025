@@ -43,6 +43,8 @@ public interface WinchIO {
    */
   public void setClimbPosition(Distance position);
 
+  public Distance getPosition();
+
   /**
    * Updates input class for Winch
    *

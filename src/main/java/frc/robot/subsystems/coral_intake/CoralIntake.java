@@ -9,13 +9,14 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team1648.Constraint;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.roller.RollerIO;
 import frc.robot.subsystems.coral_intake.roller.RollerInputsAutoLogged;
+import frc.robot.subsystems.superstructure.Constraints.Constraint;
+
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;

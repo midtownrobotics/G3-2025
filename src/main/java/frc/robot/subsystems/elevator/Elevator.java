@@ -1,20 +1,23 @@
 package frc.robot.subsystems.elevator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team1648.Constraint;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
+import frc.robot.utils.Constraints.Constraint;
 import lombok.Getter;
 import lombok.Setter;
 
 public class Elevator extends SubsystemBase {
 
-  private Constraint<Distance> elevatorConstraint = new Constraint<>(Units.Inches.of(0), Units.Inches.of(0));
+  private List<Constraint<Distance>> elevatorConstraints = new ArrayList<>();
 
   public enum State {
     STOW(0),
@@ -66,50 +69,13 @@ public class Elevator extends SubsystemBase {
     winch.updateInputs(winchInputs);
 
     switch (getCurrentState()) {
-      case ALGAE_GROUND:
-        winch.setScorePosition(State.ALGAE_GROUND.height);
-        break;
-      case ALGAE_STACKED:
-        winch.setScorePosition(State.ALGAE_STACKED.height);
-        break;
-      case BARGE:
-        winch.setScorePosition(State.BARGE.height);
-        break;
-      case HANDOFF:
-        winch.setScorePosition(State.HANDOFF.height);
-        break;
-      case CLIMB:
-        winch.setClimbPosition(State.CLIMB.height);
-        break;
-      case L1:
-        winch.setScorePosition(State.L1.height);
-        break;
-      case L2:
-        winch.setScorePosition(State.L2.height);
-        break;
-      case L3:
-        winch.setScorePosition(State.L3.height);
-        break;
-      case L4:
-        winch.setScorePosition(State.L4.height);
-        break;
-      case PROCESSOR:
-        winch.setScorePosition(State.PROCESSOR.height);
-        break;
-      case STATION:
-        winch.setScorePosition(State.STATION.height);
-        break;
-      case STOW:
-        winch.setScorePosition(State.STOW.height);
-        break;
-      case TUNING:
-        break;
-      case MANUAL:
-        break;
+
     }
   }
 
   public Distance getPosition() {
-    return null;
+    return winch.getPosition();
   }
+
+  public void set
 }

@@ -20,4 +20,10 @@ public class WinchIOSim implements WinchIO {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setClimbPosition'");
   }
+
+  @Override
+  public Distance getPosition() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
+  }
 }

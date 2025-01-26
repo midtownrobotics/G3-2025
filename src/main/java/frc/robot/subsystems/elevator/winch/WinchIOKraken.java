@@ -20,7 +20,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.lib.team1648.Constraint;
+import frc.robot.subsystems.superstructure.Constraints.Constraint;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -45,9 +45,6 @@ public class WinchIOKraken implements WinchIO {
   @Getter private StatusSignal<Current> rightSupplyCurrent;
   @Getter private StatusSignal<Current> rightTorqueCurrent;
   @Getter private StatusSignal<Temperature> rightTemperature;
-
-
-  private Constraint<Distance> elevatorConstraint = new Constraint<>(Inches.of(0), Inches.of(0));
 
   /** Contructor for real winch with Krakens */
   public WinchIOKraken(int leftMotorID, int rightMotorID) {
@@ -132,9 +129,6 @@ public class WinchIOKraken implements WinchIO {
   }
 
   public void setPosition(Distance position, int slot) {
-
-    position = elevatorConstraint.clamp(position, rotationToDistance(getLeftPosition().getValue()));
-
     double p = meterToRotation(position);
 
     PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(slot);
@@ -158,6 +152,11 @@ public class WinchIOKraken implements WinchIO {
     inputs.right.supplyCurrent = leftSupplyCurrent.getValue();
     inputs.right.torqueCurrent = leftTorqueCurrent.getValue();
     inputs.right.temperature = leftTemperature.getValue();
+  }
+
+  @Override
+  public Distance getPosition() {
+    return rotationToDistance(leftMotor.getPosition().getValue());
   }
 
   /**
