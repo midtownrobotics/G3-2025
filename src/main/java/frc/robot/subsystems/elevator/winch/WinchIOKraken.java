@@ -47,7 +47,7 @@ public class WinchIOKraken implements WinchIO {
   @Getter private StatusSignal<Temperature> rightTemperature;
 
 
-  private Constraint<Distance> elevatorConstraint = new Constraint(Inches.of(0), Inches.of(0));
+  private Constraint<Distance> elevatorConstraint = new Constraint<>(Inches.of(0), Inches.of(0));
 
   /** Contructor for real winch with Krakens */
   public WinchIOKraken(int leftMotorID, int rightMotorID) {

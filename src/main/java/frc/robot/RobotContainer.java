@@ -47,9 +47,9 @@ public class RobotContainer {
     elevator = new Elevator(winchIO);
 
     coralIntake = new CoralIntake(null, null, null, elevator::getPosition);
-    
+
     RollerIOBag rollerIO = new RollerIOBag(0);
-    
+
     coralOuttake = new CoralOuttake(rollerIO, elevator::getPosition);
 
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
