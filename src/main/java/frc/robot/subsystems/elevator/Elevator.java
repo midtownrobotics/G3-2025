@@ -1,9 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
@@ -13,6 +9,7 @@ import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 

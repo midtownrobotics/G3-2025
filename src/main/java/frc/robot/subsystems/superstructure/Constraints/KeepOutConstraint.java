@@ -25,5 +25,5 @@ public class KeepOutConstraint<T extends Measure<?>> implements Constraint<T> {
         }
         return target;
     }
-    
+
 }

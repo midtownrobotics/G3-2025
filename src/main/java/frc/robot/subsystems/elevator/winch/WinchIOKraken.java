@@ -1,6 +1,5 @@
 package frc.robot.subsystems.elevator.winch;
 
-import static edu.wpi.first.units.Units.Inches;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -20,7 +19,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.superstructure.Constraints.Constraint;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 

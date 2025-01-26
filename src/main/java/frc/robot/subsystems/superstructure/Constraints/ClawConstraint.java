@@ -70,7 +70,7 @@ public class ClawConstraint implements Constraint<Angle>{
         }
 
         return target;
-        
+
     }
-    
+
 }

@@ -1,8 +1,5 @@
 package frc.robot.subsystems.algae_claw;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -16,6 +13,8 @@ import frc.robot.subsystems.algae_claw.wrist.WristInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.ClawConstraint;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class AlgaeClaw extends SubsystemBase {
   public enum State {
