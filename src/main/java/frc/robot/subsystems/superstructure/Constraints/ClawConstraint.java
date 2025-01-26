@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure.Constraints;
 
-import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 
@@ -10,7 +9,7 @@ public class ClawConstraint implements Constraint<Angle>{
     private Angle max;
 
     /**
-     * 
+     *
      * @param min
      * @param max
      */
@@ -41,11 +40,11 @@ public class ClawConstraint implements Constraint<Angle>{
         }
 
         if (lt(current, min) && !lt(target, max)) {
-            
+
         }
 
         return error;
-        
+
     }
-    
+
 }

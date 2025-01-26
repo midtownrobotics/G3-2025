@@ -25,5 +25,5 @@ public class StayInConstraint<T extends Measure<?>> implements Constraint<T> {
         }
         return target;
     }
-    
+
 }
