@@ -9,6 +9,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team1648.Constraint;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
@@ -57,6 +58,8 @@ public class CoralIntake extends SubsystemBase {
   private final Distance handoffElevatorPosition = Distance.ofBaseUnits(0, Inches);
   private final Angle pivotOffset = Radians.of(0);
 
+  private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
+
   private final BeltIO beltIO;
   private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
   private final PivotIO pivotIO;
@@ -93,6 +96,8 @@ public class CoralIntake extends SubsystemBase {
     Angle desiredAngle = currentState.getAngle();
     Voltage desiredBeltVoltage = currentState.getBeltVoltage();
     Voltage desiredRollerVoltage = currentState.getRollerVoltage();
+
+    desiredAngle = pivotConstraint.clamp(desiredAngle);
 
     switch (currentState) {
       case HANDOFF:
