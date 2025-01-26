@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure.Constraints;
 
-import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 
@@ -10,7 +9,7 @@ public class ClawConstraint implements Constraint<Angle>{
     private Angle max;
 
     /**
-     * 
+     * constrains range of claw motion
      * @param min
      * @param max
      */
@@ -28,23 +27,49 @@ public class ClawConstraint implements Constraint<Angle>{
     private boolean lt(Angle current, Angle target) {
         double targetDegrees = target.in(Units.Degrees);
         double currentDegrees = current.in(Units.Degrees);
-        return abs(currentDegrees) < abs(targetDegrees);
+        if (currentDegrees < targetDegrees) {
+            return true;
+        }
+        if (currentDegrees - targetDegrees > 180) {
+            return true;
+        }
+        return false;
+        // return abs(currentDegrees) < abs(targetDegrees);
     }
 
     @Override
     public Angle apply(Angle target, Angle current) {
         Angle error;
+        Angle otherError;
         if (target.minus(current).abs(Units.Degrees) < current.minus(target).abs(Units.Degrees)) {
             error = target.minus(current);
+            otherError = current.minus(target);
         } else {
             error = current.minus(target);
+            otherError = target.minus(current);
         }
 
-        if (lt(current, min) && !lt(target, max)) {
-            
+        if (lt(current, max) && lt(min, current)) {
+            return target;
         }
 
-        return error;
+        if (lt(max, current) && lt(target, min)) {
+            return current.plus(otherError.div(2));
+        }
+
+        if (lt(current, min) && lt(max, target)) {
+            return current.plus(otherError.div(2));
+        }
+
+        if (lt(current, min) && lt(target, max) && lt(min, target)) {
+            return min;
+        }
+
+        if (lt(max, current) && lt(min, target) && lt(target, max)) {
+            return max;
+        }
+
+        return target;
         
     }
     

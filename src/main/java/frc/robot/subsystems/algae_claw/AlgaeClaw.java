@@ -8,13 +8,12 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team1648.ClawConstraint;
-import frc.lib.team1648.Constraint;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.algae_claw.roller.RollerIO;
 import frc.robot.subsystems.algae_claw.roller.RollerInputsAutoLogged;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristInputsAutoLogged;
+import frc.robot.subsystems.superstructure.Constraints.ClawConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -80,10 +79,9 @@ public class AlgaeClaw extends SubsystemBase {
   }
 
   public Angle getAngle() {
-    Angle motorPosition = wristInputs.absolutePosition;
     double encoderPosition = wristIO.getEncoder().get();
 
-    Angle position;
+    Angle position = Units.Rotations.of(encoderPosition);
 
     return position;
   }
@@ -101,78 +99,82 @@ public class AlgaeClaw extends SubsystemBase {
       if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = true; }
     }
 
-    if (hasAlgae) { hasAlgae = false; }
-
     // state switch case
     switch (currentState) {
       case BARGE_PREPARE_BACK:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case BARGE_PREPARE_FRONT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case BARGE_SHOOT_BACK:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
+        if (hasAlgae) { hasAlgae = false; }
         break;
       case BARGE_SHOOT_FRONT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
+        if (hasAlgae) { hasAlgae = false; }
         break;
       case CLIMB:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case GROUND_INTAKE:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case GROUND_VOMIT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
+        if (hasAlgae) { hasAlgae = false; }
         break;
       case MANUAL:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case PROCESSOR_PREPARE:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case PROCESSOR_SHOOT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
+        if (hasAlgae) { hasAlgae = false; }
         break;
       case REEF_INTAKE:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case STACKED_ALGAE_INTAKE:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case STACKED_ALGAE_VOMIT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
+        if (hasAlgae) { hasAlgae = false; }
         break;
       case START_POSITION:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       default:
       case STOW:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case TUNING:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
         break;
       case VOMIT:
         rollerIO.setVoltage(currentState.getRollerVoltage());
-        wristIO.setPosition(wristConstraint.clamp(currentState.getAngle(), wristInputs.position));
+        wristIO.setPosition(wristConstraint.apply(currentState.getAngle(), wristInputs.position));
+        if (hasAlgae) { hasAlgae = false; }
         break;
     }
 
