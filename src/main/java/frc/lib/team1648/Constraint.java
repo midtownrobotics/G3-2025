@@ -16,14 +16,17 @@ public class Constraint<T extends Measure<?>> {
     }
 
     /** Clamps the inputted value */
-    public T clamp(T value) {
-        if (value.baseUnitMagnitude() > max.baseUnitMagnitude()) {
+    public T clamp(T target, T current) {
+        if (current.baseUnitMagnitude() > max.baseUnitMagnitude() && target.baseUnitMagnitude() < max.baseUnitMagnitude()) {
             return max;
         }
-        if (value.baseUnitMagnitude() < min.baseUnitMagnitude()) {
+        if (current.baseUnitMagnitude() < min.baseUnitMagnitude() && target.baseUnitMagnitude() > min.baseUnitMagnitude()) {
             return min;
         }
-        return value;
+        if (current.baseUnitMagnitude() > min.baseUnitMagnitude() && current.baseUnitMagnitude() < max.baseUnitMagnitude()) {
+            return Math.abs(current.baseUnitMagnitude() - min.baseUnitMagnitude()) > Math.abs(current.baseUnitMagnitude() - max.baseUnitMagnitude()) ? max : min;
+        }
+        return target;
 
     }
 }
