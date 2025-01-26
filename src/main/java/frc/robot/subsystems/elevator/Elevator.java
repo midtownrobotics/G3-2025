@@ -11,13 +11,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
-import frc.robot.utils.Constraints.Constraint;
 import lombok.Getter;
 import lombok.Setter;
 
 public class Elevator extends SubsystemBase {
 
-  private List<Constraint<Distance>> elevatorConstraints = new ArrayList<>();
 
   public enum State {
     STOW(0),
@@ -68,14 +66,14 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
     winch.updateInputs(winchInputs);
 
-    switch (getCurrentState()) {
+    // switch (getCurrentState()) {
 
-    }
+    // }
   }
 
   public Distance getPosition() {
     return winch.getPosition();
   }
 
-  public void set
+  // public void set
 }

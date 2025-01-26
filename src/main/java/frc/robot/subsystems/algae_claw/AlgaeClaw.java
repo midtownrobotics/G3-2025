@@ -74,6 +74,7 @@ public class AlgaeClaw extends SubsystemBase {
     hasAlgae = false;
   }
 
+  /** no constraint */
   public AlgaeClaw(RollerIO rollerIO, WristIO wristIO) {
     this(rollerIO, wristIO, new ClawConstraint(null, null));
   }
@@ -83,6 +84,10 @@ public class AlgaeClaw extends SubsystemBase {
     return wristInputs.position;
   }
 
+  /**
+   * get angle of wrist
+   * @return
+   */
   public Angle getAngle() {
     double encoderPosition = wristIO.getEncoder().get();
 
@@ -204,6 +209,7 @@ public class AlgaeClaw extends SubsystemBase {
     Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
   }
 
+  /** if has algae */
   public boolean senseAlgae() {
     return hasAlgae;
   }
