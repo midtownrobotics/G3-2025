@@ -1,9 +1,12 @@
 package frc.robot.subsystems.algae_claw;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.Constraints;
 import frc.lib.team1648.RobotTime;
@@ -13,8 +16,6 @@ import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristInputsAutoLogged;
 import lombok.Getter;
 import lombok.Setter;
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 public class AlgaeClaw extends SubsystemBase {
   public enum State {
@@ -36,8 +37,10 @@ public class AlgaeClaw extends SubsystemBase {
     TUNING(0, 0),
     MANUAL(0, 0);
 
-    @Getter private final Angle angle;
-    @Getter private final Voltage rollerVoltage;
+    @Getter
+    private final Angle angle;
+    @Getter
+    private final Voltage rollerVoltage;
 
     private State(double angle, double rollerVoltage) {
       this.angle = Units.Radians.of(angle);
@@ -47,19 +50,31 @@ public class AlgaeClaw extends SubsystemBase {
   }
 
   private @Getter @Setter State currentState = State.STOW;
+  private static final Current kCurrentThreshold = Units.Amps.of(5);
 
   private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
   private final WristIO wristIO;
   private final WristInputsAutoLogged wristInputs = new WristInputsAutoLogged();
-  private final DigitalInput sensor;
-  private Constraints<Angle> wristConstraints = new Constraints<>(null, null);
+  // TODO put values here and remove from constructor maybe?
+  private Constraints<Angle> wristConstraints;
+
+  private boolean hasAlgae;
 
   /** Constructor for algae claw. */
-  public AlgaeClaw(RollerIO rollerIO, WristIO wristIO, DigitalInput sensor) {
+  public AlgaeClaw(RollerIO rollerIO, WristIO wristIO, Constraints<Angle> wristConstraints) {
     this.rollerIO = rollerIO;
     this.wristIO = wristIO;
-    this.sensor = sensor;
+    this.wristConstraints = wristConstraints;
+    hasAlgae = false;
+  }
+
+  public AlgaeClaw(RollerIO rollerIO, WristIO wristIO) {
+    this(rollerIO, wristIO, new Constraints<>(null, null));
+  }
+
+  public void setConstraints(Constraints<Angle> newConstraints) {
+    wristConstraints = newConstraints;
   }
 
   @AutoLogOutput
@@ -75,6 +90,10 @@ public class AlgaeClaw extends SubsystemBase {
     Logger.processInputs(getName() + "/wrist", wristInputs);
     rollerIO.updateInputs(rollerInputs);
     wristIO.updateInputs(wristInputs);
+
+    if (!hasAlgae) {
+      if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = true; }
+    }
 
     // state switch case
     switch (currentState) {
@@ -154,6 +173,6 @@ public class AlgaeClaw extends SubsystemBase {
   }
 
   public boolean senseAlgae() {
-    return sensor.get();
+    return hasAlgae;
   }
 }
