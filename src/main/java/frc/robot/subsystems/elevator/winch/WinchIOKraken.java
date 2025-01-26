@@ -133,7 +133,7 @@ public class WinchIOKraken implements WinchIO {
 
   public void setPosition(Distance position, int slot) {
 
-    position = elevatorConstraint.clamp(position);
+    position = elevatorConstraint.clamp(position, rotationToDistance(getLeftPosition().getValue()));
 
     double p = meterToRotation(position);
 
@@ -176,7 +176,7 @@ public class WinchIOKraken implements WinchIO {
    * @param a
    * @return
    */
-  public double rotationToMeter(Angle a) {
-    return (2 * Math.PI * WHEEL_RADIUS.in(Units.Meter) * a.in(Units.Rotation)) / GEARING;
+  public Distance rotationToDistance(Angle a) {
+    return Units.Meters.of((2 * Math.PI * WHEEL_RADIUS.in(Units.Meter) * a.in(Units.Rotation)) / GEARING);
   }
 }
