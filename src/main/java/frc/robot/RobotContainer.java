@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
@@ -18,6 +19,7 @@ import frc.robot.subsystems.coral_outtake.roller.RollerIOBag;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
+import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.RobotViz;
 import lombok.Getter;
@@ -26,7 +28,6 @@ public class RobotContainer {
 
   private final Controls controls;
 
-  @SuppressWarnings("unused")
   private final Superstructure superstructure;
 
   @Getter private final AlgaeClaw algaeClaw;
@@ -114,125 +115,40 @@ public class RobotContainer {
 
     // Operator
 
-    controls
-        .groundIntakeCoral()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to intake coral from the ground
-                }));
+    enableDisablePriorityControl(controls.groundIntakeCoral(), Priority.GROUND_INTAKE_CORAL);
+    enableDisablePriorityControl(controls.groundVomitCoral(), Priority.GROUND_VOMIT_CORAL);
+    enableDisablePriorityControl(controls.sourceIntakeCoral(), Priority.STATION_INTAKE_CORAL);
 
-    controls
-        .groundVomitCoral()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to vomit coral from the ground
-                }));
+    enableDisablePriorityControl(controls.groundIntakeAlgae(), Priority.GROUND_INTAKE_ALGAE);
+    enableDisablePriorityControl(controls.groundVomitAlgae(), Priority.GROUND_VOMIT_ALGAE);
+    enableDisablePriorityControl(controls.stackedIntakeAlgae(), Priority.STACKED_INTAKE_ALGAE);
+    enableDisablePriorityControl(controls.stackedVomitAlgae(), Priority.STACKED_VOMIT_ALGAE);
 
-    controls
-        .sourceIntakeCoral()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to intake coral from the source
-                }));
+    enableDisablePriorityControl(controls.prepareScoreCoral(), Priority.PREPARE_SCORE_CORAL);
+    enableDisablePriorityControl(controls.prepareScoreAlgae(), Priority.PREPARE_SCORE_ALGAE);
 
-    controls
-        .sourceVomitCoral()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to vomit coral from the source
-                }));
+    enableDisablePriorityControl(controls.handoffCoral(), Priority.HANDOFF_CORAL);
 
-    // Operator Controls for Algae
-    controls
-        .groundIntakeAlgae()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to intake algae from the ground
-                }));
+    enableDisablePriorityControl(controls.scoreGamePiece(), Priority.SCORE_GAME_PIECE);
 
-    controls
-        .groundVomitAlgae()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to vomit algae from the ground
-                }));
+    enableDisablePriorityControl(controls.climb(), Priority.CLIMB);
 
-    controls
-        .stackedIntakeAlgae()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to intake stacked algae
-                }));
+    enableDisablePriorityControl(controls.panic(), Priority.PANIC);
+    enableDisablePriorityControl(controls.climb(), Priority.MANUAL);
 
-    controls
-        .stackedVomitAlgae()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to vomit stacked algae
-                }));
+  }
 
-    controls
-        .prepareScoreAlgae()
+  public void enableDisablePriorityControl(Trigger trigger, Priority priority) {
+    trigger
         .onTrue(
             new InstantCommand(
                 () -> {
-                  // Logic to prepare for scoring algae
-                }));
-
-    controls
-        .prepareScoreCoral()
-        .onTrue(
+                  superstructure.enable(priority);
+                }))
+        .onFalse(
             new InstantCommand(
                 () -> {
-                  // Logic to prepare for scoring coral
-                }));
-
-    controls
-        .handoffCoral()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to hand off coral
-                }));
-
-    controls
-        .scoreGamePiece()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to score a game piece
-                }));
-
-    controls
-        .climb()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to activate the climbing mechanism
-                }));
-
-    controls
-        .panic()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic for the emergency panic mode
-                }));
-
-    controls
-        .setManualMode()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // Logic to switch the robot to manual mode
+                  superstructure.disable(priority);
                 }));
   }
 

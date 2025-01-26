@@ -28,6 +28,7 @@ public class CoralIntake extends SubsystemBase {
     STOW(0,0,0),
     GROUND_INTAKE(0,7,0),
     GROUND_VOMIT(0,-7,0),
+    STATION_INTAKE(0, 0, 0),
     HANDOFF(0,0,7),
     REVERSE_HANDOFF(0,0,-7),
     // TODO: find angle out of the way of climbing probably almost all the way down
