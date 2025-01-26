@@ -121,7 +121,4 @@ public class CoralIntake extends SubsystemBase {
   public Angle getPivotPosition() {
     return pivotInputs.absolutePosition.plus(pivotOffset);
   }
-
-  // setState()
-  // getState()
 }

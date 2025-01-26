@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team1648.Constraint;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
@@ -12,6 +13,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Elevator extends SubsystemBase {
+
+  private Constraint<Distance> elevatorConstraint = new Constraint<>(Units.Inches.of(0), Units.Inches.of(0));
+
   public enum State {
     STOW(0),
     HANDOFF(0),
@@ -40,7 +44,7 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  private @Getter @Setter State state;
+  private @Getter @Setter State currentState = State.STOW;
 
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
   private @Getter WinchIO winch;
@@ -61,7 +65,7 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
     winch.updateInputs(winchInputs);
 
-    switch (getState()) {
+    switch (getCurrentState()) {
       case ALGAE_GROUND:
         winch.setScorePosition(State.ALGAE_GROUND.height);
         break;
