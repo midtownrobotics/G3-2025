@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface WinchIO {
@@ -33,7 +34,16 @@ public interface WinchIO {
    *
    * @param position
    */
-  public void setPosition(Distance position);
+  public void setScorePosition(Distance position);
+
+  /**
+   * Updates PID loop to follow new target position
+   *
+   * @param position
+   */
+  public void setClimbPosition(Distance position);
+
+  public Distance getPosition();
 
   /**
    * Updates input class for Winch

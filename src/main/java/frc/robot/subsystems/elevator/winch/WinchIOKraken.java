@@ -20,7 +20,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.lib.team1648.Constraint;
+import frc.robot.subsystems.superstructure.Constraints.Constraint;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -46,11 +46,9 @@ public class WinchIOKraken implements WinchIO {
   @Getter private StatusSignal<Current> rightTorqueCurrent;
   @Getter private StatusSignal<Temperature> rightTemperature;
 
-
-  private Constraint<Distance> elevatorConstraint = new Constraint<>(Inches.of(0), Inches.of(0));
-
   /** Contructor for real winch with Krakens */
   public WinchIOKraken(int leftMotorID, int rightMotorID) {
+
     leftMotor = new TalonFX(leftMotorID);
     rightMotor = new TalonFX(rightMotorID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
@@ -121,13 +119,19 @@ public class WinchIOKraken implements WinchIO {
   }
 
   @Override
-  public void setPosition(Distance position) {
+  public void setScorePosition(Distance position) {
+    setPosition(position, 0);
+  }
 
-    position = elevatorConstraint.clamp(position, rotationToDistance(getLeftPosition().getValue()));
+  @Override
+  public void setClimbPosition(Distance position) {
+    setPosition(position, 1);
+  }
 
+  public void setPosition(Distance position, int slot) {
     double p = meterToRotation(position);
 
-    PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(0);
+    PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(slot);
     leftMotor.setControl(leftRequest);
   }
 
@@ -148,6 +152,11 @@ public class WinchIOKraken implements WinchIO {
     inputs.right.supplyCurrent = leftSupplyCurrent.getValue();
     inputs.right.torqueCurrent = leftTorqueCurrent.getValue();
     inputs.right.temperature = leftTemperature.getValue();
+  }
+
+  @Override
+  public Distance getPosition() {
+    return rotationToDistance(leftMotor.getPosition().getValue());
   }
 
   /**

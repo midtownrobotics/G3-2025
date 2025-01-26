@@ -1,16 +1,24 @@
 package frc.robot.subsystems.elevator;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
+import frc.robot.utils.Constraints.Constraint;
 import lombok.Getter;
 import lombok.Setter;
-import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
+
+  private List<Constraint<Distance>> elevatorConstraints = new ArrayList<>();
+
   public enum State {
     STOW(0),
     HANDOFF(0),
@@ -39,9 +47,9 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  private @Getter @Setter State state;
-  private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
+  private @Getter @Setter State currentState = State.STOW;
 
+  private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
   private @Getter WinchIO winch;
 
   /**
@@ -60,45 +68,14 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
     winch.updateInputs(winchInputs);
 
-    switch (getState()) {
-      case ALGAE_GROUND:
-        // getWinch().setPosition(ALGAE_GROUND)
-        break;
-      case BARGE:
-        // getWinch().setPosition(BARGE)
-        break;
-      case CLIMB:
-        break;
-      case L1:
-        // getWinch().setPosition(L1);
-        break;
-      case L2:
-        // getWinch().setPosition(L2);
-        break;
-      case L3:
-        // getWinch().setPosition(L3);
-        break;
-      case L4:
-        // getWinch().setPosition(L4);
-        break;
-      case MANUAL:
-        break;
-      case PROCESSOR:
-        // getWinch().setPosition(PROCESSOR);
-        break;
-      case STATION:
-        // getWinch().setPosition(STATION);
-        break;
-      case TUNING:
-        break;
-      default:
-      case STOW:
-        // getWinch().setPosition(STOW);
-        break;
+    switch (getCurrentState()) {
+
     }
   }
 
   public Distance getPosition() {
-    return null;
+    return winch.getPosition();
   }
+
+  public void set
 }
