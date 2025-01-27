@@ -6,6 +6,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface WristIO {
@@ -23,6 +24,9 @@ public interface WristIO {
     public Angle absolutePosition = Units.Radians.zero();
     public AngularVelocity absoluteVelocity = Units.RPM.zero();
   }
+
+  /** Gets the dutyCycleEncoder */
+  public DutyCycleEncoder getEncoder();
 
   /** sets position */
   public void setPosition(Angle position);

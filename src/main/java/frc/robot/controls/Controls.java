@@ -42,8 +42,6 @@ public interface Controls {
   public Trigger groundVomitCoral();
   /** Intake a coral from the source. */
   public Trigger sourceIntakeCoral();
-  /** Vomit a coral from the source. */
-  public Trigger sourceVomitCoral();
 
   /** Intake algae from the ground. */
   public Trigger groundIntakeAlgae();

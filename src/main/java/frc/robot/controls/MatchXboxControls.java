@@ -2,19 +2,19 @@ package frc.robot.controls;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.team1648.IOProtectionXboxController;
 import frc.lib.team6328.DoublePressTracker;
 
 public class MatchXboxControls implements Controls {
 
-  private final CommandXboxController driverController;
-  private final CommandXboxController operatorController;
+  private final IOProtectionXboxController driverController;
+  private final IOProtectionXboxController operatorController;
 
   /** Initalizes Xbox controls for matches. */
   public MatchXboxControls(int driverPort, int operatorPort) {
-    driverController = new CommandXboxController(driverPort);
-    operatorController = new CommandXboxController(operatorPort);
+    driverController = new IOProtectionXboxController(driverPort);
+    operatorController = new IOProtectionXboxController(operatorPort);
 
     bindCoralIncrementDecrement();
     bindAlgaeSet();
@@ -122,11 +122,6 @@ public class MatchXboxControls implements Controls {
   @Override
   public Trigger sourceIntakeCoral() {
     return sourceCoral().and(vomit().negate());
-  }
-
-  @Override
-  public Trigger sourceVomitCoral() {
-    return sourceCoral().and(vomit());
   }
 
   @Override
