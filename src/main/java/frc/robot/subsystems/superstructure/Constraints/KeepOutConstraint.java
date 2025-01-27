@@ -7,6 +7,7 @@ public class KeepOutConstraint<T extends Measure<?>> implements Constraint<T> {
     private T min;
     private T max;
 
+    /** NO LONGER NEEDED */
     public KeepOutConstraint(T min, T max) {
         this.min = min;
         this.max = max;
@@ -25,5 +26,5 @@ public class KeepOutConstraint<T extends Measure<?>> implements Constraint<T> {
         }
         return target;
     }
-    
+
 }

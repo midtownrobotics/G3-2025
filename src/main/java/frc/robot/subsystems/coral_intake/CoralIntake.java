@@ -15,8 +15,6 @@ import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.roller.RollerIO;
 import frc.robot.subsystems.coral_intake.roller.RollerInputsAutoLogged;
-import frc.robot.subsystems.superstructure.Constraints.Constraint;
-
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;

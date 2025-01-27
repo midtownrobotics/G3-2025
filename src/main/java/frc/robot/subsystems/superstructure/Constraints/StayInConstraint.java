@@ -7,6 +7,7 @@ public class StayInConstraint<T extends Measure<?>> implements Constraint<T> {
     private T min;
     private T max;
 
+    /** NO LONGER NEEDED */
     public StayInConstraint(T min, T max) {
         this.min = min;
         this.max = max;
@@ -25,5 +26,5 @@ public class StayInConstraint<T extends Measure<?>> implements Constraint<T> {
         }
         return target;
     }
-    
+
 }
