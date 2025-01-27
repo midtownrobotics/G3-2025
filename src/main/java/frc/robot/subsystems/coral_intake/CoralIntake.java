@@ -96,7 +96,7 @@ public class CoralIntake extends SubsystemBase {
     Voltage desiredBeltVoltage = currentState.getBeltVoltage();
     Voltage desiredRollerVoltage = currentState.getRollerVoltage();
 
-    // desiredAngle = pivotConstraint.apply(desiredAngle, getPivotPosition());
+    // desiredAngle = pivotConstraint.clamp(desiredAngle, getPivotPosition());
 
     switch (currentState) {
       case HANDOFF:

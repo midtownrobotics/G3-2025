@@ -7,7 +7,6 @@ import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.Constraint;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
-  private List<Constraint<Distance>> elevatorConstraints = new ArrayList<>();
 
   public enum State {
     STOW(0),
@@ -81,13 +79,13 @@ public class Elevator extends SubsystemBase {
   /** Sets the goal of the subsystem. */
   public void setGoal(State state, List<Constraint<Distance>> constraints) {
     currentState = state;
-    elevatorConstraints = constraints;
+    // elevatorConstraints = constraints;
   }
 
   private Distance getAllowedPosition(Distance target) {
-    for (Constraint<Distance> elevatorConstraint : elevatorConstraints) {
-      target = elevatorConstraint.apply(target, getPosition());
-    }
+    // for (Constraint<Distance> elevatorConstraint : elevatorConstraints) {
+    //   target = elevatorConstraint.apply(target, getPosition());
+    // }
     return target;
   }
 
