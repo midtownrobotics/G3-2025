@@ -1,24 +1,22 @@
 package frc.robot.subsystems.elevator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.littletonrobotics.junction.Logger;
-
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
-import frc.robot.subsystems.superstructure.Constraints.Constraint;
+import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
-  private List<Constraint<Distance>> elevatorConstraints = new ArrayList<>();
+  private List<LinearConstraint<DistanceUnit, Distance>> elevatorConstraints = new ArrayList<>();
 
   public enum State {
     STOW(0),
@@ -78,18 +76,16 @@ public class Elevator extends SubsystemBase {
         winch.setScorePosition(getAllowedPosition(currentState.height));
         break;
     }
-   
+
   }
 
-  public void setGoal(State state, List<Constraint<Distance>> constraints) {
+  public void setGoal(State state, List<LinearConstraint<DistanceUnit, Distance>> constraints) {
     currentState = state;
     elevatorConstraints = constraints;
   }
 
   private Distance getAllowedPosition(Distance target) {
-    for (Constraint<Distance> elevatorConstraint : elevatorConstraints) {
-      target = elevatorConstraint.apply(target, getPosition());
-    }
+    // return elevatorConstraints
     return target;
   }
 
