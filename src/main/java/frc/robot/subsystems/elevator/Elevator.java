@@ -77,6 +77,7 @@ public class Elevator extends SubsystemBase {
 
   }
 
+  /** Sets the goal of the subsystem. */
   public void setGoal(State state, List<Constraint<Distance>> constraints) {
     currentState = state;
     // elevatorConstraints = constraints;
