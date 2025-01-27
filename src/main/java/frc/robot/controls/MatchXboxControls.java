@@ -125,11 +125,6 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
-  public Trigger sourceVomitCoral() {
-    return sourceCoral().and(vomit());
-  }
-
-  @Override
   public Trigger groundIntakeAlgae() {
     return groundAlgae().and(vomit().negate());
   }
