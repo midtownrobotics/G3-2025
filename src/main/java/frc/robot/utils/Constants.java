@@ -4,6 +4,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public class Constants {
   public static final boolean tuningMode = false;
@@ -15,4 +16,12 @@ public class Constants {
   public static final AngularVelocity SPEAKER_SPEED = Units.RPM.of(3100);
   public static final Angle SPEAKER_ANGLE = Units.Rotations.of(0.852);
 
+  public static final Mode simMode = Mode.SIM;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+  public static enum Mode {
+    REAL,
+    SIM,
+    REPLAY
+  }
 }
