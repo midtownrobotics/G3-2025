@@ -45,6 +45,7 @@ public class WinchIOKraken implements WinchIO {
 
   /** Contructor for real winch with Krakens */
   public WinchIOKraken(int leftMotorID, int rightMotorID) {
+
     leftMotor = new TalonFX(leftMotorID);
     rightMotor = new TalonFX(rightMotorID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
@@ -115,11 +116,19 @@ public class WinchIOKraken implements WinchIO {
   }
 
   @Override
-  public void setPosition(Distance position) {
+  public void setScorePosition(Distance position) {
+    setPosition(position, 0);
+  }
 
+  @Override
+  public void setClimbPosition(Distance position) {
+    setPosition(position, 1);
+  }
+
+  public void setPosition(Distance position, int slot) {
     double p = meterToRotation(position);
 
-    PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(0);
+    PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(slot);
     leftMotor.setControl(leftRequest);
   }
 
@@ -142,6 +151,11 @@ public class WinchIOKraken implements WinchIO {
     inputs.right.temperature = leftTemperature.getValue();
   }
 
+  @Override
+  public Distance getPosition() {
+    return rotationToDistance(leftMotor.getPosition().getValue());
+  }
+
   /**
    * Converts distance unit to kraken rotations
    *
@@ -158,7 +172,7 @@ public class WinchIOKraken implements WinchIO {
    * @param a
    * @return
    */
-  public double rotationToMeter(Angle a) {
-    return (2 * Math.PI * WHEEL_RADIUS.in(Units.Meter) * a.in(Units.Rotation)) / GEARING;
+  public Distance rotationToDistance(Angle a) {
+    return Units.Meters.of((2 * Math.PI * WHEEL_RADIUS.in(Units.Meter) * a.in(Units.Rotation)) / GEARING);
   }
 }
