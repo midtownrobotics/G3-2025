@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.controls.AlgaeMode;
 import frc.robot.controls.Controls;
 import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
@@ -12,7 +13,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import frc.robot.controls.AlgaeMode;
 
 
 public class Superstructure extends SubsystemBase {

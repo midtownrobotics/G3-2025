@@ -138,6 +138,7 @@ public class RobotContainer {
 
   }
 
+  /** Handles trigger by enablling priority onTrue and disabling onFalse. */
   public void enableDisablePriorityControl(Trigger trigger, Priority priority) {
     trigger
         .onTrue(
