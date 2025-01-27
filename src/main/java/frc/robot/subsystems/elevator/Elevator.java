@@ -6,11 +6,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
+import frc.robot.subsystems.superstructure.Constraints.Constraint;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
+
+  private List<Constraint<Distance>> elevatorConstraints = new ArrayList<>();
+
   public enum State {
     STOW(0),
     HANDOFF(0),
@@ -24,24 +30,25 @@ public class Elevator extends SubsystemBase {
     STATION(0),
     ALGAE_GROUND(0),
     ALGAE_STACKED(0),
-    TUNING(0),
-    MANUAL(0);
+    TUNING,
+    MANUAL;
 
     private @Getter Distance height;
 
-    /**
-     * State has meter height value associated
-     *
-     * @param height assign -1 if no height associated
-     */
+    /** State has no meter height value associated */
+    private State() {
+      this(-1);
+    }
+
+    /** State has meter height value associated or -1 */
     private State(int height) {
       this.height = Units.Meters.of(height);
     }
   }
 
-  private @Getter @Setter State state;
-  private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
+  private @Getter @Setter State currentState = State.STOW;
 
+  private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
   private @Getter WinchIO winch;
 
   /**
@@ -60,45 +67,31 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
     winch.updateInputs(winchInputs);
 
-    switch (getState()) {
-      case ALGAE_GROUND:
-        // getWinch().setPosition(ALGAE_GROUND)
-        break;
-      case BARGE:
-        // getWinch().setPosition(BARGE)
-        break;
+    switch (currentState) {
       case CLIMB:
-        break;
-      case L1:
-        // getWinch().setPosition(L1);
-        break;
-      case L2:
-        // getWinch().setPosition(L2);
-        break;
-      case L3:
-        // getWinch().setPosition(L3);
-        break;
-      case L4:
-        // getWinch().setPosition(L4);
-        break;
-      case MANUAL:
-        break;
-      case PROCESSOR:
-        // getWinch().setPosition(PROCESSOR);
-        break;
-      case STATION:
-        // getWinch().setPosition(STATION);
-        break;
-      case TUNING:
+        winch.setClimbPosition(getAllowedPosition(currentState.height));
         break;
       default:
-      case STOW:
-        // getWinch().setPosition(STOW);
+        winch.setScorePosition(getAllowedPosition(currentState.height));
         break;
     }
+
+  }
+
+  /** Sets the goal of the subsystem. */
+  public void setGoal(State state, List<Constraint<Distance>> constraints) {
+    currentState = state;
+    elevatorConstraints = constraints;
+  }
+
+  private Distance getAllowedPosition(Distance target) {
+    for (Constraint<Distance> elevatorConstraint : elevatorConstraints) {
+      target = elevatorConstraint.apply(target, getPosition());
+    }
+    return target;
   }
 
   public Distance getPosition() {
-    return null;
+    return winch.getPosition();
   }
 }

@@ -19,6 +19,7 @@ public class PivotIONeo implements PivotIO {
   private @Getter DutyCycleEncoder encoder;
   private @Getter PIDController pivotPID;
 
+
   /** Constructor for pivotIO for Neo motors. */
   public PivotIONeo(int pivotMotorID, int ecoderID) {
     pivotMotor = new SparkMax(pivotMotorID, MotorType.kBrushless);

@@ -57,6 +57,8 @@ public class CoralIntake extends SubsystemBase {
   private final Distance handoffElevatorPosition = Distance.ofBaseUnits(0, Inches);
   private final Angle pivotOffset = Radians.of(0);
 
+  // private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
+
   private final BeltIO beltIO;
   private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
   private final PivotIO pivotIO;
@@ -94,6 +96,8 @@ public class CoralIntake extends SubsystemBase {
     Voltage desiredBeltVoltage = currentState.getBeltVoltage();
     Voltage desiredRollerVoltage = currentState.getRollerVoltage();
 
+    // desiredAngle = pivotConstraint.apply(desiredAngle, getPivotPosition());
+
     switch (currentState) {
       case HANDOFF:
         rollerIO.setVoltage(desiredRollerVoltage);
@@ -116,7 +120,4 @@ public class CoralIntake extends SubsystemBase {
   public Angle getPivotPosition() {
     return pivotInputs.absolutePosition.plus(pivotOffset);
   }
-
-  // setState()
-  // getState()
 }
