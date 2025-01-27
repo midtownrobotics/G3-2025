@@ -25,6 +25,7 @@ public interface WristIO {
     public AngularVelocity absoluteVelocity = Units.RPM.zero();
   }
 
+  /** Gets the dutyCycleEncoder */
   public DutyCycleEncoder getEncoder();
 
   /** sets position */

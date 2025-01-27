@@ -7,7 +7,6 @@ import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.Constraint;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
