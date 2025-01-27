@@ -79,13 +79,13 @@ public class Elevator extends SubsystemBase {
 
   public void setGoal(State state, List<Constraint<Distance>> constraints) {
     currentState = state;
-    elevatorConstraints = constraints;
+    // elevatorConstraints = constraints;
   }
 
   private Distance getAllowedPosition(Distance target) {
-    for (Constraint<Distance> elevatorConstraint : elevatorConstraints) {
-      target = elevatorConstraint.apply(target, getPosition());
-    }
+    // for (Constraint<Distance> elevatorConstraint : elevatorConstraints) {
+    //   target = elevatorConstraint.apply(target, getPosition());
+    // }
     return target;
   }
 
