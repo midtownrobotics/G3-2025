@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,13 +23,13 @@ import frc.robot.subsystems.drivetrain.GyroIO;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon2;
 import frc.robot.subsystems.drivetrain.ModuleIO;
 import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
+import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.RobotViz;
-import frc.robot.subsystems.drivetrain.TunerConstants;
 import lombok.Getter;
 
 public class RobotContainer {
@@ -74,7 +73,7 @@ public class RobotContainer {
 
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
 
-    
+
 
     new RobotViz(() -> {
       return null;
@@ -84,7 +83,7 @@ public class RobotContainer {
   /** Configures bindings to oi */
   private void configureBindings() {
 
-    
+
 
     // Driver
 
