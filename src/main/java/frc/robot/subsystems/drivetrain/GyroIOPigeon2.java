@@ -22,6 +22,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+
+import static edu.wpi.first.units.Units.Radians;
+
 import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
@@ -63,5 +66,9 @@ public class GyroIOPigeon2 implements GyroIO {
             .toArray(Rotation2d[]::new);
     yawTimestampQueue.clear();
     yawPositionQueue.clear();
+  }
+
+  public void resetHeading() {
+    pigeon.setYaw(Radians.of(0));
   }
 }

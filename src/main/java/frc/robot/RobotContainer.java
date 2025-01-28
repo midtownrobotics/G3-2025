@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -16,12 +19,18 @@ import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_outtake.CoralOuttake;
 import frc.robot.subsystems.coral_outtake.roller.RollerIOBag;
+import frc.robot.subsystems.drivetrain.Drive;
+import frc.robot.subsystems.drivetrain.GyroIO;
+import frc.robot.subsystems.drivetrain.GyroIOPigeon2;
+import frc.robot.subsystems.drivetrain.ModuleIO;
+import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.RobotViz;
+import frc.robot.subsystems.drivetrain.TunerConstants;
 import lombok.Getter;
 
 public class RobotContainer {
@@ -34,6 +43,7 @@ public class RobotContainer {
   @Getter private final CoralIntake coralIntake;
   @Getter private final CoralOuttake coralOuttake;
   @Getter private final Elevator elevator;
+  @Getter private final Drive drive;
 
   /** RobotContainer initialization */
   public RobotContainer() {
@@ -53,7 +63,18 @@ public class RobotContainer {
 
     coralOuttake = new CoralOuttake(rollerIO, elevator::getPosition);
 
+    GyroIO gyroIO = new GyroIOPigeon2();
+
+    ModuleIO flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft);
+    ModuleIO frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight);
+    ModuleIO blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft);
+    ModuleIO brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight);
+
+    drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
+
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
+
+    
 
     new RobotViz(() -> {
       return null;
@@ -63,14 +84,18 @@ public class RobotContainer {
   /** Configures bindings to oi */
   private void configureBindings() {
 
+    
+
     // Driver
+
+    drive.runVelocity(new ChassisSpeeds(controls.getDriveLeft(), controls.getDriveForward(), controls.getDriveRotation()));
 
     controls
         .resetDriveHeading()
         .onTrue(
             new InstantCommand(
                 () -> {
-                  // Logic to reset the drive heading
+                  drive.resetDriveHeading();
                 }));
 
     controls
@@ -78,7 +103,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  // Logic to activate drivetrain brakes ("X" Mode)
+                  drive.stopWithX();
                 }));
 
     controls
