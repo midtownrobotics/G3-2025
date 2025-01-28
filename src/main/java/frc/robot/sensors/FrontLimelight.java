@@ -2,84 +2,105 @@ package frc.robot.sensors;
 
 import frc.lib.team1648.Limelight;
 
-/**
- * This class represents the front-facing Limelight camera used for vision processing
- * in a robotics application. It can switch between different vision pipelines
- * for various tasks such as detecting AprilTags, algae, and reef branches.
- */
 public class FrontLimelight {
+  // getReefBranch()
 
-  /**
-   * Enum representing the different vision processing pipelines.
-   */
+  private Limelight limelight;
+
+  /** Enum representing the different pipelines that can be used by the Limelight camera. */
   public enum Pipeline {
-    APRILTAG, // Pipeline for detecting AprilTags
-    ALGAE,    // Pipeline for detecting algae
-    REEF;     // Pipeline for detecting reef branches
+    ALGAE(0), // Pipeline used for Algae processing.
+    REEF(0), // Pipeline used for Reef processing.
+    APRILTAG(0); // Pipeline used for AprilTag processing.
+
+    private long pipelineID;
+
+    Pipeline (long ID) {
+      this.pipelineID = ID;
+    }
+
+    public long getPipelineID() {
+      return pipelineID;
+    }
   }
 
   private Pipeline currentPipeline;
-  private Limelight limelight;
 
   /**
-   * Gets the vision observation from the Limelight if the current pipeline
-   * is set to APRILTAG and the target is seen.
+   * Constructs the Limelight for the front of the robot
+   */
+  public FrontLimelight(String name) {
+    limelight = new Limelight(name);
+
+    currentPipeline = Pipeline.APRILTAG;
+  }
+
+  /**
+   * Retrieves the horizontal offset for the Algae pipeline. If the current pipeline is not set to
+   * Algae or no target is seen, it returns {@code null}.
    *
-   * @return VisionObservation object if a target is seen and the pipeline
-   *         is APRILTAG, otherwise null.
+   * @return The horizontal offset (in degrees) of the target relative to the Limelight, or {@code
+   *     null} if no target is seen or if the pipeline is set to AprilTag.
+   */
+  public Integer getAlgaeOffset() {
+    // Check if the current pipeline is AprilTag or no target is seen
+    if (currentPipeline != Pipeline.ALGAE || !limelight.isTargetSeen()) {
+      return null; // Return null if conditions are not met
+    }
+
+    // Return the horizontal offset in degrees
+    return (int) limelight.getHorizontalOffset();
+  }
+
+    /**
+   * Retrieves the horizontal offset for the Algae pipeline. If the current pipeline is not set to
+   * Algae or no target is seen, it returns {@code null}.
+   *
+   * @return The horizontal offset (in degrees) of the target relative to the Limelight, or {@code
+   *     null} if no target is seen or if the pipeline is set to AprilTag.
+   */
+  public Integer getReefOffset() {
+    // Check if the current pipeline is AprilTag or no target is seen
+    if (currentPipeline != Pipeline.REEF || !limelight.isTargetSeen()) {
+      return null; // Return null if conditions are not met
+    }
+
+    // Return the horizontal offset in degrees
+    return (int) limelight.getHorizontalOffset();
+  }
+
+  /**
+   * Retrieves the vision observation from the Limelight camera, which includes the bot's pose
+   * estimate and other vision-related data.
+   *
+   * @return A {@link VisionObservation} containing the bot's pose estimate and related data or
+   * {@code null} if pipeline is incorrect.
    */
   public VisionObservation getVisionObservation() {
-    if (currentPipeline != Pipeline.APRILTAG || !limelight.isTargetSeen()) {
-      return null;
+    if (currentPipeline != Pipeline.APRILTAG) {
+      return null; // Return null if conditions are not met
     }
+
     return limelight.getBotPoseEstimate();
   }
 
   /**
-   * Gets the horizontal offset of the detected algae if the current pipeline
-   * is set to ALGAE and the target is seen.
+   * Sets the pipeline for the Limelight camera.
    *
-   * @return Double value representing the horizontal offset if the target is seen
-   *         and the pipeline is ALGAE, otherwise null.
-   */
-  public Double getAlgaeOffset() {
-    if (currentPipeline != Pipeline.ALGAE || !limelight.isTargetSeen()) {
-      return null;
-    }
-    return limelight.getHorizontalOffset();
-  }
-
-  /**
-   * Gets the horizontal offset of the detected reef branch if the current pipeline
-   * is set to REEF and the target is seen.
-   *
-   * @return Double value representing the horizontal offset if the target is seen
-   *         and the pipeline is REEF, otherwise null.
-   */
-
-  public Double getReefBranchOffset() {
-    if (currentPipeline != Pipeline.REEF || !limelight.isTargetSeen()) {
-      return null;
-    }
-    return limelight.getHorizontalOffset();
-  }
-
-  /**
-   * Sets the current vision processing pipeline to the specified new pipeline.
-   *
-   * @param newPipeline The new pipeline to set.
+   * @param newPipeline The pipeline to switch to (either Coral or AprilTag).
    */
   public void setPipeline(Pipeline newPipeline) {
     currentPipeline = newPipeline;
+
+    limelight.setPipeline(newPipeline.getPipelineID());
   }
 
   /**
-   * Gets the current vision processing pipeline.
+   * Gets the current pipeline being used by the Limelight camera.
    *
-   * @return The current pipeline.
+   * @return The current {@link Pipeline} (either Coral or AprilTag).
    */
   public Pipeline getPipeline() {
     return currentPipeline;
   }
-
 }

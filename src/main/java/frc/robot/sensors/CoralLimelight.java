@@ -14,11 +14,32 @@ public class CoralLimelight {
 
   /** Enum representing the different pipelines that can be used by the Limelight camera. */
   public enum Pipeline {
-    CORAL, // Pipeline used for Coral processing.
-    APRILTAG; // Pipeline used for AprilTag processing.
+    CORAL(0), // Pipeline used for Coral processing.
+    APRILTAG(0); // Pipeline used for AprilTag processing.
+
+    private long pipelineID;
+
+    Pipeline (long ID) {
+      this.pipelineID = ID;
+    }
+
+    public long getPipelineID() {
+      return pipelineID;
+    }
   }
 
   private Pipeline currentPipeline;
+
+  /**
+   * Constructs a CoralLimelight instance with the given Limelight camera name.
+   *
+   * @param name The name of the Limelight camera to interact with.
+   */
+  public CoralLimelight(String name) {
+    limelight = new Limelight(name);
+
+    currentPipeline = Pipeline.APRILTAG;
+  }
 
   /**
    * Retrieves the horizontal offset for the Coral pipeline. If the current pipeline is set to
@@ -38,12 +59,29 @@ public class CoralLimelight {
   }
 
   /**
+   * Retrieves the vision observation from the Limelight camera, which includes the bot's pose
+   * estimate and other vision-related data.
+   *
+   * @return A {@link VisionObservation} containing the bot's pose estimate and related data or
+   * {@code null} if pipeline is incorrect.
+   */
+  public VisionObservation getVisionObservation() {
+    if (currentPipeline == Pipeline.CORAL) {
+      return null; // Return null if conditions are not met
+    }
+
+    return limelight.getBotPoseEstimate();
+  }
+
+  /**
    * Sets the pipeline for the Limelight camera.
    *
    * @param newPipeline The pipeline to switch to (either Coral or AprilTag).
    */
   public void setPipeline(Pipeline newPipeline) {
     currentPipeline = newPipeline;
+
+    limelight.setPipeline(newPipeline.getPipelineID());
   }
 
   /**

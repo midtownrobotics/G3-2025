@@ -55,6 +55,6 @@ public class VisionIOLimelight implements VisionIO {
         };
 
         // Set the tag IDs from the Limelight pose estimate
-        inputs.tagIds = limelight.getBotPoseEstimate().fiducialId();
+        // inputs.tagIds = limelight.getBotPoseEstimate().fiducialId();
     }
 }
