@@ -33,4 +33,9 @@ public interface GyroIO {
    * @param inputs information that the gyro generates
    */
   public default void updateInputs(GyroIOInputs inputs) {}
+
+  /**
+   * Reset the gyro heading to zero
+   */
+  public void resetHeading();
 }
