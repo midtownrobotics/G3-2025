@@ -61,9 +61,16 @@ public enum LEDPattern {
 
     private final double powerValue;
 
+
     LEDPattern(double powerValue) {
         this.powerValue = powerValue;
     }
+
+    /**
+     * Returns Power Value
+     * 
+     * @return
+     */
 
     public double getPowerValue() {
         return powerValue;
