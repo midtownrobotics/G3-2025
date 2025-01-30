@@ -68,7 +68,7 @@ public enum LEDPattern {
 
     /**
      * Returns Power Value
-     * 
+     *
      * @return
      */
 
@@ -76,6 +76,3 @@ public enum LEDPattern {
         return powerValue;
     }
 }
-
-
-
