@@ -341,6 +341,13 @@ public class Drive extends SubsystemBase {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
+  /**
+   * sets the gyro heading to zero
+   */
+  public void resetDriveHeading() {
+    gyroIO.resetHeading();
+  }
+
   /** Adds a new timestamped vision measurement. */
   public void addVisionMeasurement(
       Pose2d visionRobotPoseMeters,
