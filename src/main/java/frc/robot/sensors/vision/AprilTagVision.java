@@ -216,4 +216,3 @@ public class AprilTagVision extends SubsystemBase {
         Matrix<N3, N1> visionMeasurementStdDevs);
   }
 }
-

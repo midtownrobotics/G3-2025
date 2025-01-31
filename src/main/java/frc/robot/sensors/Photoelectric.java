@@ -2,10 +2,14 @@ package frc.robot.sensors;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class Photoelectric {
-    private DigitalInput sensor = new DigitalInput(0);
+public class PhotoElectric {
+    private DigitalInput sensor;
 
-    public boolean isSensorTripped() {
+    public PhotoElectric(int DIOPort) {
+        this.sensor = new DigitalInput(DIOPort);
+    }
+
+    public boolean isTriggered() {
         return sensor.get();
     }
 }
