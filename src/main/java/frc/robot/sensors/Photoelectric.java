@@ -2,10 +2,14 @@ package frc.robot.sensors;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class PhotoElectric {
+public class Photoelectric {
     private DigitalInput sensor;
 
-    public PhotoElectric(int DIOPort) {
+    /**
+     * Constructor for a Photoelectric sensor
+     * @param DIOPort
+     */
+    public Photoelectric(int DIOPort) {
         this.sensor = new DigitalInput(DIOPort);
     }
 
