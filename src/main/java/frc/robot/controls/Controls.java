@@ -79,13 +79,48 @@ public interface Controls {
 
   // Manual Controls
 
+  /**
+   * Manual Mode - Get Elevator Movement Axis
+   */
   public double getElevatorAxis();
-  public Trigger wristForward();
-  public Trigger wristBackward();
+
+  /**
+   * Manual Mode - Get Wrist Movement Axis
+   */
+  public double getWristAxis();
+
+  /**
+   * Manual Mode - Outtake Coral
+   */
   public Trigger outtakeShoot();
+
+  /**
+   * Manual Mode - Intake Algae Claw
+   */
   public Trigger algaeClawIntake();
+
+  /**
+   * Manual Mode - Reverse Algae Claw
+   */
+  public Trigger algaeClawReverse();
+
+  /**
+   * Manual Mode - Move Intake Forward
+   */
   public Trigger coralForward();
+
+  /**
+   * Manual Mode - Move Intake Backward
+   */
   public Trigger coralBackward();
+
+  /**
+   * Manual Mode - Run Coral Intake Rollers
+   */
   public Trigger coralIntakeRun();
+
+  /**
+   * Manual Mode - Reverses Coral Intake Rollers
+   */
   public Trigger coralIntakeReverse();
 }

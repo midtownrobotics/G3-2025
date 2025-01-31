@@ -1,12 +1,11 @@
 package frc.robot.controls;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team1648.IOProtectionXboxController;
 import frc.lib.team6328.DoublePressTracker;
+import java.util.function.BooleanSupplier;
 
 public class MatchXboxControls implements Controls {
 
@@ -251,14 +250,9 @@ public class MatchXboxControls implements Controls {
   };
 
   @Override
-  public Trigger wristForward() {
-    return operatorController.povUp().and(getManualMode);
-  };
-
-  @Override
-  public Trigger wristBackward() {
-    return operatorController.povDown().and(getManualMode);
-  };
+  public double getWristAxis() {
+    return operatorController.getRightX();
+  }
 
   @Override
   public Trigger outtakeShoot() {
@@ -288,5 +282,11 @@ public class MatchXboxControls implements Controls {
   @Override
   public Trigger coralIntakeReverse() {
     return operatorController.rightBumper().and(getManualMode);
+  }
+
+  @Override
+  public Trigger algaeClawReverse() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'algaeClawReverse'");
   };
 }
