@@ -1,10 +1,12 @@
 package frc.robot.subsystems.coral_intake.pivot;
 
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.VelocityUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
