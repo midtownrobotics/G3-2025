@@ -93,24 +93,24 @@ public class RobotContainer {
     ModuleIO frModuleIO;
     ModuleIO blModuleIO;
     ModuleIO brModuleIO;
-    
+
     switch (Constants.MODE) {
         case REPLAY:
             // Algae Claw
             wristIO = new WristIOReplay();
             algaeClawRollerIO = new ACRollerIOReplay();
-        
+
             // Elevator
             winchIO = new WinchIOReplay();
-        
+
             // Coral Intake
             beltIO = new BeltIOReplay();
             pivotIO = new PivotIOReplay();
             coralIntakeRollerIO = new CIRollerIOReplay();
-        
+
             // Coral Outtake
             rollerIO = new CORollerIOReplay();
-        
+
             // Drive
             // TODO: Understand sim/replay
             gyroIO = new GyroIOPigeon2();
@@ -123,18 +123,18 @@ public class RobotContainer {
             // Algae Claw
             wristIO = new WristIOSim();
             algaeClawRollerIO = new ACRollerIOSim();
-        
+
             // Elevator
             winchIO = new WinchIOSim();
-        
+
             // Coral Intake
             beltIO = new BeltIOSim();
             pivotIO = new PivotIOSim();
             coralIntakeRollerIO = new CIRollerIOSim();
-        
+
             // Coral Outtake
             rollerIO = new CORollerIOSim();
-        
+
             // Drive
             // TODO: Understand sim/replay
             gyroIO = new GyroIOPigeon2();
@@ -158,7 +158,7 @@ public class RobotContainer {
 
             // Coral Outtake
             rollerIO = new CORollerIOBag(Ports.CoralOuttake.Roller);
-        
+
             // Drive
             gyroIO = new GyroIOPigeon2();
             flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft);
@@ -208,7 +208,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  // Logic to lock onto a game piece
+                  // TODO: Logic to lock onto a game piece
                 }));
 
     controls
@@ -216,7 +216,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  // Logic to lock onto the left position on the reef
+                  // TODO: Logic to lock onto the left position on the reef
                 }));
 
     controls
@@ -224,7 +224,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  // Logic to lock onto the right position on the reef
+                  // TODO: Logic to lock onto the right position on the reef
                 }));
 
     controls
@@ -232,7 +232,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  // Logic to lock onto the true right position for algae intake
+                  // TODO: Logic to lock onto the true right position for algae intake
                 }));
 
     // Operator
@@ -265,7 +265,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                    // Logic for outtake shoot action
+                    // TODO: Logic for outtake shoot action
                 }));
 
     controls
@@ -273,7 +273,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                    // Logic for algae claw intake action
+                    // TODO: Logic for algae claw intake action
                 }));
 
     controls
@@ -281,7 +281,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                    // Logic for coral forward action
+                    // TODO: Logic for coral forward action
                 }));
 
     controls
@@ -289,7 +289,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                    // Logic for coral backward action
+                    // TODO: Logic for coral backward action
                 }));
 
     controls
@@ -297,7 +297,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                    // Logic for coral intake run action
+                    //TODO:  Logic for coral intake run action
                 }));
 
     controls
@@ -305,7 +305,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                    // Logic for coral intake reverse action
+                    // TODO: Logic for coral intake reverse action
                 }));
 
   }

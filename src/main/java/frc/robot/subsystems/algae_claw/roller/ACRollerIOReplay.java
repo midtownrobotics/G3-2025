@@ -6,13 +6,11 @@ public class ACRollerIOReplay implements ACRollerIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
   }
 
   @Override
   public void updateInputs(RollerInputs inputs) {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
   }
 }
