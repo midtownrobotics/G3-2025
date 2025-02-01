@@ -42,6 +42,14 @@ public class Limelight {
   }
 
   /**
+   * Wether or not the limelight is connected.
+   * @return Wether limelight is conenct or not.
+   */
+  public boolean isConencted() {
+    return get("tx").exists();
+  }
+
+  /**
    * Converts an array of doubles into a Pose2d object.
    *
    * @param data The array of doubles containing pose data.
