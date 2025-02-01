@@ -1,4 +1,4 @@
-package frc.robot.subsystems.algae_claw.roller;
+package frc.robot.subsystems.coral_outtake.roller;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -8,17 +8,18 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface RollerIO {
+public interface CORollerIO {
   @AutoLog
   public class RollerInputs {
-    public boolean connected = true;
     public Angle position = Units.Radians.zero();
     public AngularVelocity velocity = Units.RPM.zero();
-    public Voltage appliedVoltage = Units.Volt.zero();
-    public Current supplyCurrent = Units.Amp.zero();
-    public Current torqueCurrent = Units.Amp.zero();
-    public Temperature temperature = Units.Kelvin.zero();
+    public Voltage appliedVoltage = Units.Volts.zero();
+    public Current supplyCurrent = Units.Amps.zero();
+    public Temperature temperature = Units.Fahrenheit.zero();
   }
+
+
+
 
   /**
    * Set motor output voltage
@@ -32,4 +33,11 @@ public interface RollerIO {
    * @param inputs
    */
   public void updateInputs(RollerInputs inputs);
+
+  /**
+   * Return Voltage that is being applied to the rollers
+   *
+   * @return voltage
+   */
+  public Voltage getVoltage ();
 }

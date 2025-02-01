@@ -2,7 +2,7 @@ package frc.robot.subsystems.coral_intake.roller;
 
 import edu.wpi.first.units.measure.Voltage;
 
-public class RollerIOSim implements RollerIO {
+public class CIRollerIOReplay implements CIRollerIO {
 
   @Override
   public void setVoltage(Voltage voltage) {

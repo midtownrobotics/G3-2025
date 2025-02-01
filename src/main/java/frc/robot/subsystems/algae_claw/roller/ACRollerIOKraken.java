@@ -13,7 +13,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
-public class RollerIOKraken implements RollerIO {
+public class ACRollerIOKraken implements ACRollerIO {
 
   @Getter private TalonFX roller;
   @Getter private StatusSignal<Angle> position;
@@ -24,7 +24,7 @@ public class RollerIOKraken implements RollerIO {
   @Getter private StatusSignal<Temperature> temperature;
 
   /** Constructor for rollerIO for kraken motors. */
-  public RollerIOKraken(int rollerID) {
+  public ACRollerIOKraken(int rollerID) {
     roller = new TalonFX(rollerID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 

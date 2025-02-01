@@ -2,12 +2,11 @@ package frc.robot.subsystems.coral_outtake.roller;
 
 import edu.wpi.first.units.measure.Voltage;
 
-public class RollerIOSim implements RollerIO {
+public class CORollerIOReplay implements CORollerIO {
 
     @Override
     public void setVoltage(Voltage voltage) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
+
     }
 
     @Override
@@ -20,4 +19,5 @@ public class RollerIOSim implements RollerIO {
     public Voltage getVoltage() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getVoltage'");
-    }}
+    }
+}

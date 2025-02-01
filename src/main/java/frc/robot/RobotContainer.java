@@ -13,11 +13,32 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
+import frc.robot.subsystems.algae_claw.roller.ACRollerIO;
+import frc.robot.subsystems.algae_claw.roller.ACRollerIOKraken;
+import frc.robot.subsystems.algae_claw.roller.ACRollerIOReplay;
+import frc.robot.subsystems.algae_claw.roller.ACRollerIOSim;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
+import frc.robot.subsystems.algae_claw.wrist.WristIOReplay;
+import frc.robot.subsystems.algae_claw.wrist.WristIOSim;
 import frc.robot.subsystems.coral_intake.CoralIntake;
+import frc.robot.subsystems.coral_intake.belt.BeltIO;
+import frc.robot.subsystems.coral_intake.belt.BeltIONeo550;
+import frc.robot.subsystems.coral_intake.belt.BeltIOReplay;
+import frc.robot.subsystems.coral_intake.belt.BeltIOSim;
+import frc.robot.subsystems.coral_intake.pivot.PivotIO;
+import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
+import frc.robot.subsystems.coral_intake.pivot.PivotIOReplay;
+import frc.robot.subsystems.coral_intake.pivot.PivotIOSim;
+import frc.robot.subsystems.coral_intake.roller.CIRollerIO;
+import frc.robot.subsystems.coral_intake.roller.CIRollerIONeo;
+import frc.robot.subsystems.coral_intake.roller.CIRollerIOReplay;
+import frc.robot.subsystems.coral_intake.roller.CIRollerIOSim;
 import frc.robot.subsystems.coral_outtake.CoralOuttake;
-import frc.robot.subsystems.coral_outtake.roller.RollerIOBag;
+import frc.robot.subsystems.coral_outtake.roller.CORollerIO;
+import frc.robot.subsystems.coral_outtake.roller.CORollerIOBag;
+import frc.robot.subsystems.coral_outtake.roller.CORollerIOReplay;
+import frc.robot.subsystems.coral_outtake.roller.CORollerIOSim;
 import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.drivetrain.GyroIO;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon2;
@@ -27,6 +48,8 @@ import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
+import frc.robot.subsystems.elevator.winch.WinchIOReplay;
+import frc.robot.subsystems.elevator.winch.WinchIOSim;
 import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.RobotViz;
@@ -49,31 +72,109 @@ public class RobotContainer {
     controls = new MatchXboxControls(0, 1);
     configureBindings();
 
-    WristIO wristIO = new WristIOKraken(0, 0);
-    algaeClaw = new AlgaeClaw(null, wristIO);
+    // Algae Claw
+    WristIO wristIO;
+    ACRollerIO algaeClawRollerIO;
 
+    // Elevator
+    WinchIO winchIO;
 
-    WinchIO winchIO = new WinchIOKraken(0, 0);
+    // Coral Intake
+    BeltIO beltIO;
+    PivotIO pivotIO;
+    CIRollerIO coralIntakeRollerIO;
+
+    // Coral Outtake
+    CORollerIO rollerIO;
+
+    // Drive
+    GyroIO gyroIO;
+    ModuleIO flModuleIO;
+    ModuleIO frModuleIO;
+    ModuleIO blModuleIO;
+    ModuleIO brModuleIO;
+    
+    switch (Constants.MODE) {
+        case REPLAY:
+            // Algae Claw
+            wristIO = new WristIOReplay();
+            algaeClawRollerIO = new ACRollerIOReplay();
+        
+            // Elevator
+            winchIO = new WinchIOReplay();
+        
+            // Coral Intake
+            beltIO = new BeltIOReplay();
+            pivotIO = new PivotIOReplay();
+            coralIntakeRollerIO = new CIRollerIOReplay();
+        
+            // Coral Outtake
+            rollerIO = new CORollerIOReplay();
+        
+            // Drive
+            // TODO: Understand sim/replay
+            gyroIO = new GyroIOPigeon2();
+            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft);
+            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight);
+            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft);
+            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight);
+            break;
+        case SIM:
+            // Algae Claw
+            wristIO = new WristIOSim();
+            algaeClawRollerIO = new ACRollerIOSim();
+        
+            // Elevator
+            winchIO = new WinchIOSim();
+        
+            // Coral Intake
+            beltIO = new BeltIOSim();
+            pivotIO = new PivotIOSim();
+            coralIntakeRollerIO = new CIRollerIOSim();
+        
+            // Coral Outtake
+            rollerIO = new CORollerIOSim();
+        
+            // Drive
+            // TODO: Understand sim/replay
+            gyroIO = new GyroIOPigeon2();
+            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft);
+            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight);
+            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft);
+            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight);
+            break;
+        default:
+            // Algae Claw
+            wristIO = new WristIOKraken(Ports.AlgaeClaw.WristMotor, Ports.AlgaeClaw.WristEncoder);
+            algaeClawRollerIO = new ACRollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller);
+
+            // Elevator
+            winchIO = new WinchIOKraken(Ports.Elevator.WinchMotor, Ports.Elevator.WinchEncoder);
+
+            // Coral Intake
+            beltIO = new BeltIONeo550(Ports.CoralIntake.Belt);
+            pivotIO = new PivotIONeo(Ports.CoralIntake.PivotMotor, Ports.CoralIntake.PivotEncoder);
+            coralIntakeRollerIO = new CIRollerIONeo(Ports.CoralIntake.CoralIntakeRoller);
+
+            // Coral Outtake
+            rollerIO = new CORollerIOBag(Ports.CoralOuttake.Roller);
+        
+            // Drive
+            gyroIO = new GyroIOPigeon2();
+            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft);
+            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight);
+            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft);
+            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight);
+            break;
+    }
+
+    algaeClaw = new AlgaeClaw(algaeClawRollerIO, wristIO);
     elevator = new Elevator(winchIO);
-
-    coralIntake = new CoralIntake(null, null, null, elevator::getPosition);
-
-    RollerIOBag rollerIO = new RollerIOBag(0);
-
-    coralOuttake = new CoralOuttake(rollerIO, elevator::getPosition);
-
-    GyroIO gyroIO = new GyroIOPigeon2();
-
-    ModuleIO flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft);
-    ModuleIO frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight);
-    ModuleIO blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft);
-    ModuleIO brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight);
-
+    coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO);
+    coralOuttake = new CoralOuttake(rollerIO);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
-
-
 
     new RobotViz(() -> {
       return null;
@@ -82,9 +183,6 @@ public class RobotContainer {
 
   /** Configures bindings to oi */
   private void configureBindings() {
-
-
-
     // Driver
 
     drive.runVelocity(new ChassisSpeeds(controls.getDriveLeft(), controls.getDriveForward(), controls.getDriveRotation()));
