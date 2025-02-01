@@ -45,7 +45,7 @@ public class Limelight {
    * Wether or not the limelight is connected.
    * @return Wether limelight is conenct or not.
    */
-  public boolean isConencted() {
+  public boolean isConnected() {
     return get("tx").exists();
   }
 

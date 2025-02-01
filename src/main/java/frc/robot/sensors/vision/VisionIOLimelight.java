@@ -32,7 +32,7 @@ public class VisionIOLimelight implements VisionIO {
     @Override
     public void updateInputs(VisionIOInputs inputs) {
         // Set connection status to true
-        inputs.connected = limelight.isConencted();
+        inputs.connected = limelight.isConnected();
 
         // Update target observation with horizontal and vertical offsets
         inputs.latestTargetObservation = new TargetObservation(
@@ -57,5 +57,10 @@ public class VisionIOLimelight implements VisionIO {
 
         // Set the tag IDs from the Limelight pose estimate
         // inputs.tagIds = limelight.getBotPoseEstimate().fiducialId();
+    }
+
+    @Override
+    public void setPipeline(long pipelineID) {
+        limelight.setPipeline(pipelineID);
     }
 }
