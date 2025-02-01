@@ -1,7 +1,6 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class WristIOSim implements WristIO {
 
@@ -18,8 +17,9 @@ public class WristIOSim implements WristIO {
   }
 
   @Override
-  public DutyCycleEncoder getEncoder() {
+  public double getEncoderPosition() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getEncoder'");
+    throw new UnsupportedOperationException("Unimplemented method 'getEncodedPosition'");
   }
+
 }

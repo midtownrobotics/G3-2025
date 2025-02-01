@@ -15,7 +15,7 @@ public class BeltIONeo implements BeltIO {
 
   private @Getter SparkMax beltMotor;
 
-  /** Constructor for beltIO for Neo550 motors. */
+  /** Constructor for beltIO for Neo motors. */
   public BeltIONeo(int beltMotorID) {
     beltMotor = new SparkMax(beltMotorID, MotorType.kBrushless);
     beltMotor.configure(new SparkMaxConfig().smartCurrentLimit((int) Constants.NEO_CURRENT_LIMIT.in(Units.Amps))
