@@ -11,11 +11,11 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
-public class RollerIONeo implements RollerIO {
+public class CIRollerIONeo implements CIRollerIO {
  private @Getter SparkMax beltMotor;
 
   /** Constructor for rollerIO for Neo motors. */
-  public RollerIONeo(int beltMotorID) {
+  public CIRollerIONeo(int beltMotorID) {
     beltMotor = new SparkMax(beltMotorID, MotorType.kBrushless);
     beltMotor.configure(new SparkMaxConfig().smartCurrentLimit((int) Constants.NEO_CURRENT_LIMIT.in(Units.Amps))
     .idleMode(IdleMode.kBrake),

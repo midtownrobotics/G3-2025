@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevator;
 
+
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
@@ -8,15 +9,12 @@ import frc.lib.team1648.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
-  private List<LinearConstraint<DistanceUnit, Distance>> elevatorConstraints = new ArrayList<>();
+  private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
 
   public enum State {
     STOW(0),
@@ -38,16 +36,16 @@ public class Elevator extends SubsystemBase {
 
     /** State has no meter height value associated */
     private State() {
-      this(-1);
+      this.height = null;
     }
 
-    /** State has meter height value associated or -1 */
+    /** State has meter height value associated */
     private State(int height) {
       this.height = Units.Meters.of(height);
     }
   }
 
-  private @Getter @Setter State currentState = State.STOW;
+  private @Getter State currentState = State.STOW;
 
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
   private @Getter WinchIO winch;
@@ -68,26 +66,20 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
     winch.updateInputs(winchInputs);
 
-    switch (currentState) {
+    switch (getCurrentState()) {
       case CLIMB:
-        winch.setClimbPosition(getAllowedPosition(currentState.height));
+        winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
         break;
       default:
-        winch.setScorePosition(getAllowedPosition(currentState.height));
+        winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
         break;
     }
-
   }
-
 
   /** Sets the goal of the elevator. */
-  public void setGoal(State state, List<LinearConstraint<DistanceUnit, Distance>> constraints) {
+  public void setGoal(State state, LinearConstraint<DistanceUnit, Distance> constraint) {
     currentState = state;
-    // elevatorConstraints = constraints;
-  }
-
-  private Distance getAllowedPosition(Distance target) {
-    return target;
+    elevatorConstraint = constraint;
   }
 
   public Distance getPosition() {

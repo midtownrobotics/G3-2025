@@ -1,6 +1,8 @@
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.controls.AlgaeMode;
 import frc.robot.controls.Controls;
@@ -9,6 +11,9 @@ import frc.robot.subsystems.algae_claw.AlgaeClaw;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_outtake.CoralOuttake;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
+import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
@@ -81,6 +86,11 @@ public class Superstructure extends SubsystemBase {
     Set<CoralIntake.State> possibleCoralIntakeStates = new HashSet<>(EnumSet.allOf(CoralIntake.State.class));
     Set<CoralOuttake.State> possibleCoralOuttakeStates = new HashSet<>(EnumSet.allOf(CoralOuttake.State.class));
     Set<Elevator.State> possibleElevatorStates = new HashSet<>(EnumSet.allOf(Elevator.State.class));
+
+    // TODO: Work with somebody to figure out restrictions for each state
+    LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
+    CircularConstraint coralIntakeConstraint = new CircularConstraint();
+    CircularConstraint algaeClawConstraint = new CircularConstraint();
 
     for (Priority priority : controllerPrioritySubset.getCurrentlyEnabled()) {
       switch (priority) {
@@ -212,10 +222,10 @@ public class Superstructure extends SubsystemBase {
       }
     }
 
-    algaeClaw.setCurrentState(possibleAlgaeClawStates.toArray(new AlgaeClaw.State[possibleAlgaeClawStates.size()])[0]);
-    coralIntake.setCurrentState(possibleCoralIntakeStates.toArray(new CoralIntake.State[possibleCoralIntakeStates.size()])[0]);
-    coralOuttake.setCurrentState(possibleCoralOuttakeStates.toArray(new CoralOuttake.State[possibleCoralOuttakeStates.size()])[0]);
-    elevator.setCurrentState(possibleElevatorStates.toArray(new Elevator.State[possibleElevatorStates.size()])[0]);
+    algaeClaw.setGoal(possibleAlgaeClawStates.iterator().next(), algaeClawConstraint);
+    coralIntake.setGoal(possibleCoralIntakeStates.iterator().next(), coralIntakeConstraint);
+    coralOuttake.setGoal(possibleCoralOuttakeStates.iterator().next());
+    elevator.setGoal(possibleElevatorStates.iterator().next(), elevatorConstraint);
   }
 
   private boolean isAlgaeClawBlockingIntake() {

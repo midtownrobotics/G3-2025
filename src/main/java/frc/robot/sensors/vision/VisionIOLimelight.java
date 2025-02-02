@@ -3,6 +3,7 @@ package frc.robot.sensors.vision;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.team1648.Limelight;
+import frc.robot.sensors.VisionObservation;
 
 /**
  * VisionIO implementation for the Limelight camera.
@@ -31,7 +32,7 @@ public class VisionIOLimelight implements VisionIO {
     @Override
     public void updateInputs(VisionIOInputs inputs) {
         // Set connection status to true
-        inputs.connected = true;
+        inputs.connected = limelight.isConnected();
 
         // Update target observation with horizontal and vertical offsets
         inputs.latestTargetObservation = new TargetObservation(
@@ -40,7 +41,7 @@ public class VisionIOLimelight implements VisionIO {
         );
 
         // Retrieve the robot's pose estimate from the Limelight
-        var pose = limelight.getBotPoseEstimate();
+        VisionObservation pose = limelight.getBotPoseEstimate();
 
         // Update pose observations
         inputs.poseObservations = new PoseObservation[] {
@@ -56,5 +57,10 @@ public class VisionIOLimelight implements VisionIO {
 
         // Set the tag IDs from the Limelight pose estimate
         // inputs.tagIds = limelight.getBotPoseEstimate().fiducialId();
+    }
+
+    @Override
+    public void setPipeline(long pipelineID) {
+        limelight.setPipeline(pipelineID);
     }
 }
