@@ -23,7 +23,7 @@ import frc.robot.subsystems.algae_claw.wrist.WristIOReplay;
 import frc.robot.subsystems.algae_claw.wrist.WristIOSim;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
-import frc.robot.subsystems.coral_intake.belt.BeltIONeo550;
+import frc.robot.subsystems.coral_intake.belt.BeltIONeo;
 import frc.robot.subsystems.coral_intake.belt.BeltIOReplay;
 import frc.robot.subsystems.coral_intake.belt.BeltIOSim;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
@@ -152,7 +152,7 @@ public class RobotContainer {
             winchIO = new WinchIOKraken(Ports.Elevator.WinchMotor, Ports.Elevator.WinchEncoder);
 
             // Coral Intake
-            beltIO = new BeltIONeo550(Ports.CoralIntake.Belt);
+            beltIO = new BeltIONeo(Ports.CoralIntake.Belt);
             pivotIO = new PivotIONeo(Ports.CoralIntake.PivotMotor, Ports.CoralIntake.PivotEncoder);
             coralIntakeRollerIO = new CIRollerIONeo(Ports.CoralIntake.CoralIntakeRoller);
 
