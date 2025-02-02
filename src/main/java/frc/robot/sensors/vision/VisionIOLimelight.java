@@ -2,7 +2,7 @@ package frc.robot.sensors.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.lib.team1648.Limelight;
+import frc.lib.Limelight;
 import frc.robot.sensors.VisionObservation;
 
 /**

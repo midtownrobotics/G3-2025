@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.lib.team6328;
+package frc.lib;
 
 import frc.robot.utils.Constants;
 import java.util.Arrays;

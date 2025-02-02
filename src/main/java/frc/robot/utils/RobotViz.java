@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import frc.lib.team6328.VirtualSubsystem;
+import frc.lib.VirtualSubsystem;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
