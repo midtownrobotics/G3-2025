@@ -4,36 +4,26 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.VisionObservation;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
+import frc.robot.sensors.vision.VisionIO.TargetObservation;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class CoralCamera extends SubsystemBase {
-    private VisionIO visionController;
+    private final VisionIO visionController;
     private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
     /** Enum representing the different pipelines that can be used by the camera controller. */
+    @RequiredArgsConstructor
     public enum Pipeline {
-        CORAL(0), // Pipeline used for Algae processing.
-        APRILTAG(0); // Pipeline used for AprilTag processing.
+        APRILTAG(0), // Pipeline used for AprilTag processing.
+        CORAL(1); // Pipeline used for Algae processing.
 
-        private long pipelineID;
 
-        Pipeline (long ID) {
-            this.pipelineID = ID;
-        }
-
-        public long getPipelineID() {
-            return pipelineID;
-        }
+        @Getter private final int pipelineID;
     }
 
-    @Getter Pipeline currentPipeline = Pipeline.APRILTAG;
-
-    /**
-     * Constructs the AprilTag Camera
-     */
-    public CoralCamera(VisionIO visionController) {
-        this.visionController = visionController;
-    }
+    @Getter private Pipeline currentPipeline = Pipeline.APRILTAG;
 
     @Override
     public void periodic() {
@@ -60,9 +50,9 @@ public class CoralCamera extends SubsystemBase {
      * @return A {@link Rotation2d} of the coral offset or {@code null} if the current pipeline is not
      * set to CORAL.
      */
-    public Rotation2d getCoralOffset() {
+    public TargetObservation getCoralOffset() {
         if (currentPipeline == Pipeline.CORAL) {
-            return visionInputs.latestTargetObservation.tx();
+            return visionInputs.latestTargetObservation;
         }
         return null;
     }

@@ -1,41 +1,28 @@
 package frc.robot.sensors.vision;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.VisionObservation;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
+import frc.robot.sensors.vision.VisionIO.TargetObservation;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class AlgaeCamera extends SubsystemBase {
-private VisionIO visionController;
+    private final VisionIO visionController;
     private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
     /** Enum representing the different pipelines that can be used by the camera controller. */
+    @RequiredArgsConstructor
     public enum Pipeline {
-        ALGAE(0), // Pipeline used for Algae processing.
-        APRILTAG(0); // Pipeline used for AprilTag processing.
+        APRILTAG(0), // Pipeline used for AprilTag processing.
+        ALGAE(1); // Pipeline used for Algae processing.
 
-        private long pipelineID;
-
-        Pipeline (long ID) {
-            this.pipelineID = ID;
-        }
-
-        public long getPipelineID() {
-            return pipelineID;
-        }
+        @Getter private final int pipelineID;
     }
 
-    @Getter Pipeline currentPipeline = Pipeline.APRILTAG;
-
-    /**
-     * Constructs the AprilTag Camera
-     */
-    public AlgaeCamera(VisionIO visionController) {
-        this.visionController = visionController;
-    }
+    @Getter private Pipeline currentPipeline = Pipeline.APRILTAG;
 
     @Override
     public void periodic() {
@@ -50,7 +37,7 @@ private VisionIO visionController;
      * {@code null} if no vision observation was found or the current pipeline is not set to APRILTAG.
      */
     public PoseObservation getVisionObservation() {
-        if (visionInputs.poseObservations.length > 0 && currentPipeline == Pipeline.APRILTAG) {
+        if (currentPipeline == Pipeline.APRILTAG && visionInputs.poseObservations.length > 0) {
             return visionInputs.poseObservations[visionInputs.poseObservations.length-1];
         }
         return null;
@@ -62,9 +49,9 @@ private VisionIO visionController;
      * @return A {@link Rotation2d} of the algae offset or {@code null} if the current pipeline is not
      * set to ALGAE.
      */
-    public Rotation2d getAlgaeOffset() {
+    public TargetObservation getAlgaeOffset() {
         if (currentPipeline == Pipeline.ALGAE) {
-            return visionInputs.latestTargetObservation.tx();
+            return visionInputs.latestTargetObservation;
         }
         return null;
     }
