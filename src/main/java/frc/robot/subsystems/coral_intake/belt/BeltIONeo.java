@@ -11,14 +11,14 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
-public class BeltIONeo550 implements BeltIO {
+public class BeltIONeo implements BeltIO {
 
   private @Getter SparkMax beltMotor;
 
-  /** Constructor for beltIO for Neo550 motors. */
-  public BeltIONeo550(int beltMotorID) {
+  /** Constructor for beltIO for Neo motors. */
+  public BeltIONeo(int beltMotorID) {
     beltMotor = new SparkMax(beltMotorID, MotorType.kBrushless);
-    beltMotor.configure(new SparkMaxConfig().smartCurrentLimit((int) Constants.NEO_550_CURRENT_LIMIT.in(Units.Amps))
+    beltMotor.configure(new SparkMaxConfig().smartCurrentLimit((int) Constants.NEO_CURRENT_LIMIT.in(Units.Amps))
     .idleMode(IdleMode.kBrake),
 
     ResetMode.kResetSafeParameters,

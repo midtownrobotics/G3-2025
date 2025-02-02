@@ -1,12 +1,14 @@
 package frc.robot.subsystems.coral_intake.pivot;
 
+import static edu.wpi.first.units.Units.Degrees;
+
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -17,26 +19,21 @@ public class PivotIONeo implements PivotIO {
 
   private @Getter SparkMax pivotMotor;
   private @Getter DutyCycleEncoder encoder;
-  private @Getter PIDController pivotPID;
-
 
   /** Constructor for pivotIO for Neo motors. */
   public PivotIONeo(int pivotMotorID, int ecoderID) {
     pivotMotor = new SparkMax(pivotMotorID, MotorType.kBrushless);
-    pivotMotor.configure(new SparkMaxConfig().smartCurrentLimit((int) Constants.NEO_CURRENT_LIMIT.in(Units.Amps))
-    .idleMode(IdleMode.kBrake),
+    SparkMaxConfig pivotConfig = new SparkMaxConfig();
+    pivotConfig.smartCurrentLimit((int) Constants.NEO_CURRENT_LIMIT.in(Units.Amps));
+    pivotConfig.idleMode(IdleMode.kBrake);
+    pivotConfig.closedLoop.pidf(0,0,0,0);
 
-    ResetMode.kResetSafeParameters,
-    PersistMode.kNoPersistParameters);
-
-    pivotPID = new PIDController(0, 0, 0);
+    pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
-
-
 
   @Override
   public void setPosition(Angle position) {
-    pivotMotor.setVoltage(pivotPID.calculate(encoder.get(), position.in(Units.Rotations)));
+    pivotMotor.getClosedLoopController().setReference(position.in(Degrees), ControlType.kPosition);
   }
 
   @Override

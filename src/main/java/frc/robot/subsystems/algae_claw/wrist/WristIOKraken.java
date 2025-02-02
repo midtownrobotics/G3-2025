@@ -2,10 +2,11 @@ package frc.robot.subsystems.algae_claw.wrist;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.units.Units;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -19,8 +20,7 @@ import lombok.Getter;
 public class WristIOKraken implements WristIO {
 
   @Getter private TalonFX wristMotor;
-  @Getter private DutyCycleEncoder encoder;
-  @Getter private PIDController wristPID;
+  private DutyCycleEncoder encoder;
 
   @Getter private StatusSignal<Angle> position;
   @Getter private StatusSignal<AngularVelocity> velocity;
@@ -34,9 +34,18 @@ public class WristIOKraken implements WristIO {
     wristMotor = new TalonFX(wristMotorID);
     encoder = new DutyCycleEncoder(new DigitalInput(encoderID));
 
-    wristPID = new PIDController(0, 0, 0);
-
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
+    // Shooting Slot
+    krakenConfig.Slot0 =
+          new Slot0Configs()
+              .withKP(0)
+              .withKI(0)
+              .withKD(0)
+              .withKS(0)
+              .withKG(0)
+              .withKA(0)
+              .withKV(0)
+              .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
@@ -66,7 +75,13 @@ public class WristIOKraken implements WristIO {
 
   @Override
   public void setPosition(Angle position) {
-    wristMotor.setVoltage(wristPID.calculate(encoder.get(), position.in(Units.Rotations)));
+    PositionTorqueCurrentFOC request = new PositionTorqueCurrentFOC(position);
+    wristMotor.setControl(request);
+  }
+
+  @Override
+  public double getEncoderPosition() {
+    return encoder.get();
   }
 
   @Override

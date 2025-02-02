@@ -79,7 +79,7 @@ public class AlgaeClaw extends SubsystemBase {
    * @return
    */
   public Angle getAngle() {
-    double encoderPosition = wristIO.getEncoder().get();
+    double encoderPosition = wristIO.getEncoderPosition();
 
     Angle position = Units.Rotations.of(encoderPosition);
 
