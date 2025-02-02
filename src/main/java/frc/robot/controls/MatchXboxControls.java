@@ -286,7 +286,6 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger algaeClawReverse() {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'algaeClawReverse'");
   };
 }

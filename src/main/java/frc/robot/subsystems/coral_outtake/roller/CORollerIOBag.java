@@ -12,14 +12,14 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 
-public class RollerIOBag implements RollerIO {
+public class CORollerIOBag implements CORollerIO {
 
     private SparkMax rollerMotor;
 
     /**
      * Constructor for Bag Roller
      */
-    public RollerIOBag(int rollerMotorID) {
+    public CORollerIOBag(int rollerMotorID) {
         rollerMotor = new SparkMax(rollerMotorID, MotorType.kBrushed);
 
         SparkMaxConfig rollerMotorConfig = new SparkMaxConfig();

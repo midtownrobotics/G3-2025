@@ -8,7 +8,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface RollerIO {
+public interface CIRollerIO {
   @AutoLog
   public class RollerInputs {
     public Angle position = Units.Radians.zero();

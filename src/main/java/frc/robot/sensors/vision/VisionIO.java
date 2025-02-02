@@ -87,4 +87,9 @@ public interface VisionIO {
    * @param inputs The VisionIOInputs object to update with the latest vision data.
    */
   public void updateInputs(VisionIOInputs inputs);
+
+  /**
+   * Set the pipeline. Only for limelights.
+   */
+  public void setPipeline(long pipelineID);
 }

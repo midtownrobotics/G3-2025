@@ -1,52 +1,56 @@
 package frc.robot.subsystems.coral_outtake;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.coral_outtake.roller.RollerIO;
+import frc.robot.subsystems.coral_outtake.roller.CORollerIO;
 import frc.robot.subsystems.coral_outtake.roller.RollerInputsAutoLogged;
-import frc.robot.subsystems.elevator.Elevator;
-import java.util.function.Supplier;
 import lombok.Getter;
-import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
-
 
 public class CoralOuttake extends SubsystemBase {
 
-  private static final Distance ELEVATOR_HANDOFF_THRESHOLD = Units.Inches.of(0);
-
   public enum State {
-    IDLE,
-    SHOOT,
-    REVERSE_HANDOFF,
-    HANDOFF,
-    STATION_INTAKE,
-    TUNING,
-    MANUAL
+    // TODO: Set correct voltages
+    IDLE(0),
+    SHOOT(12),
+    REVERSE_HANDOFF(-12),
+    HANDOFF(12),
+    STATION_INTAKE(12),
+    TUNING(),
+    MANUAL();
+
+    private @Getter Voltage voltage;
+
+    /** State has no meter height value associated */
+    private State() {
+      this.voltage = null;
+    }
+
+    State(double voltage) {
+      this.voltage = Volts.of(voltage);
+    }
   }
 
-  private @Getter @Setter State currentState = State.IDLE;
-  private RollerIO rollerIO;
-  private Supplier<Distance> getElevatorPosition;
+  private @Getter State currentState = State.IDLE;
+  private CORollerIO rollerIO;
   private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
-
 
   /**
    * Initializes Coral Outtake
    * @param rollerIO
    */
-  public CoralOuttake(RollerIO rollerIO, Supplier<Distance> getElevatorPosition ) {
+  public CoralOuttake(CORollerIO rollerIO) {
     this.rollerIO = rollerIO;
-    this.getElevatorPosition = getElevatorPosition;
   }
 
-public AngularVelocity getRollerSpeed() {
-  return rollerInputs.velocity;
-}
+  public AngularVelocity getRollerSpeed() {
+    return rollerInputs.velocity;
+  }
 
   @Override
   public void periodic() {
@@ -55,37 +59,22 @@ public AngularVelocity getRollerSpeed() {
     Logger.processInputs(getName() + "/roller", rollerInputs);
 
     // state switch case
-    switch (currentState) {
-      case IDLE:
-        rollerIO.setVoltage(Units.Volts.zero());
-        break;
-      case SHOOT:
-        rollerIO.setVoltage( CoralOuttakeConstants.SHOOT_VOLTAGE);
-        break;
-      case REVERSE_HANDOFF:
-        if (Math.abs(Elevator.State.HANDOFF.getHeight().minus(getElevatorPosition.get()).in(Units.Meters)) < ELEVATOR_HANDOFF_THRESHOLD.in(Units.Meters) ) {
-          rollerIO.setVoltage( CoralOuttakeConstants.HANDOFF_VOLTAGE.times(-1));
-        }
-        break;
-      case HANDOFF:
-        if (Math.abs(Elevator.State.HANDOFF.getHeight().minus(getElevatorPosition.get()).in(Units.Meters)) < ELEVATOR_HANDOFF_THRESHOLD.in(Units.Meters) ) {
-          rollerIO.setVoltage( CoralOuttakeConstants.HANDOFF_VOLTAGE);
-        }
-        break;
-      case STATION_INTAKE:
-        rollerIO.setVoltage( CoralOuttakeConstants.STATION_INTAKE_VOLTAGE);
-        break;
+    switch (getCurrentState()) {
       case TUNING:
-        rollerIO.setVoltage(Units.Volts.zero());
-        break;
       case MANUAL:
         rollerIO.setVoltage(Units.Volts.zero());
         break;
       default:
+        rollerIO.setVoltage(getCurrentState().getVoltage());
         break;
     }
 
     Logger.recordOutput(getName() + "/latencyPeriodicSec", Timer.getFPGATimestamp() - timestamp);
+  }
+
+  /** Sets the goal of the coral outtake. */
+  public void setGoal(State state) {
+    currentState = state;
   }
 
   public Voltage getRollerVoltage() {
