@@ -43,12 +43,15 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.utils.Constants;
 import frc.robot.utils.Constants.Mode;
 import frc.robot.utils.LocalADStarAK;
+import frc.robot.utils.LoggerUtil;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -164,6 +167,8 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double timestamp = Timer.getFPGATimestamp();
+
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -219,6 +224,8 @@ public class Drive extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /**

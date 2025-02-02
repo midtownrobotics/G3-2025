@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.coral_outtake.roller.CORollerIO;
 import frc.robot.subsystems.coral_outtake.roller.RollerInputsAutoLogged;
+import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -69,7 +70,7 @@ public class CoralOuttake extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput(getName() + "/latencyPeriodicSec", Timer.getFPGATimestamp() - timestamp);
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /** Sets the goal of the coral outtake. */

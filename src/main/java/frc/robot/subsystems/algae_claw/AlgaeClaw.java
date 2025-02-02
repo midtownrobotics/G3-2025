@@ -4,13 +4,14 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.RobotTime;
 import frc.robot.subsystems.algae_claw.roller.ACRollerIO;
 import frc.robot.subsystems.algae_claw.roller.RollerInputsAutoLogged;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
+import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -88,7 +89,7 @@ public class AlgaeClaw extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double timestamp = RobotTime.getTimestampSeconds();
+    double timestamp = Timer.getFPGATimestamp();
 
     Logger.processInputs(getName() + "/roller", rollerInputs);
     Logger.processInputs(getName() + "/wrist", wristInputs);
@@ -119,7 +120,7 @@ public class AlgaeClaw extends SubsystemBase {
     }
 
     // record outputs
-    Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /** Sets the goal of the coral outtake. */

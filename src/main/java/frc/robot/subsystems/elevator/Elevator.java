@@ -4,11 +4,13 @@ package frc.robot.subsystems.elevator;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.RobotTime;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
+import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -62,8 +64,7 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double timestamp = RobotTime.getTimestampSeconds();
-    Logger.recordOutput(getName() + "/latencyPeriodicSec", RobotTime.getTimestampSeconds() - timestamp);
+    double timestamp = Timer.getFPGATimestamp();
     winch.updateInputs(winchInputs);
 
     switch (getCurrentState()) {
@@ -74,6 +75,8 @@ public class Elevator extends SubsystemBase {
         winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
         break;
     }
+
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /** Sets the goal of the elevator. */

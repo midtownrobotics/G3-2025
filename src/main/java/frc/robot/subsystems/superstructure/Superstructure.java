@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.controls.AlgaeMode;
 import frc.robot.controls.Controls;
@@ -14,6 +15,8 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
+import frc.robot.utils.LoggerUtil;
+
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
@@ -82,6 +85,8 @@ public class Superstructure extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double timestamp = Timer.getFPGATimestamp();
+
     Set<AlgaeClaw.State> possibleAlgaeClawStates = new HashSet<>(EnumSet.allOf(AlgaeClaw.State.class));
     Set<CoralIntake.State> possibleCoralIntakeStates = new HashSet<>(EnumSet.allOf(CoralIntake.State.class));
     Set<CoralOuttake.State> possibleCoralOuttakeStates = new HashSet<>(EnumSet.allOf(CoralOuttake.State.class));
@@ -226,6 +231,8 @@ public class Superstructure extends SubsystemBase {
     coralIntake.setGoal(possibleCoralIntakeStates.iterator().next(), coralIntakeConstraint);
     coralOuttake.setGoal(possibleCoralOuttakeStates.iterator().next());
     elevator.setGoal(possibleElevatorStates.iterator().next(), elevatorConstraint);
+
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   private boolean isAlgaeClawBlockingIntake() {

@@ -14,6 +14,7 @@ import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.roller.CIRollerIO;
 import frc.robot.subsystems.coral_intake.roller.RollerInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
+import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -107,7 +108,7 @@ public class CoralIntake extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput(getName() + "/latencyPeriodicSec", Timer.getFPGATimestamp() - timestamp);
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /** Sets the goal of the coral outtake. */
