@@ -46,6 +46,7 @@ import frc.robot.subsystems.elevator.winch.WinchIOReplay;
 import frc.robot.subsystems.elevator.winch.WinchIOSim;
 import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.RobotViz;
 import lombok.Getter;
 
@@ -60,6 +61,8 @@ public class RobotContainer {
   @Getter private final CoralOuttake coralOuttake;
   @Getter private final Elevator elevator;
   @Getter private final Drive drive;
+
+  private CANBusStatusSignalRegistration algaeClawCANBusRegistration;
 
   /** RobotContainer initialization */
   public RobotContainer() {
@@ -140,7 +143,7 @@ public class RobotContainer {
         default:
             // Algae Claw
             wristIO = new WristIOKraken(Ports.AlgaeClaw.WristMotor, Ports.AlgaeClaw.WristEncoder);
-            algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller);
+            algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller, algaeClawCANBusRegistration);
 
             // Elevator
             winchIO = new WinchIOKraken(Ports.Elevator.WinchMotor, Ports.Elevator.WinchEncoder);

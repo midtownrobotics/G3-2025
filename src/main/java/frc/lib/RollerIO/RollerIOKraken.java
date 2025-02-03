@@ -10,6 +10,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -24,7 +25,7 @@ public class RollerIOKraken implements RollerIO {
   @Getter private StatusSignal<Temperature> temperature;
 
   /** Constructor for rollerIO for kraken motors. */
-  public RollerIOKraken(int rollerID) {
+  public RollerIOKraken(int rollerID, CANBusStatusSignalRegistration registry) {
     roller = new TalonFX(rollerID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 
@@ -50,6 +51,14 @@ public class RollerIOKraken implements RollerIO {
     supplyCurrent.setUpdateFrequency(50);
     torqueCurrent.setUpdateFrequency(50);
     temperature.setUpdateFrequency(50);
+
+    registry
+      .register(position)
+      .register(velocity)
+      .register(voltage)
+      .register(supplyCurrent)
+      .register(torqueCurrent)
+      .register(temperature);
 
     roller.optimizeBusUtilization();
   }
