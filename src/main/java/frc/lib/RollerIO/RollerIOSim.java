@@ -1,8 +1,8 @@
-package frc.robot.subsystems.algae_claw.roller;
+package frc.lib.RollerIO;
 
 import edu.wpi.first.units.measure.Voltage;
 
-public class ACRollerIOReplay implements ACRollerIO {
+public class RollerIOSim implements RollerIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
@@ -12,5 +12,11 @@ public class ACRollerIOReplay implements ACRollerIO {
   @Override
   public void updateInputs(RollerInputs inputs) {
     throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
+  }
+
+  @Override
+  public Voltage getVoltage() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getVoltage'");
   }
 }

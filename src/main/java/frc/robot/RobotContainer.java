@@ -10,13 +10,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.RollerIO.RollerIO;
+import frc.lib.RollerIO.RollerIOBag;
+import frc.lib.RollerIO.RollerIOKraken;
+import frc.lib.RollerIO.RollerIONeo;
+import frc.lib.RollerIO.RollerIOReplay;
+import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
-import frc.robot.subsystems.algae_claw.roller.ACRollerIO;
-import frc.robot.subsystems.algae_claw.roller.ACRollerIOKraken;
-import frc.robot.subsystems.algae_claw.roller.ACRollerIOReplay;
-import frc.robot.subsystems.algae_claw.roller.ACRollerIOSim;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
 import frc.robot.subsystems.algae_claw.wrist.WristIOReplay;
@@ -30,15 +32,7 @@ import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
 import frc.robot.subsystems.coral_intake.pivot.PivotIOReplay;
 import frc.robot.subsystems.coral_intake.pivot.PivotIOSim;
-import frc.robot.subsystems.coral_intake.roller.CIRollerIO;
-import frc.robot.subsystems.coral_intake.roller.CIRollerIONeo;
-import frc.robot.subsystems.coral_intake.roller.CIRollerIOReplay;
-import frc.robot.subsystems.coral_intake.roller.CIRollerIOSim;
 import frc.robot.subsystems.coral_outtake.CoralOuttake;
-import frc.robot.subsystems.coral_outtake.roller.CORollerIO;
-import frc.robot.subsystems.coral_outtake.roller.CORollerIOBag;
-import frc.robot.subsystems.coral_outtake.roller.CORollerIOReplay;
-import frc.robot.subsystems.coral_outtake.roller.CORollerIOSim;
 import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.drivetrain.GyroIO;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon2;
@@ -74,7 +68,7 @@ public class RobotContainer {
 
     // Algae Claw
     WristIO wristIO;
-    ACRollerIO algaeClawRollerIO;
+    RollerIO algaeClawRollerIO;
 
     // Elevator
     WinchIO winchIO;
@@ -82,10 +76,10 @@ public class RobotContainer {
     // Coral Intake
     BeltIO beltIO;
     PivotIO pivotIO;
-    CIRollerIO coralIntakeRollerIO;
+    RollerIO coralIntakeRollerIO;
 
     // Coral Outtake
-    CORollerIO rollerIO;
+    RollerIO rollerIO;
 
     // Drive
     GyroIO gyroIO;
@@ -98,7 +92,7 @@ public class RobotContainer {
         case REPLAY:
             // Algae Claw
             wristIO = new WristIOReplay();
-            algaeClawRollerIO = new ACRollerIOReplay();
+            algaeClawRollerIO = new RollerIOReplay();
 
             // Elevator
             winchIO = new WinchIOReplay();
@@ -106,10 +100,10 @@ public class RobotContainer {
             // Coral Intake
             beltIO = new BeltIOReplay();
             pivotIO = new PivotIOReplay();
-            coralIntakeRollerIO = new CIRollerIOReplay();
+            coralIntakeRollerIO = new RollerIOReplay();
 
             // Coral Outtake
-            rollerIO = new CORollerIOReplay();
+            rollerIO = new RollerIOReplay();
 
             // Drive
             // TODO: Understand sim/replay
@@ -122,7 +116,7 @@ public class RobotContainer {
         case SIM:
             // Algae Claw
             wristIO = new WristIOSim();
-            algaeClawRollerIO = new ACRollerIOSim();
+            algaeClawRollerIO = new RollerIOSim();
 
             // Elevator
             winchIO = new WinchIOSim();
@@ -130,10 +124,10 @@ public class RobotContainer {
             // Coral Intake
             beltIO = new BeltIOSim();
             pivotIO = new PivotIOSim();
-            coralIntakeRollerIO = new CIRollerIOSim();
+            coralIntakeRollerIO = new RollerIOSim();
 
             // Coral Outtake
-            rollerIO = new CORollerIOSim();
+            rollerIO = new RollerIOSim();
 
             // Drive
             // TODO: Understand sim/replay
@@ -146,7 +140,7 @@ public class RobotContainer {
         default:
             // Algae Claw
             wristIO = new WristIOKraken(Ports.AlgaeClaw.WristMotor, Ports.AlgaeClaw.WristEncoder);
-            algaeClawRollerIO = new ACRollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller);
+            algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller);
 
             // Elevator
             winchIO = new WinchIOKraken(Ports.Elevator.WinchMotor, Ports.Elevator.WinchEncoder);
@@ -154,10 +148,10 @@ public class RobotContainer {
             // Coral Intake
             beltIO = new BeltIONeo(Ports.CoralIntake.Belt);
             pivotIO = new PivotIONeo(Ports.CoralIntake.PivotMotor, Ports.CoralIntake.PivotEncoder);
-            coralIntakeRollerIO = new CIRollerIONeo(Ports.CoralIntake.CoralIntakeRoller);
+            coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.CoralIntakeRoller);
 
             // Coral Outtake
-            rollerIO = new CORollerIOBag(Ports.CoralOuttake.Roller);
+            rollerIO = new RollerIOBag(Ports.CoralOuttake.Roller);
 
             // Drive
             gyroIO = new GyroIOPigeon2();

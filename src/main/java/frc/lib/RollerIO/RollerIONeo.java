@@ -1,4 +1,6 @@
-package frc.robot.subsystems.coral_intake.roller;
+package frc.lib.RollerIO;
+
+import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -11,11 +13,11 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
-public class CIRollerIONeo implements CIRollerIO {
+public class RollerIONeo implements RollerIO {
  private @Getter SparkMax beltMotor;
 
   /** Constructor for rollerIO for Neo motors. */
-  public CIRollerIONeo(int beltMotorID) {
+  public RollerIONeo(int beltMotorID) {
     beltMotor = new SparkMax(beltMotorID, MotorType.kBrushless);
     beltMotor.configure(new SparkMaxConfig().smartCurrentLimit((int) Constants.NEO_CURRENT_LIMIT.in(Units.Amps))
     .idleMode(IdleMode.kBrake),
@@ -27,6 +29,10 @@ public class CIRollerIONeo implements CIRollerIO {
   @Override
   public void setVoltage(Voltage voltage) {
     beltMotor.setVoltage(voltage);
+  }
+
+  public Voltage getVoltage() {
+    return Volts.of(beltMotor.getAppliedOutput());
   }
 
   @Override

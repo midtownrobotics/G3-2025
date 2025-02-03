@@ -7,12 +7,12 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.RollerIO.RollerIO;
+import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
-import frc.robot.subsystems.coral_intake.roller.CIRollerIO;
-import frc.robot.subsystems.coral_intake.roller.RollerInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
@@ -64,7 +64,7 @@ public class CoralIntake extends SubsystemBase {
   private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
   private final PivotIO pivotIO;
   private final PivotInputsAutoLogged pivotInputs = new PivotInputsAutoLogged();
-  private final CIRollerIO rollerIO;
+  private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
 
   /**
@@ -73,7 +73,7 @@ public class CoralIntake extends SubsystemBase {
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(BeltIO beltIO, PivotIO pivotIO, CIRollerIO rollerIO) {
+  public CoralIntake(BeltIO beltIO, PivotIO pivotIO, RollerIO rollerIO) {
     this.beltIO = beltIO;
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;

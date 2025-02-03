@@ -1,4 +1,4 @@
-package frc.robot.subsystems.algae_claw.roller;
+package frc.lib.RollerIO;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -13,18 +13,18 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
-public class ACRollerIOKraken implements ACRollerIO {
+public class RollerIOKraken implements RollerIO {
 
   @Getter private TalonFX roller;
   @Getter private StatusSignal<Angle> position;
   @Getter private StatusSignal<AngularVelocity> velocity;
-  @Getter private StatusSignal<Voltage> voltage;
+  private StatusSignal<Voltage> voltage;
   @Getter private StatusSignal<Current> supplyCurrent;
   @Getter private StatusSignal<Current> torqueCurrent;
   @Getter private StatusSignal<Temperature> temperature;
 
   /** Constructor for rollerIO for kraken motors. */
-  public ACRollerIOKraken(int rollerID) {
+  public RollerIOKraken(int rollerID) {
     roller = new TalonFX(rollerID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 
@@ -59,6 +59,10 @@ public class ACRollerIOKraken implements ACRollerIO {
   public void setVoltage(Voltage voltage) {
     VoltageOut request = new VoltageOut(voltage);
     roller.setControl(request);
+  }
+
+  public Voltage getVoltage() {
+    return roller.getMotorVoltage().getValue();
   }
 
   @Override

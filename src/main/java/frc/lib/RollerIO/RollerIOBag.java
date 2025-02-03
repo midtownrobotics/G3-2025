@@ -1,4 +1,4 @@
-package frc.robot.subsystems.coral_outtake.roller;
+package frc.lib.RollerIO;
 
 
 import static edu.wpi.first.units.Units.Volts;
@@ -12,14 +12,14 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.Constants;
 
-public class CORollerIOBag implements CORollerIO {
+public class RollerIOBag implements RollerIO {
 
     private SparkMax rollerMotor;
 
     /**
      * Constructor for Bag Roller
      */
-    public CORollerIOBag(int rollerMotorID) {
+    public RollerIOBag(int rollerMotorID) {
         rollerMotor = new SparkMax(rollerMotorID, MotorType.kBrushed);
 
         SparkMaxConfig rollerMotorConfig = new SparkMaxConfig();
