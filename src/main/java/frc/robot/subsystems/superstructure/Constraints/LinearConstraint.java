@@ -12,7 +12,7 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
      */
     public LinearConstraint(M start, M end) {
         intervals = new RealNumberSet<>();
-        intervals.add(start, end);
+        intervals.add(new Interval<>(start, end));
     }
 
     /**
@@ -20,7 +20,7 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
      */
     public LinearConstraint<U, M> addStayInConstraint(M start, M end) {
         RealNumberSet<U, M> intersectedSet = new RealNumberSet<>();
-        intersectedSet.add(start, end);
+        intersectedSet.add(new Interval<>(start, end));
 
         intervals = intervals.intersection(intersectedSet);
 
@@ -32,7 +32,7 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
      */
     public LinearConstraint<U, M> addKeepOutConstraint(M start, M end) {
         RealNumberSet<U, M> intersectedSet = new RealNumberSet<>();
-        intersectedSet.add(start, end);
+        intersectedSet.add(new Interval<>(start, end));
 
         intervals = intervals.difference(intersectedSet);
 
@@ -60,12 +60,12 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
     public M getClosestToDesired(M current, M desired) {
         Interval<U, M> interval = intervals.getIntervalOfValue(current);
 
-        if (desired.gt(current) && desired.gt(interval.end)) {
-            return interval.end;
+        if (desired.gt(current) && desired.gt(interval.getEnd())) {
+            return interval.getEnd();
         }
 
-        if (desired.lt(current) && desired.lt(interval.start)) {
-            return interval.start;
+        if (desired.lt(current) && desired.lt(interval.getStart())) {
+            return interval.getStart();
         }
 
         return desired;

@@ -18,46 +18,39 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
     /**
      * Adds and optimizes a new interval to the set
      */
-    public void add(T start, T end) {
-        Interval<U, T> newInterval = new Interval<>(start, end);
-        List<Interval<U, T>> result = new ArrayList<>();
+    public RealNumberSet<U, T> add(Interval<U, T> interval) {
         int i = 0;
 
-        // Add all intervals ending before the new interval starts
-        while (i < intervals.size() && intervals.get(i).end.lt(newInterval.start)) {
-            result.add(intervals.get(i++));
-        }
-
-        // Merge overlapping intervals
-        while (i < intervals.size() && intervals.get(i).start.lte(newInterval.end)) {
-            newInterval.start = min(newInterval.start, intervals.get(i).start);
-            newInterval.end = max(newInterval.end, intervals.get(i).end);
+        while (i < intervals.size() && intervals.get(i).getEnd().lt(interval.getStart())) {
             i++;
         }
-        result.add(newInterval);
 
-        // Add remaining intervals
-        while (i < intervals.size()) {
-            result.add(intervals.get(i++));
+        while (i < intervals.size() && intervals.get(i).getStart().lte(interval.getEnd())) {
+            Interval<U, T> removedInterval = intervals.remove(i);
+            interval.setStart(min(interval.getStart(), removedInterval.getStart()));
+            interval.setEnd(max(interval.getEnd(), removedInterval.getEnd()));
         }
 
-        this.intervals = result;
+        intervals.add(i, interval);
+
+        return this;
     }
 
     /**
      * Returns the union of two sets (NOT IN PLACE)
      */
     public RealNumberSet<U, T> union(RealNumberSet<U, T> other) {
+        
         RealNumberSet<U, T> result = new RealNumberSet<U, T>();
         int i = 0, j = 0;
         while (i < this.intervals.size() || j < other.intervals.size()) {
             Interval<U, T> next;
-            if (j >= other.intervals.size() || (i < this.intervals.size() && this.intervals.get(i).start.lt(other.intervals.get(j).start))) {
+            if (j >= other.intervals.size() || (i < this.intervals.size() && this.intervals.get(i).getStart().lt(other.intervals.get(j).getEnd()))) {
                 next = this.intervals.get(i++);
             } else {
                 next = other.intervals.get(j++);
             }
-            result.add(next.start, next.end);
+            result.add(new Interval<>(next.getStart(), next.getEnd()));
         }
         return result;
     }
@@ -73,15 +66,15 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
             Interval<U, T> b = other.intervals.get(j);
 
             // Find overlap
-            T start = max(a.start, b.start);
-            T end = min(a.end, b.end);
+            T start = max(a.getStart(), b.getStart());
+            T end = min(a.getEnd(), b.getEnd());
 
             if (start.lt(end)) { // Overlapping
-                result.add(start, end);
+                result.add(new Interval<>(start, end));
             }
 
             // Move to the next interval
-            if (a.end.lt(b.end)) {
+            if (a.getEnd().lt(b.getEnd())) {
                 i++;
             } else {
                 j++;
@@ -96,19 +89,19 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
     public RealNumberSet<U, T> difference(RealNumberSet<U, T> other) {
         RealNumberSet<U, T> result = new RealNumberSet<U, T>();
         for (Interval<U, T> a : this.intervals) {
-            T currentStart = a.start;
-            T currentEnd = a.end;
+            T currentStart = a.getStart();
+            T currentEnd = a.getEnd();
             for (Interval<U, T> b : other.intervals) {
-                if (b.end.lte(currentStart)) continue;
-                if (b.start.gte(currentEnd)) break;
-                if (b.start.gt(currentStart)) {
-                    result.add(currentStart, min(b.start, currentEnd));
+                if (b.getEnd().lte(currentStart)) continue;
+                if (b.getStart().gte(currentEnd)) break;
+                if (b.getStart().gt(currentStart)) {
+                    result.add(new Interval<>(currentStart, min(b.getStart(), currentEnd)));
                 }
-                currentStart = max(currentStart, b.end);
+                currentStart = max(currentStart, b.getEnd());
                 if (currentStart.gte(currentEnd)) break;
             }
             if (currentStart.lt(currentEnd)) {
-                result.add(currentStart, currentEnd);
+                result.add(new Interval<>(currentStart, currentEnd));
             }
         }
         return result;
@@ -134,8 +127,8 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
      */
     public Interval<U, T> getIntervalOfValue(T value) {
         for (Interval<U, T> interval : intervals) {
-            if (value.lt(interval.start)) continue;
-            if (value.lte(interval.end)) {
+            if (value.lt(interval.getStart())) continue;
+            if (value.lte(interval.getEnd())) {
                 return interval;
             }
             break;

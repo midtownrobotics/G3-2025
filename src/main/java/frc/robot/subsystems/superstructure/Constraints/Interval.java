@@ -2,10 +2,12 @@ package frc.robot.subsystems.superstructure.Constraints;
 
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
+import lombok.Getter;
+import lombok.Setter;
 
-public class Interval<U extends Unit, T extends Measure<U>> implements Comparable<Interval<U, T>> {
-    T start;
-    T end;
+public class Interval<U extends Unit, T extends Measure<U>> {
+    @Getter @Setter private T start;
+    @Getter @Setter private T end;
 
     /**
      * Constructs an Interval within a Set
@@ -14,12 +16,6 @@ public class Interval<U extends Unit, T extends Measure<U>> implements Comparabl
         if (start.gt(end)) throw new IllegalArgumentException("Start cannot be greater than end.");
         this.start = start;
         this.end = end;
-    }
-
-    @Override
-    public int compareTo(Interval<U, T> other) {
-        // TODO: Double check this (?)
-        return start.compareTo(other.start);
     }
 
     @Override

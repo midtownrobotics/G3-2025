@@ -15,7 +15,7 @@ public class CircularConstraint {
      */
     public CircularConstraint() {
         intervals = new RealNumberSet<>();
-        intervals.add(Degrees.of(0), Degrees.of(360));
+        intervals.add(new Interval<>(Degrees.of(0), Degrees.of(360)));
     }
 
     /**
@@ -27,10 +27,10 @@ public class CircularConstraint {
 
         RealNumberSet<AngleUnit, Angle> intersectedSet = new RealNumberSet<>();
         if (end.gte(start)) {
-            intersectedSet.add(start, end);
+            intersectedSet.add(new Interval<>(start, end));
         } else {
-            intersectedSet.add(Degrees.of(0), start);
-            intersectedSet.add(end, Degrees.of(360));
+            intersectedSet.add(new Interval<>(Degrees.of(0), start));
+            intersectedSet.add(new Interval<>(end, Degrees.of(360)));
         }
 
         intervals = intervals.intersection(intersectedSet);
@@ -47,10 +47,10 @@ public class CircularConstraint {
 
         RealNumberSet<AngleUnit, Angle> intersectedSet = new RealNumberSet<>();
         if (end.gte(start)) {
-            intersectedSet.add(Degrees.of(0), start);
-            intersectedSet.add(end, Degrees.of(360));
+            intersectedSet.add(new Interval<>(Degrees.of(0), start));
+            intersectedSet.add(new Interval<>(end, Degrees.of(360)));
         } else {
-            intersectedSet.add(start, end);
+            intersectedSet.add(new Interval<>(start, end));
         }
 
         intervals = intervals.intersection(intersectedSet);
@@ -89,7 +89,7 @@ public class CircularConstraint {
     public Angle getClosestToDesired(Angle current, Angle desired) {
         Interval<AngleUnit, Angle> interval = intervals.getIntervalOfValue(current);
 
-        if (desired.lte(interval.end) && desired.gte(interval.start)) {
+        if (desired.lte(interval.getEnd()) && desired.gte(interval.getStart())) {
             return desired;
         }
 
