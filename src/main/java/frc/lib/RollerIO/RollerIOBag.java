@@ -11,30 +11,30 @@ import frc.robot.utils.Constants;
 
 public class RollerIOBag implements RollerIO {
 
-    private SparkMax rollerMotor;
+    private SparkMax motor;
 
     /**
      * Constructor for Bag Roller
      */
-    public RollerIOBag(int rollerMotorID) {
-        rollerMotor = new SparkMax(rollerMotorID, MotorType.kBrushed);
+    public RollerIOBag(int motorID) {
+        motor = new SparkMax(motorID, MotorType.kBrushed);
 
         SparkMaxConfig rollerMotorConfig = new SparkMaxConfig();
         rollerMotorConfig.smartCurrentLimit((int) Constants.BAG_CURRENT_LIMIT.in(Units.Amps));
-        rollerMotor.configure(rollerMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        motor.configure(rollerMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
     public void setVoltage(Voltage voltage) {
-        rollerMotor.setVoltage(voltage);
+        motor.setVoltage(voltage);
     }
 
     @Override
     public void updateInputs(RollerInputs inputs) {
-        inputs.appliedVoltage = Units.Volts.of(rollerMotor.getAppliedOutput() * rollerMotor.getBusVoltage());
-        inputs.velocity = Units.RPM.of(rollerMotor.getEncoder().getVelocity());
-        inputs.temperature = Units.Celsius.of(rollerMotor.getMotorTemperature());
-        inputs.supplyCurrent = Units.Amps.of(rollerMotor.getOutputCurrent());
-        inputs.position = Units.Rotations.of(rollerMotor.getEncoder().getPosition());
+        inputs.appliedVoltage = Units.Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
+        inputs.velocity = Units.RPM.of(motor.getEncoder().getVelocity());
+        inputs.temperature = Units.Celsius.of(motor.getMotorTemperature());
+        inputs.supplyCurrent = Units.Amps.of(motor.getOutputCurrent());
+        inputs.position = Units.Rotations.of(motor.getEncoder().getPosition());
 
     }}

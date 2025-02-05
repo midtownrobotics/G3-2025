@@ -16,7 +16,7 @@ import lombok.Getter;
 
 public class RollerIOKraken implements RollerIO {
 
-  @Getter private TalonFX roller;
+  @Getter private TalonFX motor;
   @Getter private StatusSignal<Angle> position;
   @Getter private StatusSignal<AngularVelocity> velocity;
   private StatusSignal<Voltage> voltage;
@@ -25,8 +25,8 @@ public class RollerIOKraken implements RollerIO {
   @Getter private StatusSignal<Temperature> temperature;
 
   /** Constructor for rollerIO for kraken motors. */
-  public RollerIOKraken(int rollerID, CANBusStatusSignalRegistration registry) {
-    roller = new TalonFX(rollerID);
+  public RollerIOKraken(int motorID, CANBusStatusSignalRegistration registry) {
+    motor = new TalonFX(motorID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 
     krakenConfig.CurrentLimits =
@@ -36,14 +36,14 @@ public class RollerIOKraken implements RollerIO {
             .withSupplyCurrentLowerLimit(Constants.KRAKEN_CURRENT_LOWER_LIMIT)
             .withSupplyCurrentLowerTime(1);
 
-    roller.getConfigurator().apply(krakenConfig);
+    motor.getConfigurator().apply(krakenConfig);
 
-    position = roller.getPosition();
-    velocity = roller.getVelocity();
-    voltage = roller.getMotorVoltage();
-    supplyCurrent = roller.getSupplyCurrent();
-    torqueCurrent = roller.getTorqueCurrent();
-    temperature = roller.getDeviceTemp();
+    position = motor.getPosition();
+    velocity = motor.getVelocity();
+    voltage = motor.getMotorVoltage();
+    supplyCurrent = motor.getSupplyCurrent();
+    torqueCurrent = motor.getTorqueCurrent();
+    temperature = motor.getDeviceTemp();
 
     position.setUpdateFrequency(50);
     velocity.setUpdateFrequency(50);
@@ -60,19 +60,19 @@ public class RollerIOKraken implements RollerIO {
       .register(torqueCurrent)
       .register(temperature);
 
-    roller.optimizeBusUtilization();
+    motor.optimizeBusUtilization();
   }
 
 
   @Override
   public void setVoltage(Voltage voltage) {
     VoltageOut request = new VoltageOut(voltage);
-    roller.setControl(request);
+    motor.setControl(request);
   }
-  
+
   @Override
   public void updateInputs(RollerInputs inputs) {
-    inputs.connected = roller.isConnected();
+    inputs.connected = motor.isConnected();
     inputs.position = position.getValue();
     inputs.velocity = velocity.getValue();
     inputs.appliedVoltage = voltage.getValue();
