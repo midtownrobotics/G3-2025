@@ -1,8 +1,6 @@
 package frc.robot.subsystems.coral_intake;
 
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Volts;
-
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
@@ -48,15 +46,15 @@ public class CoralIntake extends SubsystemBase {
      */
 
     private State(double angle, double rollerVoltage, double beltVoltage) {
-      this.angle = Angle.ofBaseUnits(angle, Radians);
-      this.rollerVoltage = Voltage.ofBaseUnits(rollerVoltage, Volts);
-      this.beltVoltage = Voltage.ofBaseUnits(beltVoltage, Volts);
+      this.angle = Units.Radians.of(angle);
+      this.rollerVoltage = Units.Volts.of(rollerVoltage);
+      this.beltVoltage = Units.Volts.of(beltVoltage);
     }
   }
 
   private @Getter State currentState = State.STOW;
 
-  private final Angle pivotOffset = Radians.of(0);
+  private final Angle pivotOffset = Units.Radians.of(0);
 
   // private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
 
