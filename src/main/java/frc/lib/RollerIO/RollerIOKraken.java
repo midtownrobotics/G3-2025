@@ -25,7 +25,7 @@ public class RollerIOKraken implements RollerIO {
   @Getter private StatusSignal<Temperature> temperature;
 
   /** Constructor for rollerIO for kraken motors. */
-  public RollerIOKraken(int motorID, CANBusStatusSignalRegistration registry) {
+  public RollerIOKraken(int motorID, CANBusStatusSignalRegistration bus) {
     motor = new TalonFX(motorID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 
@@ -52,7 +52,7 @@ public class RollerIOKraken implements RollerIO {
     torqueCurrent.setUpdateFrequency(50);
     temperature.setUpdateFrequency(50);
 
-    registry
+    bus
       .register(position)
       .register(velocity)
       .register(voltage)

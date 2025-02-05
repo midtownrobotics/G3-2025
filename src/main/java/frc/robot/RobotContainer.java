@@ -62,7 +62,7 @@ public class RobotContainer {
   @Getter private final Elevator elevator;
   @Getter private final Drive drive;
 
-  private CANBusStatusSignalRegistration algaeClawCANBusRegistration;
+  @Getter private CANBusStatusSignalRegistration elevatorCANBusHandler;
 
   /** RobotContainer initialization */
   public RobotContainer() {
@@ -143,7 +143,7 @@ public class RobotContainer {
         default:
             // Algae Claw
             wristIO = new WristIOKraken(Ports.AlgaeClaw.WristMotor, Ports.AlgaeClaw.WristEncoder);
-            algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller, algaeClawCANBusRegistration);
+            algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller, elevatorCANBusHandler);
 
             // Elevator
             winchIO = new WinchIOKraken(Ports.Elevator.WinchMotor, Ports.Elevator.WinchEncoder);

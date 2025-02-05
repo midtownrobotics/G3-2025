@@ -5,7 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import java.util.List;
 
 public class CANBusStatusSignalRegistration {
-    List<StatusSignal<?>> signals;
+    private List<StatusSignal<?>> signals;
 
     /** registry for all status signals */
     public CANBusStatusSignalRegistration register(StatusSignal<?> signal) {
