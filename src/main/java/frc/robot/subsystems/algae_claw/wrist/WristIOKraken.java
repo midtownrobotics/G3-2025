@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -30,7 +31,7 @@ public class WristIOKraken implements WristIO {
   @Getter private StatusSignal<Temperature> temperature;
 
   /** Constructor for wristIO for kraken motors. */
-  public WristIOKraken(int wristMotorID, int encoderID) {
+  public WristIOKraken(int wristMotorID, int encoderID, CANBusStatusSignalRegistration bus) {
     wristMotor = new TalonFX(wristMotorID);
     encoder = new DutyCycleEncoder(new DigitalInput(encoderID));
 
@@ -71,6 +72,14 @@ public class WristIOKraken implements WristIO {
     temperature.setUpdateFrequency(50);
 
     wristMotor.optimizeBusUtilization();
+
+    bus
+       .register(position)
+       .register(velocity)
+       .register(voltage)
+       .register(torqueCurrent)
+       .register(supplyCurrent)
+       .register(temperature);
   }
 
   @Override

@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -44,7 +45,7 @@ public class WinchIOKraken implements WinchIO {
   @Getter private StatusSignal<Temperature> rightTemperature;
 
   /** Contructor for real winch with Krakens */
-  public WinchIOKraken(int leftMotorID, int rightMotorID) {
+  public WinchIOKraken(int leftMotorID, int rightMotorID, CANBusStatusSignalRegistration bus) {
 
     leftMotor = new TalonFX(leftMotorID);
     rightMotor = new TalonFX(rightMotorID);
@@ -113,6 +114,20 @@ public class WinchIOKraken implements WinchIO {
     rightTemperature.setUpdateFrequency(50);
 
     rightMotor.optimizeBusUtilization();
+
+    bus
+      .register(rightPosition)
+      .register(rightVelocity)
+      .register(rightVoltage)
+      .register(rightSupplyCurrent)
+      .register(rightTorqueCurrent)
+      .register(rightTemperature)
+      .register(leftPosition)
+      .register(leftVelocity)
+      .register(leftVoltage)
+      .register(leftSupplyCurrent)
+      .register(leftTorqueCurrent)
+      .register(leftTemperature);
   }
 
   @Override

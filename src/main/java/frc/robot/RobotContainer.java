@@ -63,6 +63,7 @@ public class RobotContainer {
   @Getter private final Drive drive;
 
   @Getter private CANBusStatusSignalRegistration elevatorCANBusHandler;
+  @Getter private CANBusStatusSignalRegistration driveCANBusHandler;
 
   /** RobotContainer initialization */
   public RobotContainer() {
@@ -111,10 +112,10 @@ public class RobotContainer {
             // Drive
             // TODO: Understand sim/replay
             gyroIO = new GyroIOPigeon2();
-            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft);
-            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight);
-            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft);
-            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight);
+            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
+            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
+            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);
+            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
             break;
         case SIM:
             // Algae Claw
@@ -135,18 +136,18 @@ public class RobotContainer {
             // Drive
             // TODO: Understand sim/replay
             gyroIO = new GyroIOPigeon2();
-            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft);
-            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight);
-            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft);
-            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight);
+            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
+            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
+            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);
+            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
             break;
         default:
             // Algae Claw
-            wristIO = new WristIOKraken(Ports.AlgaeClaw.WristMotor, Ports.AlgaeClaw.WristEncoder);
+            wristIO = new WristIOKraken(Ports.AlgaeClaw.WristMotor, Ports.AlgaeClaw.WristEncoder, elevatorCANBusHandler);
             algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller, elevatorCANBusHandler);
 
             // Elevator
-            winchIO = new WinchIOKraken(Ports.Elevator.WinchMotor, Ports.Elevator.WinchEncoder);
+            winchIO = new WinchIOKraken(Ports.Elevator.WinchMotor, Ports.Elevator.WinchEncoder, elevatorCANBusHandler);
 
             // Coral Intake
             beltIO = new BeltIONeo(Ports.CoralIntake.Belt);
@@ -158,10 +159,10 @@ public class RobotContainer {
 
             // Drive
             gyroIO = new GyroIOPigeon2();
-            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft);
-            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight);
-            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft);
-            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight);
+            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
+            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
+            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);
+            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
             break;
     }
 
