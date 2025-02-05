@@ -69,11 +69,7 @@ public class RollerIOKraken implements RollerIO {
     VoltageOut request = new VoltageOut(voltage);
     roller.setControl(request);
   }
-
-  public Voltage getVoltage() {
-    return roller.getMotorVoltage().getValue();
-  }
-
+  
   @Override
   public void updateInputs(RollerInputs inputs) {
     inputs.connected = roller.isConnected();

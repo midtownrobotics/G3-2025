@@ -1,7 +1,5 @@
 package frc.lib.RollerIO;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -31,9 +29,6 @@ public class RollerIONeo implements RollerIO {
     beltMotor.setVoltage(voltage);
   }
 
-  public Voltage getVoltage() {
-    return Volts.of(beltMotor.getAppliedOutput());
-  }
 
   @Override
   public void updateInputs(RollerInputs inputs) {

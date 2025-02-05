@@ -79,6 +79,6 @@ public class CoralOuttake extends SubsystemBase {
   }
 
   public Voltage getRollerVoltage() {
-    return rollerIO.getVoltage();
+    return rollerInputs.appliedVoltage;
   }
 }

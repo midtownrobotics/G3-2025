@@ -32,8 +32,4 @@ public interface RollerIO {
    * @param inputs
    */
   public void updateInputs(RollerInputs inputs);
-  /**
-   * @return the current voltage applied to the motor
-   */
-  public Voltage getVoltage();
 }

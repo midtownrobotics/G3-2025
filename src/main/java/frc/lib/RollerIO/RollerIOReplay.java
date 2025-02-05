@@ -13,10 +13,4 @@ public class RollerIOReplay implements RollerIO {
   public void updateInputs(RollerInputs inputs) {
     throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
   }
-
-  @Override
-  public Voltage getVoltage() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getVoltage'");
-  }
 }
