@@ -111,7 +111,7 @@ public class RobotContainer {
 
             // Drive
             // TODO: Understand sim/replay
-            gyroIO = new GyroIOPigeon2();
+            gyroIO = new GyroIOPigeon2(driveCANBusHandler);
             flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
             frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
             blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);
@@ -158,7 +158,7 @@ public class RobotContainer {
             rollerIO = new RollerIOBag(Ports.CoralOuttake.Roller);
 
             // Drive
-            gyroIO = new GyroIOPigeon2();
+            gyroIO = new GyroIOPigeon2(driveCANBusHandler);
             flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
             frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
             blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);

@@ -41,7 +41,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.CANBusStatusSignalRegistration;
-
 import java.util.Queue;
 
 /**
@@ -179,10 +178,10 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     // Register status signals
     bus
-        .register(turnAbsolutePosition) 
-        .register(turnPosition) 
-        .register(turnVelocity) 
-        .register(turnAppliedVolts) 
+        .register(turnAbsolutePosition)
+        .register(turnPosition)
+        .register(turnVelocity)
+        .register(turnAppliedVolts)
         .register(turnCurrent)
         .register(drivePosition)
         .register(driveVelocity)
