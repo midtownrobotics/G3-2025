@@ -32,9 +32,9 @@ public class RollerIOBag implements RollerIO {
     @Override
     public void updateInputs(RollerInputs inputs) {
         inputs.appliedVoltage = Units.Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
-        inputs.velocity = Units.RPM.of(motor.getEncoder().getVelocity());
-        inputs.temperature = Units.Celsius.of(motor.getMotorTemperature());
+        inputs.velocity = Units.RPM.of(-1);
+        inputs.temperature = Units.Kelvin.of(-1);
         inputs.supplyCurrent = Units.Amps.of(motor.getOutputCurrent());
-        inputs.position = Units.Rotations.of(motor.getEncoder().getPosition());
+        inputs.position = Units.Rotations.of(-1);
 
     }}
