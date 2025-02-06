@@ -11,6 +11,7 @@ public class Photoelectric {
      */
     public Photoelectric(int DIOPort) {
         this.sensor = new DigitalInput(DIOPort);
+        
     }
 
     public boolean isTriggered() {
