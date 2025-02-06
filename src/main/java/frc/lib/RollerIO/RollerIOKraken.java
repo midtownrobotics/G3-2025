@@ -1,5 +1,8 @@
 package frc.lib.RollerIO;
 
+import static frc.robot.utils.PhoenixUtil.tryUntilOk;
+
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -44,12 +47,15 @@ public class RollerIOKraken implements RollerIO {
     torqueCurrent = motor.getTorqueCurrent();
     temperature = motor.getDeviceTemp();
 
-    position.setUpdateFrequency(50);
-    velocity.setUpdateFrequency(50);
-    voltage.setUpdateFrequency(50);
-    supplyCurrent.setUpdateFrequency(50);
-    torqueCurrent.setUpdateFrequency(50);
-    temperature.setUpdateFrequency(50);
+    tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
+      50, 
+      position,
+      velocity,
+      voltage,
+      supplyCurrent,
+      torqueCurrent,
+      temperature
+    ));
 
     bus
       .register(position)
@@ -59,7 +65,7 @@ public class RollerIOKraken implements RollerIO {
       .register(torqueCurrent)
       .register(temperature);
 
-    motor.optimizeBusUtilization();
+    tryUntilOk(5, () -> motor.optimizeBusUtilization());
   }
 
 
