@@ -1,5 +1,8 @@
 package frc.robot.subsystems.elevator.winch;
 
+import static frc.robot.utils.PhoenixUtil.tryUntilOk;
+
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -128,6 +131,22 @@ public class WinchIOKraken implements WinchIO {
       .register(leftSupplyCurrent)
       .register(leftTorqueCurrent)
       .register(leftTemperature);
+
+    tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
+      50.0, 
+      rightPosition,
+      rightVelocity,
+      rightVoltage,
+      rightSupplyCurrent,
+      rightTorqueCurrent,
+      rightTemperature,
+      leftPosition,
+      leftVelocity,
+      leftVoltage,
+      leftSupplyCurrent,
+      leftTorqueCurrent,
+      leftTemperature
+      ));
   }
 
   @Override

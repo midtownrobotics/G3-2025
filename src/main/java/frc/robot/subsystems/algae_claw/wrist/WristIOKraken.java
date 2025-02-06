@@ -1,5 +1,7 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
+import static frc.robot.utils.PhoenixUtil.tryUntilOk;
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -71,7 +73,7 @@ public class WristIOKraken implements WristIO {
     torqueCurrent.setUpdateFrequency(50);
     temperature.setUpdateFrequency(50);
 
-    wristMotor.optimizeBusUtilization();
+    tryUntilOk(5, () -> wristMotor.optimizeBusUtilization());
 
     bus
        .register(position)
@@ -80,6 +82,16 @@ public class WristIOKraken implements WristIO {
        .register(torqueCurrent)
        .register(supplyCurrent)
        .register(temperature);
+    
+    tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
+      50.0, 
+      position,
+      velocity,
+      voltage,
+      torqueCurrent,
+      supplyCurrent,
+      temperature
+    ));
   }
 
   @Override
