@@ -63,6 +63,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotPeriodic() {
+    m_robotContainer.getDriveCANBusHandler().refreshSignals();
+    m_robotContainer.getElevatorCANBusHandler().refreshSignals();
     CommandScheduler.getInstance().run();
   }
 

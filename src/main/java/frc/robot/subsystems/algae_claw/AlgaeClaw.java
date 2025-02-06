@@ -6,8 +6,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.algae_claw.roller.ACRollerIO;
-import frc.robot.subsystems.algae_claw.roller.RollerInputsAutoLogged;
+import frc.lib.RollerIO.RollerIO;
+import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
@@ -56,7 +56,7 @@ public class AlgaeClaw extends SubsystemBase {
   private @Getter State currentState = State.STOW;
   private static final Current kCurrentThreshold = Units.Amps.of(5);
 
-  private final ACRollerIO rollerIO;
+  private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
   private final WristIO wristIO;
   private final WristInputsAutoLogged wristInputs = new WristInputsAutoLogged();
@@ -64,7 +64,7 @@ public class AlgaeClaw extends SubsystemBase {
   private boolean hasAlgae;
 
   /** Constructor for algae claw. */
-  public AlgaeClaw(ACRollerIO rollerIO, WristIO wristIO) {
+  public AlgaeClaw(RollerIO rollerIO, WristIO wristIO) {
     this.rollerIO = rollerIO;
     this.wristIO = wristIO;
     hasAlgae = false;
