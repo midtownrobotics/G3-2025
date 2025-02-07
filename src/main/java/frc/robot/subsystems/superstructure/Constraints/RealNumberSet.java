@@ -1,5 +1,8 @@
 package frc.robot.subsystems.superstructure.Constraints;
 
+import static frc.robot.utils.UnitUtil.max;
+import static frc.robot.utils.UnitUtil.min;
+
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
 import java.util.ArrayList;
@@ -114,16 +117,6 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
     @Override
     public String toString() {
         return intervals.toString();
-    }
-
-    protected T max(T a, T b) {
-        if (a.gt(b)) return a;
-        return b;
-    }
-
-    protected T min (T a, T b) {
-        if (a.lt(b)) return a;
-        return b;
     }
 
     /**

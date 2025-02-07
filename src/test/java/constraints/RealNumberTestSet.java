@@ -1,5 +1,8 @@
 package constraints;
 
+import static frc.robot.utils.UnitUtil.max;
+import static frc.robot.utils.UnitUtil.min;
+
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;

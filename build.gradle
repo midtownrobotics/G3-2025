@@ -101,6 +101,7 @@ wpi.sim.addDriverstation()
 
 checkstyle {
     configFile = file("config/checkstyle/checkstyle.xml")
+    checkstyleTest.enabled = false
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')

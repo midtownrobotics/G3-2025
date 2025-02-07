@@ -1,6 +1,8 @@
 package frc.robot.subsystems.superstructure.Constraints;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static frc.robot.utils.UnitUtil.max;
+import static frc.robot.utils.UnitUtil.min;
 
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Units;
@@ -119,8 +121,7 @@ public class CircularConstraint {
         }
 
         // Find how close we can get to that goal
-        Angle positiveOutput = interval.getEnd();
-        if (desired.lt(positiveOutput)) positiveOutput = desired;
+        Angle positiveOutput = min(positiveGoal, desired);
 
         // Find the goal in the negative direction
         Angle negativeGoal = desired;
@@ -129,8 +130,7 @@ public class CircularConstraint {
         }
 
         // Find how close we can get to that goal
-        Angle negativeOutput = interval.getStart();
-        if (desired.gt(negativeOutput)) negativeOutput = desired;
+        Angle negativeOutput = max(negativeGoal, desired);
 
         // Calculate the delta travelled in each direction
         Angle positiveDelta = positiveOutput.minus(current);
@@ -183,5 +183,10 @@ public class CircularConstraint {
         }
 
         return new Interval<AngleUnit,Angle>(start, end);
+    }
+
+    @Override
+    public String toString() {
+        return intervals.toString();
     }
 }

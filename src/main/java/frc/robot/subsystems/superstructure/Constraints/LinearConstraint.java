@@ -75,5 +75,8 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
         return desired;
     }
 
-
+    @Override
+    public String toString() {
+        return intervals.toString();
+    }
 }
