@@ -4,9 +4,10 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 public class RealNumberSet<U extends Unit, T extends Measure<U>> {
-    private List<Interval<U, T>> intervals;
+    @Getter protected List<Interval<U, T>> intervals;
 
     /**
      * Constructs a new RealNumberSet
@@ -20,40 +21,43 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
      */
     public RealNumberSet<U, T> add(Interval<U, T> interval) {
         int i = 0;
+        T start = interval.getStart();
+        T end = interval.getEnd();
 
-        while (i < intervals.size() && intervals.get(i).getEnd().lt(interval.getStart())) {
+        while (i < intervals.size() && intervals.get(i).getEnd().lt(start)) {
             i++;
         }
 
-        while (i < intervals.size() && intervals.get(i).getStart().lte(interval.getEnd())) {
+        while (i < intervals.size() && intervals.get(i).getStart().lte(end)) {
             Interval<U, T> removedInterval = intervals.remove(i);
-            interval.setStart(min(interval.getStart(), removedInterval.getStart()));
-            interval.setEnd(max(interval.getEnd(), removedInterval.getEnd()));
+            start = min(start, removedInterval.getStart());
+            end = max(end, removedInterval.getEnd());
         }
 
-        intervals.add(i, interval);
+        intervals.add(i, new Interval<U, T>(start, end));
 
         return this;
     }
 
     /**
      * Returns the union of two sets (NOT IN PLACE)
+     * Untested ChatGPT Code
      */
-    public RealNumberSet<U, T> union(RealNumberSet<U, T> other) {
-        
-        RealNumberSet<U, T> result = new RealNumberSet<U, T>();
-        int i = 0, j = 0;
-        while (i < this.intervals.size() || j < other.intervals.size()) {
-            Interval<U, T> next;
-            if (j >= other.intervals.size() || (i < this.intervals.size() && this.intervals.get(i).getStart().lt(other.intervals.get(j).getEnd()))) {
-                next = this.intervals.get(i++);
-            } else {
-                next = other.intervals.get(j++);
-            }
-            result.add(new Interval<>(next.getStart(), next.getEnd()));
-        }
-        return result;
-    }
+    // public RealNumberSet<U, T> union(RealNumberSet<U, T> other) {
+
+    //     RealNumberSet<U, T> result = new RealNumberSet<U, T>();
+    //     int i = 0, j = 0;
+    //     while (i < this.intervals.size() || j < other.intervals.size()) {
+    //         Interval<U, T> next;
+    //         if (j >= other.intervals.size() || (i < this.intervals.size() && this.intervals.get(i).getStart().lt(other.intervals.get(j).getEnd()))) {
+    //             next = this.intervals.get(i++);
+    //         } else {
+    //             next = other.intervals.get(j++);
+    //         }
+    //         result.add(new Interval<>(next.getStart(), next.getEnd()));
+    //     }
+    //     return result;
+    // }
 
     /**
      * Intersects two sets (NOT IN PLACE)
@@ -69,7 +73,7 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
             T start = max(a.getStart(), b.getStart());
             T end = min(a.getEnd(), b.getEnd());
 
-            if (start.lt(end)) { // Overlapping
+            if (start.lte(end)) { // Overlapping
                 result.add(new Interval<>(start, end));
             }
 
@@ -112,12 +116,12 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
         return intervals.toString();
     }
 
-    private T max(T a, T b) {
+    protected T max(T a, T b) {
         if (a.gt(b)) return a;
         return b;
     }
 
-    private T min (T a, T b) {
+    protected T min (T a, T b) {
         if (a.lt(b)) return a;
         return b;
     }
@@ -131,7 +135,6 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
             if (value.lte(interval.getEnd())) {
                 return interval;
             }
-            break;
         }
         return null;
     }

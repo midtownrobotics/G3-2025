@@ -45,15 +45,15 @@ public class CircularConstraint {
         start = normalize(start);
         end = normalize(end);
 
-        RealNumberSet<AngleUnit, Angle> intersectedSet = new RealNumberSet<>();
+        RealNumberSet<AngleUnit, Angle> differenceSet = new RealNumberSet<>();
         if (end.gte(start)) {
-            intersectedSet.add(new Interval<>(Degrees.of(0), start));
-            intersectedSet.add(new Interval<>(end, Degrees.of(360)));
+            differenceSet.add(new Interval<>(start, end));
         } else {
-            intersectedSet.add(new Interval<>(start, end));
+            differenceSet.add(new Interval<>(Degrees.of(0), start));
+            differenceSet.add(new Interval<>(end, Degrees.of(360)));
         }
 
-        intervals = intervals.intersection(intersectedSet);
+        intervals = intervals.difference(differenceSet);
 
         return this;
     }
@@ -66,6 +66,9 @@ public class CircularConstraint {
         return this;
     }
 
+    /**
+     * Normalizes an angle to be between 0 and 360 degrees
+     */
     private Angle normalize(Angle angle) {
         double degrees = angle.in(Units.Degrees);
         degrees = degrees % 360;
@@ -75,52 +78,110 @@ public class CircularConstraint {
 
     /**
      * Checks if an angle is valid to reach under the current constraints.
-     * TODO: Finish wraparound logic
      */
     public boolean isValid(Angle angle) {
         angle = normalize(angle);
-        return intervals.getIntervalOfValue(angle) != null;
+        Interval<AngleUnit, Angle> interval = getWraparoundInterval(angle);
+
+        return interval.contains(angle) || interval.contains(angle.plus(Degrees.of(360))) || interval.contains(angle.minus(Degrees.of(360)));
     }
 
     /**
      * Gets the angle closest to the desired angle based on the current angle and these constraints.
-     * TODO: Finish method
+     * @param current A non-normalized angle of the current position of the system
+     * @param desired A normalized angle (can be not normalized) of the desired position of the system
+     * @return Best angle to target based on constraints. Null if the current position is impossible.
      */
     public Angle getClosestToDesired(Angle current, Angle desired) {
-        Interval<AngleUnit, Angle> interval = intervals.getIntervalOfValue(current);
+        Angle delta = getDeltaToDesired(normalize(current), normalize(desired));
 
-        if (desired.lte(interval.getEnd()) && desired.gte(interval.getStart())) {
-            return desired;
-        }
+        if (delta == null) return null;
 
-        return desired;
+        return current.plus(delta);
     }
 
-    // public Angle getClosestToDesiredInDirection(Angle current, Angle desired, boolean positive) {
-    //     Interval<AngleUnit, Angle> interval = intervals.getIntervalOfValue(current);
+    /**
+     * Gets the delta to be as close to the desired angle as possible
+     * @param current A normalized angle of the current position of the system
+     * @param desired A normalized angle of the desired position of the system
+     * @return Best delta to target based on constraints. Null if the current position is impossible.
+     */
+    private Angle getDeltaToDesired(Angle current, Angle desired) {
+        // Get the wraparound Interval of the current positive
+        Interval<AngleUnit, Angle> interval = getWraparoundInterval(current);
 
-    //     if (desired.lte(interval.end) && desired.gte(interval.start)) {
-    //         return desired;
-    //     }
+        if (interval == null) return null;
 
-    //     if (positive) {
-    //         if (interval.end.lt(Degrees.of(360))) {
-    //             return interval.end;
-    //         }
+        // Find the goal in the positive direction
+        Angle positiveGoal = desired;
+        if (desired.lt(current)) {
+            positiveGoal = desired.plus(Degrees.of(360));
+        }
 
-    //         Interval<AngleUnit, Angle> wraparoundInterval = intervals.getIntervalOfValue(Degrees.of(0));
-    //         if (wrap)
-    //     }
+        // Find how close we can get to that goal
+        Angle positiveOutput = interval.getEnd();
+        if (desired.lt(positiveOutput)) positiveOutput = desired;
 
-    //     return desired;
-    // }
+        // Find the goal in the negative direction
+        Angle negativeGoal = desired;
+        if (desired.gt(current)) {
+            negativeGoal = desired.minus(Degrees.of(360));
+        }
 
-    // public Angle getWraparoundDifference(Angle value1, Angle value2) {
-    //     double val1 = value1.in(Degrees);
-    //     double val2 = value2.in(Degrees);
+        // Find how close we can get to that goal
+        Angle negativeOutput = interval.getStart();
+        if (desired.gt(negativeOutput)) negativeOutput = desired;
 
-    //     double difference = Math.abs(val1 - val2);
+        // Calculate the delta travelled in each direction
+        Angle positiveDelta = positiveOutput.minus(current);
+        Angle negativeDelta = negativeOutput.minus(current);
 
-    //     if (difference > 180) return 360 - difference;
-    // }
+        // Choose positive if its closer to goal
+        if (negativeOutput.minus(negativeGoal).abs(Degrees) > positiveOutput.minus(positiveGoal).abs(Degrees)) {
+            return positiveDelta;
+        }
+
+        // Choose negative if its closer to goal
+        if (negativeOutput.minus(negativeGoal).abs(Degrees) < positiveOutput.minus(positiveGoal).abs(Degrees)) {
+            return negativeDelta;
+        }
+
+        // If both are equidistance, chose whichever is closer to current position
+        if (positiveDelta.abs(Degrees) < negativeDelta.abs(Degrees)) {
+            return positiveDelta;
+        }
+
+        return negativeDelta;
+    }
+
+    /**
+     * Returns a wraparound interval (from -360 to 720) of the given angle based on constraints.
+     * For example, if current constraint is [[0, 50], [300, 360]]:
+     * getWraparoundInterval(40) --> [-60, 50]
+     * getWraparoundInterval(320) --> [300, 410]
+     */
+    private Interval<AngleUnit, Angle> getWraparoundInterval(Angle angle) {
+        Interval<AngleUnit, Angle> interval = intervals.getIntervalOfValue(angle);
+
+        if (interval == null) return null;
+
+        Angle start = interval.getStart();
+        Angle end = interval.getEnd();
+
+        if (interval.contains(Degrees.of(360))) {
+            Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.of(0));
+            if (wrapAround != null) {
+                end = wrapAround.getEnd().plus(Degrees.of(360));
+            }
+        }
+
+        if (interval.contains(Degrees.of(0))) {
+            Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.of(360));
+            if (wrapAround != null) {
+                end = wrapAround.getStart().minus(Degrees.of(360));
+            }
+        }
+
+        return new Interval<AngleUnit,Angle>(start, end);
+    }
 }

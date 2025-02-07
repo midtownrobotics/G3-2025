@@ -3,11 +3,10 @@ package frc.robot.subsystems.superstructure.Constraints;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
 import lombok.Getter;
-import lombok.Setter;
 
 public class Interval<U extends Unit, T extends Measure<U>> {
-    @Getter @Setter private T start;
-    @Getter @Setter private T end;
+    @Getter private T start;
+    @Getter private T end;
 
     /**
      * Constructs an Interval within a Set
@@ -18,8 +17,15 @@ public class Interval<U extends Unit, T extends Measure<U>> {
         this.end = end;
     }
 
+    /**
+     * Simple check if a value is contained in an interval
+     */
+    public boolean contains(T value) {
+        return value.gte(start) && value.lte(end);
+    }
+
     @Override
     public String toString() {
-        return "[" + start.baseUnitMagnitude() + ", " + end.baseUnitMagnitude() + ")";
+        return "[" + start.baseUnitMagnitude() + ", " + end.baseUnitMagnitude() + "]";
     }
 }

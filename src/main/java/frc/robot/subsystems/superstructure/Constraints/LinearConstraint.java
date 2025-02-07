@@ -60,6 +60,10 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
     public M getClosestToDesired(M current, M desired) {
         Interval<U, M> interval = intervals.getIntervalOfValue(current);
 
+        if (interval == null) {
+            return current;
+        }
+
         if (desired.gt(current) && desired.gt(interval.getEnd())) {
             return interval.getEnd();
         }
