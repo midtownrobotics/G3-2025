@@ -1,5 +1,8 @@
 package frc.robot.sensors.vision;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.Limelight;
@@ -12,13 +15,15 @@ import frc.robot.sensors.VisionObservation;
 public class VisionIOLimelight implements VisionIO {
 
     private Limelight limelight;
+    Supplier<Pose2d> poseSupplier;
 
     /**
      * Constructs a VisionIOLimelight object.
      *
      * @param name The name of the Limelight camera to interface with.
      */
-    public VisionIOLimelight(String name) {
+    public VisionIOLimelight(String name, Supplier<Pose2d> poseSupplier) {
+        this.poseSupplier = poseSupplier;
         limelight = new Limelight(name);
     }
 
@@ -34,6 +39,8 @@ public class VisionIOLimelight implements VisionIO {
         // Set connection status to true
         inputs.connected = limelight.isConnected();
 
+        limelight.setRobotYaw(poseSupplier.get().getRotation());
+
         // Update target observation with horizontal and vertical offsets
         if (limelight.isTargetSeen()) {
             inputs.latestTargetObservation = new TargetObservation(
@@ -44,6 +51,7 @@ public class VisionIOLimelight implements VisionIO {
 
         // Retrieve the robot's pose estimate from the Limelight
         VisionObservation pose = limelight.getBotPoseEstimate();
+        VisionObservation poseMegaTag2 = limelight.getBotPoseEstimateMegatag2();
 
         // Update pose observations
         inputs.poseObservations = new PoseObservation[] {

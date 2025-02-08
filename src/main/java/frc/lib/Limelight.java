@@ -142,6 +142,51 @@ public class Limelight {
         pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix);
   }
 
+  public VisionObservation getBotPoseEstimateMegatag2() {
+    DoubleArrayEntry poseEntry = table.getDoubleArrayTopic("botpose_orb_wpiblue").getEntry(null);
+
+    TimestampedDoubleArray tsValue = poseEntry.getAtomic();
+    double[] poseArray = tsValue.value;
+    long timestamp = tsValue.timestamp;
+
+    if (poseArray.length == 0) {
+      // Handle the case where no data is available
+      return null;
+    }
+
+    var pose = toPose2d(poseArray);
+    double latency = poseArray[6];
+    int tagCount = (int) poseArray[7];
+    double tagDist = poseArray[9];
+
+    // Convert server timestamp from microseconds to seconds and adjust for latency
+    double adjustedTimestamp = (timestamp / 1000000.0) - (latency / 1000.0);
+
+    int[] rawFiducialIds = new int[tagCount];
+    int valsPerFiducial = 7;
+    int expectedTotalVals = 11 + valsPerFiducial * tagCount;
+
+    if (poseArray.length != expectedTotalVals) {
+      // Don't populate fiducials
+    } else {
+      for (int i = 0; i < tagCount; i++) {
+        int baseIndex = 11 + (i * valsPerFiducial);
+        int id = (int) poseArray[baseIndex];
+        rawFiducialIds[i] = id;
+      }
+    }
+
+    Stddevs stddevs = getMegatagStddevs();
+    Matrix<N3, N1> stddevMatrix = new Matrix<N3, N1>(Nat.N3(), Nat.N1());
+    stddevMatrix.set(0, 0, stddevs.x);
+    stddevMatrix.set(0, 1, stddevs.y);
+    stddevMatrix.set(0, 2, Math.toRadians(stddevs.yaw));
+    return new VisionObservation(
+        pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix);
+  }
+
+  
+
   /** Flushes the network tables to send any updates to the Limelight system. */
   private void flush() {
     NetworkTableInstance.getDefault().flush();

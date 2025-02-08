@@ -16,13 +16,14 @@ public class AlgaeCamera extends SubsystemBase {
     /** Enum representing the different pipelines that can be used by the camera controller. */
     @RequiredArgsConstructor
     public enum Pipeline {
-        APRILTAG(0), // Pipeline used for AprilTag processing.
+        APRILTAG_MT1(0), // Pipeline used for AprilTag processing.
+        APRILTAG_MT2(0), // Pipeline used for AprilTag processing.
         ALGAE(1); // Pipeline used for Algae processing.
 
         @Getter private final int pipelineID;
     }
 
-    @Getter private Pipeline currentPipeline = Pipeline.APRILTAG;
+    @Getter private Pipeline currentPipeline = Pipeline.APRILTAG_MT1;
 
     @Override
     public void periodic() {
@@ -37,7 +38,7 @@ public class AlgaeCamera extends SubsystemBase {
      * {@code null} if no vision observation was found or the current pipeline is not set to APRILTAG.
      */
     public PoseObservation getVisionObservation() {
-        if (currentPipeline == Pipeline.APRILTAG && visionInputs.poseObservations.length > 0) {
+        if (currentPipeline == Pipeline.APRILTAG_MT1 && visionInputs.poseObservations.length > 0) {
             return visionInputs.poseObservations[visionInputs.poseObservations.length-1];
         }
         return null;
