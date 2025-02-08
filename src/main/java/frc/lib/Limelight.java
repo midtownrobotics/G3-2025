@@ -677,4 +677,8 @@ public class Limelight {
   public void setCrop(double[] x0x1y0y1) {
     set("crop", x0x1y0y1);
   }
+
+  public void setIMUMode(double modeID) {
+    set("imumode_set", modeID);
+  }
 }

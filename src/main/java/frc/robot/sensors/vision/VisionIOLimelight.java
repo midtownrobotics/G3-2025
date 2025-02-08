@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.Limelight;
 import frc.robot.sensors.VisionObservation;
+import lombok.Getter;
 
 /**
  * VisionIO implementation for the Limelight camera.
@@ -14,7 +15,7 @@ import frc.robot.sensors.VisionObservation;
  */
 public class VisionIOLimelight implements VisionIO {
 
-    private Limelight limelight;
+    @Getter Limelight limelight;
     Supplier<Pose2d> poseSupplier;
 
     /**
