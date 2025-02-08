@@ -6,11 +6,9 @@ public class RollerIOSim implements RollerIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
-    throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
   }
 
   @Override
   public void updateInputs(RollerInputs inputs) {
-    throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
   }
 }
