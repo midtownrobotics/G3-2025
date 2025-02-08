@@ -41,6 +41,9 @@ public class AlgaeCamera extends SubsystemBase {
         if (currentPipeline == Pipeline.APRILTAG_MT1 && visionInputs.poseObservations.length > 0) {
             return visionInputs.poseObservations[visionInputs.poseObservations.length-1];
         }
+        if (currentPipeline == Pipeline.APRILTAG_MT2 && visionInputs.poseObservationsMegaTag2.length > 0) {
+            return visionInputs.poseObservationsMegaTag2[visionInputs.poseObservationsMegaTag2.length-1];
+        }
         return null;
     }
 

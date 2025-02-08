@@ -51,7 +51,6 @@ public class VisionIOLimelight implements VisionIO {
 
         // Retrieve the robot's pose estimate from the Limelight
         VisionObservation pose = limelight.getBotPoseEstimate();
-        VisionObservation poseMegaTag2 = limelight.getBotPoseEstimateMegatag2();
 
         // Update pose observations
         inputs.poseObservations = new PoseObservation[] {
@@ -65,6 +64,18 @@ public class VisionIOLimelight implements VisionIO {
             )
         };
 
+        VisionObservation poseMegaTag2 = limelight.getBotPoseEstimateMegatag2();
+
+        inputs.poseObservationsMegaTag2 = new PoseObservation[] {
+                            new PoseObservation(
+                                poseMegaTag2.timestamp(), 
+                                new Pose3d(pose.pose()), 
+                                0.0, 
+                                pose.tagCount(), 
+                                pose.avgTagDist(), 
+                                PoseObservationType.MEGATAG_2
+                            )
+        };
         // Set the tag IDs from the Limelight pose estimate
         // inputs.tagIds = limelight.getBotPoseEstimate().fiducialId();
     }

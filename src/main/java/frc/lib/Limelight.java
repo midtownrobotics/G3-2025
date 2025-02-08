@@ -142,6 +142,13 @@ public class Limelight {
         pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix);
   }
 
+  /**
+   * Retrieves the estimated MegaTag2 bot pose from the Limelight system.
+   *
+   * @return A VisionObservation containing the pose and associated data, or null if no pose data is
+   *     available.
+   */
+
   public VisionObservation getBotPoseEstimateMegatag2() {
     DoubleArrayEntry poseEntry = table.getDoubleArrayTopic("botpose_orb_wpiblue").getEntry(null);
 
@@ -185,7 +192,7 @@ public class Limelight {
         pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix);
   }
 
-  
+
 
   /** Flushes the network tables to send any updates to the Limelight system. */
   private void flush() {
