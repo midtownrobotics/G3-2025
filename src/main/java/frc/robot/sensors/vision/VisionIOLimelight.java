@@ -35,10 +35,12 @@ public class VisionIOLimelight implements VisionIO {
         inputs.connected = limelight.isConnected();
 
         // Update target observation with horizontal and vertical offsets
-        inputs.latestTargetObservation = new TargetObservation(
-            new Rotation2d(limelight.getHorizontalOffset()),
-            new Rotation2d(limelight.getVerticalOffset())
-        );
+        if (limelight.isTargetSeen()) {
+            inputs.latestTargetObservation = new TargetObservation(
+                new Rotation2d(limelight.getHorizontalOffset()),
+                new Rotation2d(limelight.getVerticalOffset())
+            );
+        }
 
         // Retrieve the robot's pose estimate from the Limelight
         VisionObservation pose = limelight.getBotPoseEstimate();

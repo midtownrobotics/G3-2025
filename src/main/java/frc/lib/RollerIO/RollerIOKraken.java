@@ -48,7 +48,7 @@ public class RollerIOKraken implements RollerIO {
     temperature = motor.getDeviceTemp();
 
     tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
-      50, 
+      50,
       position,
       velocity,
       voltage,

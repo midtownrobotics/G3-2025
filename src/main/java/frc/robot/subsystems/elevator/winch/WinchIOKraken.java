@@ -133,7 +133,7 @@ public class WinchIOKraken implements WinchIO {
       .register(leftTemperature);
 
     tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
-      50.0, 
+      50.0,
       rightPosition,
       rightVelocity,
       rightVoltage,
