@@ -56,8 +56,6 @@ public class CoralIntake extends SubsystemBase {
 
   private @Getter State currentState = State.STOW;
 
-  private final Angle pivotOffset = Radians.of(0);
-
   // private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
 
   private final BeltIO beltIO;
@@ -118,6 +116,6 @@ public class CoralIntake extends SubsystemBase {
   }
 
   public Angle getPivotPosition() {
-    return pivotInputs.absolutePosition.plus(pivotOffset);
+    return pivotInputs.offsetedPosition;
   }
 }

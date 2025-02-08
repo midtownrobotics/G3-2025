@@ -8,9 +8,14 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -18,6 +23,9 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.lib.LoggedTunableNumber;
+import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -25,6 +33,8 @@ public class WinchIOKraken implements WinchIO {
 
   private static final double GEARING = 12;
   private static final Distance WHEEL_RADIUS = Units.Inches.of(1);
+
+  private int currentSlot = 0;
 
   @Getter private TalonFX leftMotor;
   @Getter private TalonFX rightMotor;
@@ -48,39 +58,9 @@ public class WinchIOKraken implements WinchIO {
 
     leftMotor = new TalonFX(leftMotorID);
     rightMotor = new TalonFX(rightMotorID);
-    TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
-    // Scoring Slot
-    krakenConfig.Slot0 =
-        new Slot0Configs()
-            .withKP(0)
-            .withKI(0)
-            .withKD(0)
-            .withKS(0)
-            .withKG(0)
-            .withKA(0)
-            .withKV(0)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-    // Climbing Slot
-    krakenConfig.Slot1 =
-        new Slot1Configs()
-            .withKP(0)
-            .withKI(0)
-            .withKD(0)
-            .withKS(0)
-            .withKG(0)
-            .withKA(0)
-            .withKV(0)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-    krakenConfig.CurrentLimits =
-        new CurrentLimitsConfigs()
-            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT)
-            .withSupplyCurrentLowerLimit(40)
-            .withSupplyCurrentLowerTime(1);
-    krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    new Rotation2d();
-    leftMotor.getConfigurator().apply(krakenConfig);
-    rightMotor.getConfigurator().apply(krakenConfig);
-    rightMotor.setControl(new Follower(leftMotor.getDeviceID(), false));
+
+    configureMotors();
+    configureClimbLimits();
 
     leftPosition = leftMotor.getPosition();
     leftVelocity = leftMotor.getVelocity();
@@ -118,11 +98,19 @@ public class WinchIOKraken implements WinchIO {
   @Override
   public void setScorePosition(Distance position) {
     setPosition(position, 0);
+    if (currentSlot != 0) {
+      currentSlot = 0;
+      configureScoreLimits();
+    }
   }
 
   @Override
   public void setClimbPosition(Distance position) {
     setPosition(position, 1);
+    if (currentSlot != 1) {
+      currentSlot = 1;
+      configureClimbLimits();
+    }
   }
 
   /**
@@ -154,6 +142,25 @@ public class WinchIOKraken implements WinchIO {
     inputs.right.supplyCurrent = leftSupplyCurrent.getValue();
     inputs.right.torqueCurrent = leftTorqueCurrent.getValue();
     inputs.right.temperature = leftTemperature.getValue();
+
+    updateConstants();
+  }
+
+  private void updateConstants() {
+    LoggedTunableNumber.ifChanged(
+      hashCode(), 
+      this::configureMotors, 
+      ElevatorConstants.PID_CLIMB.p,
+      ElevatorConstants.PID_CLIMB.d,  
+      ElevatorConstants.PID_CLIMB.kg, 
+      ElevatorConstants.PID_CLIMB.ks,
+      ElevatorConstants.PID_CLIMB.kv,
+      ElevatorConstants.PID_SCORE.p,
+      ElevatorConstants.PID_SCORE.d,  
+      ElevatorConstants.PID_SCORE.kg, 
+      ElevatorConstants.PID_SCORE.ks,
+      ElevatorConstants.PID_SCORE.kv
+    );
   }
 
   @Override
@@ -179,5 +186,63 @@ public class WinchIOKraken implements WinchIO {
    */
   public Distance rotationToDistance(Angle a) {
     return Units.Meters.of((2 * Math.PI * WHEEL_RADIUS.in(Units.Meter) * a.in(Units.Rotation)) / GEARING);
+  }
+
+  private void configureMotors() {
+    TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
+    // Scoring Slot
+    krakenConfig.Slot0 =
+        new Slot0Configs()
+            .withKP(ElevatorConstants.PID_SCORE.p.get())
+            .withKI(0)
+            .withKD(ElevatorConstants.PID_SCORE.d.get())
+            .withKS(ElevatorConstants.PID_SCORE.ks.get())
+            .withKG(ElevatorConstants.PID_SCORE.kg.get())
+            .withKA(0)
+            .withKV(ElevatorConstants.PID_SCORE.kv.get())
+            .withGravityType(GravityTypeValue.Elevator_Static);
+    // Climbing Slot
+    krakenConfig.Slot1 =
+        new Slot1Configs()
+            .withKP(ElevatorConstants.PID_CLIMB.p.get())
+            .withKI(0)
+            .withKD(ElevatorConstants.PID_CLIMB.d.get())
+            .withKS(ElevatorConstants.PID_CLIMB.ks.get())
+            .withKG(ElevatorConstants.PID_CLIMB.kg.get())
+            .withKA(0)
+            .withKV(ElevatorConstants.PID_CLIMB.kv.get())
+            .withGravityType(GravityTypeValue.Elevator_Static);
+    krakenConfig.CurrentLimits =
+        new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
+    krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    leftMotor.getConfigurator().apply(krakenConfig);
+    rightMotor.getConfigurator().apply(krakenConfig);
+    rightMotor.setControl(new Follower(leftMotor.getDeviceID(), false));
+
+  }
+  
+  /**
+   * Sets the voltage and current limits for the climb PID.
+   */
+  private void configureClimbLimits() {
+    TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
+    krakenConfig.CurrentLimits
+      .withSupplyCurrentLimit(ElevatorConstants.PID_CLIMB.maxA.get());
+    krakenConfig.Voltage
+      .withPeakForwardVoltage(ElevatorConstants.PID_CLIMB.maxV.get())
+      .withPeakReverseVoltage(ElevatorConstants.PID_CLIMB.maxV.get());
+  }
+
+  /**
+   * Sets the voltage and current limits for the score PID.
+   */
+  private void configureScoreLimits() {
+    TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
+    krakenConfig.CurrentLimits
+      .withSupplyCurrentLimit(ElevatorConstants.PID_SCORE.maxA.get());
+    krakenConfig.Voltage
+      .withPeakForwardVoltage(ElevatorConstants.PID_SCORE.maxV.get())
+      .withPeakReverseVoltage(ElevatorConstants.PID_SCORE.maxV.get());
   }
 }

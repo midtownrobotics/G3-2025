@@ -19,6 +19,7 @@ public interface PivotIO {
     public Temperature temperature = Units.Fahrenheit.zero();
 
     public Angle absolutePosition = Units.Radians.zero();
+    public Angle offsetedPosition = Units.Radians.zero();
     public AngularVelocity absoluteVelocity = Units.RPM.zero();
   }
 
