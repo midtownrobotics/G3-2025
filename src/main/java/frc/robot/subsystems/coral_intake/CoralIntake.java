@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
-import frc.robot.subsystems.coral_intake.pivot.PivotIOSim;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.roller.CIRollerIO;
 import frc.robot.subsystems.coral_intake.roller.RollerInputsAutoLogged;
@@ -120,7 +119,7 @@ public class CoralIntake extends SubsystemBase {
     Voltage desiredBeltVoltage = currentState.getBeltVoltage();
     Voltage desiredRollerVoltage = currentState.getRollerVoltage();
 
-    
+
 
     if (Constants.tuningMode) return; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -148,10 +147,16 @@ public class CoralIntake extends SubsystemBase {
     return pivotInputs.offsetedPosition;
   }
 
+  /**
+   * Runs the sysIdQuasistatic test on the coral intake.
+   */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return routine.quasistatic(direction);
   }
 
+  /**
+   * Runs the sysIdDynamic test on the coral intake.
+   */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return routine.dynamic(direction);
   }

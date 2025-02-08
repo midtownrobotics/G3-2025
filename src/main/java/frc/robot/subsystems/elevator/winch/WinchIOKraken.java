@@ -243,5 +243,5 @@ public class WinchIOKraken implements WinchIO {
     leftMotor.setVoltage(voltage.in(Units.Volts));
   }
 
-  
+
 }

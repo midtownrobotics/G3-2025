@@ -68,7 +68,7 @@ public class Elevator extends SubsystemBase {
   public Elevator(WinchIO winch) {
     this.winch = winch;
     winch.updateInputs(winchInputs);
-    
+
       SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         winch::setVoltage,
         this::motorSysIdLog,
@@ -112,10 +112,16 @@ public class Elevator extends SubsystemBase {
     return winch.getPosition();
   }
 
+  /**
+   * Runs the sysIdQuasistatic test on the elevator.
+   */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return routine.quasistatic(direction);
   }
 
+  /**
+   * Runs the sysIdDynamic test on the elevator.
+   */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return routine.dynamic(direction);
   }

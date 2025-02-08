@@ -28,7 +28,7 @@ public interface PivotIO {
 
   /** Sets the motor voltage. */
   public void setVoltage(Voltage voltage);
-  
+
   /**
    * Update input class for Pivot
    *

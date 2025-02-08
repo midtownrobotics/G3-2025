@@ -2,7 +2,6 @@ package frc.robot.subsystems.elevator.winch;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -46,6 +45,9 @@ public interface WinchIO {
   /** Gets the position of the winch. */
   public Distance getPosition();
 
+  /**
+   * Sets the motor voltage.
+   */
   public void setVoltage(Voltage voltage);
 
   /**
