@@ -10,11 +10,11 @@ import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.LoggedTunableNumber;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
@@ -78,7 +78,7 @@ public class PivotIONeo implements PivotIO {
 
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
       SparkMaxConfig motorConfig = new SparkMaxConfig();
-      
+
       motorConfig.apply(
         new EncoderConfig()
           .positionConversionFactor(1.0/25)
@@ -96,5 +96,10 @@ public class PivotIONeo implements PivotIO {
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
       trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(CoralIntakeConstants.maxPivotV.get(), CoralIntakeConstants.maxPivotA.get()));
     }, CoralIntakeConstants.maxPivotA, CoralIntakeConstants.maxPivotV);
+  }
+
+  @Override
+  public void setVoltage(Voltage voltage) {
+    pivotMotor.setVoltage(voltage);
   }
 }

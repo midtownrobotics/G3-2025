@@ -19,9 +19,18 @@ public class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
-  public static enum Mode {
+  public enum Mode {
     REAL,
     SIM,
     REPLAY
+  }
+
+  public static final Mode MODE;
+  private static final boolean enableReplay = false;
+
+  static {
+    if (RobotBase.isReal()) MODE = Mode.REAL;
+    else if (enableReplay) MODE = Mode.REPLAY;
+    else MODE = Mode.SIM;
   }
 }

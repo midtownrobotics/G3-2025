@@ -1,19 +1,27 @@
 package frc.robot.subsystems.coral_intake;
 
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
+import frc.robot.subsystems.coral_intake.pivot.PivotIOSim;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.roller.CIRollerIO;
 import frc.robot.subsystems.coral_intake.roller.RollerInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
+import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -65,6 +73,8 @@ public class CoralIntake extends SubsystemBase {
   private final CIRollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
 
+  private SysIdRoutine routine;
+
   /**
    * Initializes Coral Intake with IO classes
    * @param beltIO
@@ -75,6 +85,21 @@ public class CoralIntake extends SubsystemBase {
     this.beltIO = beltIO;
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
+
+    SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
+        pivotIO::setVoltage,
+        this::motorSysIdLog,
+        this
+    );
+
+    routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(3)), sysIdMech);
+  }
+
+  private void motorSysIdLog(SysIdRoutineLog log) {
+    log.motor("pivotMotor")
+      .voltage(pivotInputs.appliedVoltage)
+      .angularPosition(pivotInputs.absolutePosition)
+      .angularVelocity(pivotInputs.velocity);
   }
 
   @Override
@@ -87,11 +112,17 @@ public class CoralIntake extends SubsystemBase {
     Logger.processInputs(getName() + "/pivot", beltInputs);
     Logger.processInputs(getName() + "/roller", beltInputs);
 
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
+
     // state switch case
 
     Angle desiredAngle = currentState.getAngle();
     Voltage desiredBeltVoltage = currentState.getBeltVoltage();
     Voltage desiredRollerVoltage = currentState.getRollerVoltage();
+
+    
+
+    if (Constants.tuningMode) return; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     switch (getCurrentState()) {
       case HANDOFF:
@@ -105,8 +136,6 @@ public class CoralIntake extends SubsystemBase {
         rollerIO.setVoltage(desiredRollerVoltage);
         break;
     }
-
-    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /** Sets the goal of the coral outtake. */
@@ -117,5 +146,13 @@ public class CoralIntake extends SubsystemBase {
 
   public Angle getPivotPosition() {
     return pivotInputs.offsetedPosition;
+  }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return routine.dynamic(direction);
   }
 }
