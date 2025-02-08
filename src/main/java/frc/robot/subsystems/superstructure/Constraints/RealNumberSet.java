@@ -124,10 +124,7 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
      */
     public Interval<U, T> getIntervalOfValue(T value) {
         for (Interval<U, T> interval : intervals) {
-            if (value.lt(interval.getStart())) continue;
-            if (value.lte(interval.getEnd())) {
-                return interval;
-            }
+            if (interval.contains(value)) return interval;
         }
         return null;
     }

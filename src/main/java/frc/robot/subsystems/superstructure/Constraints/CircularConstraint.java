@@ -10,7 +10,7 @@ import edu.wpi.first.units.measure.Angle;
 
 public class CircularConstraint {
 
-    private RealNumberSet<AngleUnit, Angle> intervals;
+    public RealNumberSet<AngleUnit, Angle> intervals;
 
     /**
      * Constructor for a new Circular Constraint
@@ -85,6 +85,8 @@ public class CircularConstraint {
         angle = normalize(angle);
         Interval<AngleUnit, Angle> interval = getWraparoundInterval(angle);
 
+        if (interval == null) return false;
+
         return interval.contains(angle) || interval.contains(angle.plus(Degrees.of(360))) || interval.contains(angle.minus(Degrees.of(360)));
     }
 
@@ -121,7 +123,7 @@ public class CircularConstraint {
         }
 
         // Find how close we can get to that goal
-        Angle positiveOutput = min(positiveGoal, desired);
+        Angle positiveOutput = min(positiveGoal, interval.getEnd());
 
         // Find the goal in the negative direction
         Angle negativeGoal = desired;
@@ -130,7 +132,7 @@ public class CircularConstraint {
         }
 
         // Find how close we can get to that goal
-        Angle negativeOutput = max(negativeGoal, desired);
+        Angle negativeOutput = max(negativeGoal, interval.getStart());
 
         // Calculate the delta travelled in each direction
         Angle positiveDelta = positiveOutput.minus(current);
@@ -178,7 +180,7 @@ public class CircularConstraint {
         if (interval.contains(Degrees.of(0))) {
             Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.of(360));
             if (wrapAround != null) {
-                end = wrapAround.getStart().minus(Degrees.of(360));
+                start = wrapAround.getStart().minus(Degrees.of(360));
             }
         }
 
