@@ -188,9 +188,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         .register(driveAppliedVolts)
         .register(driveCurrent);
 
-    tryUntilOk(5, () -> 
+    tryUntilOk(5, () ->
                         BaseStatusSignal.setUpdateFrequencyForAll(
-                            50, 
+                            50,
                             turnAbsolutePosition,
                             turnPosition,
                             turnVelocity,

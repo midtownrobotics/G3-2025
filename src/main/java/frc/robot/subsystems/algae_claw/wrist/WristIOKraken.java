@@ -1,6 +1,8 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
+import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -82,9 +84,9 @@ public class WristIOKraken implements WristIO {
        .register(torqueCurrent)
        .register(supplyCurrent)
        .register(temperature);
-    
+
     tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
-      50.0, 
+      50.0,
       position,
       velocity,
       voltage,
@@ -101,11 +103,6 @@ public class WristIOKraken implements WristIO {
   }
 
   @Override
-  public double getEncoderPosition() {
-    return encoder.get();
-  }
-
-  @Override
   public void updateInputs(WristInputs inputs) {
     inputs.connected = wristMotor.isConnected();
     inputs.position = position.getValue();
@@ -114,5 +111,6 @@ public class WristIOKraken implements WristIO {
     inputs.supplyCurrent = supplyCurrent.getValue();
     inputs.torqueCurrent = torqueCurrent.getValue();
     inputs.temperature = temperature.getValue();
+    inputs.absolutePosition = Rotations.of(encoder.get());
   }
 }

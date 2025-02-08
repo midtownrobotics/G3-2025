@@ -33,12 +33,4 @@ public interface WristIO {
    * @param inputs
    */
   public void updateInputs(WristInputs inputs);
-
-  /**
-   * returns encoder position
-   *
-   * @return
-   */
-  public double getEncoderPosition();
-
 }
