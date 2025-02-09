@@ -2,6 +2,8 @@ package frc.robot.subsystems.coral_intake.pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
