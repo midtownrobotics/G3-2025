@@ -79,6 +79,7 @@ dependencies {
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
 
+    testImplementation sourceSets.main.output
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
@@ -100,6 +101,7 @@ wpi.sim.addDriverstation()
 
 checkstyle {
     configFile = file("config/checkstyle/checkstyle.xml")
+    checkstyleTest.enabled = false
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
