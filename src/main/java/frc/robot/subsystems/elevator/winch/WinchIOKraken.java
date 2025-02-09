@@ -81,14 +81,10 @@ public class WinchIOKraken implements WinchIO {
     rightMotor.optimizeBusUtilization();
 
     bus
-      .register(rightPosition)
-      .register(rightVelocity)
       .register(rightVoltage)
       .register(rightSupplyCurrent)
       .register(rightTorqueCurrent)
       .register(rightTemperature)
-      .register(leftPosition)
-      .register(leftVelocity)
       .register(leftVoltage)
       .register(leftSupplyCurrent)
       .register(leftTorqueCurrent)
@@ -96,14 +92,10 @@ public class WinchIOKraken implements WinchIO {
 
     tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
       50.0,
-      rightPosition,
-      rightVelocity,
       rightVoltage,
       rightSupplyCurrent,
       rightTorqueCurrent,
       rightTemperature,
-      leftPosition,
-      leftVelocity,
       leftVoltage,
       leftSupplyCurrent,
       leftTorqueCurrent,
@@ -276,6 +268,5 @@ public class WinchIOKraken implements WinchIO {
   public void setVoltage(Voltage voltage) {
     leftMotor.setVoltage(voltage.in(Units.Volts));
   }
-
 
 }

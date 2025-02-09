@@ -1,6 +1,5 @@
 package frc.robot.subsystems.coral_intake;
 
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;

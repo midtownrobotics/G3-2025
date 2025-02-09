@@ -45,8 +45,8 @@ import frc.robot.subsystems.elevator.winch.WinchIOReplay;
 import frc.robot.subsystems.elevator.winch.WinchIOSim;
 import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.utils.Constants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
+import frc.robot.utils.Constants;
 import frc.robot.utils.RobotViz;
 import lombok.Getter;
 
