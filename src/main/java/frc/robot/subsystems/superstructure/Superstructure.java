@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +18,10 @@ import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
+
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
@@ -239,6 +244,15 @@ public class Superstructure extends SubsystemBase {
     elevator.setGoal(possibleElevatorStates.iterator().next(), elevatorConstraint);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
+
+    Angle algaeClawPosition = algaeClaw.getPosition();
+    Angle coralIntakePosition = coralIntake.getPivotPosition();
+    Distance elevatorPosition = elevator.getPosition();
+
+    // TODO
+    if (elevatorPosition.lt(Inches.of(0))) {
+      
+    }
   }
 
   private boolean isAlgaeClawBlockingIntake() {
