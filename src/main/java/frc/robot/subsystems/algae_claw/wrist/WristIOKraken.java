@@ -1,5 +1,8 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
+import static frc.robot.utils.PhoenixUtil.tryUntilOk;
+
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -14,6 +17,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
@@ -30,7 +34,7 @@ public class WristIOKraken implements WristIO {
   @Getter private StatusSignal<Temperature> temperature;
 
   /** Constructor for wristIO for kraken motors. */
-  public WristIOKraken(int wristMotorID, int encoderID) {
+  public WristIOKraken(int wristMotorID, int encoderID, CANBusStatusSignalRegistration bus) {
     wristMotor = new TalonFX(wristMotorID);
     encoder = new DutyCycleEncoder(new DigitalInput(encoderID));
 
@@ -70,7 +74,25 @@ public class WristIOKraken implements WristIO {
     torqueCurrent.setUpdateFrequency(50);
     temperature.setUpdateFrequency(50);
 
-    wristMotor.optimizeBusUtilization();
+    tryUntilOk(5, () -> wristMotor.optimizeBusUtilization());
+
+    bus
+       .register(position)
+       .register(velocity)
+       .register(voltage)
+       .register(torqueCurrent)
+       .register(supplyCurrent)
+       .register(temperature);
+
+    tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
+      50.0,
+      position,
+      velocity,
+      voltage,
+      torqueCurrent,
+      supplyCurrent,
+      temperature
+    ));
   }
 
   @Override

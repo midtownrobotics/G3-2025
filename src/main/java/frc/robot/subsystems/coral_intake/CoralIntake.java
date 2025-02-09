@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
@@ -13,12 +14,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.lib.RollerIO.RollerIO;
+import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
-import frc.robot.subsystems.coral_intake.roller.CIRollerIO;
-import frc.robot.subsystems.coral_intake.roller.RollerInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
@@ -54,9 +55,9 @@ public class CoralIntake extends SubsystemBase {
      */
 
     private State(double angle, double rollerVoltage, double beltVoltage) {
-      this.angle = Angle.ofBaseUnits(angle, Radians);
-      this.rollerVoltage = Voltage.ofBaseUnits(rollerVoltage, Volts);
-      this.beltVoltage = Voltage.ofBaseUnits(beltVoltage, Volts);
+      this.angle = Units.Radians.of(angle);
+      this.rollerVoltage = Units.Volts.of(rollerVoltage);
+      this.beltVoltage = Units.Volts.of(beltVoltage);
     }
   }
 
@@ -68,7 +69,7 @@ public class CoralIntake extends SubsystemBase {
   private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
   private final PivotIO pivotIO;
   private final PivotInputsAutoLogged pivotInputs = new PivotInputsAutoLogged();
-  private final CIRollerIO rollerIO;
+  private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
 
   private SysIdRoutine routine;
@@ -79,7 +80,7 @@ public class CoralIntake extends SubsystemBase {
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(BeltIO beltIO, PivotIO pivotIO, CIRollerIO rollerIO) {
+  public CoralIntake(BeltIO beltIO, PivotIO pivotIO, RollerIO rollerIO) {
     this.beltIO = beltIO;
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;

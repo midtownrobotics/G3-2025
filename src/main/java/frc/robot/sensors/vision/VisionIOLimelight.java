@@ -1,9 +1,12 @@
 package frc.robot.sensors.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.Limelight;
 import frc.robot.sensors.VisionObservation;
+import java.util.function.Supplier;
+import lombok.Getter;
 
 /**
  * VisionIO implementation for the Limelight camera.
@@ -11,14 +14,16 @@ import frc.robot.sensors.VisionObservation;
  */
 public class VisionIOLimelight implements VisionIO {
 
-    private Limelight limelight;
+    @Getter Limelight limelight;
+    Supplier<Pose2d> poseSupplier;
 
     /**
      * Constructs a VisionIOLimelight object.
      *
      * @param name The name of the Limelight camera to interface with.
      */
-    public VisionIOLimelight(String name) {
+    public VisionIOLimelight(String name, Supplier<Pose2d> poseSupplier) {
+        this.poseSupplier = poseSupplier;
         limelight = new Limelight(name);
     }
 
@@ -34,11 +39,15 @@ public class VisionIOLimelight implements VisionIO {
         // Set connection status to true
         inputs.connected = limelight.isConnected();
 
+        limelight.setRobotYaw(poseSupplier.get().getRotation());
+
         // Update target observation with horizontal and vertical offsets
-        inputs.latestTargetObservation = new TargetObservation(
-            new Rotation2d(limelight.getHorizontalOffset()),
-            new Rotation2d(limelight.getVerticalOffset())
-        );
+        if (limelight.isTargetSeen()) {
+            inputs.latestTargetObservation = new TargetObservation(
+                new Rotation2d(limelight.getHorizontalOffset()),
+                new Rotation2d(limelight.getVerticalOffset())
+            );
+        }
 
         // Retrieve the robot's pose estimate from the Limelight
         VisionObservation pose = limelight.getBotPoseEstimate();
@@ -55,6 +64,18 @@ public class VisionIOLimelight implements VisionIO {
             )
         };
 
+        VisionObservation poseMegaTag2 = limelight.getBotPoseEstimateMegatag2();
+
+        inputs.poseObservationsMegaTag2 = new PoseObservation[] {
+                            new PoseObservation(
+                                poseMegaTag2.timestamp(),
+                                new Pose3d(pose.pose()),
+                                0.0,
+                                pose.tagCount(),
+                                pose.avgTagDist(),
+                                PoseObservationType.MEGATAG_2
+                            )
+        };
         // Set the tag IDs from the Limelight pose estimate
         // inputs.tagIds = limelight.getBotPoseEstimate().fiducialId();
     }

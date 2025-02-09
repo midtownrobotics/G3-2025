@@ -7,8 +7,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.coral_outtake.roller.CORollerIO;
-import frc.robot.subsystems.coral_outtake.roller.RollerInputsAutoLogged;
+import frc.lib.RollerIO.RollerIO;
+import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -38,14 +38,14 @@ public class CoralOuttake extends SubsystemBase {
   }
 
   private @Getter State currentState = State.IDLE;
-  private CORollerIO rollerIO;
+  private RollerIO rollerIO;
   private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
 
   /**
    * Initializes Coral Outtake
    * @param rollerIO
    */
-  public CoralOuttake(CORollerIO rollerIO) {
+  public CoralOuttake(RollerIO rollerIO) {
     this.rollerIO = rollerIO;
   }
 
@@ -79,6 +79,6 @@ public class CoralOuttake extends SubsystemBase {
   }
 
   public Voltage getRollerVoltage() {
-    return rollerIO.getVoltage();
+    return rollerInputs.appliedVoltage;
   }
 }

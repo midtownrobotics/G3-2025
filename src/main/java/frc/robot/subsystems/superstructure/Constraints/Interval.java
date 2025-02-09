@@ -1,11 +1,17 @@
 package frc.robot.subsystems.superstructure.Constraints;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.measure.Angle;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-public class Interval<U extends Unit, T extends Measure<U>> implements Comparable<Interval<U, T>> {
-    T start;
-    T end;
+@EqualsAndHashCode
+public class Interval<U extends Unit, T extends Measure<U>> {
+    @Getter private T start;
+    @Getter private T end;
 
     /**
      * Constructs an Interval within a Set
@@ -16,14 +22,18 @@ public class Interval<U extends Unit, T extends Measure<U>> implements Comparabl
         this.end = end;
     }
 
-    @Override
-    public int compareTo(Interval<U, T> other) {
-        // TODO: Double check this (?)
-        return start.compareTo(other.start);
+    /**
+     * Simple check if a value is contained in an interval
+     */
+    public boolean contains(T value) {
+        return value.gte(start) && value.lte(end);
     }
 
     @Override
     public String toString() {
-        return "[" + start.baseUnitMagnitude() + ", " + end.baseUnitMagnitude() + ")";
+        if (start instanceof Angle startAngle && end instanceof Angle endAngle) {
+            return "[" + startAngle.in(Degrees) + ", " + endAngle.in(Degrees) + "]";
+        }
+        return "[" + start.baseUnitMagnitude() + ", " + end.baseUnitMagnitude() + "]";
     }
 }

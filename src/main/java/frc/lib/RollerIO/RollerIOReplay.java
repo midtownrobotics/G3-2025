@@ -1,8 +1,8 @@
-package frc.robot.subsystems.algae_claw.roller;
+package frc.lib.RollerIO;
 
 import edu.wpi.first.units.measure.Voltage;
 
-public class ACRollerIOSim implements ACRollerIO {
+public class RollerIOReplay implements RollerIO {
 
   @Override
   public void setVoltage(Voltage voltage) {

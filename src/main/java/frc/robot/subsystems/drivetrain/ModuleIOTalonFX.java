@@ -40,6 +40,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.utils.CANBusStatusSignalRegistration;
 import java.util.Queue;
 
 /**
@@ -99,7 +100,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    */
   public ModuleIOTalonFX(
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
-          constants) {
+          constants, CANBusStatusSignalRegistration bus) {
     this.constants = constants;
     driveTalon = new TalonFX(constants.DriveMotorId, TunerConstants.DrivetrainConstants.CANBusName);
     turnTalon = new TalonFX(constants.SteerMotorId, TunerConstants.DrivetrainConstants.CANBusName);
@@ -174,6 +175,31 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnVelocity = turnTalon.getVelocity();
     turnAppliedVolts = turnTalon.getMotorVoltage();
     turnCurrent = turnTalon.getStatorCurrent();
+
+    // Register status signals
+    bus
+        .register(turnAbsolutePosition)
+        .register(turnPosition)
+        .register(turnVelocity)
+        .register(turnAppliedVolts)
+        .register(turnCurrent)
+        .register(drivePosition)
+        .register(driveVelocity)
+        .register(driveAppliedVolts)
+        .register(driveCurrent);
+
+    tryUntilOk(5, () ->
+                        BaseStatusSignal.setUpdateFrequencyForAll(
+                            50,
+                            turnAbsolutePosition,
+                            turnPosition,
+                            turnVelocity,
+                            turnAppliedVolts,
+                            turnCurrent,
+                            drivePosition,
+                            driveVelocity,
+                            driveAppliedVolts,
+                            driveCurrent));
 
     // Configure periodic frames
     BaseStatusSignal.setUpdateFrequencyForAll(

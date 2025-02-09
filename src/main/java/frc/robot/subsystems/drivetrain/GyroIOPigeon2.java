@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.utils.CANBusStatusSignalRegistration;
 import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
@@ -41,7 +42,7 @@ public class GyroIOPigeon2 implements GyroIO {
   /**
    * Constructor for Pigeon2 IO
    */
-  public GyroIOPigeon2() {
+  public GyroIOPigeon2(CANBusStatusSignalRegistration bus) {
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getConfigurator().setYaw(0.0);
     yaw.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY);
@@ -49,6 +50,10 @@ public class GyroIOPigeon2 implements GyroIO {
     pigeon.optimizeBusUtilization();
     yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
     yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(pigeon.getYaw());
+
+    bus
+      .register(yaw)
+      .register(yawVelocity);
   }
 
   @Override
