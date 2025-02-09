@@ -20,7 +20,6 @@ import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.roller.CIRollerIO;
 import frc.robot.subsystems.coral_intake.roller.RollerInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
-import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -119,15 +118,13 @@ public class CoralIntake extends SubsystemBase {
     Voltage desiredBeltVoltage = currentState.getBeltVoltage();
     Voltage desiredRollerVoltage = currentState.getRollerVoltage();
 
-
-
-    if (Constants.tuningMode) return; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     switch (getCurrentState()) {
       case HANDOFF:
         rollerIO.setVoltage(desiredRollerVoltage);
         pivotIO.setPosition(desiredAngle);
         beltIO.setVoltage(desiredBeltVoltage);
+        break;
+      case TUNING:
         break;
       default:
         pivotIO.setPosition(desiredAngle);

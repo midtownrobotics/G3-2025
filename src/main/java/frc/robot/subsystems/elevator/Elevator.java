@@ -94,6 +94,8 @@ public class Elevator extends SubsystemBase {
       case CLIMB:
         winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
         break;
+      case TUNING:
+        break;
       default:
         winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
         break;
