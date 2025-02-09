@@ -1,15 +1,16 @@
-package frc.robot.sensors.vision;
+package frc.robot.sensors;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.sensors.VisionObservation;
+import frc.robot.sensors.vision.VisionIO;
+import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
 import frc.robot.sensors.vision.VisionIO.TargetObservation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class CoralCamera extends SubsystemBase {
+public class AlgaeCamera extends SubsystemBase {
     private final VisionIO visionController;
     private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
@@ -18,8 +19,7 @@ public class CoralCamera extends SubsystemBase {
     public enum Pipeline {
         APRILTAG_MT1(0), // Pipeline used for AprilTag processing.
         APRILTAG_MT2(0), // Pipeline used for AprilTag processing.
-        CORAL(1); // Pipeline used for Algae processing.
-
+        ALGAE(1); // Pipeline used for Algae processing.
 
         @Getter private final int pipelineID;
     }
@@ -39,7 +39,7 @@ public class CoralCamera extends SubsystemBase {
      * {@code null} if no vision observation was found or the current pipeline is not set to APRILTAG.
      */
     public PoseObservation getVisionObservation() {
-        if (visionInputs.poseObservations.length > 0 && currentPipeline == Pipeline.APRILTAG_MT1) {
+        if (currentPipeline == Pipeline.APRILTAG_MT1 && visionInputs.poseObservations.length > 0) {
             return visionInputs.poseObservations[visionInputs.poseObservations.length-1];
         }
         if (currentPipeline == Pipeline.APRILTAG_MT2 && visionInputs.poseObservationsMegaTag2.length > 0) {
@@ -49,13 +49,13 @@ public class CoralCamera extends SubsystemBase {
     }
 
     /**
-     * Retrieves the rotational coral offset.
+     * Retrieves the rotational algae offset.
      *
-     * @return A {@link Rotation2d} of the coral offset or {@code null} if the current pipeline is not
-     * set to CORAL.
+     * @return A {@link Rotation2d} of the algae offset or {@code null} if the current pipeline is not
+     * set to ALGAE.
      */
-    public TargetObservation getCoralOffset() {
-        if (currentPipeline == Pipeline.CORAL) {
+    public TargetObservation getAlgaeOffset() {
+        if (currentPipeline == Pipeline.ALGAE) {
             return visionInputs.latestTargetObservation;
         }
         return null;

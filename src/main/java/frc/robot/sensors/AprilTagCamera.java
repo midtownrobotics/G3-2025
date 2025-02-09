@@ -1,7 +1,8 @@
-package frc.robot.sensors.vision;
+package frc.robot.sensors;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.sensors.VisionObservation;
+import frc.robot.sensors.vision.VisionIO;
+import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
 import lombok.RequiredArgsConstructor;
 
