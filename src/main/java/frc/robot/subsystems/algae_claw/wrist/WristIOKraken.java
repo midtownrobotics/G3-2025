@@ -1,6 +1,7 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -82,9 +83,9 @@ public class WristIOKraken implements WristIO {
        .register(torqueCurrent)
        .register(supplyCurrent)
        .register(temperature);
-    
+
     tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
-      50.0, 
+      50.0,
       position,
       velocity,
       voltage,

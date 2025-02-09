@@ -47,6 +47,11 @@ public interface VisionIO {
     public PoseObservation[] poseObservations = new PoseObservation[0];
 
     /**
+     * A list of pose observations estimated by MegaTag2 for the robot
+     */
+    public PoseObservation[] poseObservationsMegaTag2 = new PoseObservation[0];
+
+    /**
      * A list of tag IDs detected by the vision system.
      */
     public int[] tagIds = new int[0];

@@ -16,14 +16,15 @@ public class CoralCamera extends SubsystemBase {
     /** Enum representing the different pipelines that can be used by the camera controller. */
     @RequiredArgsConstructor
     public enum Pipeline {
-        APRILTAG(0), // Pipeline used for AprilTag processing.
+        APRILTAG_MT1(0), // Pipeline used for AprilTag processing.
+        APRILTAG_MT2(0), // Pipeline used for AprilTag processing.
         CORAL(1); // Pipeline used for Algae processing.
 
 
         @Getter private final int pipelineID;
     }
 
-    @Getter private Pipeline currentPipeline = Pipeline.APRILTAG;
+    @Getter private Pipeline currentPipeline = Pipeline.APRILTAG_MT1;
 
     @Override
     public void periodic() {
@@ -38,8 +39,11 @@ public class CoralCamera extends SubsystemBase {
      * {@code null} if no vision observation was found or the current pipeline is not set to APRILTAG.
      */
     public PoseObservation getVisionObservation() {
-        if (visionInputs.poseObservations.length > 0 && currentPipeline == Pipeline.APRILTAG) {
+        if (visionInputs.poseObservations.length > 0 && currentPipeline == Pipeline.APRILTAG_MT1) {
             return visionInputs.poseObservations[visionInputs.poseObservations.length-1];
+        }
+        if (currentPipeline == Pipeline.APRILTAG_MT2 && visionInputs.poseObservationsMegaTag2.length > 0) {
+            return visionInputs.poseObservationsMegaTag2[visionInputs.poseObservationsMegaTag2.length-1];
         }
         return null;
     }
