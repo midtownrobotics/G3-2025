@@ -1,12 +1,11 @@
 package frc.robot.utils;
 
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.RobotBase;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class Constants {
   public static final Current KRAKEN_CURRENT_LIMIT = Units.Amp.of(70);
