@@ -5,10 +5,11 @@ import static frc.robot.utils.UnitUtil.min;
 
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
+import lombok.Getter;
 
 public class LinearConstraint<U extends Unit, M extends Measure<U>> {
 
-    private RealNumberSet<U, M> intervals;
+    @Getter private RealNumberSet<U, M> set;
     private final M lower;
     private final M upper;
 
@@ -16,10 +17,10 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
      * Constructor for a new Linear Constraint
      */
     public LinearConstraint(M lower, M upper) {
-        intervals = new RealNumberSet<>();
+        set = new RealNumberSet<>();
         this.lower = lower;
         this.upper = upper;
-        intervals.add(new Interval<>(lower, upper));
+        set.add(new Interval<>(lower, upper));
     }
 
     /**
@@ -29,8 +30,7 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
         RealNumberSet<U, M> intersectedSet = new RealNumberSet<>();
         intersectedSet.add(new Interval<>(start, end));
 
-        intervals = intervals.intersection(intersectedSet);
-
+        set = set.intersection(intersectedSet);
         return this;
     }
 
@@ -41,8 +41,7 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
         RealNumberSet<U, M> intersectedSet = new RealNumberSet<>();
         intersectedSet.add(new Interval<>(start, end));
 
-        intervals = intervals.difference(intersectedSet);
-
+        set = set.difference(intersectedSet);
         return this;
     }
 
@@ -50,7 +49,7 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
      * Intersects two constraints together
      */
     public LinearConstraint<U, M> addConstraint(LinearConstraint<U, M> constraint) {
-        intervals = intervals.intersection(constraint.intervals);
+        set = set.intersection(constraint.set);
         return this;
     }
 
@@ -58,48 +57,47 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
      * Checks if a measure is valid to reach under the current constraints.
      */
     public boolean isValid(M value) {
-        return intervals.getIntervalOfValue(value) != null;
+        return set.getIntervalOfValue(value) != null;
     }
 
     /**
      * Gets the measure closest to the desired setpoint based on the current reading and these constraints.
      */
     public M getClosestToDesired(M current, M desired) {
-        Interval<U, M> interval = intervals.getIntervalOfValue(current);
+        Interval<U, M> interval = set.getIntervalOfValue(current);
 
-        /** Case where current value is illegal. Priority is finding closest illegal value */
+        // Case where current value is illegal. Priority is finding closest illegal value
         if (interval == null) {
-            /** Set complement gives intervals of illegal values rather than legal ones */
-            RealNumberSet<U, M> inverted = intervals.complement(lower, upper);
+            // Set complement gives set of illegal values rather than legal ones
+            RealNumberSet<U, M> inverted = set.complement(lower, upper);
             Interval<U, M> invertedInterval = inverted.getIntervalOfValue(current);
 
-            /** These are two possible legal options, the start or the end. */
+            if (invertedInterval == null) {
+                // This is theoretically impossible but just in case, This makes sure it doesn't return a null pointer exception
+                return current;
+            }
+
+            // These are two possible legal options, the start or the end.
             M previousLegal = invertedInterval.getStart();
             M nextLegal = invertedInterval.getEnd();
 
-            /** For cases where the lower or upper bounds are the ones considered to be legal */
+            // For cases where the lower or upper bounds are the ones considered to be legal
+            if (previousLegal.isEquivalent(lower) && nextLegal.isEquivalent(upper)) return current;
             if (previousLegal.isEquivalent(lower)) return nextLegal;
             if (nextLegal.isEquivalent(upper)) return previousLegal;
 
             // Note: There is one case not account for here - that the entire range is illegal. Thus, this function would return the closest bound
 
             // If closer to previous legal, return that. Else return next legal.
-            if (previousLegal.minus(current).abs(current.baseUnit()) < nextLegal.minus(current).abs(current.baseUnit())) {
-                return previousLegal;
-            }
-
-            return nextLegal;
+            return (previousLegal.minus(current).abs(current.baseUnit()) < nextLegal.minus(current).abs(current.baseUnit())) ? previousLegal : nextLegal;
         }
 
-        if (desired.gte(current)) {
-            return min(desired, interval.getEnd());
-        }
-
-        return max(desired, interval.getStart());
+        // Return the desired value or the value closest to it.
+        return desired.gte(current) ? min(desired, interval.getEnd()) : max(desired, interval.getStart());
     }
 
     @Override
     public String toString() {
-        return intervals.toString();
+        return set.toString();
     }
 }
