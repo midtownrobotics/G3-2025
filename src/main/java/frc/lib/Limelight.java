@@ -148,7 +148,6 @@ public class Limelight {
    * @return A VisionObservation containing the pose and associated data, or null if no pose data is
    *     available.
    */
-
   public VisionObservation getBotPoseEstimateMegatag2() {
     DoubleArrayEntry poseEntry = table.getDoubleArrayTopic("botpose_orb_wpiblue").getEntry(null);
 
@@ -161,7 +160,7 @@ public class Limelight {
       return null;
     }
 
-    var pose = toPose2d(poseArray);
+    Pose2d pose = toPose2d(poseArray);
     double latency = poseArray[6];
     int tagCount = (int) poseArray[7];
     double tagDist = poseArray[9];
@@ -183,7 +182,7 @@ public class Limelight {
       }
     }
 
-    Stddevs stddevs = getMegatagStddevs();
+    Stddevs stddevs = getMegatag2Stddevs();
     Matrix<N3, N1> stddevMatrix = new Matrix<N3, N1>(Nat.N3(), Nat.N1());
     stddevMatrix.set(0, 0, stddevs.x);
     stddevMatrix.set(0, 1, stddevs.y);

@@ -1,12 +1,11 @@
 package frc.robot.sensors.vision;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.Limelight;
 import frc.robot.sensors.VisionObservation;
+import java.util.function.Supplier;
 import lombok.Getter;
 
 /**
@@ -69,11 +68,11 @@ public class VisionIOLimelight implements VisionIO {
 
         inputs.poseObservationsMegaTag2 = new PoseObservation[] {
                             new PoseObservation(
-                                poseMegaTag2.timestamp(), 
-                                new Pose3d(pose.pose()), 
-                                0.0, 
-                                pose.tagCount(), 
-                                pose.avgTagDist(), 
+                                poseMegaTag2.timestamp(),
+                                new Pose3d(pose.pose()),
+                                0.0,
+                                pose.tagCount(),
+                                pose.avgTagDist(),
                                 PoseObservationType.MEGATAG_2
                             )
         };
