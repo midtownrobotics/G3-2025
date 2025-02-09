@@ -55,10 +55,10 @@ public class AlgaeCamera extends AprilTagCamera {
      * {@code null} if no vision observation was found or the current pipeline is not set to APRILTAG.
      */
     public PoseObservation getVisionObservation() {
-        if (visionInputs.poseObservations.length == 0){
+        if (currentPipeline != Pipeline.APRILTAG_MT1 && currentPipeline != Pipeline.APRILTAG_MT2) {
             return null;
         }
-        if (currentPipeline == Pipeline.ALGAE){
+        if (visionInputs.poseObservations.length == 0 && visionInputs.poseObservationsMegaTag2.length == 0){
             return null;
         }
         if (currentPipeline == Pipeline.APRILTAG_MT1) {
@@ -77,7 +77,10 @@ public class AlgaeCamera extends AprilTagCamera {
      * set to ALGAE.
      */
     public TargetObservation getAlgaeOffset() {
-        if (Units.Seconds.of(Timer.getFPGATimestamp()).minus(lastObservationTimestamp).lte(expirationDuration)) {
+        if (
+            Units.Seconds.of(Timer.getFPGATimestamp()).minus(lastObservationTimestamp).lte(expirationDuration) 
+            && currentPipeline == Pipeline.ALGAE
+        ) {
             return lastObservation;
         }
         return null;
