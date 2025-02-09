@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
 import org.junit.jupiter.api.Test;
 
-public class TestCircularConstraint {
+public class TestLinearConstraint {
 
     /** Makes angle from double */
     private Angle ma(double degrees) {

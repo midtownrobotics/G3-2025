@@ -44,23 +44,22 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
 
     /**
      * Returns the union of two sets (NOT IN PLACE)
-     * Untested ChatGPT Code
      */
-    // public RealNumberSet<U, T> union(RealNumberSet<U, T> other) {
+    public RealNumberSet<U, T> union(RealNumberSet<U, T> other) {
 
-    //     RealNumberSet<U, T> result = new RealNumberSet<U, T>();
-    //     int i = 0, j = 0;
-    //     while (i < this.intervals.size() || j < other.intervals.size()) {
-    //         Interval<U, T> next;
-    //         if (j >= other.intervals.size() || (i < this.intervals.size() && this.intervals.get(i).getStart().lt(other.intervals.get(j).getEnd()))) {
-    //             next = this.intervals.get(i++);
-    //         } else {
-    //             next = other.intervals.get(j++);
-    //         }
-    //         result.add(new Interval<>(next.getStart(), next.getEnd()));
-    //     }
-    //     return result;
-    // }
+        RealNumberSet<U, T> result = new RealNumberSet<U, T>();
+        int i = 0, j = 0;
+        while (i < this.intervals.size() || j < other.intervals.size()) {
+            Interval<U, T> next;
+            if (j >= other.intervals.size() || (i < this.intervals.size() && this.intervals.get(i).getStart().lt(other.intervals.get(j).getEnd()))) {
+                next = this.intervals.get(i++);
+            } else {
+                next = other.intervals.get(j++);
+            }
+            result.add(new Interval<>(next.getStart(), next.getEnd()));
+        }
+        return result;
+    }
 
     /**
      * Intersects two sets (NOT IN PLACE)
@@ -114,9 +113,30 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return intervals.toString();
+    /**
+     * Returns the complement of the current set, given the lower and upper bounds to return the complement within.
+     */
+    public RealNumberSet<U, T> complement(T lowerBound, T upperBound) {
+        RealNumberSet<U, T> result = new RealNumberSet<>();
+        T currentStart = lowerBound;
+
+        for (Interval<U, T> interval : intervals) {
+            T intervalStart = interval.getStart();
+            T intervalEnd = interval.getEnd();
+
+            if (currentStart.gte(upperBound)) break;
+
+            if (currentStart.lt(intervalStart)) {
+                result.add(new Interval<>(currentStart, intervalStart));
+            }
+            currentStart = max(currentStart, intervalEnd);
+        }
+
+        if (currentStart.lt(upperBound)) {
+            result.add(new Interval<>(currentStart, upperBound));
+        }
+
+        return result;
     }
 
     /**
@@ -127,5 +147,10 @@ public class RealNumberSet<U extends Unit, T extends Measure<U>> {
             if (interval.contains(value)) return interval;
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return intervals.toString();
     }
 }

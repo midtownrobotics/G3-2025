@@ -7,6 +7,7 @@ import static frc.robot.utils.UnitUtil.min;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import lombok.NonNull;
 
 public class CircularConstraint {
 
@@ -28,11 +29,11 @@ public class CircularConstraint {
         end = normalize(end);
 
         RealNumberSet<AngleUnit, Angle> intersectedSet = new RealNumberSet<>();
-        if (end.gte(start)) {
+        if (end.gt(start)) {
             intersectedSet.add(new Interval<>(start, end));
         } else {
-            intersectedSet.add(new Interval<>(Degrees.of(0), start));
-            intersectedSet.add(new Interval<>(end, Degrees.of(360)));
+            intersectedSet.add(new Interval<>(Degrees.of(0), end));
+            intersectedSet.add(new Interval<>(start, Degrees.of(360)));
         }
 
         intervals = intervals.intersection(intersectedSet);
@@ -83,7 +84,7 @@ public class CircularConstraint {
      */
     public boolean isValid(Angle angle) {
         angle = normalize(angle);
-        Interval<AngleUnit, Angle> interval = getWraparoundInterval(angle);
+        Interval<AngleUnit, Angle> interval = unwrapInterval(intervals.getIntervalOfValue(angle));
 
         if (interval == null) return false;
 
@@ -99,7 +100,9 @@ public class CircularConstraint {
     public Angle getClosestToDesired(Angle current, Angle desired) {
         Angle delta = getDeltaToDesired(normalize(current), normalize(desired));
 
-        if (delta == null) return null;
+        if (delta == null) {
+
+        };
 
         return current.plus(delta);
     }
@@ -110,11 +113,30 @@ public class CircularConstraint {
      * @param desired A normalized angle of the desired position of the system
      * @return Best delta to target based on constraints. Null if the current position is impossible.
      */
-    private Angle getDeltaToDesired(Angle current, Angle desired) {
+    private @NonNull Angle getDeltaToDesired(Angle current, Angle desired) {
         // Get the wraparound Interval of the current positive
-        Interval<AngleUnit, Angle> interval = getWraparoundInterval(current);
+        Interval<AngleUnit, Angle> interval = unwrapInterval(intervals.getIntervalOfValue(current));
 
-        if (interval == null) return null;
+        if (interval == null) {
+            /** Set complement gives intervals of illegal values rather than legal ones */
+            RealNumberSet<AngleUnit, Angle> inverted = intervals.complement(Degrees.of(0), Degrees.of(360));
+            Interval<AngleUnit, Angle> invertedInterval = unwrapInterval(inverted.getIntervalOfValue(current));
+
+            if (invertedInterval.getStart().isEquivalent(Degrees.of(-360)) && invertedInterval.getEnd().isEquivalent(Degrees.of(720))) {
+                return current;
+            }
+
+            /** These are two possible legal options, the start or the end. */
+            Angle previousLegal = invertedInterval.getStart();
+            Angle nextLegal = invertedInterval.getEnd();
+
+            // If closer to previous legal, return that. Else return next legal.
+            if (previousLegal.minus(current).abs(current.baseUnit()) < nextLegal.minus(current).abs(current.baseUnit())) {
+                return previousLegal.minus(current);
+            }
+
+            return nextLegal.minus(current);
+        };
 
         // Find the goal in the positive direction
         Angle positiveGoal = desired;
@@ -162,9 +184,7 @@ public class CircularConstraint {
      * getWraparoundInterval(40) --> [-60, 50]
      * getWraparoundInterval(320) --> [300, 410]
      */
-    private Interval<AngleUnit, Angle> getWraparoundInterval(Angle angle) {
-        Interval<AngleUnit, Angle> interval = intervals.getIntervalOfValue(angle);
-
+    private Interval<AngleUnit, Angle> unwrapInterval(Interval<AngleUnit, Angle> interval) {
         if (interval == null) return null;
 
         Angle start = interval.getStart();
