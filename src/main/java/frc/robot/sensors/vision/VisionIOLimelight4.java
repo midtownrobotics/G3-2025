@@ -36,9 +36,13 @@ public class VisionIOLimelight4 extends VisionIOLimelight{
     public void updateInputs(VisionIOInputs inputs) {
         super.updateInputs(inputs);
         if (DriverStation.isEnabled()) {
+            limelight.setIMUMode(IMUMode.ENABLED_IMU_MODE.IMUModeID);
             currentMode = IMUMode.ENABLED_IMU_MODE;
         } else {
+            limelight.setIMUMode(IMUMode.DISABLED_IMU_MODE.IMUModeID);
             currentMode = IMUMode.DISABLED_IMU_MODE;
         }
+        
+        
     }
 }
