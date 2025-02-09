@@ -68,7 +68,6 @@ public class RobotContainer {
   /** RobotContainer initialization */
   public RobotContainer() {
     controls = new MatchXboxControls(0, 1);
-    configureBindings();
 
     // Algae Claw
     WristIO wristIO;
@@ -177,6 +176,9 @@ public class RobotContainer {
     new RobotViz(() -> {
       return null;
     }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition(), () -> algaeClaw.getPosition());
+
+
+    configureBindings();
   }
 
   /** Configures bindings to oi */

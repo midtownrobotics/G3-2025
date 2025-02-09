@@ -11,6 +11,7 @@ import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
@@ -73,6 +74,8 @@ public class Elevator extends SubsystemBase {
         winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
         break;
     }
+
+    Logger.recordOutput("Elevator/currentState", getCurrentState());
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
