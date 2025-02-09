@@ -16,7 +16,6 @@ public class WristIOReplay implements WristIO {
 
   @Override
   public double getEncoderPosition() {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'getEncodedPosition'");
   }
 
