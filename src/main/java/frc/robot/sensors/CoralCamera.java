@@ -5,9 +5,9 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.sensors.vision.VisionIO;
-import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
 import frc.robot.sensors.vision.VisionIO.TargetObservation;
+import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,10 +30,14 @@ public class CoralCamera extends AprilTagCamera {
 
         @Getter private final int pipelineID;
     }
-    
+
 
     @Getter private Pipeline currentPipeline = Pipeline.APRILTAG_MT1;
 
+    /**
+     * Constructor for CoralCamera
+     * @param visionController the visionIO object used by the camera
+     */    
     public CoralCamera(VisionIO visionController) {
         super(visionController);
     }
