@@ -15,12 +15,12 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
+import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 
 public class Superstructure extends SubsystemBase {
   private ControllerPrioritySubset controllerPrioritySubset = new ControllerPrioritySubset();
@@ -96,133 +96,140 @@ public class Superstructure extends SubsystemBase {
     CircularConstraint coralIntakeConstraint = new CircularConstraint();
     CircularConstraint algaeClawConstraint = new CircularConstraint();
 
-    for (Priority priority : controllerPrioritySubset.getCurrentlyEnabled()) {
-      switch (priority) {
-        case PANIC:
-          break;
-        case MANUAL:
-          break;
-        case CLIMB:
-          possibleElevatorStates = Set.of(Elevator.State.CLIMB);
-          possibleAlgaeClawStates = Set.of(AlgaeClaw.State.CLIMB);
-          possibleCoralIntakeStates = Set.of(CoralIntake.State.CLIMB);
-          break;
-        case GROUND_INTAKE_CORAL:
-        case GROUND_VOMIT_CORAL:
-        case STATION_INTAKE_CORAL:
-          if (!possibleCoralIntakeStates.contains(priorityToCoralIntakeState.get(priority))) continue;
-
-          if (!isCoralIntakeOutside() && isAlgaeClawBlockingIntake()) {
-            if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
-            moveAlgaeClawOutside(possibleAlgaeClawStates);
-          }
-
-          possibleCoralIntakeStates = Set.of(priorityToCoralIntakeState.get(priority));
-
-          break;
-        case GROUND_INTAKE_ALGAE:
-        case GROUND_VOMIT_ALGAE:
-        case STACKED_INTAKE_ALGAE:
-        case STACKED_VOMIT_ALGAE:
-
-          if (!possibleAlgaeClawStates.contains(priorityToAlgaeClawState.get(priority)) || !possibleElevatorStates.contains(priorityToElevatorState.get(priority))) continue;
-
-          if (!isCoralIntakeOutside()) {
-            if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
-
-            moveCoralIntakeOutside(possibleCoralIntakeStates);
-          }
-
-          possibleElevatorStates = Set.of(priorityToElevatorState.get(priority));
-          possibleAlgaeClawStates = Set.of(priorityToAlgaeClawState.get(priority));
-
-          break;
-        case PREPARE_SCORE_ALGAE:
-          if (controls.getAlgaeMode() == AlgaeMode.PROCESSOR) {
-            if (!possibleAlgaeClawStates.contains(AlgaeClaw.State.PROCESSOR_PREPARE) || !possibleElevatorStates.contains(Elevator.State.PROCESSOR)) continue;
-
+    if (Constants.tuningMode.get()) {
+      possibleAlgaeClawStates = Set.of(AlgaeClaw.State.TUNING);
+      possibleCoralIntakeStates = Set.of(CoralIntake.State.TUNING);
+      possibleCoralOuttakeStates = Set.of(CoralOuttake.State.TUNING);
+      possibleElevatorStates = Set.of(Elevator.State.TUNING);
+    } else {
+      for (Priority priority : controllerPrioritySubset.getCurrentlyEnabled()) {
+        switch (priority) {
+          case PANIC:
+            break;
+          case MANUAL:
+            break;
+          case CLIMB:
+            possibleElevatorStates = Set.of(Elevator.State.CLIMB);
+            possibleAlgaeClawStates = Set.of(AlgaeClaw.State.CLIMB);
+            possibleCoralIntakeStates = Set.of(CoralIntake.State.CLIMB);
+            break;
+          case GROUND_INTAKE_CORAL:
+          case GROUND_VOMIT_CORAL:
+          case STATION_INTAKE_CORAL:
+            if (!possibleCoralIntakeStates.contains(priorityToCoralIntakeState.get(priority))) continue;
+  
+            if (!isCoralIntakeOutside() && isAlgaeClawBlockingIntake()) {
+              if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
+              moveAlgaeClawOutside(possibleAlgaeClawStates);
+            }
+  
+            possibleCoralIntakeStates = Set.of(priorityToCoralIntakeState.get(priority));
+  
+            break;
+          case GROUND_INTAKE_ALGAE:
+          case GROUND_VOMIT_ALGAE:
+          case STACKED_INTAKE_ALGAE:
+          case STACKED_VOMIT_ALGAE:
+  
+            if (!possibleAlgaeClawStates.contains(priorityToAlgaeClawState.get(priority)) || !possibleElevatorStates.contains(priorityToElevatorState.get(priority))) continue;
+  
             if (!isCoralIntakeOutside()) {
               if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
-
+  
               moveCoralIntakeOutside(possibleCoralIntakeStates);
             }
-
-            possibleElevatorStates = Set.of(Elevator.State.PROCESSOR);
-            possibleAlgaeClawStates = Set.of(AlgaeClaw.State.PROCESSOR_PREPARE);
-          } else {
-            if (!possibleAlgaeClawStates.contains(AlgaeClaw.State.BARGE_PREPARE_BACK) || !possibleElevatorStates.contains(Elevator.State.BARGE)) continue;
-
+  
+            possibleElevatorStates = Set.of(priorityToElevatorState.get(priority));
+            possibleAlgaeClawStates = Set.of(priorityToAlgaeClawState.get(priority));
+  
+            break;
+          case PREPARE_SCORE_ALGAE:
+            if (controls.getAlgaeMode() == AlgaeMode.PROCESSOR) {
+              if (!possibleAlgaeClawStates.contains(AlgaeClaw.State.PROCESSOR_PREPARE) || !possibleElevatorStates.contains(Elevator.State.PROCESSOR)) continue;
+  
+              if (!isCoralIntakeOutside()) {
+                if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
+  
+                moveCoralIntakeOutside(possibleCoralIntakeStates);
+              }
+  
+              possibleElevatorStates = Set.of(Elevator.State.PROCESSOR);
+              possibleAlgaeClawStates = Set.of(AlgaeClaw.State.PROCESSOR_PREPARE);
+            } else {
+              if (!possibleAlgaeClawStates.contains(AlgaeClaw.State.BARGE_PREPARE_BACK) || !possibleElevatorStates.contains(Elevator.State.BARGE)) continue;
+  
+              if (!isCoralIntakeOutside()) {
+                if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
+                if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
+  
+                moveCoralIntakeOutside(possibleCoralIntakeStates);
+                moveAlgaeClawOutside(possibleAlgaeClawStates);
+              } else {
+                possibleAlgaeClawStates = Set.of(AlgaeClaw.State.BARGE_PREPARE_BACK);
+              }
+  
+              possibleElevatorStates = Set.of(Elevator.State.BARGE);
+            }
+            break;
+          case PREPARE_SCORE_CORAL:
+            if (!possibleElevatorStates.contains(coralModeToElevatorState.get(controls.getCoralMode()))) continue;
+  
             if (!isCoralIntakeOutside()) {
               if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
               if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
-
+  
               moveCoralIntakeOutside(possibleCoralIntakeStates);
               moveAlgaeClawOutside(possibleAlgaeClawStates);
+            }
+  
+            possibleElevatorStates = Set.of(coralModeToElevatorState.get(controls.getCoralMode()));
+            possibleCoralOuttakeStates = Set.of(CoralOuttake.State.SHOOT);
+  
+            break;
+          case SCORE_GAME_PIECE:
+            if (controllerPrioritySubset.getCurrentlyEnabled().contains(Priority.PREPARE_SCORE_ALGAE)) {
+              if (!possibleCoralOuttakeStates.contains(CoralOuttake.State.SHOOT)) continue;
+              possibleCoralOuttakeStates = Set.of(CoralOuttake.State.SHOOT);
             } else {
+              if (!possibleAlgaeClawStates.contains(AlgaeClaw.State.BARGE_PREPARE_BACK)) continue;
               possibleAlgaeClawStates = Set.of(AlgaeClaw.State.BARGE_PREPARE_BACK);
             }
-
-            possibleElevatorStates = Set.of(Elevator.State.BARGE);
-          }
-          break;
-        case PREPARE_SCORE_CORAL:
-          if (!possibleElevatorStates.contains(coralModeToElevatorState.get(controls.getCoralMode()))) continue;
-
-          if (!isCoralIntakeOutside()) {
-            if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
-            if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
-
-            moveCoralIntakeOutside(possibleCoralIntakeStates);
-            moveAlgaeClawOutside(possibleAlgaeClawStates);
-          }
-
-          possibleElevatorStates = Set.of(coralModeToElevatorState.get(controls.getCoralMode()));
-          possibleCoralOuttakeStates = Set.of(CoralOuttake.State.SHOOT);
-
-          break;
-        case SCORE_GAME_PIECE:
-          if (controllerPrioritySubset.getCurrentlyEnabled().contains(Priority.PREPARE_SCORE_ALGAE)) {
-            if (!possibleCoralOuttakeStates.contains(CoralOuttake.State.SHOOT)) continue;
-            possibleCoralOuttakeStates = Set.of(CoralOuttake.State.SHOOT);
-          } else {
-            if (!possibleAlgaeClawStates.contains(AlgaeClaw.State.BARGE_PREPARE_BACK)) continue;
-            possibleAlgaeClawStates = Set.of(AlgaeClaw.State.BARGE_PREPARE_BACK);
-          }
-          break;
-        case REVERSE_HANDOFF_CORAL:
-        case HANDOFF_CORAL:
-
-          if (!possibleCoralOuttakeStates.contains(priorityToCoralOuttakeState.get(priority)) || !possibleElevatorStates.contains(Elevator.State.HANDOFF)) continue;
-
-          if (isElevatorExtended()) {
-            if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
-
-            if (!isCoralIntakeOutside()) {
+            break;
+          case REVERSE_HANDOFF_CORAL:
+          case HANDOFF_CORAL:
+  
+            if (!possibleCoralOuttakeStates.contains(priorityToCoralOuttakeState.get(priority)) || !possibleElevatorStates.contains(Elevator.State.HANDOFF)) continue;
+  
+            if (isElevatorExtended()) {
+              if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
+  
+              if (!isCoralIntakeOutside()) {
+                if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
+  
+                moveAlgaeClawOutside(possibleAlgaeClawStates);
+              }
+  
+              moveCoralIntakeOutside(possibleCoralIntakeStates);
+  
+              possibleElevatorStates = Set.of(Elevator.State.HANDOFF);
+              possibleCoralOuttakeStates = Set.of(priorityToCoralOuttakeState.get(priority));
+              continue;
+            }
+  
+            if (!possibleCoralIntakeStates.contains(CoralIntake.State.HANDOFF)) continue;
+  
+            if (isCoralIntakeOutside()) {
               if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
-
+  
               moveAlgaeClawOutside(possibleAlgaeClawStates);
             }
-
-            moveCoralIntakeOutside(possibleCoralIntakeStates);
-
+  
             possibleElevatorStates = Set.of(Elevator.State.HANDOFF);
             possibleCoralOuttakeStates = Set.of(priorityToCoralOuttakeState.get(priority));
-            continue;
-          }
-
-          if (!possibleCoralIntakeStates.contains(CoralIntake.State.HANDOFF)) continue;
-
-          if (isCoralIntakeOutside()) {
-            if (!canMoveAlgaeClawOutside(possibleAlgaeClawStates)) continue;
-
-            moveAlgaeClawOutside(possibleAlgaeClawStates);
-          }
-
-          possibleElevatorStates = Set.of(Elevator.State.HANDOFF);
-          possibleCoralOuttakeStates = Set.of(priorityToCoralOuttakeState.get(priority));
-          possibleCoralIntakeStates = Set.of(CoralIntake.State.HANDOFF);
-
-          break;
+            possibleCoralIntakeStates = Set.of(CoralIntake.State.HANDOFF);
+  
+            break;
+        }
       }
     }
 
