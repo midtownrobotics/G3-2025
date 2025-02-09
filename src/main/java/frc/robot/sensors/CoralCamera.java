@@ -1,6 +1,9 @@
 package frc.robot.sensors;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.sensors.vision.VisionIO;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
@@ -11,6 +14,10 @@ import lombok.RequiredArgsConstructor;
 
 public class CoralCamera extends AprilTagCamera {
     private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
+    private final Time expirationDuration = Units.Milliseconds.of(200);
+    private Time lastObservationTimestamp;
+    private TargetObservation lastObservation;
+
 
     /** Enum representing the different pipelines that can be used by the camera controller. */
 
@@ -34,6 +41,10 @@ public class CoralCamera extends AprilTagCamera {
     @Override
     public void periodic() {
         super.getVisionController().updateInputs(visionInputs);
+        if (visionInputs.targetSeen) {
+            lastObservation = visionInputs.latestTargetObservation;
+            lastObservationTimestamp = Units.Seconds.of(Timer.getFPGATimestamp());
+        }
     }
 
     /**
@@ -66,8 +77,8 @@ public class CoralCamera extends AprilTagCamera {
      * set to CORAL.
      */
     public TargetObservation getCoralOffset() {
-        if (currentPipeline == Pipeline.CORAL) {
-            return visionInputs.latestTargetObservation;
+        if (Units.Seconds.of(Timer.getFPGATimestamp()).minus(lastObservationTimestamp).lte(expirationDuration)) {
+            return lastObservation;
         }
         return null;
     }
