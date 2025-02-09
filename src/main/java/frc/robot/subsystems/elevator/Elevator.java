@@ -1,11 +1,19 @@
 package frc.robot.subsystems.elevator;
 
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -50,6 +58,8 @@ public class Elevator extends SubsystemBase {
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
   private @Getter WinchIO winch;
 
+  private SysIdRoutine routine;
+
   /**
    * Constructs elevator :)
    *
@@ -58,6 +68,21 @@ public class Elevator extends SubsystemBase {
   public Elevator(WinchIO winch) {
     this.winch = winch;
     winch.updateInputs(winchInputs);
+
+      SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
+        winch::setVoltage,
+        this::motorSysIdLog,
+        this
+    );
+
+    routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(3)), sysIdMech);
+  }
+
+  private void motorSysIdLog(SysIdRoutineLog log) {
+    log.motor("leftMotor")
+      .voltage(winchInputs.left.appliedVoltage)
+      .linearPosition(winchInputs.left.position)
+      .linearVelocity(winchInputs.left.velocity);
   }
 
   @Override
@@ -68,6 +93,8 @@ public class Elevator extends SubsystemBase {
     switch (getCurrentState()) {
       case CLIMB:
         winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
+        break;
+      case TUNING:
         break;
       default:
         winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
@@ -85,5 +112,19 @@ public class Elevator extends SubsystemBase {
 
   public Distance getPosition() {
     return winch.getPosition();
+  }
+
+  /**
+   * Runs the sysIdQuasistatic test on the elevator.
+   */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return routine.quasistatic(direction);
+  }
+
+  /**
+   * Runs the sysIdDynamic test on the elevator.
+   */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return routine.dynamic(direction);
   }
 }
