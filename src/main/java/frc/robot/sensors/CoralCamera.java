@@ -1,7 +1,6 @@
 package frc.robot.sensors;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.vision.VisionIO;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
@@ -9,12 +8,12 @@ import frc.robot.sensors.vision.VisionIO.TargetObservation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-public class CoralCamera extends SubsystemBase {
-    private final VisionIO visionController;
+
+public class CoralCamera extends AprilTagCamera {
     private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
     /** Enum representing the different pipelines that can be used by the camera controller. */
+
     @RequiredArgsConstructor
     public enum Pipeline {
         APRILTAG_MT1(0), // Pipeline used for AprilTag processing.
@@ -24,12 +23,17 @@ public class CoralCamera extends SubsystemBase {
 
         @Getter private final int pipelineID;
     }
+    
 
     @Getter private Pipeline currentPipeline = Pipeline.APRILTAG_MT1;
 
+    public CoralCamera(VisionIO visionController) {
+        super(visionController);
+    }
+
     @Override
     public void periodic() {
-        visionController.updateInputs(visionInputs);
+        super.getVisionController().updateInputs(visionInputs);
     }
 
     /**

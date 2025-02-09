@@ -1,7 +1,6 @@
 package frc.robot.sensors;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.vision.VisionIO;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
@@ -9,9 +8,8 @@ import frc.robot.sensors.vision.VisionIO.TargetObservation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-public class AlgaeCamera extends SubsystemBase {
-    private final VisionIO visionController;
+
+public class AlgaeCamera extends AprilTagCamera {
     private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
     /** Enum representing the different pipelines that can be used by the camera controller. */
@@ -24,11 +22,15 @@ public class AlgaeCamera extends SubsystemBase {
         @Getter private final int pipelineID;
     }
 
+    public AlgaeCamera(VisionIO visionController) {
+        super(visionController);
+    }
+
     @Getter private Pipeline currentPipeline = Pipeline.APRILTAG_MT1;
 
     @Override
     public void periodic() {
-        visionController.updateInputs(visionInputs);
+        super.getVisionController().updateInputs(visionInputs);
     }
 
     /**
