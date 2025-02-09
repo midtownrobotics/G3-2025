@@ -52,8 +52,8 @@ public class CircularConstraint {
         if (end.gte(start)) {
             differenceSet.add(new Interval<>(start, end));
         } else {
-            differenceSet.add(new Interval<>(Degrees.of(0), start));
-            differenceSet.add(new Interval<>(end, Degrees.of(360)));
+            differenceSet.add(new Interval<>(Degrees.of(0), end));
+            differenceSet.add(new Interval<>(start, Degrees.of(360)));
         }
 
         intervals = intervals.difference(differenceSet);
@@ -92,19 +92,32 @@ public class CircularConstraint {
     }
 
     /**
-     * Gets the angle closest to the desired angle based on the current angle and these constraints.
-     * @param current A non-normalized angle of the current position of the system
-     * @param desired A normalized angle (can be not normalized) of the desired position of the system
-     * @return Best angle to target based on constraints. Null if the current position is impossible.
+     * Returns a wraparound interval (from -360 to 720) of the given interval.
+     * For example, if current constraint is [[0, 50], [300, 360]]:
+     * getWraparoundInterval([0, 50]) --> [-60, 50]
+     * getWraparoundInterval([300, 360]]) --> [300, 410]
      */
-    public Angle getClosestToDesired(Angle current, Angle desired) {
-        Angle delta = getDeltaToDesired(normalize(current), normalize(desired));
+    private Interval<AngleUnit, Angle> unwrapInterval(Interval<AngleUnit, Angle> interval) {
+        if (interval == null) return null;
 
-        if (delta == null) {
+        Angle start = interval.getStart();
+        Angle end = interval.getEnd();
 
-        };
+        if (interval.contains(Degrees.of(360))) {
+            Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.of(0));
+            if (wrapAround != null) {
+                end = wrapAround.getEnd().plus(Degrees.of(360));
+            }
+        }
 
-        return current.plus(delta);
+        if (interval.contains(Degrees.of(0))) {
+            Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.of(360));
+            if (wrapAround != null) {
+                start = wrapAround.getStart().minus(Degrees.of(360));
+            }
+        }
+
+        return new Interval<AngleUnit,Angle>(start, end);
     }
 
     /**
@@ -179,33 +192,17 @@ public class CircularConstraint {
     }
 
     /**
-     * Returns a wraparound interval (from -360 to 720) of the given angle based on constraints.
-     * For example, if current constraint is [[0, 50], [300, 360]]:
-     * getWraparoundInterval(40) --> [-60, 50]
-     * getWraparoundInterval(320) --> [300, 410]
+     * Gets the angle closest to the desired angle based on the current angle and these constraints.
+     * @param current A non-normalized angle of the current position of the system
+     * @param desired A normalized angle (can be not normalized) of the desired position of the system
+     * @return Best angle to target based on constraints. Null if the current position is impossible.
      */
-    private Interval<AngleUnit, Angle> unwrapInterval(Interval<AngleUnit, Angle> interval) {
-        if (interval == null) return null;
+    public Angle getClosestToDesired(Angle current, Angle desired) {
+        Angle delta = getDeltaToDesired(normalize(current), normalize(desired));
 
-        Angle start = interval.getStart();
-        Angle end = interval.getEnd();
-
-        if (interval.contains(Degrees.of(360))) {
-            Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.of(0));
-            if (wrapAround != null) {
-                end = wrapAround.getEnd().plus(Degrees.of(360));
-            }
-        }
-
-        if (interval.contains(Degrees.of(0))) {
-            Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.of(360));
-            if (wrapAround != null) {
-                start = wrapAround.getStart().minus(Degrees.of(360));
-            }
-        }
-
-        return new Interval<AngleUnit,Angle>(start, end);
+        return current.plus(delta);
     }
+
 
     @Override
     public String toString() {
