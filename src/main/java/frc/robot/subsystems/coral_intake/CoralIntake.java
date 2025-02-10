@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
@@ -19,14 +21,14 @@ import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
-import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
+import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
 
-  public CircularConstraint coralIntakeConstraint = new CircularConstraint();
+  public LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit, Angle>(CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
   public enum State {
     // TODO: find angle out of the way of the carriage
@@ -135,7 +137,7 @@ public class CoralIntake extends SubsystemBase {
   }
 
   /** Sets the goal of the coral outtake. */
-  public void setGoal(State state, CircularConstraint constraint) {
+  public void setGoal(State state, LinearConstraint<AngleUnit, Angle> constraint) {
     currentState = state;
     coralIntakeConstraint = constraint;
   }
