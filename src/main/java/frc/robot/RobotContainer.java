@@ -185,53 +185,17 @@ public class RobotContainer {
 
     drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
 
-    controls
-        .resetDriveHeading()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  drive.resetDriveHeading();
-                }));
+    controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
-    controls
-        .driveBrake()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  drive.stopWithX();
-                }));
+    controls.driveBrake().onTrue(drive.stopWithXCommand());
 
-    controls
-        .gamePieceLock()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // TODO: Logic to lock onto a game piece
-                }));
+    controls.gamePieceLock().onTrue(Commands.none());
 
-    controls
-        .leftPositionLock()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // TODO: Logic to lock onto the left position on the reef
-                }));
+    controls.leftPositionLock().onTrue(Commands.none());
 
-    controls
-        .rightPositionLock()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // TODO: Logic to lock onto the right position on the reef
-                }));
+    controls.rightPositionLock().onTrue(Commands.none());
 
-    controls
-        .reefAlgaePositionLock()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // TODO: Logic to lock onto the true right position for algae intake
-                }));
+    controls.reefAlgaePositionLock().onTrue(Commands.none());
 
     // Operator
 
@@ -258,53 +222,17 @@ public class RobotContainer {
 
     // TODO: Use Elevator and Wrist axes as well
 
-    controls
-        .outtakeShoot()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for outtake shoot action
-                }));
+    controls.outtakeShoot().onTrue(Commands.none());
 
-    controls
-        .algaeClawIntake()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for algae claw intake action
-                }));
+    controls.algaeClawIntake().onTrue(Commands.none());
 
-    controls
-        .coralForward()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for coral forward action
-                }));
+    controls.coralForward().onTrue(Commands.none());
 
-    controls
-        .coralBackward()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for coral backward action
-                }));
+    controls.coralBackward().onTrue(Commands.none());
 
-    controls
-        .coralIntakeRun()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    //TODO:  Logic for coral intake run action
-                }));
+    controls.coralIntakeRun().onTrue(Commands.none());
 
-    controls
-        .coralIntakeReverse()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for coral intake reverse action
-                }));
+    controls.coralIntakeReverse().onTrue(Commands.none());
 
   }
 

@@ -47,6 +47,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.utils.Constants;
@@ -362,7 +363,7 @@ public class Drive extends SubsystemBase {
    * sets the gyro heading to zero
    */
   public void resetDriveHeading() {
-    gyroIO.resetHeading();
+    poseEstimator.resetRotation(Rotation2d.kZero);
   }
 
   /** Adds a new timestamped vision measurement. */
@@ -392,5 +393,13 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
+  }
+
+  public Command stopWithXCommand() {
+    return runOnce(this::stopWithX);
+  }
+
+  public Command resetDriveHeadingCommand() {
+    return Commands.runOnce(this::resetDriveHeading);
   }
 }
