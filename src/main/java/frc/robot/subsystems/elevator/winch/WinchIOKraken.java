@@ -21,6 +21,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
@@ -37,6 +38,9 @@ public class WinchIOKraken implements WinchIO {
   @Getter private TalonFX leftMotor;
   @Getter private TalonFX rightMotor;
 
+  @Getter private DutyCycleEncoder leftMotorEncoder;
+  @Getter private DutyCycleEncoder rightMotorEncoder;
+
   @Getter private StatusSignal<Voltage> leftVoltage;
   @Getter private StatusSignal<Current> leftSupplyCurrent;
   @Getter private StatusSignal<Current> leftTorqueCurrent;
@@ -48,10 +52,20 @@ public class WinchIOKraken implements WinchIO {
   @Getter private StatusSignal<Temperature> rightTemperature;
 
   /** Contructor for real winch with Krakens */
-  public WinchIOKraken(int leftMotorID, int rightMotorID, CANBusStatusSignalRegistration bus) {
+  public WinchIOKraken(int leftMotorID, 
+                       int rightMotorID, 
+                       int leftMotorEncoderID, 
+                       int rightMotorEncoderID,
+                       CANBusStatusSignalRegistration bus) {
 
     leftMotor = new TalonFX(leftMotorID);
     rightMotor = new TalonFX(rightMotorID);
+
+    leftMotorEncoder = new DutyCycleEncoder(rightMotorID);
+    rightMotorEncoder = new DutyCycleEncoder(rightMotorID);
+
+    leftMotor.setPosition(leftMotorEncoder.get());
+    rightMotor.setPosition(rightMotorEncoder.get());
 
     configureMotors();
     configureClimbLimits();

@@ -9,8 +9,10 @@ public class Ports {
     }
 
     public static class Elevator {
-        public static final int WinchMotor = 3;
-        public static final int WinchEncoder = 4;
+        public static final int LeftWinchMotor = 3;
+        public static final int RightWinchMotor = 4;
+        public static final int LeftWinchEncoder = -1;
+        public static final int RightWinchEncoder = -1;
     }
 
     public static class CoralIntake {

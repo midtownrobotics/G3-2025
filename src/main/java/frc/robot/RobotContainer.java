@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -144,7 +143,11 @@ public class RobotContainer {
             algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller, elevatorCANBusHandler);
 
             // Elevator
-            winchIO = new WinchIOKraken(Ports.Elevator.WinchMotor, Ports.Elevator.WinchEncoder, elevatorCANBusHandler);
+            winchIO = new WinchIOKraken(Ports.Elevator.LeftWinchMotor, 
+                                        Ports.Elevator.RightWinchMotor, 
+                                        Ports.Elevator.LeftWinchEncoder,
+                                        Ports.Elevator.RightWinchEncoder,
+                                        elevatorCANBusHandler);
 
             // Coral Intake
             beltIO = new BeltIONeo(Ports.CoralIntake.Belt);
