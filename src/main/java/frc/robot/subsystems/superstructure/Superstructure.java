@@ -1,7 +1,9 @@
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,6 +12,7 @@ import frc.robot.controls.Controls;
 import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
 import frc.robot.subsystems.coral_intake.CoralIntake;
+import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
 import frc.robot.subsystems.coral_outtake.CoralOuttake;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -17,6 +20,10 @@ import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
@@ -93,7 +100,7 @@ public class Superstructure extends SubsystemBase {
 
     // TODO: Work with somebody to figure out restrictions for each state
     LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
-    CircularConstraint coralIntakeConstraint = new CircularConstraint();
+    LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit,Angle>(CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
     CircularConstraint algaeClawConstraint = new CircularConstraint();
 
     if (Constants.tuningMode.get()) {
@@ -233,13 +240,54 @@ public class Superstructure extends SubsystemBase {
       }
     }
 
+    Angle algaeClawPosition = algaeClaw.getPosition();
+    Angle coralIntakePosition = coralIntake.getPivotPosition();
+    Distance elevatorPosition = elevator.getPosition();
+
+    // TODO: Find positions for consrains
+
+    // If coral intake would intersect elevator due to low elevator
+    if (elevatorPosition.lte(Inches.of(0))) {
+      coralIntakeConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
+    }
+
+    // If elevator would intersect coral intake due to high coral intake
+    if (coralIntakePosition.gte(Degrees.of(0))) {
+      elevatorConstraint.addKeepOutConstraint(Inches.of(0), Inches.of(0));
+    }
+
+    // If elevator would push algae claw into frame
+    if (algaeClawPosition.gte(Degrees.of(0))) {
+      elevatorConstraint.addKeepOutConstraint(Inches.of(0), Inches.of(0));
+    }
+
+    // If algae claw would intersect frame due to low elevator
+    if (elevatorPosition.lte(Inches.of(0))) {
+      algaeClawConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
+    }
+
+    // If algae claw would intersect the coral intake due to low elevator and high intake
+    if (coralIntakePosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0))) {
+      algaeClawConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
+    }
+
+    // If coral inatke would intersect algae claw due to low elevator
+    if (algaeClawPosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0))) {
+      coralIntakeConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
+    }
+
+    // If elevator would push algae claw into coral intake due to low algae claw and high intake
+    if (coralIntakePosition.gte(Degrees.of(0)) && algaeClawPosition.gte(Degrees.of(0))) {
+      elevatorConstraint.addKeepOutConstraint(Inches.of(0), Inches.of(0));
+    }
+
     algaeClaw.setGoal(possibleAlgaeClawStates.iterator().next(), algaeClawConstraint);
     coralIntake.setGoal(possibleCoralIntakeStates.iterator().next(), coralIntakeConstraint);
     coralOuttake.setGoal(possibleCoralOuttakeStates.iterator().next());
     elevator.setGoal(possibleElevatorStates.iterator().next(), elevatorConstraint);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
-  }
+  } 
 
   private boolean isAlgaeClawBlockingIntake() {
     return (
