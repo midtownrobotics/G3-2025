@@ -84,8 +84,8 @@ public class CoralIntake extends SubsystemBase {
     pivotIO.updateInputs(pivotInputs);
     rollerIO.updateInputs(rollerInputs);
     Logger.processInputs(getName() + "/belt", beltInputs);
-    Logger.processInputs(getName() + "/pivot", beltInputs);
-    Logger.processInputs(getName() + "/roller", beltInputs);
+    Logger.processInputs(getName() + "/pivot", pivotInputs);
+    Logger.processInputs(getName() + "/roller", rollerInputs);
 
     // state switch case
 
@@ -106,7 +106,7 @@ public class CoralIntake extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput("CoralIntake/currentState", getCurrentState());
+    Logger.recordOutput("CoralIntake/currentState🍆", getCurrentState());
     Logger.recordOutput("CoralIntake/desiredAngle", desiredAngle);
     Logger.recordOutput("CoralIntake/desiredBeltVoltage", desiredBeltVoltage);
     Logger.recordOutput("CoralIntake/desiredRollerVoltage", desiredRollerVoltage);
