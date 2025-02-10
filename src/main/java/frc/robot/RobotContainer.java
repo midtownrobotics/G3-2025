@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -56,6 +59,8 @@ public class RobotContainer {
   private final Controls controls;
 
   private final Superstructure superstructure;
+
+  SendableChooser<Command> m_autoChooser;
 
   @Getter private final AlgaeClaw algaeClaw;
   @Getter private final CoralIntake coralIntake;
@@ -176,6 +181,9 @@ public class RobotContainer {
     new RobotViz(() -> {
       return null;
     }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition(), () -> algaeClaw.getPosition());
+
+    m_autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
   }
 
   /** Configures bindings to oi */
@@ -250,7 +258,14 @@ public class RobotContainer {
                 }));
   }
 
+  /** Returns the autonomous command */
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    var selected = m_autoChooser.getSelected();
+
+    if (selected == null) {
+      return Commands.print("AHHHHHH");
+    }
+
+    return selected;
   }
 }
