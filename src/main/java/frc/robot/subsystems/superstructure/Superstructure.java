@@ -21,6 +21,7 @@ import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
 import java.util.EnumSet;
@@ -243,9 +244,41 @@ public class Superstructure extends SubsystemBase {
     Angle coralIntakePosition = coralIntake.getPivotPosition();
     Distance elevatorPosition = elevator.getPosition();
 
-    // TODO: Find position
-    if (elevatorPosition.lt(Inches.of(0))) {
-      coralIntakeConstraint.addConstraint(coralIntakeConstraint);
+    // TODO: Find positions for consrains
+
+    // If coral intake would intersect elevator due to low elevator
+    if (elevatorPosition.lte(Inches.of(0))) {
+      coralIntakeConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
+    }
+
+    // If elevator would intersect coral intake due to high coral intake
+    if (coralIntakePosition.gte(Degrees.of(0))) {
+      elevatorConstraint.addKeepOutConstraint(Inches.of(0), Inches.of(0));
+    }
+
+    // If elevator would push algae claw into frame
+    if (algaeClawPosition.gte(Degrees.of(0))) {
+      elevatorConstraint.addKeepOutConstraint(Inches.of(0), Inches.of(0));
+    }
+
+    // If algae claw would intersect frame due to low elevator
+    if (elevatorPosition.lte(Inches.of(0))) {
+      algaeClawConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
+    }
+
+    // If algae claw would intersect the coral intake due to low elevator and high intake
+    if (coralIntakePosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0))) {
+      algaeClawConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
+    }
+
+    // If coral inatke would intersect algae claw due to low elevator
+    if (algaeClawPosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0))) {
+      coralIntakeConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
+    }
+
+    // If elevator would push algae claw into coral intake due to low algae claw and high intake
+    if (coralIntakePosition.gte(Degrees.of(0)) && algaeClawPosition.gte(Degrees.of(0))) {
+      elevatorConstraint.addKeepOutConstraint(Inches.of(0), Inches.of(0));
     }
 
     algaeClaw.setGoal(possibleAlgaeClawStates.iterator().next(), algaeClawConstraint);
