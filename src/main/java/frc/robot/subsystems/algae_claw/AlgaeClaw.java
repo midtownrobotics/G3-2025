@@ -35,16 +35,11 @@ public class AlgaeClaw extends SubsystemBase {
     STACKED_ALGAE_INTAKE(0, -7),
     STACKED_ALGAE_VOMIT(0, 7),
     CLIMB(0, 0),
-    TUNING(),
-    MANUAL();
+    TUNING(0, 0),
+    MANUAL(0, 0);
 
     @Getter private final Angle angle;
     @Getter private final Voltage rollerVoltage;
-
-    private State() {
-      this.angle = null;
-      this.rollerVoltage = null;
-    }
 
     private State(double angle, double rollerVoltage) {
       this.angle = Units.Radians.of(angle);
@@ -80,11 +75,7 @@ public class AlgaeClaw extends SubsystemBase {
    * @return
    */
   public Angle getAngle() {
-    double encoderPosition = wristIO.getEncoderPosition();
-
-    Angle position = Units.Rotations.of(encoderPosition);
-
-    return position;
+    return wristInputs.absolutePosition;
   }
 
   @Override
