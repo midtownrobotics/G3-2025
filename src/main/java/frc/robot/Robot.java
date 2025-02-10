@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.simulation.BatterySimManager;
+import frc.robot.utils.Constants;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -53,7 +54,6 @@ public class Robot extends LoggedRobot {
         break;
 
     }
-
 
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
     // be added.

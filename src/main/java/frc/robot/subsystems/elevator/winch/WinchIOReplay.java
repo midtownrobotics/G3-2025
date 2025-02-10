@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator.winch;
 
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 
 public class WinchIOReplay implements WinchIO {
   @Override
@@ -21,5 +22,11 @@ public class WinchIOReplay implements WinchIO {
   @Override
   public Distance getPosition() {
     throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
+  }
+
+  @Override
+  public void setVoltage(Voltage voltage) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
   }
 }

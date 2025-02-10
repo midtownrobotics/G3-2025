@@ -91,9 +91,12 @@ public class ModuleIOSim implements ModuleIO {
       turnController.reset();
     }
 
+    driveAppliedVolts = MathUtil.clamp(driveAppliedVolts, -12.0, 12.0);
+    turnAppliedVolts = MathUtil.clamp(turnAppliedVolts, -12.0, 12.0);
+
     // Update simulation state
-    driveSim.setInputVoltage(MathUtil.clamp(driveAppliedVolts, -12.0, 12.0));
-    turnSim.setInputVoltage(MathUtil.clamp(turnAppliedVolts, -12.0, 12.0));
+    driveSim.setInputVoltage(driveAppliedVolts);
+    turnSim.setInputVoltage(turnAppliedVolts);
     driveSim.update(0.02);
     turnSim.update(0.02);
 

@@ -14,6 +14,7 @@
 
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix6.sim.Pigeon2SimState;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -38,4 +39,7 @@ public interface GyroIO {
    * Reset the gyro heading to zero
    */
   public void resetHeading();
+
+  /** return simulated state for robot sim */
+  public Pigeon2SimState getPigeon2SimState();
 }

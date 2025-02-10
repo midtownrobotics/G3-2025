@@ -1,5 +1,6 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
+import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
 import org.littletonrobotics.junction.Logger;
@@ -104,11 +105,6 @@ public class WristIOKraken implements WristIO {
   }
 
   @Override
-  public double getEncoderPosition() {
-    return encoder.get();
-  }
-
-  @Override
   public void updateInputs(WristInputs inputs) {
     inputs.connected = wristMotor.isConnected();
     inputs.position = position.getValue();
@@ -117,5 +113,6 @@ public class WristIOKraken implements WristIO {
     inputs.supplyCurrent = supplyCurrent.getValue();
     inputs.torqueCurrent = torqueCurrent.getValue();
     inputs.temperature = temperature.getValue();
+    inputs.absolutePosition = Rotations.of(encoder.get());
   }
 }

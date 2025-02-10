@@ -1,17 +1,22 @@
-package frc.robot.sensors.vision;
+package frc.robot.sensors;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.sensors.VisionObservation;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.sensors.vision.VisionIO;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
 import frc.robot.sensors.vision.VisionIO.TargetObservation;
+import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-public class AlgaeCamera extends SubsystemBase {
-    private final VisionIO visionController;
+
+public class AlgaeCamera extends AprilTagCamera {
     private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
+    private final Time expirationDuration = Units.Milliseconds.of(200);
+    private Time lastObservationTimestamp;
+    private TargetObservation lastObservation;
 
     /** Enum representing the different pipelines that can be used by the camera controller. */
     @RequiredArgsConstructor
@@ -23,11 +28,23 @@ public class AlgaeCamera extends SubsystemBase {
         @Getter private final int pipelineID;
     }
 
+    /**
+     * Constructor for AlgaeCamera
+     * @param visionController the visionIO object used by the camera
+     */    
+    public AlgaeCamera(VisionIO visionController) {
+        super(visionController);
+    }
+
     @Getter private Pipeline currentPipeline = Pipeline.APRILTAG_MT1;
 
     @Override
     public void periodic() {
-        visionController.updateInputs(visionInputs);
+        super.getVisionController().updateInputs(visionInputs);
+        if (visionInputs.targetSeen) {
+            lastObservation = visionInputs.latestTargetObservation;
+            lastObservationTimestamp = Units.Seconds.of(Timer.getFPGATimestamp());
+        }
     }
 
     /**
@@ -38,10 +55,16 @@ public class AlgaeCamera extends SubsystemBase {
      * {@code null} if no vision observation was found or the current pipeline is not set to APRILTAG.
      */
     public PoseObservation getVisionObservation() {
-        if (currentPipeline == Pipeline.APRILTAG_MT1 && visionInputs.poseObservations.length > 0) {
+        if (currentPipeline != Pipeline.APRILTAG_MT1 && currentPipeline != Pipeline.APRILTAG_MT2) {
+            return null;
+        }
+        if (visionInputs.poseObservations.length == 0 && visionInputs.poseObservationsMegaTag2.length == 0){
+            return null;
+        }
+        if (currentPipeline == Pipeline.APRILTAG_MT1) {
             return visionInputs.poseObservations[visionInputs.poseObservations.length-1];
         }
-        if (currentPipeline == Pipeline.APRILTAG_MT2 && visionInputs.poseObservationsMegaTag2.length > 0) {
+        if (currentPipeline == Pipeline.APRILTAG_MT2) {
             return visionInputs.poseObservationsMegaTag2[visionInputs.poseObservationsMegaTag2.length-1];
         }
         return null;
@@ -54,8 +77,11 @@ public class AlgaeCamera extends SubsystemBase {
      * set to ALGAE.
      */
     public TargetObservation getAlgaeOffset() {
-        if (currentPipeline == Pipeline.ALGAE) {
-            return visionInputs.latestTargetObservation;
+        if (
+            Units.Seconds.of(Timer.getFPGATimestamp()).minus(lastObservationTimestamp).lte(expirationDuration) 
+            && currentPipeline == Pipeline.ALGAE
+        ) {
+            return lastObservation;
         }
         return null;
     }

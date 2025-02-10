@@ -19,11 +19,16 @@ public interface PivotIO {
     public Temperature temperature = Units.Fahrenheit.zero();
 
     public Angle absolutePosition = Units.Radians.zero();
+    public Angle offsetedPosition = Units.Radians.zero();
     public AngularVelocity absoluteVelocity = Units.RPM.zero();
   }
 
   /** sets position */
   public void setPosition(Angle position);
+
+  /** Sets the motor voltage. */
+  public void setVoltage(Voltage voltage);
+
   /**
    * Update input class for Pivot
    *

@@ -39,6 +39,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -250,6 +252,14 @@ public class Drive extends SubsystemBase {
 
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+
+    if (Constants.currentMode == Mode.SIM) {
+      AngularVelocity yawSpeed = RadiansPerSecond.of(discreteSpeeds.omegaRadiansPerSecond).unaryMinus();
+      Angle yawIncrement = yawSpeed.times(Seconds.of(0.02));
+      gyroIO.getPigeon2SimState().setAngularVelocityZ(yawSpeed);
+      gyroIO.getPigeon2SimState().addYaw(yawIncrement);
+    }
+
   }
 
   /** Runs the drive in a straight line with the specified drive output. */

@@ -20,11 +20,15 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.sim.Pigeon2SimState;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.utils.CANBusStatusSignalRegistration;
+import frc.robot.utils.Constants;
+import frc.robot.utils.Constants.Mode;
+import java.util.Date;
 import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
@@ -33,6 +37,7 @@ public class GyroIOPigeon2 implements GyroIO {
       new Pigeon2(
           TunerConstants.DrivetrainConstants.Pigeon2Id,
           TunerConstants.DrivetrainConstants.CANBusName);
+
   private final StatusSignal<Angle> yaw = pigeon.getYaw();
   private final Queue<Double> yawPositionQueue;
   private final Queue<Double> yawTimestampQueue;
@@ -43,7 +48,12 @@ public class GyroIOPigeon2 implements GyroIO {
    * Constructor for Pigeon2 IO
    */
   public GyroIOPigeon2(CANBusStatusSignalRegistration bus) {
-    pigeon.getConfigurator().apply(new Pigeon2Configuration());
+    pigeon.getConfigurator().apply(
+      new Pigeon2Configuration());
+    if (Constants.currentMode == Mode.SIM) {
+      pigeon.getSimState().setRawYaw(0);
+    }
+    pigeon.getSimState().setRawYaw(0);
     pigeon.getConfigurator().setYaw(0.0);
     yaw.setUpdateFrequency(Drive.ODOMETRY_FREQUENCY);
     yawVelocity.setUpdateFrequency(50.0);
@@ -54,6 +64,11 @@ public class GyroIOPigeon2 implements GyroIO {
     bus
       .register(yaw)
       .register(yawVelocity);
+  }
+
+  @Override
+  public Pigeon2SimState getPigeon2SimState() {
+      return pigeon.getSimState();
   }
 
   @Override
@@ -68,6 +83,17 @@ public class GyroIOPigeon2 implements GyroIO {
         yawPositionQueue.stream()
             .map((Double value) -> Rotation2d.fromDegrees(value))
             .toArray(Rotation2d[]::new);
+    if (Constants.currentMode == Mode.SIM) {
+      inputs.odometryYawTimestamps = new double[] {new Date().getTime()};
+      inputs.odometryYawPositions = new Rotation2d[] {inputs.yawPosition};
+    } else {
+      inputs.odometryYawTimestamps =
+        yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
+      inputs.odometryYawPositions =
+        yawPositionQueue.stream()
+            .map((Double value) -> Rotation2d.fromDegrees(value))
+            .toArray(Rotation2d[]::new);
+    }
     yawTimestampQueue.clear();
     yawPositionQueue.clear();
   }

@@ -1,24 +1,33 @@
 package frc.robot.subsystems.coral_intake;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
-import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
+import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
 
-  public CircularConstraint coralIntakeConstraint = new CircularConstraint();
+  public LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit, Angle>(CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
   public enum State {
     // TODO: find angle out of the way of the carriage
@@ -54,8 +63,6 @@ public class CoralIntake extends SubsystemBase {
 
   private @Getter State currentState = State.STOW;
 
-  private final Angle pivotOffset = Units.Radians.of(0);
-
   // private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
 
   private final BeltIO beltIO;
@@ -64,6 +71,8 @@ public class CoralIntake extends SubsystemBase {
   private final PivotInputsAutoLogged pivotInputs = new PivotInputsAutoLogged();
   private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
+
+  private SysIdRoutine routine;
 
   /**
    * Initializes Coral Intake with IO classes
@@ -75,6 +84,21 @@ public class CoralIntake extends SubsystemBase {
     this.beltIO = beltIO;
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
+
+    SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
+        pivotIO::setVoltage,
+        this::motorSysIdLog,
+        this
+    );
+
+    routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(3)), sysIdMech);
+  }
+
+  private void motorSysIdLog(SysIdRoutineLog log) {
+    log.motor("pivotMotor")
+      .voltage(pivotInputs.appliedVoltage)
+      .angularPosition(pivotInputs.absolutePosition)
+      .angularVelocity(pivotInputs.velocity);
   }
 
   @Override
@@ -99,6 +123,8 @@ public class CoralIntake extends SubsystemBase {
         pivotIO.setPosition(desiredAngle);
         beltIO.setVoltage(desiredBeltVoltage);
         break;
+      case TUNING:
+        break;
       default:
         pivotIO.setPosition(desiredAngle);
         beltIO.setVoltage(desiredBeltVoltage);
@@ -115,12 +141,26 @@ public class CoralIntake extends SubsystemBase {
   }
 
   /** Sets the goal of the coral outtake. */
-  public void setGoal(State state, CircularConstraint constraint) {
+  public void setGoal(State state, LinearConstraint<AngleUnit, Angle> constraint) {
     currentState = state;
     coralIntakeConstraint = constraint;
   }
 
   public Angle getPivotPosition() {
-    return pivotInputs.absolutePosition.plus(pivotOffset);
+    return pivotInputs.offsetedPosition;
+  }
+
+  /**
+   * Runs the sysIdQuasistatic test on the coral intake.
+   */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return routine.quasistatic(direction);
+  }
+
+  /**
+   * Runs the sysIdDynamic test on the coral intake.
+   */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return routine.dynamic(direction);
   }
 }

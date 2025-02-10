@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -16,6 +15,7 @@ import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
+import frc.robot.commands.DriveCommands;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
@@ -37,6 +37,7 @@ import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.drivetrain.GyroIO;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon2;
 import frc.robot.subsystems.drivetrain.ModuleIO;
+import frc.robot.subsystems.drivetrain.ModuleIOSim;
 import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.elevator.Elevator;
@@ -47,6 +48,7 @@ import frc.robot.subsystems.elevator.winch.WinchIOSim;
 import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.CANBusStatusSignalRegistration;
+import frc.robot.utils.Constants;
 import frc.robot.utils.RobotViz;
 import lombok.Getter;
 
@@ -62,13 +64,11 @@ public class RobotContainer {
   @Getter private final Elevator elevator;
   @Getter private final Drive drive;
 
-  @Getter private CANBusStatusSignalRegistration elevatorCANBusHandler;
-  @Getter private CANBusStatusSignalRegistration driveCANBusHandler;
+  @Getter private CANBusStatusSignalRegistration elevatorCANBusHandler = new CANBusStatusSignalRegistration();
+  @Getter private CANBusStatusSignalRegistration driveCANBusHandler = new CANBusStatusSignalRegistration();
 
   /** RobotContainer initialization */
   public RobotContainer() {
-    controls = new MatchXboxControls(0, 1);
-
     // Algae Claw
     WristIO wristIO;
     RollerIO algaeClawRollerIO;
@@ -109,7 +109,6 @@ public class RobotContainer {
             rollerIO = new RollerIOReplay();
 
             // Drive
-            // TODO: Understand sim/replay
             gyroIO = new GyroIOPigeon2(driveCANBusHandler);
             flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
             frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
@@ -133,12 +132,11 @@ public class RobotContainer {
             rollerIO = new RollerIOSim();
 
             // Drive
-            // TODO: Understand sim/replay
             gyroIO = new GyroIOPigeon2(driveCANBusHandler);
-            flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
-            frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
-            blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);
-            brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
+            flModuleIO = new ModuleIOSim(TunerConstants.FrontLeft);
+            frModuleIO = new ModuleIOSim(TunerConstants.FrontRight);
+            blModuleIO = new ModuleIOSim(TunerConstants.BackLeft);
+            brModuleIO = new ModuleIOSim(TunerConstants.BackRight);
             break;
         default:
             // Algae Claw
@@ -171,6 +169,9 @@ public class RobotContainer {
     coralOuttake = new CoralOuttake(rollerIO);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
+    controls = new MatchXboxControls(0, 1);
+    configureBindings();
+
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
 
     new RobotViz(() -> {
@@ -185,7 +186,7 @@ public class RobotContainer {
   private void configureBindings() {
     // Driver
 
-    drive.runVelocity(new ChassisSpeeds(controls.getDriveLeft(), controls.getDriveForward(), controls.getDriveRotation()));
+    drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
 
     controls
         .resetDriveHeading()
