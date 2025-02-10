@@ -36,6 +36,11 @@ public interface VisionIO {
     public boolean connected = false;
 
     /**
+     * Indicates whether the vision system detects a target
+     */
+    public boolean targetSeen = false;
+
+    /**
      * The latest target observation, including the horizontal and vertical offsets.
      */
     public TargetObservation latestTargetObservation =

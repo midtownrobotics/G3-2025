@@ -1,14 +1,18 @@
-package frc.robot.sensors.vision;
+package frc.robot.sensors;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.sensors.VisionObservation;
+import frc.lib.VirtualSubsystem;
+import frc.robot.sensors.vision.VisionIO;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
+import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AprilTagCamera extends SubsystemBase {
-  private final VisionIO visionController;
+public class AprilTagCamera extends VirtualSubsystem {
+  @Getter private final VisionIO visionController;
   private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
+
+
 
   @Override
   public void periodic() {

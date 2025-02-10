@@ -13,4 +13,5 @@ public class WristIOReplay implements WristIO {
   public void updateInputs(WristInputs inputs) {
     throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
   }
+  
 }

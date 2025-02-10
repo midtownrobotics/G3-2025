@@ -2,9 +2,9 @@ package frc.robot.subsystems.elevator.winch;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
@@ -13,8 +13,8 @@ public interface WinchIO {
   @AutoLog
   public class WinchMotorInputs {
     public boolean connected = true;
-    public Angle position = Units.Radians.zero();
-    public AngularVelocity velocity = Units.RPM.zero();
+    public Distance position = Units.Inches.zero();
+    public LinearVelocity velocity = Units.InchesPerSecond.zero();
     public Voltage appliedVoltage = Units.Volt.zero();
     public Current supplyCurrent = Units.Amp.zero();
     public Current torqueCurrent = Units.Amp.zero();
@@ -44,6 +44,11 @@ public interface WinchIO {
 
   /** Gets the position of the winch. */
   public Distance getPosition();
+
+  /**
+   * Sets the motor voltage.
+   */
+  public void setVoltage(Voltage voltage);
 
   /**
    * Updates input class for Winch

@@ -410,7 +410,7 @@ public class Limelight {
   /**
    * Retrieves the horizontal offset of the detected target from the camera center.
    *
-   * @return The horizontal offset in pixels.
+   * @return The horizontal offset in degrees.
    */
   public double getHorizontalOffset() {
     return getStats()[4];
@@ -419,7 +419,7 @@ public class Limelight {
   /**
    * Retrieves the vertical offset of the detected target from the camera center.
    *
-   * @return The vertical offset in pixels.
+   * @return The vertical offset in degrees.
    */
   public double getVerticalOffset() {
     return getStats()[5];

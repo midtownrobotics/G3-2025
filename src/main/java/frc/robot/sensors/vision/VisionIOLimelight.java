@@ -3,6 +3,7 @@ package frc.robot.sensors.vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Units;
 import frc.lib.Limelight;
 import frc.robot.sensors.VisionObservation;
 import java.util.function.Supplier;
@@ -41,13 +42,13 @@ public class VisionIOLimelight implements VisionIO {
 
         limelight.setRobotYaw(poseSupplier.get().getRotation());
 
+        inputs.targetSeen = limelight.isTargetSeen();
+
         // Update target observation with horizontal and vertical offsets
-        if (limelight.isTargetSeen()) {
-            inputs.latestTargetObservation = new TargetObservation(
-                new Rotation2d(limelight.getHorizontalOffset()),
-                new Rotation2d(limelight.getVerticalOffset())
-            );
-        }
+        inputs.latestTargetObservation = new TargetObservation(
+            new Rotation2d(Units.Degrees.of(limelight.getHorizontalOffset()).in(Units.Radians)),
+            new Rotation2d(Units.Degrees.of(limelight.getVerticalOffset()).in(Units.Radians))
+        );
 
         // Retrieve the robot's pose estimate from the Limelight
         VisionObservation pose = limelight.getBotPoseEstimate();

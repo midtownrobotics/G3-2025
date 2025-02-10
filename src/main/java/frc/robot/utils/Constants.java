@@ -19,9 +19,18 @@ public class Constants {
   public static final LoggedNetworkBoolean tuningMode = new LoggedNetworkBoolean("TuningMode", false);
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
 
-  public static enum Mode {
+  public enum Mode {
     REAL,
     SIM,
     REPLAY
+  }
+
+  public static final Mode MODE;
+  private static final boolean enableReplay = false;
+
+  static {
+    if (RobotBase.isReal()) MODE = Mode.REAL;
+    else if (enableReplay) MODE = Mode.REPLAY;
+    else MODE = Mode.SIM;
   }
 }

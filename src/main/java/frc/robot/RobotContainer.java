@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -48,6 +48,7 @@ import frc.robot.subsystems.elevator.winch.WinchIOSim;
 import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.CANBusStatusSignalRegistration;
+import frc.robot.utils.Constants;
 import frc.robot.utils.RobotViz;
 import lombok.Getter;
 
@@ -108,7 +109,6 @@ public class RobotContainer {
             rollerIO = new RollerIOReplay();
 
             // Drive
-            // TODO: Understand sim/replay
             gyroIO = new GyroIOPigeon2(driveCANBusHandler);
             flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
             frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
@@ -132,7 +132,6 @@ public class RobotContainer {
             rollerIO = new RollerIOSim();
 
             // Drive
-            // TODO: Understand sim/replay
             gyroIO = new GyroIOPigeon2(driveCANBusHandler);
             flModuleIO = new ModuleIOSim(TunerConstants.FrontLeft);
             frModuleIO = new ModuleIOSim(TunerConstants.FrontRight);
