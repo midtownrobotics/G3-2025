@@ -172,6 +172,13 @@ public class Drive extends SubsystemBase {
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
 
+    if (Constants.currentMode == Mode.SIM) {
+      AngularVelocity yawSpeed = RadiansPerSecond.of(getChassisSpeeds().omegaRadiansPerSecond);
+      Angle yawIncrement = yawSpeed.times(Seconds.of(0.02));
+      gyroIO.getPigeon2SimState().setAngularVelocityZ(yawSpeed);
+      gyroIO.getPigeon2SimState().addYaw(yawIncrement);
+    }
+
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -253,14 +260,6 @@ public class Drive extends SubsystemBase {
 
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
-
-    if (Constants.currentMode == Mode.SIM) {
-      AngularVelocity yawSpeed = RadiansPerSecond.of(discreteSpeeds.omegaRadiansPerSecond).unaryMinus();
-      Angle yawIncrement = yawSpeed.times(Seconds.of(0.02));
-      gyroIO.getPigeon2SimState().setAngularVelocityZ(yawSpeed);
-      gyroIO.getPigeon2SimState().addYaw(yawIncrement);
-    }
-
   }
 
   /** Runs the drive in a straight line with the specified drive output. */
