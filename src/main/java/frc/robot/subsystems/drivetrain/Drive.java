@@ -395,10 +395,12 @@ public class Drive extends SubsystemBase {
     };
   }
 
+  /** Returns a command to stop with X */
   public Command stopWithXCommand() {
     return runOnce(this::stopWithX);
   }
 
+  /** Returns a command to reset driver heading */
   public Command resetDriveHeadingCommand() {
     return Commands.runOnce(this::resetDriveHeading);
   }
