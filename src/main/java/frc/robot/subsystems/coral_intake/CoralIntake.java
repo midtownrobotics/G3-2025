@@ -16,8 +16,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
-import frc.robot.subsystems.coral_intake.belt.BeltIO;
-import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -65,8 +63,8 @@ public class CoralIntake extends SubsystemBase {
 
   // private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
 
-  private final BeltIO beltIO;
-  private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
+  private final RollerIO beltIO;
+  private final RollerInputsAutoLogged beltInputs = new RollerInputsAutoLogged();
   private final PivotIO pivotIO;
   private final PivotInputsAutoLogged pivotInputs = new PivotInputsAutoLogged();
   private final RollerIO rollerIO;
@@ -80,7 +78,7 @@ public class CoralIntake extends SubsystemBase {
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(BeltIO beltIO, PivotIO pivotIO, RollerIO rollerIO) {
+  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO) {
     this.beltIO = beltIO;
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
@@ -108,8 +106,8 @@ public class CoralIntake extends SubsystemBase {
     pivotIO.updateInputs(pivotInputs);
     rollerIO.updateInputs(rollerInputs);
     Logger.processInputs(getName() + "/belt", beltInputs);
-    Logger.processInputs(getName() + "/pivot", beltInputs);
-    Logger.processInputs(getName() + "/roller", beltInputs);
+    Logger.processInputs(getName() + "/pivot", pivotInputs);
+    Logger.processInputs(getName() + "/roller", rollerInputs);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
 
