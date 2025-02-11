@@ -3,6 +3,8 @@ package frc.robot.subsystems.algae_claw.wrist;
 import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -18,11 +20,25 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.lib.LoggedTunableNumber;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
 
 public class WristIOKraken implements WristIO {
+
+  private class WristConfig {
+    private LoggedTunableNumber p, i, d, s, g, a, v;
+    private WristConfig() {
+      p = new LoggedTunableNumber("WristIOKraken/P", 0);
+      i = new LoggedTunableNumber("WristIOKraken/I", 0);
+      d = new LoggedTunableNumber("WristIOKraken/D", 0);
+      s = new LoggedTunableNumber("WristIOKraken/S", 0);
+      g = new LoggedTunableNumber("WristIOKraken/G", 0);
+      a = new LoggedTunableNumber("WristIOKraken/A", 0);
+      v = new LoggedTunableNumber("WristIOKraken/V", 0);
+    }
+  }
 
   @Getter private TalonFX wristMotor;
   private DutyCycleEncoder encoder;
@@ -60,6 +76,8 @@ public class WristIOKraken implements WristIO {
             .withSupplyCurrentLowerTime(1);
 
     wristMotor.getConfigurator().apply(krakenConfig);
+
+    wristMotor.setPosition(encoder.get());
 
     position = wristMotor.getPosition();
     velocity = wristMotor.getVelocity();
