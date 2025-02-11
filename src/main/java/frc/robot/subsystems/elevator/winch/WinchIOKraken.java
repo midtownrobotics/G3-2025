@@ -75,10 +75,11 @@ public class WinchIOKraken implements WinchIO {
     leftTorqueCurrent = leftMotor.getTorqueCurrent();
     leftTemperature = leftMotor.getDeviceTemp();
 
-    tryUntilOk(5, () -> leftVoltage.setUpdateFrequency(50));
-    tryUntilOk(5, () -> leftSupplyCurrent.setUpdateFrequency(50));
-    tryUntilOk(5, () -> leftTorqueCurrent.setUpdateFrequency(50));
-    tryUntilOk(5, () -> leftTemperature.setUpdateFrequency(50));
+    tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(50, 
+                                                                              leftVoltage, 
+                                                                              leftSupplyCurrent, 
+                                                                              leftTorqueCurrent, 
+                                                                              leftTemperature));
 
     tryUntilOk(5, () -> leftMotor.optimizeBusUtilization());
 
@@ -87,10 +88,11 @@ public class WinchIOKraken implements WinchIO {
     rightTorqueCurrent = rightMotor.getTorqueCurrent();
     rightTemperature = rightMotor.getDeviceTemp();
 
-    tryUntilOk(5, () -> rightVoltage.setUpdateFrequency(50));
-    tryUntilOk(5, () -> rightSupplyCurrent.setUpdateFrequency(50));
-    tryUntilOk(5, () -> rightTorqueCurrent.setUpdateFrequency(50));
-    tryUntilOk(5, () -> rightTemperature.setUpdateFrequency(50));
+    tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(50, 
+                                                                              rightVoltage, 
+                                                                              rightSupplyCurrent, 
+                                                                              rightTorqueCurrent, 
+                                                                              rightTemperature));
 
     tryUntilOk(5, () -> rightMotor.optimizeBusUtilization());
 
