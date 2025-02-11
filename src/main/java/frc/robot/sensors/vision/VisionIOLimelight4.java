@@ -42,7 +42,7 @@ public class VisionIOLimelight4 extends VisionIOLimelight{
             limelight.setIMUMode(IMUMode.DISABLED_IMU_MODE.IMUModeID);
             currentMode = IMUMode.DISABLED_IMU_MODE;
         }
-        
-        
+
+
     }
 }
