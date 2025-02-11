@@ -37,8 +37,8 @@ public class Elevator extends SubsystemBase {
     STATION(0),
     ALGAE_GROUND(0),
     ALGAE_STACKED(0),
-    TUNING,
-    MANUAL;
+    TUNING(0),
+    MANUAL(0);
 
     private @Getter Distance height;
 
