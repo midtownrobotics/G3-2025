@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
+import frc.robot.sensors.Photoelectric;
 import frc.robot.subsystems.coral_intake.belt.BeltIO;
 import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
@@ -24,53 +25,76 @@ import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
+import org.opencv.photo.Photo;
 
 public class CoralIntake extends SubsystemBase {
 
   public LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit, Angle>(CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
-  public enum State {
-    // TODO: find angle out of the way of the carriage
-    STOW(0,0,0),
-    GROUND_INTAKE(0,7,0),
-    GROUND_VOMIT(0,-7,0),
-    STATION_INTAKE(0, 0, 0),
-    HANDOFF(0,0,7),
-    REVERSE_HANDOFF(0,0,-7),
-    // TODO: find angle out of the way of climbing probably almost all the way down
-    CLIMB(0,0,0),
-    TUNING(0,0,0),
-    MANUAL(0,0,0);
+  public enum Goal {
+    GROUND_INTAKE(0,7),
+    GROUND_VOMIT(-7, GROUND_INTAKE),
+    STATION_INTAKE(0, 0),
+    HANDOFF(120,0),
+    STOW(HANDOFF),
+    REVERSE_HANDOFF(HANDOFF),
+    CLIMB(45,0),
+    TUNING(0,0),
+    MANUAL(0,0);
 
     private @Getter Angle angle;
     private @Getter Voltage rollerVoltage;
-    private @Getter Voltage beltVoltage;
 
     /**
-     * State has angle, beltVoltage, and rollerVoltage associated.
+     * Goal has angle, and rollerVoltage associated.
      *
      * @param angle
      * @param rollerVoltage
-     * @param beltVoltage
      */
 
-    private State(double angle, double rollerVoltage, double beltVoltage) {
+    private Goal(double angle, double rollerVoltage) {
       this.angle = Units.Radians.of(angle);
       this.rollerVoltage = Units.Volts.of(rollerVoltage);
-      this.beltVoltage = Units.Volts.of(beltVoltage);
+    }
+
+    /**
+     * Goal has angle, and rollerVoltage associated.
+     * @param goal The other goal to copy the angle and roller voltage of.
+     * @param beltVoltage The goal belt voltage.
+     */
+    private Goal(Goal goal) {
+      this(goal.getAngle().in(Units.Radians), goal.getRollerVoltage().in(Units.Volts));
+    }
+
+    /**
+     * Goal has angle, and rollerVoltage associated.
+     * @param rollerVoltage The goal rpller voltage.
+     * @param goal The other goal to copy the angle and belt voltage of.
+     */
+    private Goal(double rollerVoltage, Goal goal) {
+      this(goal.getAngle().in(Units.Radians), rollerVoltage);
     }
   }
 
-  private @Getter State currentState = State.STOW;
+  private enum CoralGamePieceState {
+    IDLE,
+    INTAKING,
+    INTAKE_ADJUSTING,
+    INTAKE_HOLDING
+  }
 
-  // private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
+  private CoralGamePieceState currentCoralGamePieceState;
+  private @Getter Goal currentGoal = Goal.STOW;
 
-  private final BeltIO beltIO;
-  private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
+  private final Photoelectric handoffSensor;
+  private final Photoelectric centerSensor;
+
   private final PivotIO pivotIO;
   private final PivotInputsAutoLogged pivotInputs = new PivotInputsAutoLogged();
   private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
+  private final BeltIO beltIO;
+  private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
 
   private SysIdRoutine routine;
 
@@ -80,10 +104,12 @@ public class CoralIntake extends SubsystemBase {
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(BeltIO beltIO, PivotIO pivotIO, RollerIO rollerIO) {
-    this.beltIO = beltIO;
+  public CoralIntake(BeltIO beltIO, PivotIO pivotIO, RollerIO rollerIO, Photoelectric centerSensor, Photoelectric handoffSensor) {
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
+    this.beltIO = beltIO;
+    this.centerSensor = centerSensor;
+    this.handoffSensor = handoffSensor;
 
     SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         pivotIO::setVoltage,
@@ -104,25 +130,26 @@ public class CoralIntake extends SubsystemBase {
   @Override
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
-    beltIO.updateInputs(beltInputs);
     pivotIO.updateInputs(pivotInputs);
     rollerIO.updateInputs(rollerInputs);
-    Logger.processInputs(getName() + "/belt", beltInputs);
+    beltIO.updateInputs(beltInputs);
     Logger.processInputs(getName() + "/pivot", beltInputs);
     Logger.processInputs(getName() + "/roller", beltInputs);
+    Logger.processInputs(getName() + "/belt", beltInputs);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
 
-    // state switch case
+    Voltage desiredBeltVoltage;
+    Voltage desiredRollerVoltage = currentGoal.getRollerVoltage();
 
-    Angle desiredAngle = currentState.getAngle();
-    Voltage desiredBeltVoltage = currentState.getBeltVoltage();
-    Voltage desiredRollerVoltage = currentState.getRollerVoltage();
+    // Goal switch case
 
-    switch (getCurrentState()) {
+    Angle desiredAngle = currentGoal.getAngle();
+
+    switch (getCurrentGoal()) {
       case HANDOFF:
-        rollerIO.setVoltage(desiredRollerVoltage);
         pivotIO.setPosition(desiredAngle);
+        rollerIO.setVoltage(desiredRollerVoltage);
         beltIO.setVoltage(desiredBeltVoltage);
         break;
       case TUNING:
@@ -136,8 +163,8 @@ public class CoralIntake extends SubsystemBase {
   }
 
   /** Sets the goal of the coral outtake. */
-  public void setGoal(State state, LinearConstraint<AngleUnit, Angle> constraint) {
-    currentState = state;
+  public void setGoal(Goal goal, LinearConstraint<AngleUnit, Angle> constraint) {
+    currentGoal = goal;
     coralIntakeConstraint = constraint;
   }
 

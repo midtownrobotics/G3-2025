@@ -19,7 +19,7 @@ import org.littletonrobotics.junction.Logger;
 public class AlgaeClaw extends SubsystemBase {
   public CircularConstraint wristConstraint = new CircularConstraint();
 
-  public enum State {
+  public enum Goal {
     STOW(0, 0),
     VOMIT(0, 7),
     START_POSITION(0, 0),
@@ -41,14 +41,14 @@ public class AlgaeClaw extends SubsystemBase {
     @Getter private final Angle angle;
     @Getter private final Voltage rollerVoltage;
 
-    private State(double angle, double rollerVoltage) {
+    private Goal(double angle, double rollerVoltage) {
       this.angle = Units.Radians.of(angle);
       this.rollerVoltage = Units.Volts.of(rollerVoltage);
     }
 
   }
 
-  private @Getter State currentState = State.STOW;
+  private @Getter Goal currentGoal = Goal.STOW;
   private static final Current kCurrentThreshold = Units.Amps.of(5);
 
   private final RollerIO rollerIO;
@@ -87,8 +87,8 @@ public class AlgaeClaw extends SubsystemBase {
     rollerIO.updateInputs(rollerInputs);
     wristIO.updateInputs(wristInputs);
 
-    // state switch case
-    switch (getCurrentState()) {
+    // goal switch case
+    switch (getCurrentGoal()) {
       case BARGE_SHOOT_BACK:
       case BARGE_SHOOT_FRONT:
       case GROUND_INTAKE:
@@ -98,15 +98,15 @@ public class AlgaeClaw extends SubsystemBase {
       case STACKED_ALGAE_INTAKE:
       case STACKED_ALGAE_VOMIT:
       case VOMIT:
-        rollerIO.setVoltage(getCurrentState().getRollerVoltage());
-        wristIO.setPosition(wristConstraint.getClosestToDesired(wristInputs.position, currentState.getAngle()));
+        rollerIO.setVoltage(getCurrentGoal().getRollerVoltage());
+        wristIO.setPosition(wristConstraint.getClosestToDesired(wristInputs.position, currentGoal.getAngle()));
         if (hasAlgae) {
           if (rollerInputs.torqueCurrent.gte(kCurrentThreshold)) { hasAlgae = false; }
         }
         break;
       default:
-        rollerIO.setVoltage(getCurrentState().getRollerVoltage());
-        wristIO.setPosition(wristConstraint.getClosestToDesired(wristInputs.position, currentState.getAngle()));
+        rollerIO.setVoltage(getCurrentGoal().getRollerVoltage());
+        wristIO.setPosition(wristConstraint.getClosestToDesired(wristInputs.position, currentGoal.getAngle()));
         break;
     }
 
@@ -115,8 +115,8 @@ public class AlgaeClaw extends SubsystemBase {
   }
 
   /** Sets the goal of the coral outtake. */
-  public void setGoal(State state, CircularConstraint constraint) {
-    currentState = state;
+  public void setGoal(Goal goal, CircularConstraint constraint) {
+    currentGoal = goal;
     wristConstraint = constraint;
   }
 
