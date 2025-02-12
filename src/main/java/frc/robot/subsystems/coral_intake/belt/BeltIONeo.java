@@ -42,3 +42,4 @@ public class BeltIONeo implements BeltIO {
     inputs.temperature = Units.Celsius.of(beltMotor.getMotorTemperature());
   }
 }
+
