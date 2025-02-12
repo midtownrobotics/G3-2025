@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -189,6 +190,20 @@ public class RobotContainer {
     new RobotViz(() -> {
       return null;
     }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition(), () -> algaeClaw.getPosition());
+
+    NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
+      Commands.print("Raising Elevator..."),
+      Commands.waitSeconds(1),
+      Commands.print("Scoring..."),
+      Commands.waitSeconds(0.5),
+      Commands.print("Lowering Elevator..."),
+      Commands.waitSeconds(0.3),
+      Commands.print("Done.")));
+
+    NamedCommands.registerCommand("IntakeFromLoadingStation", Commands.sequence(
+      Commands.print("Intaking..."),
+      Commands.waitSeconds(0.7),
+      Commands.print("Done.")));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);

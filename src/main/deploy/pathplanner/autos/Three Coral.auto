@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start to 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef 3 to Loading Station"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeFromLoadingStation"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Loading Station to Reef 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef 4 to Loading Station"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeFromLoadingStation"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Loading Station to Reef 5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
