@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.littletonrobotics.junction.Logger;
+
 public class Superstructure extends SubsystemBase {
   private ControllerPrioritySubset controllerPrioritySubset = new ControllerPrioritySubset();
 
@@ -248,36 +250,43 @@ public class Superstructure extends SubsystemBase {
 
     // If coral intake would intersect elevator due to low elevator
     if (elevatorPosition.lte(Inches.of(0))) {
+      Logger.recordOutput("Superstructure/Constraints/IntakeBlockedByElevator", elevatorPosition.lte(Inches.of(0)));
       coralIntakeConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
     }
 
     // If elevator would intersect coral intake due to high coral intake
     if (coralIntakePosition.gte(Degrees.of(0))) {
+       Logger.recordOutput("Superstructure/Constraints/ElevatorBlockedByIntake", coralIntakePosition.gte(Degrees.of(0)));
       elevatorConstraint.addKeepOutConstraint(Inches.of(0), Inches.of(0));
     }
 
     // If elevator would push algae claw into frame
     if (algaeClawPosition.gte(Degrees.of(0))) {
+       Logger.recordOutput("Superstructure/Constraints/ElevatorBlockedByClaw", algaeClawPosition.gte(Degrees.of(0)));
       elevatorConstraint.addKeepOutConstraint(Inches.of(0), Inches.of(0));
     }
 
     // If algae claw would intersect frame due to low elevator
     if (elevatorPosition.lte(Inches.of(0))) {
+       Logger.recordOutput("Superstructure/Constraints/ClawBlockedByElevator", elevatorPosition.lte(Inches.of(0)));
       algaeClawConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
     }
 
     // If algae claw would intersect the coral intake due to low elevator and high intake
     if (coralIntakePosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0))) {
+       Logger.recordOutput("Superstructure/Constraints/ClawBlockedByIntake", coralIntakePosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0)));
       algaeClawConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
     }
 
     // If coral inatke would intersect algae claw due to low elevator
     if (algaeClawPosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0))) {
+       Logger.recordOutput("Superstructure/Constraints/IntakeBlockedByClaw", algaeClawPosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0)));
       coralIntakeConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
     }
 
     // If elevator would push algae claw into coral intake due to low algae claw and high intake
     if (coralIntakePosition.gte(Degrees.of(0)) && algaeClawPosition.gte(Degrees.of(0))) {
+       Logger.recordOutput("Superstructure/Constraints/ElevatorBlockedByBoth", coralIntakePosition.gte(Degrees.of(0)) && algaeClawPosition.gte(Degrees.of(0)));
       elevatorConstraint.addKeepOutConstraint(Inches.of(0), Inches.of(0));
     }
 

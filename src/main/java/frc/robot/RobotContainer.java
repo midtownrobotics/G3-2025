@@ -172,6 +172,9 @@ public class RobotContainer {
     new RobotViz(() -> {
       return null;
     }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition(), () -> algaeClaw.getPosition());
+
+
+    configureBindings();
   }
 
   /** Configures bindings to oi */

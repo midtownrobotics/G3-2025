@@ -131,6 +131,13 @@ public class CoralIntake extends SubsystemBase {
         rollerIO.setVoltage(desiredRollerVoltage);
         break;
     }
+
+    Logger.recordOutput("CoralIntake/currentState🍆", getCurrentState());
+    Logger.recordOutput("CoralIntake/desiredAngle", desiredAngle);
+    Logger.recordOutput("CoralIntake/desiredBeltVoltage", desiredBeltVoltage);
+    Logger.recordOutput("CoralIntake/desiredRollerVoltage", desiredRollerVoltage);
+
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /** Sets the goal of the coral outtake. */
