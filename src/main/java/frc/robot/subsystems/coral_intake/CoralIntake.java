@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
@@ -15,18 +16,16 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
-import frc.robot.subsystems.coral_intake.belt.BeltIO;
-import frc.robot.subsystems.coral_intake.belt.BeltInputsAutoLogged;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
-import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
+import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
 
-  public CircularConstraint coralIntakeConstraint = new CircularConstraint();
+  public LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit, Angle>(CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
   public enum State {
     // TODO: find angle out of the way of the carriage
@@ -64,8 +63,8 @@ public class CoralIntake extends SubsystemBase {
 
   // private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
 
-  private final BeltIO beltIO;
-  private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
+  private final RollerIO beltIO;
+  private final RollerInputsAutoLogged beltInputs = new RollerInputsAutoLogged();
   private final PivotIO pivotIO;
   private final PivotInputsAutoLogged pivotInputs = new PivotInputsAutoLogged();
   private final RollerIO rollerIO;
@@ -79,7 +78,7 @@ public class CoralIntake extends SubsystemBase {
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(BeltIO beltIO, PivotIO pivotIO, RollerIO rollerIO) {
+  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO) {
     this.beltIO = beltIO;
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
@@ -107,8 +106,8 @@ public class CoralIntake extends SubsystemBase {
     pivotIO.updateInputs(pivotInputs);
     rollerIO.updateInputs(rollerInputs);
     Logger.processInputs(getName() + "/belt", beltInputs);
-    Logger.processInputs(getName() + "/pivot", beltInputs);
-    Logger.processInputs(getName() + "/roller", beltInputs);
+    Logger.processInputs(getName() + "/pivot", pivotInputs);
+    Logger.processInputs(getName() + "/roller", rollerInputs);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
 
@@ -132,10 +131,17 @@ public class CoralIntake extends SubsystemBase {
         rollerIO.setVoltage(desiredRollerVoltage);
         break;
     }
+
+    Logger.recordOutput("CoralIntake/currentState🍆", getCurrentState());
+    Logger.recordOutput("CoralIntake/desiredAngle", desiredAngle);
+    Logger.recordOutput("CoralIntake/desiredBeltVoltage", desiredBeltVoltage);
+    Logger.recordOutput("CoralIntake/desiredRollerVoltage", desiredRollerVoltage);
+
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /** Sets the goal of the coral outtake. */
-  public void setGoal(State state, CircularConstraint constraint) {
+  public void setGoal(State state, LinearConstraint<AngleUnit, Angle> constraint) {
     currentState = state;
     coralIntakeConstraint = constraint;
   }

@@ -110,6 +110,9 @@ public class AlgaeClaw extends SubsystemBase {
         break;
     }
 
+    Logger.recordOutput("AlgaeClaw/currentState", getCurrentState());
+    Logger.recordOutput("AlgaeClaw/rollerVoltage", getCurrentState().getRollerVoltage());
+    Logger.recordOutput("AlgaeClaw/wristPosition", getCurrentState().getAngle());
     // record outputs
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
