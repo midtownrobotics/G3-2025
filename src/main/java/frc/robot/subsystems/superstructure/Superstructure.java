@@ -4,9 +4,10 @@ import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.controls.AlgaeMode;
-import frc.robot.controls.Controls;
 import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
 import frc.robot.subsystems.coral_intake.CoralIntake;
@@ -29,15 +30,23 @@ public class Superstructure extends SubsystemBase {
   public CoralIntake coralIntake;
   public CoralOuttake coralOuttake;
   public Elevator elevator;
-  public Controls controls;
+
+  private CoralMode coralMode = CoralMode.L4;
+  private AlgaeMode algaeMode = AlgaeMode.PROCESSOR;
 
   /** Construct the robot supersctructure. */
-  public Superstructure(AlgaeClaw algaeClaw, CoralIntake coralIntake, CoralOuttake coralOuttake, Elevator elevator, Controls controls) {
+  public Superstructure(AlgaeClaw algaeClaw, CoralIntake coralIntake, CoralOuttake coralOuttake, Elevator elevator) {
     this.algaeClaw = algaeClaw;
     this.coralIntake = coralIntake;
     this.coralOuttake = coralOuttake;
     this.elevator = elevator;
-    this.controls = controls;
+  }
+
+  public void setCoralMode(CoralMode coralMode) {
+    this.coralMode = coralMode;
+  }
+  public void setAlgaeMode(AlgaeMode algaeMode) {
+    this.algaeMode = algaeMode;
   }
 
   /** Enables priority value on schedule. */
@@ -48,6 +57,30 @@ public class Superstructure extends SubsystemBase {
   /** Disables priority value on schedule. */
   public void disable(Priority priority) {
     controllerPrioritySubset.disable(priority);
+  }
+
+  public Command enablePriorityCommand(Priority priority) {
+    return Commands.runOnce(() -> enable(priority));
+  }
+
+  public Command disablePriorityCommand(Priority priority) {
+    return Commands.runOnce(() -> disable(priority));
+  }
+
+  public Command setCoralModeCommand(CoralMode coralMode) {
+    return Commands.runOnce(() -> setCoralMode(coralMode));
+  }
+
+  public Command incrementCoralModeCommand() {
+    return Commands.runOnce(() -> setCoralMode(coralMode.increment()));
+  }
+
+  public Command decrementCoralModeCommand() {
+    return Commands.runOnce(() -> setCoralMode(coralMode.decrement()));
+  }
+
+  public Command setAlgaeModeCommand(AlgaeMode algaeMode) {
+    return Commands.runOnce(() -> setAlgaeMode(algaeMode));
   }
 
   private Map<Priority, CoralIntake.State> priorityToCoralIntakeState = Map.ofEntries(
@@ -144,7 +177,7 @@ public class Superstructure extends SubsystemBase {
 
             break;
           case PREPARE_SCORE_ALGAE:
-            if (controls.getAlgaeMode() == AlgaeMode.PROCESSOR) {
+            if (algaeMode == AlgaeMode.PROCESSOR) {
               if (!possibleAlgaeClawStates.contains(AlgaeClaw.State.PROCESSOR_PREPARE) || !possibleElevatorStates.contains(Elevator.State.PROCESSOR)) continue;
 
               if (!isCoralIntakeOutside()) {
@@ -172,7 +205,7 @@ public class Superstructure extends SubsystemBase {
             }
             break;
           case PREPARE_SCORE_CORAL:
-            if (!possibleElevatorStates.contains(coralModeToElevatorState.get(controls.getCoralMode()))) continue;
+            if (!possibleElevatorStates.contains(coralModeToElevatorState.get(coralMode))) continue;
 
             if (!isCoralIntakeOutside()) {
               if (!canMoveCoralIntakeOutside(possibleCoralIntakeStates)) continue;
@@ -182,7 +215,7 @@ public class Superstructure extends SubsystemBase {
               moveAlgaeClawOutside(possibleAlgaeClawStates);
             }
 
-            possibleElevatorStates = Set.of(coralModeToElevatorState.get(controls.getCoralMode()));
+            possibleElevatorStates = Set.of(coralModeToElevatorState.get(coralMode));
             possibleCoralOuttakeStates = Set.of(CoralOuttake.State.SHOOT);
 
             break;

@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOBag;
@@ -26,6 +25,7 @@ import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.commands.DriveCommands;
+import frc.robot.controls.AlgaeMode;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
@@ -184,7 +184,7 @@ public class RobotContainer {
     controls = new MatchXboxControls(0, 1);
     configureBindings();
 
-    superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
+    superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator);
 
     new RobotViz(() -> {
       return null;
@@ -211,6 +211,14 @@ public class RobotContainer {
     controls.rightPositionLock().onTrue(Commands.none());
 
     controls.reefAlgaePositionLock().onTrue(Commands.none());
+
+    controls.algaeModeBarge().onTrue(superstructure.setAlgaeModeCommand(AlgaeMode.BARGE));
+
+    controls.algaeModeProcessor().onTrue(superstructure.setAlgaeModeCommand(AlgaeMode.PROCESSOR));
+
+    controls.incrementCoralMode().onTrue(superstructure.incrementCoralModeCommand());
+
+    controls.decrementCoralMode().onTrue(superstructure.decrementCoralModeCommand());
 
     // Operator
 
@@ -248,22 +256,13 @@ public class RobotContainer {
     controls.coralIntakeRun().onTrue(Commands.none());
 
     controls.coralIntakeReverse().onTrue(Commands.none());
-
   }
 
   /** Handles trigger by enablling priority onTrue and disabling onFalse. */
   public void enableDisablePriorityControl(Trigger trigger, Priority priority) {
     trigger
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  superstructure.enable(priority);
-                }))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  superstructure.disable(priority);
-                }));
+        .onTrue(superstructure.enablePriorityCommand(priority))
+        .onFalse(superstructure.disablePriorityCommand(priority));
   }
 
   /** Returns the autonomous command */
