@@ -25,7 +25,7 @@ public class Elevator extends SubsystemBase {
 
   private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
 
-  public enum State {
+  public enum Goal {
     STOW(0),
     HANDOFF(0),
     L1(0),
@@ -43,18 +43,18 @@ public class Elevator extends SubsystemBase {
 
     private @Getter Distance height;
 
-    /** State has no meter height value associated */
-    private State() {
+    /** Goal has no meter height value associated */
+    private Goal() {
       this.height = null;
     }
 
-    /** State has meter height value associated */
-    private State(int height) {
+    /** Goal has meter height value associated */
+    private Goal(int height) {
       this.height = Units.Meters.of(height);
     }
   }
 
-  private @Getter State currentState = State.STOW;
+  private @Getter Goal currentGoal = Goal.STOW;
 
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
   private @Getter WinchIO winch;
@@ -91,14 +91,14 @@ public class Elevator extends SubsystemBase {
     double timestamp = Timer.getFPGATimestamp();
     winch.updateInputs(winchInputs);
 
-    switch (getCurrentState()) {
+    switch (getCurrentGoal()) {
       case CLIMB:
-        winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
+        winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
         break;
       case TUNING:
         break;
       default:
-        winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentState.height));
+        winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
         break;
     }
 
@@ -109,8 +109,8 @@ public class Elevator extends SubsystemBase {
   }
 
   /** Sets the goal of the elevator. */
-  public void setGoal(State state, LinearConstraint<DistanceUnit, Distance> constraint) {
-    currentState = state;
+  public void setGoal(Goal goal, LinearConstraint<DistanceUnit, Distance> constraint) {
+    currentGoal = goal;
     elevatorConstraint = constraint;
   }
 

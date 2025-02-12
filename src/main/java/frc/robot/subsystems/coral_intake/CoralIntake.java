@@ -1,11 +1,12 @@
 package frc.robot.subsystems.coral_intake;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
+import frc.robot.sensors.Photoelectric;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -25,43 +27,52 @@ import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
 
-  public LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit, Angle>(CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
+  public LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit, Angle>(
+      CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
-  public enum State {
-    // TODO: find angle out of the way of the carriage
-    STOW(0,0,0),
-    GROUND_INTAKE(0,7,0),
-    GROUND_VOMIT(0,-7,0),
-    STATION_INTAKE(0, 0, 0),
-    HANDOFF(0,0,7),
-    REVERSE_HANDOFF(0,0,-7),
-    // TODO: find angle out of the way of climbing probably almost all the way down
-    CLIMB(0,0,0),
-    TUNING(0,0,0),
-    MANUAL(0,0,0);
+  public enum Goal {
+    GROUND_INTAKE(Degrees.of(0), Volts.of(7)),
+    GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-7)),
+    STATION_INTAKE(Degrees.of(0), Volts.of(0)),
+    HANDOFF(Degrees.of(120), Volts.of(0)),
+    HANDOFF_ADJUSTING(HANDOFF.getAngle(), Volts.of(0), Volts.of(7)),
+    STOW(HANDOFF.getAngle(), Volts.of(0)),
+    CLIMB(Degrees.of(45), Volts.of(0)),
+    TUNING(Degrees.of(0), Volts.of(0)),
+    MANUAL(Degrees.of(0), Volts.of(0));
 
     private @Getter Angle angle;
     private @Getter Voltage rollerVoltage;
-    private @Getter Voltage beltVoltage;
+    private @Getter Voltage beltVoltage = Volts.of(0);
 
     /**
-     * State has angle, beltVoltage, and rollerVoltage associated.
-     *
+     * Goal has angle, and rollerVoltage associated.
+     * 
+     * @param angle
+     * @param rollerVoltage
+     */
+    private Goal(Angle angle, Voltage rollerVoltage) {
+      this.angle = angle;
+      this.rollerVoltage = rollerVoltage;
+    }
+
+    /**
+     * Goal has angle, rollerVoltage, and beltVoltage associated.
+     * 
      * @param angle
      * @param rollerVoltage
      * @param beltVoltage
      */
-
-    private State(double angle, double rollerVoltage, double beltVoltage) {
-      this.angle = Units.Radians.of(angle);
-      this.rollerVoltage = Units.Volts.of(rollerVoltage);
-      this.beltVoltage = Units.Volts.of(beltVoltage);
+    private Goal(Angle angle, Voltage rollerVoltage, Voltage beltVoltage) {
+      this(angle, rollerVoltage);
+      this.beltVoltage = beltVoltage;
     }
   }
 
-  private @Getter State currentState = State.STOW;
+  private @Getter Goal currentGoal = Goal.STOW;
 
-  // private Constraint<Angle> pivotConstraint = new Constraint<Angle>(Radians.of(0), Radians.of(0));
+  private final Photoelectric handoffSensor;
+  private final Photoelectric centerSensor;
 
   private final RollerIO beltIO;
   private final RollerInputsAutoLogged beltInputs = new RollerInputsAutoLogged();
@@ -74,55 +85,67 @@ public class CoralIntake extends SubsystemBase {
 
   /**
    * Initializes Coral Intake with IO classes
+   * 
    * @param beltIO
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO) {
-    this.beltIO = beltIO;
+  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO, Photoelectric centerSensor,
+      Photoelectric handoffSensor) {
+
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
+    this.beltIO = beltIO;
+    this.centerSensor = centerSensor;
+    this.handoffSensor = handoffSensor;
 
     SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         pivotIO::setVoltage,
         this::motorSysIdLog,
-        this
-    );
+        this);
 
     routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(3)), sysIdMech);
   }
 
   private void motorSysIdLog(SysIdRoutineLog log) {
     log.motor("pivotMotor")
-      .voltage(pivotInputs.appliedVoltage)
-      .angularPosition(pivotInputs.absolutePosition)
-      .angularVelocity(pivotInputs.velocity);
+        .voltage(pivotInputs.appliedVoltage)
+        .angularPosition(pivotInputs.absolutePosition)
+        .angularVelocity(pivotInputs.velocity);
   }
 
   @Override
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
-    beltIO.updateInputs(beltInputs);
     pivotIO.updateInputs(pivotInputs);
     rollerIO.updateInputs(rollerInputs);
+
     Logger.processInputs(getName() + "/belt", beltInputs);
     Logger.processInputs(getName() + "/pivot", pivotInputs);
     Logger.processInputs(getName() + "/roller", rollerInputs);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
 
-    // state switch case
+    Voltage desiredBeltVoltage = currentGoal.getBeltVoltage();
+    Voltage desiredRollerVoltage = currentGoal.getRollerVoltage();
+    Angle desiredAngle = currentGoal.getAngle();
 
-    Angle desiredAngle = currentState.getAngle();
-    Voltage desiredBeltVoltage = currentState.getBeltVoltage();
-    Voltage desiredRollerVoltage = currentState.getRollerVoltage();
+    // Goal switch case
 
-    switch (getCurrentState()) {
+    switch (getCurrentGoal()) {
       case HANDOFF:
-        rollerIO.setVoltage(desiredRollerVoltage);
         pivotIO.setPosition(desiredAngle);
+        rollerIO.setVoltage(desiredRollerVoltage);
         beltIO.setVoltage(desiredBeltVoltage);
         break;
+      case HANDOFF_ADJUSTING:
+        pivotIO.setPosition(desiredAngle);
+        rollerIO.setVoltage(desiredRollerVoltage);
+        if (isCoralBlockingMovement()) {
+          beltIO.setVoltage(desiredBeltVoltage);
+        } else {
+          beltIO.setVoltage(desiredRollerVoltage.times(-1));
+        }
       case TUNING:
         break;
       default:
@@ -141,13 +164,46 @@ public class CoralIntake extends SubsystemBase {
   }
 
   /** Sets the goal of the coral outtake. */
-  public void setGoal(State state, LinearConstraint<AngleUnit, Angle> constraint) {
-    currentState = state;
+  public void setGoal(Goal goal, LinearConstraint<AngleUnit, Angle> constraint) {
+    currentGoal = goal;
     coralIntakeConstraint = constraint;
   }
 
   public Angle getPivotPosition() {
     return pivotInputs.offsetedPosition;
+  }
+
+  private double coralLastDetected;
+
+  /**
+   * Uses photoelectric sensors to detect coral.
+   * @return {@code boolean} Wheter coral is detected.
+   */
+  public boolean isCoralDetected() {
+    boolean value = handoffSensor.isTriggered() || centerSensor.isTriggered();
+    if (value) {
+      coralLastDetected = Timer.getFPGATimestamp();
+    }
+    if (Timer.getFPGATimestamp() - coralLastDetected >= CoralIntakeConstants.coralDetectionIdleDelay.in(Seconds)) {
+      return true;
+    }
+    return value;
+  }
+
+  /**
+   * Uses photoelectric sensors to detect if coral needs to be adjusted to be centered.
+   * @return {@code boolean} Whether coral needs adjusting.
+   */
+  public boolean doesCoralNeedAdjusting() {
+    return handoffSensor.isTriggered() != centerSensor.isTriggered();
+  }
+
+  /**
+   * Uses photoelectric sensors to detect if coral will block the intake from moving into handoff mode.
+   * @return {@code boolean} Wheter coral is blocking movement.
+   */
+  public boolean isCoralBlockingMovement() {
+    return handoffSensor.isTriggered() && !centerSensor.isTriggered();
   }
 
   /**

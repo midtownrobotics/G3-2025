@@ -28,6 +28,7 @@ import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.commands.DriveCommands;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
+import frc.robot.sensors.Photoelectric;
 import frc.robot.subsystems.algae_claw.AlgaeClaw;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
@@ -85,9 +86,11 @@ public class RobotContainer {
     WinchIO winchIO;
 
     // Coral Intake
-    RollerIO RollerIO;
+    RollerIO beltIO;
     PivotIO pivotIO;
     RollerIO coralIntakeRollerIO;
+    Photoelectric centerSensor = new Photoelectric(Ports.CoralIntake.centerSensor);
+    Photoelectric handoffSensor = new Photoelectric(Ports.CoralIntake.handoffSensor);
 
     // Coral Outtake
     RollerIO rollerIO;
@@ -109,7 +112,7 @@ public class RobotContainer {
             winchIO = new WinchIOReplay();
 
             // Coral Intake
-            RollerIO = new RollerIOReplay();
+            beltIO = new RollerIOReplay();
             pivotIO = new PivotIOReplay();
             coralIntakeRollerIO = new RollerIOReplay();
 
@@ -132,7 +135,7 @@ public class RobotContainer {
             winchIO = new WinchIOSim();
 
             // Coral Intake
-            RollerIO = new RollerIOSim();
+            beltIO = new RollerIOSim();
             pivotIO = new PivotIOSim();
             coralIntakeRollerIO = new RollerIOSim();
 
@@ -148,19 +151,19 @@ public class RobotContainer {
             break;
         default:
             // Algae Claw
-            wristIO = new WristIOKraken(Ports.AlgaeClaw.WristMotor, Ports.AlgaeClaw.WristEncoder, elevatorCANBusHandler);
-            algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.AlgaeClawRoller, elevatorCANBusHandler);
+            wristIO = new WristIOKraken(Ports.AlgaeClaw.wristMotor, Ports.AlgaeClaw.wristEncoder, elevatorCANBusHandler);
+            algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.algaeClawRoller, elevatorCANBusHandler);
 
             // Elevator
-            winchIO = new WinchIOKraken(Ports.Elevator.WinchMotor, Ports.Elevator.WinchEncoder, elevatorCANBusHandler);
+            winchIO = new WinchIOKraken(Ports.Elevator.winchMotor, Ports.Elevator.winchEncoder, elevatorCANBusHandler);
 
             // Coral Intake
-            RollerIO = new RollerIONeo(Ports.CoralIntake.Belt);
-            pivotIO = new PivotIONeo(Ports.CoralIntake.PivotMotor, Ports.CoralIntake.PivotEncoder);
-            coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.CoralIntakeRoller);
+            beltIO = new RollerIONeo(Ports.CoralIntake.belt);
+            pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
+            coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller);
 
             // Coral Outtake
-            rollerIO = new RollerIOBag(Ports.CoralOuttake.Roller);
+            rollerIO = new RollerIOBag(Ports.CoralOuttake.roller);
 
             // Drive
             gyroIO = new GyroIOPigeon2(driveCANBusHandler);
@@ -173,7 +176,7 @@ public class RobotContainer {
 
     algaeClaw = new AlgaeClaw(algaeClawRollerIO, wristIO);
     elevator = new Elevator(winchIO);
-    coralIntake = new CoralIntake(RollerIO, pivotIO, coralIntakeRollerIO);
+    coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     coralOuttake = new CoralOuttake(rollerIO);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
