@@ -240,11 +240,32 @@ public class Superstructure extends SubsystemBase {
       }
     }
 
+    // Coral intake handoff logic
+
+    if (
+      possibleCoralIntakeGoals.contains(CoralIntake.Goal.GROUND_INTAKE) 
+      && possibleElevatorGoals.contains(Elevator.Goal.HANDOFF)
+      && coralIntake.isCoralDetected()
+    ) {
+      possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF);
+    }
+
+    if (possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF) && possibleElevatorGoals.contains(Elevator.Goal.HANDOFF)) {
+      if (coralIntake.doesCoralNeedAdjusting()) {
+        possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF_ADJUSTING);
+      }
+    }
+
     Angle algaeClawPosition = algaeClaw.getPosition();
     Angle coralIntakePosition = coralIntake.getPivotPosition();
     Distance elevatorPosition = elevator.getPosition();
 
     // TODO: Find positions for consrains
+
+    // If coral intake would intersect elevator due to bad coral placement
+    if (coralIntake.isCoralBlockingMovement()) {
+      coralIntakeConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
+    }
 
     // If coral intake would intersect elevator due to low elevator
     if (elevatorPosition.lte(Inches.of(0))) {
@@ -325,7 +346,7 @@ public class Superstructure extends SubsystemBase {
     possibleGoals.removeAll(insideAlgaeClawGoals);
   }
 
-  private final Set<CoralIntake.Goal> insideCoralIntakeGoals = Set.of(CoralIntake.Goal.STOW, CoralIntake.Goal.HANDOFF, CoralIntake.Goal.REVERSE_HANDOFF);
+  private final Set<CoralIntake.Goal> insideCoralIntakeGoals = Set.of(CoralIntake.Goal.STOW, CoralIntake.Goal.HANDOFF);
 
   private boolean canMoveCoralIntakeOutside(Set<CoralIntake.Goal> possibleGoals) {
     return isAnyPossibleGoals(possibleGoals, insideCoralIntakeGoals);
