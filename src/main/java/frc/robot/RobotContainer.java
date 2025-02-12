@@ -73,7 +73,7 @@ public class RobotContainer {
     WinchIO winchIO;
 
     // Coral Intake
-    RollerIO RollerIO;
+    RollerIO beltIO;
     PivotIO pivotIO;
     RollerIO coralIntakeRollerIO;
     Photoelectric centerSensor = new Photoelectric(Ports.CoralIntake.centerSensor);
@@ -99,7 +99,7 @@ public class RobotContainer {
             winchIO = new WinchIOReplay();
 
             // Coral Intake
-            RollerIO = new RollerIOReplay();
+            beltIO = new RollerIOReplay();
             pivotIO = new PivotIOReplay();
             coralIntakeRollerIO = new RollerIOReplay();
 
@@ -122,7 +122,7 @@ public class RobotContainer {
             winchIO = new WinchIOSim();
 
             // Coral Intake
-            RollerIO = new RollerIOSim();
+            beltIO = new RollerIOSim();
             pivotIO = new PivotIOSim();
             coralIntakeRollerIO = new RollerIOSim();
 
@@ -145,9 +145,9 @@ public class RobotContainer {
             winchIO = new WinchIOKraken(Ports.Elevator.winchMotor, Ports.Elevator.winchEncoder, elevatorCANBusHandler);
 
             // Coral Intake
-            RollerIO = new RollerIONeo(Ports.CoralIntake.Belt);
-            pivotIO = new PivotIONeo(Ports.CoralIntake.PivotMotor, Ports.CoralIntake.PivotEncoder);
-            coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.CoralIntakeRoller);
+            beltIO = new RollerIONeo(Ports.CoralIntake.belt);
+            pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
+            coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller);
 
             // Coral Outtake
             rollerIO = new RollerIOBag(Ports.CoralOuttake.roller);
