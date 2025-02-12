@@ -6,6 +6,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.LoggedTunableNumber;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
@@ -109,6 +110,8 @@ public class AlgaeClaw extends SubsystemBase {
         wristIO.setPosition(wristConstraint.getClosestToDesired(wristInputs.position, currentState.getAngle()));
         break;
     }
+
+    LoggedTunableNumber.ifChanged(hashCode(), wristIO::applyConfig, wristIO.getConfig().getConstants());
 
     // record outputs
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());

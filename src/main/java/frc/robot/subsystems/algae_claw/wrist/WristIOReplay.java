@@ -13,5 +13,17 @@ public class WristIOReplay implements WristIO {
   public void updateInputs(WristInputs inputs) {
     throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
   }
+
+  @Override
+  public void applyConfig() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'applyConfig'");
+  }
+
+  @Override
+  public WristConfig getConfig() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getConfig'");
+  }
   
 }

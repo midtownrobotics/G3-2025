@@ -27,19 +27,6 @@ import lombok.Getter;
 
 public class WristIOKraken implements WristIO {
 
-  private class WristConfig {
-    private LoggedTunableNumber p, i, d, s, g, a, v;
-    private WristConfig() {
-      p = new LoggedTunableNumber("WristIOKraken/P", 0);
-      i = new LoggedTunableNumber("WristIOKraken/I", 0);
-      d = new LoggedTunableNumber("WristIOKraken/D", 0);
-      s = new LoggedTunableNumber("WristIOKraken/S", 0);
-      g = new LoggedTunableNumber("WristIOKraken/G", 0);
-      a = new LoggedTunableNumber("WristIOKraken/A", 0);
-      v = new LoggedTunableNumber("WristIOKraken/V", 0);
-    }
-  }
-
   @Getter private TalonFX wristMotor;
   private DutyCycleEncoder encoder;
 
@@ -49,24 +36,17 @@ public class WristIOKraken implements WristIO {
   @Getter private StatusSignal<Current> supplyCurrent;
   @Getter private StatusSignal<Current> torqueCurrent;
   @Getter private StatusSignal<Temperature> temperature;
+  private WristConfig pidConfig;
 
   /** Constructor for wristIO for kraken motors. */
   public WristIOKraken(int wristMotorID, int encoderID, CANBusStatusSignalRegistration bus) {
+    pidConfig = new WristConfig();
     wristMotor = new TalonFX(wristMotorID);
     encoder = new DutyCycleEncoder(new DigitalInput(encoderID));
 
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
     // Shooting Slot
-    krakenConfig.Slot0 =
-          new Slot0Configs()
-              .withKP(0)
-              .withKI(0)
-              .withKD(0)
-              .withKS(0)
-              .withKG(0)
-              .withKA(0)
-              .withKV(0)
-              .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+    pidConfig.apply(wristMotor);
 
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
@@ -112,6 +92,16 @@ public class WristIOKraken implements WristIO {
       supplyCurrent,
       temperature
     ));
+  }
+
+  @Override
+  public void applyConfig() {
+      pidConfig.apply(wristMotor);
+  }
+
+  @Override
+  public WristConfig getConfig() {
+      return pidConfig;
   }
 
   @Override

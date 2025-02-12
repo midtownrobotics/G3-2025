@@ -12,4 +12,16 @@ public class WristIOSim implements WristIO {
   public void updateInputs(WristInputs inputs) {
   }
 
+  @Override
+  public void applyConfig() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'applyConfig'");
+  }
+
+  @Override
+  public WristConfig getConfig() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getConfig'");
+  }
+
 }
