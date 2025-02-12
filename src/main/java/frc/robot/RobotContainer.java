@@ -4,6 +4,17 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -52,6 +63,8 @@ public class RobotContainer {
   private final Controls controls;
 
   private final Superstructure superstructure;
+
+  SendableChooser<Command> m_autoChooser;
 
   @Getter private final AlgaeClaw algaeClaw;
   @Getter private final CoralIntake coralIntake;
@@ -173,8 +186,8 @@ public class RobotContainer {
       return null;
     }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition(), () -> algaeClaw.getPosition());
 
-
-    configureBindings();
+    m_autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
   }
 
   /** Configures bindings to oi */
@@ -183,53 +196,17 @@ public class RobotContainer {
 
     drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
 
-    controls
-        .resetDriveHeading()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  drive.resetDriveHeading();
-                }));
+    controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
-    controls
-        .driveBrake()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  drive.stopWithX();
-                }));
+    controls.driveBrake().onTrue(drive.stopWithXCommand());
 
-    controls
-        .gamePieceLock()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // TODO: Logic to lock onto a game piece
-                }));
+    controls.gamePieceLock().onTrue(Commands.none());
 
-    controls
-        .leftPositionLock()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // TODO: Logic to lock onto the left position on the reef
-                }));
+    controls.leftPositionLock().whileTrue(AutoBuilder.pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
 
-    controls
-        .rightPositionLock()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // TODO: Logic to lock onto the right position on the reef
-                }));
+    controls.rightPositionLock().onTrue(Commands.none());
 
-    controls
-        .reefAlgaePositionLock()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  // TODO: Logic to lock onto the true right position for algae intake
-                }));
+    controls.reefAlgaePositionLock().onTrue(Commands.none());
 
     // Operator
 
@@ -256,53 +233,17 @@ public class RobotContainer {
 
     // TODO: Use Elevator and Wrist axes as well
 
-    controls
-        .outtakeShoot()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for outtake shoot action
-                }));
+    controls.outtakeShoot().onTrue(Commands.none());
 
-    controls
-        .algaeClawIntake()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for algae claw intake action
-                }));
+    controls.algaeClawIntake().onTrue(Commands.none());
 
-    controls
-        .coralForward()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for coral forward action
-                }));
+    controls.coralForward().onTrue(Commands.none());
 
-    controls
-        .coralBackward()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for coral backward action
-                }));
+    controls.coralBackward().onTrue(Commands.none());
 
-    controls
-        .coralIntakeRun()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    //TODO:  Logic for coral intake run action
-                }));
+    controls.coralIntakeRun().onTrue(Commands.none());
 
-    controls
-        .coralIntakeReverse()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                    // TODO: Logic for coral intake reverse action
-                }));
+    controls.coralIntakeReverse().onTrue(Commands.none());
 
   }
 
@@ -321,7 +262,14 @@ public class RobotContainer {
                 }));
   }
 
+  /** Returns the autonomous command */
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    var selected = m_autoChooser.getSelected();
+
+    if (selected == null) {
+      return Commands.print("AHHHHHH");
+    }
+
+    return selected;
   }
 }

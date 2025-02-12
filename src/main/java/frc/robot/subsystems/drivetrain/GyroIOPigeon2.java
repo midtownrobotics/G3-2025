@@ -25,10 +25,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import frc.robot.utils.Constants.Mode;
-import java.util.Date;
 import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
@@ -84,7 +84,7 @@ public class GyroIOPigeon2 implements GyroIO {
             .map((Double value) -> Rotation2d.fromDegrees(value))
             .toArray(Rotation2d[]::new);
     if (Constants.currentMode == Mode.SIM) {
-      inputs.odometryYawTimestamps = new double[] {new Date().getTime()};
+      inputs.odometryYawTimestamps = new double[] {Timer.getTimestamp()};
       inputs.odometryYawPositions = new Rotation2d[] {inputs.yawPosition};
     } else {
       inputs.odometryYawTimestamps =
