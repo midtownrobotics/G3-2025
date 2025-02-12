@@ -155,7 +155,11 @@ public class RobotContainer {
             algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.algaeClawRoller, elevatorCANBusHandler);
 
             // Elevator
-            winchIO = new WinchIOKraken(Ports.Elevator.winchMotor, Ports.Elevator.winchEncoder, elevatorCANBusHandler);
+            winchIO = new WinchIOKraken(Ports.Elevator.LeftWinchMotor, 
+                                        Ports.Elevator.RightWinchMotor, 
+                                        Ports.Elevator.LeftWinchEncoder,
+                                        Ports.Elevator.RightWinchEncoder,
+                                        elevatorCANBusHandler);
 
             // Coral Intake
             beltIO = new RollerIONeo(Ports.CoralIntake.belt);

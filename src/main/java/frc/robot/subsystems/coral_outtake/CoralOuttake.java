@@ -70,8 +70,8 @@ public class CoralOuttake extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput("CoralOuttake/currentState", getCurrentState());
-    Logger.recordOutput("CoralOuttake/desiredVoltage", getCurrentState().getVoltage());
+    Logger.recordOutput("CoralOuttake/currentState", getCurrentGoal());
+    Logger.recordOutput("CoralOuttake/desiredVoltage", getCurrentGoal().getVoltage());
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }

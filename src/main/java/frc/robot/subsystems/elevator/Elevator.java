@@ -102,8 +102,8 @@ public class Elevator extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput("Elevator/currentState", getCurrentState());
-    Logger.recordOutput("Elevator/desiredPosition", getCurrentState().getHeight());
+    Logger.recordOutput("Elevator/currentState", getCurrentGoal());
+    Logger.recordOutput("Elevator/desiredPosition", getCurrentGoal().getHeight());
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }

@@ -3,8 +3,6 @@ package frc.robot.subsystems.algae_claw.wrist;
 import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;

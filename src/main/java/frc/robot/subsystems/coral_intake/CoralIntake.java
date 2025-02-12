@@ -1,7 +1,6 @@
 package frc.robot.subsystems.coral_intake;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -155,7 +154,7 @@ public class CoralIntake extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput("CoralIntake/currentState🍆", getCurrentState());
+    Logger.recordOutput("CoralIntake/currentState🍆", getCurrentGoal());
     Logger.recordOutput("CoralIntake/desiredAngle", desiredAngle);
     Logger.recordOutput("CoralIntake/desiredBeltVoltage", desiredBeltVoltage);
     Logger.recordOutput("CoralIntake/desiredRollerVoltage", desiredRollerVoltage);
