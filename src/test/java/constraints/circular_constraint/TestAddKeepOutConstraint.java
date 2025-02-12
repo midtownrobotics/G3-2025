@@ -59,8 +59,6 @@ public class TestAddKeepOutConstraint extends TestSet {
         // Expected valid interval: [0,270]
         constraint.addKeepOutConstraint(Degrees.of(270), Degrees.of(360));
 
-        System.out.println(constraint);
-
         assertTrue(isValidIntervals(constraint.intervals));
         assertEquals(1, constraint.intervals.getIntervals().size());
 

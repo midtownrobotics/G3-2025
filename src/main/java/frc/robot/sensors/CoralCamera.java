@@ -37,7 +37,7 @@ public class CoralCamera extends AprilTagCamera {
 
     /**
      * Constructor for CoralCamera
-     * 
+     *
      * @param visionController the visionIO object used by the camera
      */
     public CoralCamera(VisionIO visionController) {

@@ -53,7 +53,7 @@ public class MatchXboxControls implements Controls {
   @Override
   public double getDriveRotation() {
     return isDriverControlInDeadzone()
-        ? Math.signum(driverController.getRightX())
+        ? -Math.signum(driverController.getRightX())
             * Math.abs(Math.pow(driverController.getRightX(), 3))
         : 0;
   }

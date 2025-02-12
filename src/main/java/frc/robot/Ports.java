@@ -3,9 +3,9 @@ package frc.robot;
 // Define port variables
 public class Ports {
     public static class AlgaeClaw {
-        public static final int WristMotor = 0;
-        public static final int WristEncoder = 1;
-        public static final int AlgaeClawRoller = 2;
+        public static final int wristMotor = 0;
+        public static final int wristEncoder = 1;
+        public static final int algaeClawRoller = 2;
     }
 
     public static class Elevator {
@@ -16,13 +16,15 @@ public class Ports {
     }
 
     public static class CoralIntake {
-        public static final int Belt = 5;
-        public static final int PivotMotor = 6;
-        public static final int PivotEncoder = 7;
-        public static final int CoralIntakeRoller = 8;
+        public static final int belt = 5;
+        public static final int pivotMotor = 6;
+        public static final int pivotEncoder = 7;
+        public static final int coralIntakeRoller = 8;
+        public static final int centerSensor = 0;
+        public static final int handoffSensor = 1;
     }
 
     public static class CoralOuttake {
-        public static final int Roller = 9;
+        public static final int roller = 9;
     }
 }

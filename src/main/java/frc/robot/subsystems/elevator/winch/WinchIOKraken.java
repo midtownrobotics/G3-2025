@@ -27,6 +27,7 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class WinchIOKraken implements WinchIO {
 
@@ -147,6 +148,7 @@ public class WinchIOKraken implements WinchIO {
 
     PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(slot);
     leftMotor.setControl(leftRequest);
+    Logger.recordOutput("Elevator/Winch/TargetPosition", position);
   }
 
   @Override

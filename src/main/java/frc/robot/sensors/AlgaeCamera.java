@@ -31,7 +31,7 @@ public class AlgaeCamera extends AprilTagCamera {
     /**
      * Constructor for AlgaeCamera
      * @param visionController the visionIO object used by the camera
-     */    
+     */
     public AlgaeCamera(VisionIO visionController) {
         super(visionController);
     }
@@ -78,7 +78,7 @@ public class AlgaeCamera extends AprilTagCamera {
      */
     public TargetObservation getAlgaeOffset() {
         if (
-            Units.Seconds.of(Timer.getFPGATimestamp()).minus(lastObservationTimestamp).lte(expirationDuration) 
+            Units.Seconds.of(Timer.getFPGATimestamp()).minus(lastObservationTimestamp).lte(expirationDuration)
             && currentPipeline == Pipeline.ALGAE
         ) {
             return lastObservation;
