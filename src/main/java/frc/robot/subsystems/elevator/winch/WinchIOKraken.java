@@ -30,8 +30,9 @@ import lombok.Getter;
 
 public class WinchIOKraken implements WinchIO {
 
-  private static final double GEARING = 12;
+  private static final double GEARING = 16 + (2/3);
   private static final Distance WHEEL_RADIUS = Units.Inches.of(1);
+  public static final Current KRAKEN_CURRENT_LIMIT = Units.Amp.of(70);
 
   private int currentSlot = 0;
 
@@ -248,7 +249,7 @@ public class WinchIOKraken implements WinchIO {
             .withGravityType(GravityTypeValue.Elevator_Static);
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
-            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
+            .withSupplyCurrentLimit(KRAKEN_CURRENT_LIMIT);
     krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     tryUntilOk(5, () -> leftMotor.getConfigurator().apply(krakenConfig));
