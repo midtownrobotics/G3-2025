@@ -77,12 +77,12 @@ public class CoralIntake extends SubsystemBase {
   private final Photoelectric handoffSensor;
   private final Photoelectric centerSensor;
 
+  private final RollerIO beltIO;
+  private final RollerInputsAutoLogged beltInputs = new RollerInputsAutoLogged();
   private final PivotIO pivotIO;
   private final PivotInputsAutoLogged pivotInputs = new PivotInputsAutoLogged();
   private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
-  private final BeltIO beltIO;
-  private final BeltInputsAutoLogged beltInputs = new BeltInputsAutoLogged();
 
   private SysIdRoutine routine;
 
@@ -93,8 +93,9 @@ public class CoralIntake extends SubsystemBase {
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(BeltIO beltIO, PivotIO pivotIO, RollerIO rollerIO, Photoelectric centerSensor,
+  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO, Photoelectric centerSensor,
       Photoelectric handoffSensor) {
+
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
     this.beltIO = beltIO;
@@ -121,10 +122,10 @@ public class CoralIntake extends SubsystemBase {
     double timestamp = Timer.getFPGATimestamp();
     pivotIO.updateInputs(pivotInputs);
     rollerIO.updateInputs(rollerInputs);
-    beltIO.updateInputs(beltInputs);
-    Logger.processInputs(getName() + "/pivot", beltInputs);
-    Logger.processInputs(getName() + "/roller", beltInputs);
+
     Logger.processInputs(getName() + "/belt", beltInputs);
+    Logger.processInputs(getName() + "/pivot", pivotInputs);
+    Logger.processInputs(getName() + "/roller", rollerInputs);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
 

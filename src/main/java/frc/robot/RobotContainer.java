@@ -24,10 +24,6 @@ import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
 import frc.robot.subsystems.algae_claw.wrist.WristIOReplay;
 import frc.robot.subsystems.algae_claw.wrist.WristIOSim;
 import frc.robot.subsystems.coral_intake.CoralIntake;
-import frc.robot.subsystems.coral_intake.belt.BeltIO;
-import frc.robot.subsystems.coral_intake.belt.BeltIONeo;
-import frc.robot.subsystems.coral_intake.belt.BeltIOReplay;
-import frc.robot.subsystems.coral_intake.belt.BeltIOSim;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
 import frc.robot.subsystems.coral_intake.pivot.PivotIOReplay;
@@ -77,7 +73,7 @@ public class RobotContainer {
     WinchIO winchIO;
 
     // Coral Intake
-    BeltIO beltIO;
+    RollerIO RollerIO;
     PivotIO pivotIO;
     RollerIO coralIntakeRollerIO;
     Photoelectric centerSensor = new Photoelectric(Ports.CoralIntake.centerSensor);
@@ -103,7 +99,7 @@ public class RobotContainer {
             winchIO = new WinchIOReplay();
 
             // Coral Intake
-            beltIO = new BeltIOReplay();
+            RollerIO = new RollerIOReplay();
             pivotIO = new PivotIOReplay();
             coralIntakeRollerIO = new RollerIOReplay();
 
@@ -126,7 +122,7 @@ public class RobotContainer {
             winchIO = new WinchIOSim();
 
             // Coral Intake
-            beltIO = new BeltIOSim();
+            RollerIO = new RollerIOSim();
             pivotIO = new PivotIOSim();
             coralIntakeRollerIO = new RollerIOSim();
 
@@ -149,9 +145,9 @@ public class RobotContainer {
             winchIO = new WinchIOKraken(Ports.Elevator.winchMotor, Ports.Elevator.winchEncoder, elevatorCANBusHandler);
 
             // Coral Intake
-            beltIO = new BeltIONeo(Ports.CoralIntake.belt);
-            pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
-            coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller);
+            RollerIO = new RollerIONeo(Ports.CoralIntake.Belt);
+            pivotIO = new PivotIONeo(Ports.CoralIntake.PivotMotor, Ports.CoralIntake.PivotEncoder);
+            coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.CoralIntakeRoller);
 
             // Coral Outtake
             rollerIO = new RollerIOBag(Ports.CoralOuttake.roller);
