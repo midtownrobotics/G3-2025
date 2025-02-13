@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class CoralOuttake extends SubsystemBase {
 
-  public enum State {
+  public enum Goal {
     // TODO: Set correct voltages
     IDLE(0),
     SHOOT(12),
@@ -27,17 +27,17 @@ public class CoralOuttake extends SubsystemBase {
 
     private @Getter Voltage voltage;
 
-    /** State has no meter height value associated */
-    private State() {
+    /** Goal has no meter height value associated */
+    private Goal() {
       this.voltage = null;
     }
 
-    State(double voltage) {
+    Goal(double voltage) {
       this.voltage = Volts.of(voltage);
     }
   }
 
-  private @Getter State currentState = State.IDLE;
+  private @Getter Goal currentGoal = Goal.IDLE;
   private RollerIO rollerIO;
   private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
 
@@ -59,23 +59,26 @@ public class CoralOuttake extends SubsystemBase {
     rollerIO.updateInputs(rollerInputs);
     Logger.processInputs(getName() + "/roller", rollerInputs);
 
-    // state switch case
-    switch (getCurrentState()) {
+    // goal switch case
+    switch (getCurrentGoal()) {
       case TUNING:
       case MANUAL:
         rollerIO.setVoltage(Units.Volts.zero());
         break;
       default:
-        rollerIO.setVoltage(getCurrentState().getVoltage());
+        rollerIO.setVoltage(getCurrentGoal().getVoltage());
         break;
     }
+
+    Logger.recordOutput("CoralOuttake/currentState", getCurrentGoal());
+    Logger.recordOutput("CoralOuttake/desiredVoltage", getCurrentGoal().getVoltage());
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /** Sets the goal of the coral outtake. */
-  public void setGoal(State state) {
-    currentState = state;
+  public void setGoal(Goal goal) {
+    currentGoal = goal;
   }
 
   public Voltage getRollerVoltage() {
