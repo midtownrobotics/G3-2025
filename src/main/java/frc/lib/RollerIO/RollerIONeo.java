@@ -21,7 +21,7 @@ public class RollerIONeo implements RollerIO {
     .idleMode(IdleMode.kBrake),
 
     ResetMode.kResetSafeParameters,
-    PersistMode.kNoPersistParameters);
+    PersistMode.kPersistParameters);
   }
 
   @Override
@@ -32,9 +32,9 @@ public class RollerIONeo implements RollerIO {
 
   @Override
   public void updateInputs(RollerInputs inputs) {
-    inputs.position = Units.Rotations.of(motor.getAbsoluteEncoder().getPosition());
-    inputs.velocity = Units.RPM.of(motor.getAbsoluteEncoder().getVelocity());
-    inputs.appliedVoltage = Units.Volts.of(motor.getBusVoltage());
+    inputs.position = Units.Rotations.of(motor.getEncoder().getPosition());
+    inputs.velocity = Units.RPM.of(motor.getEncoder().getVelocity());
+    inputs.appliedVoltage = Units.Volts.of(motor.getBusVoltage()*motor.getAppliedOutput());
     inputs.supplyCurrent = Units.Amps.of(motor.getOutputCurrent());
     inputs.temperature = Units.Celsius.of(motor.getMotorTemperature());
   }

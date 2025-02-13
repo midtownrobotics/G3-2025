@@ -1,6 +1,5 @@
 package frc.robot.subsystems.coral_intake.pivot;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.units.measure.Angle;

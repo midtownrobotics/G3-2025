@@ -21,11 +21,13 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class WinchIOKraken implements WinchIO {
 
@@ -36,6 +38,9 @@ public class WinchIOKraken implements WinchIO {
 
   @Getter private TalonFX leftMotor;
   @Getter private TalonFX rightMotor;
+
+  @Getter private DutyCycleEncoder leftMotorEncoder;
+  @Getter private DutyCycleEncoder rightMotorEncoder;
 
   @Getter private StatusSignal<Voltage> leftVoltage;
   @Getter private StatusSignal<Current> leftSupplyCurrent;
@@ -48,11 +53,21 @@ public class WinchIOKraken implements WinchIO {
   @Getter private StatusSignal<Temperature> rightTemperature;
 
   /** Contructor for real winch with Krakens */
-  public WinchIOKraken(int leftMotorID, int rightMotorID, CANBusStatusSignalRegistration bus) {
+  public WinchIOKraken(int leftMotorID, 
+                       int rightMotorID, 
+                       int leftMotorEncoderID, 
+                       int rightMotorEncoderID,
+                       CANBusStatusSignalRegistration bus) {
 
     leftMotor = new TalonFX(leftMotorID);
     rightMotor = new TalonFX(rightMotorID);
 
+    leftMotorEncoder = new DutyCycleEncoder(rightMotorID);
+    rightMotorEncoder = new DutyCycleEncoder(rightMotorID);
+
+    tryUntilOk(5, () -> leftMotor.setPosition(leftMotorEncoder.get()));
+    tryUntilOk(5, () -> rightMotor.setPosition(rightMotorEncoder.get()));
+    
     configureMotors();
     configureClimbLimits();
 
@@ -61,24 +76,26 @@ public class WinchIOKraken implements WinchIO {
     leftTorqueCurrent = leftMotor.getTorqueCurrent();
     leftTemperature = leftMotor.getDeviceTemp();
 
-    leftVoltage.setUpdateFrequency(50);
-    leftSupplyCurrent.setUpdateFrequency(50);
-    leftTorqueCurrent.setUpdateFrequency(50);
-    leftTemperature.setUpdateFrequency(50);
+    tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(50, 
+                                                                              leftVoltage, 
+                                                                              leftSupplyCurrent, 
+                                                                              leftTorqueCurrent, 
+                                                                              leftTemperature));
 
-    leftMotor.optimizeBusUtilization();
+    tryUntilOk(5, () -> leftMotor.optimizeBusUtilization(0, 1));
 
     rightVoltage = rightMotor.getMotorVoltage();
     rightSupplyCurrent = rightMotor.getSupplyCurrent();
     rightTorqueCurrent = rightMotor.getTorqueCurrent();
     rightTemperature = rightMotor.getDeviceTemp();
 
-    rightVoltage.setUpdateFrequency(50);
-    rightSupplyCurrent.setUpdateFrequency(50);
-    rightTorqueCurrent.setUpdateFrequency(50);
-    rightTemperature.setUpdateFrequency(50);
+    tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(50, 
+                                                                              rightVoltage, 
+                                                                              rightSupplyCurrent, 
+                                                                              rightTorqueCurrent, 
+                                                                              rightTemperature));
 
-    rightMotor.optimizeBusUtilization();
+    tryUntilOk(5, () -> rightMotor.optimizeBusUtilization(0, 1));
 
     bus
       .register(rightVoltage)
@@ -131,6 +148,7 @@ public class WinchIOKraken implements WinchIO {
 
     PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(slot);
     leftMotor.setControl(leftRequest);
+    Logger.recordOutput("Elevator/Winch/TargetPosition", position);
   }
 
   @Override
@@ -234,10 +252,10 @@ public class WinchIOKraken implements WinchIO {
         new CurrentLimitsConfigs()
             .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
     krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    leftMotor.getConfigurator().apply(krakenConfig);
-    rightMotor.getConfigurator().apply(krakenConfig);
-    rightMotor.setControl(new Follower(leftMotor.getDeviceID(), false));
 
+    tryUntilOk(5, () -> leftMotor.getConfigurator().apply(krakenConfig));
+    tryUntilOk(5, () -> rightMotor.getConfigurator().apply(krakenConfig));
+    tryUntilOk(5, () -> rightMotor.setControl(new Follower(leftMotor.getDeviceID(), false)));
   }
 
   /**
