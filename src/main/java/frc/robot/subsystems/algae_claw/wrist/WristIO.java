@@ -90,10 +90,6 @@ public interface WristIO {
   /** sets position */
   public void setPosition(Angle position);
 
-  public void applyConfig();
-
-  public WristConfig getConfig();
-
   /**
    * updates input class for Wrist
    *
