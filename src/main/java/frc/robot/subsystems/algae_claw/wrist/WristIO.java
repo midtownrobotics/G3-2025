@@ -10,7 +10,9 @@ import frc.lib.LoggedTunableNumber;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 public interface WristIO {
@@ -30,8 +32,10 @@ public interface WristIO {
   }
 
   public class WristConfig {
-    private LoggedTunableNumber p, i, d, s, g, a, v;
-    private LoggedTunableNumber[] constants = new LoggedTunableNumber[]{p, i, d, s, g, a, v};
+    private LoggedTunableNumber p, i, d, s, g, a, v,
+      currentLimit, currentLowerLimit, currentLowerTime;
+    private LoggedTunableNumber[] constants = new LoggedTunableNumber[]{p, i, d, s, g, a, v,
+      currentLimit, currentLowerLimit, currentLowerTime};
 
     /**
      * constructor for wrist pid config object
@@ -44,6 +48,9 @@ public interface WristIO {
       g = new LoggedTunableNumber("WristIOKraken/G", 0);
       a = new LoggedTunableNumber("WristIOKraken/A", 0);
       v = new LoggedTunableNumber("WristIOKraken/V", 0);
+      currentLimit = new LoggedTunableNumber("WristIOKraken/currentLimit", 0);
+      currentLowerLimit = new LoggedTunableNumber("WristIOKraken/currentLowerLimit", 0);
+      currentLowerTime = new LoggedTunableNumber("WristIOKraken/currentLowerTime", 0);
     }
 
     /**
@@ -51,14 +58,22 @@ public interface WristIO {
      * @param motor
      */
     public void apply(TalonFX motor) {
-      motor.getConfigurator().apply(new Slot0Configs()
+      TalonFXConfiguration configuration = new TalonFXConfiguration();
+      configuration.Slot0 = new Slot0Configs()
         .withKP(p.get())
         .withKI(i.get())
         .withKD(d.get())
         .withKS(s.get())
         .withKG(g.get())
         .withKA(a.get())
-        .withKV(v.get()));
+        .withKV(v.get());
+      
+        configuration.CurrentLimits = new CurrentLimitsConfigs()
+          .withSupplyCurrentLimit(currentLimit.get())
+          .withSupplyCurrentLowerLimit(currentLowerLimit.get())
+          .withSupplyCurrentLowerTime(currentLowerTime.get());
+
+      motor.getConfigurator().apply(configuration);
     }
 
     /**
