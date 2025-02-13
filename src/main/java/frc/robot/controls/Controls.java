@@ -63,10 +63,17 @@ public interface Controls {
   /** Scores a game piece. */
   public Trigger scoreGamePiece();
 
-  /** Gets the coral mode. */
-  public CoralMode getCoralMode();
-  /** Gets the algae mode. */
-  public AlgaeMode getAlgaeMode();
+  /** Increments the coral mode */
+  public Trigger incrementCoralMode();
+
+  /** Decrements the coral mode */
+  public Trigger decrementCoralMode();
+
+  /** Sets the algae claw to barge mode */
+  public Trigger algaeModeBarge();
+
+  /** Sets the algae claw to processor mode */
+  public Trigger algaeModeProcessor();
 
   /** Activates the climbing mechanism. */
   public Trigger climb();

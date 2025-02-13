@@ -82,7 +82,7 @@ public class WinchIOKraken implements WinchIO {
                                                                               leftTorqueCurrent, 
                                                                               leftTemperature));
 
-    tryUntilOk(5, () -> leftMotor.optimizeBusUtilization(1));
+    tryUntilOk(5, () -> leftMotor.optimizeBusUtilization(0, 1));
 
     rightVoltage = rightMotor.getMotorVoltage();
     rightSupplyCurrent = rightMotor.getSupplyCurrent();
@@ -95,7 +95,7 @@ public class WinchIOKraken implements WinchIO {
                                                                               rightTorqueCurrent, 
                                                                               rightTemperature));
 
-    tryUntilOk(5, () -> rightMotor.optimizeBusUtilization(1));
+    tryUntilOk(5, () -> rightMotor.optimizeBusUtilization(0, 1));
 
     bus
       .register(rightVoltage)

@@ -21,9 +21,6 @@ public class MatchXboxControls implements Controls {
   public MatchXboxControls(int driverPort, int operatorPort) {
     driverController = new IOProtectionXboxController(driverPort);
     operatorController = new IOProtectionXboxController(operatorPort);
-
-    bindCoralIncrementDecrement();
-    bindAlgaeSet();
   }
 
   /** Determines if the driver joystick is in the controller deadzone. */
@@ -175,57 +172,34 @@ public class MatchXboxControls implements Controls {
     return operatorController.rightTrigger().and(getNotManualMode);
   }
 
-  private CoralMode currentCoralMode = CoralMode.L4;
-
-  private void bindCoralIncrementDecrement() {
-    operatorController
-        .povUp()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  currentCoralMode = currentCoralMode.increment();
-                }))
-        .and(getNotManualMode);
-    operatorController
-        .povDown()
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  currentCoralMode = currentCoralMode.decrement();
-                }))
-        .and(getNotManualMode);
+  @Override
+  public Trigger incrementCoralMode() {
+    return     operatorController
+    .povUp()
+    .and(getNotManualMode);
   }
 
   @Override
-  public CoralMode getCoralMode() {
-    return currentCoralMode;
-  }
-
-  private AlgaeMode currentAlgaeMode = AlgaeMode.PROCESSOR;
-
-  private void bindAlgaeSet() {
-    operatorController
-        .axisGreaterThan(XboxController.Axis.kLeftY.value, 0.3)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  currentAlgaeMode = AlgaeMode.PROCESSOR;
-                }))
-        .and(getNotManualMode);
-    operatorController
-        .axisLessThan(XboxController.Axis.kLeftY.value, -0.3)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  currentAlgaeMode = AlgaeMode.BARGE;
-                }))
-        .and(getNotManualMode);
+  public Trigger decrementCoralMode() {
+   return operatorController
+    .povDown()
+    .and(getNotManualMode);
   }
 
   @Override
-  public AlgaeMode getAlgaeMode() {
-    return currentAlgaeMode;
+  public Trigger algaeModeBarge() {
+    return operatorController
+    .axisLessThan(XboxController.Axis.kLeftY.value, -0.3)
+    .and(getNotManualMode);
   }
+
+  @Override
+  public Trigger algaeModeProcessor() {
+    return operatorController
+    .axisGreaterThan(XboxController.Axis.kLeftY.value, 0.3)
+    .and(getNotManualMode);
+  }
+
 
   @Override
   public Trigger climb() {

@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.093451967592593,
-        "y": 5.245078125
+        "x": 1.6043623408564804,
+        "y": 7.302125651041666
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.819787715757376,
-        "y": 5.255794194329029
+        "x": 2.5821406832646856,
+        "y": 6.884957963153356
       },
       "isLocked": false,
-      "linkedName": "Start"
+      "linkedName": "Loading Station"
     },
     {
       "anchor": {
-        "x": 5.303029875578703,
-        "y": 5.120228587962963
+        "x": 3.9461646412037026,
+        "y": 5.27797923900463
       },
       "prevControl": {
-        "x": 6.405059484935833,
-        "y": 5.136646981214093
+        "x": 3.8049915331913287,
+        "y": 5.484304597538491
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef 3"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6917271860328639,
+      "rotationDegrees": -61.09871186671859
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -120.42757070656636
+    "rotation": -58.48863152178299
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.6566721497386
+    "rotation": 125.36619010616316
   },
   "useDefaultConstraints": true
 }
