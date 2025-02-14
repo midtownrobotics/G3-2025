@@ -7,13 +7,11 @@ import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -41,11 +39,9 @@ public class WristIOKraken implements WristIO {
   @Getter private StatusSignal<Current> torqueCurrent;
   @Getter private StatusSignal<Temperature> temperature;
   @Getter private StatusSignal<Double> dutyCycle;
-  private WristConfig wristConfig;
 
   /** Constructor for wristIO for kraken motors. */
   public WristIOKraken(int wristMotorID, int encoderID, CANBusStatusSignalRegistration bus) {
-    wristConfig = new WristConfig();
     wristMotor = new TalonFX(wristMotorID);
     encoder = new DutyCycleEncoder(new DigitalInput(encoderID));
 
@@ -82,7 +78,7 @@ public class WristIOKraken implements WristIO {
 
     tryUntilOk(5, () -> wristMotor.optimizeBusUtilization(0, 1));
 
-    configureMotors();
+    configureMotor();
   }
 
   @Override
