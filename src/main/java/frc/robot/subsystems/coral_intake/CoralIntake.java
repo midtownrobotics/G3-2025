@@ -169,7 +169,7 @@ public class CoralIntake extends SubsystemBase {
   }
 
   public Angle getPivotPosition() {
-    return pivotInputs.offsetedPosition;
+    return pivotInputs.position;
   }
 
   private double coralLastDetected;

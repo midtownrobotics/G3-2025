@@ -165,6 +165,7 @@ public class WinchIOKraken implements WinchIO {
     LoggedTunableNumber.ifChanged(
       hashCode(),
       this::configureMotors,
+      // Score
       ElevatorConstants.PID_SCORE.p,
       ElevatorConstants.PID_SCORE.i,
       ElevatorConstants.PID_SCORE.d,
@@ -172,6 +173,7 @@ public class WinchIOKraken implements WinchIO {
       ElevatorConstants.PID_SCORE.v,
       ElevatorConstants.PID_SCORE.g,
       ElevatorConstants.PID_SCORE.a,
+      // Climb
       ElevatorConstants.PID_CLIMB.p,
       ElevatorConstants.PID_CLIMB.i,
       ElevatorConstants.PID_CLIMB.d,
