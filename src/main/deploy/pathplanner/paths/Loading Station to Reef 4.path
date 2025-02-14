@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.093451967592593,
-        "y": 5.245078125
+        "x": 1.6043623408564804,
+        "y": 7.302125651041666
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.819787715757376,
-        "y": 5.255794194329029
+        "x": 2.653529369217361,
+        "y": 6.844596354172936
       },
       "isLocked": false,
-      "linkedName": "Start"
+      "linkedName": "Loading Station"
     },
     {
       "anchor": {
-        "x": 5.303029875578703,
-        "y": 5.120228587962963
+        "x": 5.012626591435184,
+        "y": 5.2853747106481475
       },
       "prevControl": {
-        "x": 6.405059484935833,
-        "y": 5.136646981214093
+        "x": 4.638543836809953,
+        "y": 5.849352213547936
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef 3"
+      "linkedName": "Reef 4"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6917271860328639,
+      "rotationDegrees": -120.45471540298064
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -48,7 +53,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.6566721497386
+    "rotation": 125.36619010616316
   },
   "useDefaultConstraints": true
 }

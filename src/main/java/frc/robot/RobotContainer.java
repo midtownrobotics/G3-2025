@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOBag;
@@ -26,6 +26,7 @@ import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.commands.DriveCommands;
+import frc.robot.controls.AlgaeMode;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.sensors.Photoelectric;
@@ -183,15 +184,30 @@ public class RobotContainer {
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     coralOuttake = new CoralOuttake(rollerIO);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
+    
+    superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator);
 
     controls = new MatchXboxControls(0, 1);
     configureBindings();
 
-    superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator, controls);
 
     new RobotViz(() -> {
       return null;
     }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition(), () -> algaeClaw.getPosition());
+
+    NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
+      Commands.print("Raising Elevator..."),
+      Commands.waitSeconds(1),
+      Commands.print("Scoring..."),
+      Commands.waitSeconds(0.5),
+      Commands.print("Lowering Elevator..."),
+      Commands.waitSeconds(0.3),
+      Commands.print("Done.")));
+
+    NamedCommands.registerCommand("IntakeFromLoadingStation", Commands.sequence(
+      Commands.print("Intaking..."),
+      Commands.waitSeconds(0.7),
+      Commands.print("Done.")));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
@@ -214,6 +230,14 @@ public class RobotContainer {
     controls.rightPositionLock().onTrue(Commands.none());
 
     controls.reefAlgaePositionLock().onTrue(Commands.none());
+
+    controls.algaeModeBarge().onTrue(superstructure.setAlgaeModeCommand(AlgaeMode.BARGE));
+
+    controls.algaeModeProcessor().onTrue(superstructure.setAlgaeModeCommand(AlgaeMode.PROCESSOR));
+
+    controls.incrementCoralMode().onTrue(superstructure.incrementCoralModeCommand());
+
+    controls.decrementCoralMode().onTrue(superstructure.decrementCoralModeCommand());
 
     // Operator
 
@@ -251,22 +275,13 @@ public class RobotContainer {
     controls.coralIntakeRun().onTrue(Commands.none());
 
     controls.coralIntakeReverse().onTrue(Commands.none());
-
   }
 
   /** Handles trigger by enablling priority onTrue and disabling onFalse. */
   public void enableDisablePriorityControl(Trigger trigger, Priority priority) {
     trigger
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  superstructure.enable(priority);
-                }))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  superstructure.disable(priority);
-                }));
+        .onTrue(superstructure.enablePriorityCommand(priority))
+        .onFalse(superstructure.disablePriorityCommand(priority));
   }
 
   /** Returns the autonomous command */

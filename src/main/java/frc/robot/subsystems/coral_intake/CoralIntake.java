@@ -179,14 +179,13 @@ public class CoralIntake extends SubsystemBase {
    * @return {@code boolean} Wheter coral is detected.
    */
   public boolean isCoralDetected() {
-    boolean value = handoffSensor.isTriggered() || centerSensor.isTriggered();
-    if (value) {
+    if (handoffSensor.isTriggered() || centerSensor.isTriggered()) {
       coralLastDetected = Timer.getFPGATimestamp();
     }
     if (Timer.getFPGATimestamp() - coralLastDetected >= CoralIntakeConstants.coralDetectionIdleDelay.in(Seconds)) {
-      return true;
+      return false;
     }
-    return value;
+    return true;
   }
 
   /**

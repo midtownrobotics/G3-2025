@@ -7,12 +7,12 @@ public class WristIOReplay implements WristIO {
 
   @Override
   public void setPosition(Angle position) {
-    throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
+
   }
 
   @Override
   public void updateInputs(WristInputs inputs) {
-    throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
+
   }
 
   @Override
