@@ -6,7 +6,6 @@ import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
@@ -22,8 +21,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.LoggedTunableNumber;
 import frc.robot.subsystems.algae_claw.AlgaeClawConstants;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
-import frc.robot.utils.Constants;
 import lombok.Getter;
 
 public class WristIOKraken implements WristIO {
@@ -112,13 +111,14 @@ public class WristIOKraken implements WristIO {
       AlgaeClawConstants.PID.v,
       AlgaeClawConstants.PID.g,
       AlgaeClawConstants.PID.a,
-      AlgaeClawConstants.PID.maxA
+      AlgaeClawConstants.PID.maxA,
+      AlgaeClawConstants.PID.maxV
     );
   }
 
   private void configureMotor() {
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
-    // Shooting Slot
+
     krakenConfig.Slot0 =
           new Slot0Configs()
               .withKP(AlgaeClawConstants.PID.p.get())
@@ -129,14 +129,11 @@ public class WristIOKraken implements WristIO {
               .withKA(AlgaeClawConstants.PID.a.get())
               .withKV(AlgaeClawConstants.PID.v.get())
               .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-
-    krakenConfig.CurrentLimits =
-        new CurrentLimitsConfigs()
-            .withSupplyCurrentLimitEnable(true)
-            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT)
-            .withSupplyCurrentLowerLimit(Constants.KRAKEN_CURRENT_LOWER_LIMIT)
-            .withSupplyCurrentLowerTime(1);
-
+    krakenConfig.CurrentLimits
+      .withSupplyCurrentLimit(ElevatorConstants.PID_CLIMB.maxA.get());
+    krakenConfig.Voltage
+      .withPeakForwardVoltage(ElevatorConstants.PID_CLIMB.maxV.get())
+      .withPeakReverseVoltage(ElevatorConstants.PID_CLIMB.maxV.get());
     wristMotor.getConfigurator().apply(krakenConfig);
   }
 

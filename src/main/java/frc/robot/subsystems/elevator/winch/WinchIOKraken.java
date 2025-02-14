@@ -4,7 +4,6 @@ import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -25,7 +24,6 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
-import frc.robot.utils.Constants;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -256,9 +254,10 @@ public class WinchIOKraken implements WinchIO {
             .withKA(ElevatorConstants.PID_SCORE.a.get())
             .withKV(ElevatorConstants.PID_CLIMB.v.get())
             .withGravityType(GravityTypeValue.Elevator_Static);
-    krakenConfig.CurrentLimits =
-        new CurrentLimitsConfigs()
-            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
+    // Current limits are set in configure_____Limits() methods
+    // krakenConfig.CurrentLimits =
+    //     new CurrentLimitsConfigs()
+    //         .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
     krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     tryUntilOk(5, () -> leftMotor.getConfigurator().apply(krakenConfig));

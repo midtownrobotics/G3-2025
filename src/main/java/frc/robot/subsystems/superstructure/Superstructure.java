@@ -294,7 +294,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     // Coral intake handoff logic
-
+ 
     if (
       possibleCoralIntakeGoals.contains(CoralIntake.Goal.GROUND_INTAKE) 
       && possibleElevatorGoals.contains(Elevator.Goal.HANDOFF)
@@ -313,7 +313,7 @@ public class Superstructure extends SubsystemBase {
     Angle coralIntakePosition = coralIntake.getPivotPosition();
     Distance elevatorPosition = elevator.getPosition();
 
-    // TODO: Find positions for consrains
+    // TODO: Find positions for constraints
 
     // If coral intake would intersect elevator due to bad coral placement
     if (coralIntake.isCoralBlockingMovement()) {
@@ -350,7 +350,7 @@ public class Superstructure extends SubsystemBase {
       algaeClawConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
     }
 
-    // If coral inatke would intersect algae claw due to low elevator
+    // If coral intake would intersect algae claw due to low elevator
     if (algaeClawPosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0))) {
        Logger.recordOutput("Superstructure/Constraints/IntakeBlockedByClaw", algaeClawPosition.gte(Degrees.of(0)) && elevatorPosition.lte(Inches.of(0)));
       coralIntakeConstraint.addKeepOutConstraint(Degrees.of(0), Degrees.of(0));
