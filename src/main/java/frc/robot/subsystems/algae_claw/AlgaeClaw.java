@@ -52,14 +52,10 @@ public class AlgaeClaw extends SubsystemBase {
     @Getter private final Voltage rollerVoltage;
   }
 
-  public enum AlgaeGamePieceState {
-    IDLE,
-    INTAKING,
-    HOLDING
-  }
+  // No getter because isHasAlgae() makes no sense
+  private boolean hasAlgae = false;
 
   private @Getter Goal currentGoal = Goal.STOW;
-  private AlgaeGamePieceState currentAlgaeGamePieceState = AlgaeGamePieceState.IDLE;
 
   private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
@@ -104,7 +100,7 @@ public class AlgaeClaw extends SubsystemBase {
 
     Voltage desiredRollerVoltage = getCurrentGoal().getRollerVoltage();
 
-    // goal switch case
+    // Goal switch case
     switch (getCurrentGoal()) {
       case BARGE_SHOOT_BACK:
       case BARGE_SHOOT_FRONT:
@@ -112,23 +108,24 @@ public class AlgaeClaw extends SubsystemBase {
       case PROCESSOR_SHOOT:
       case STACKED_ALGAE_VOMIT:
       case VOMIT:
-        currentAlgaeGamePieceState = AlgaeGamePieceState.IDLE;
+        hasAlgae = false;
         break;
       case GROUND_INTAKE:
       case STACKED_ALGAE_INTAKE:
       case REEF_INTAKE:
         if (wristInputs.torqueCurrent.gt(AlgaeClawConstants.CURRENT_INTAKE_MAXIMUM_DETECTION)) {
-          currentAlgaeGamePieceState = AlgaeGamePieceState.HOLDING;
-        } else {
-          currentAlgaeGamePieceState = AlgaeGamePieceState.INTAKING;
+          hasAlgae = true;
         }
         break;
       default:
-       break;
+        break;
     }
 
-    if (currentAlgaeGamePieceState == AlgaeGamePieceState.HOLDING) {
+    if (hasAlgae && desiredRollerVoltage == Volts.of(0)) {
       desiredRollerVoltage = AlgaeClawConstants.HOLD_PIECE_ROLLER_VOLTAGE;
+      if (wristInputs.velocity.gt(AlgaeClawConstants.MIN_ANGULAR_VELOCITY_PIECE_DETECTION)) {
+        hasAlgae = false;
+      }
     }
 
     rollerIO.setVoltage(desiredRollerVoltage);
@@ -152,7 +149,7 @@ public class AlgaeClaw extends SubsystemBase {
 
   /** If {@link currentAlgaeGamePieceState} is {@code HOLDING}. */
   public boolean hasAlgae() {
-    return currentAlgaeGamePieceState == AlgaeGamePieceState.HOLDING;
+    return hasAlgae;
   }
 
   /**

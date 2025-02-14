@@ -293,6 +293,10 @@ public class Superstructure extends SubsystemBase {
       }
     }
 
+    if (algaeClaw.hasAlgae()) {
+      
+    }
+
     // Coral intake handoff logic
  
     if (
