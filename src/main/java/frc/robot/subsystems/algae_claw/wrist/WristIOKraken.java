@@ -1,6 +1,7 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -112,5 +113,10 @@ public class WristIOKraken implements WristIO {
     inputs.torqueCurrent = torqueCurrent.getValue();
     inputs.temperature = temperature.getValue();
     inputs.absolutePosition = Rotations.of(encoder.get());
+  }
+
+  @Override
+  public void setVoltage(Voltage volts) {
+    wristMotor.setVoltage(volts.in(Volts));
   }
 }

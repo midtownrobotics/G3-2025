@@ -84,6 +84,10 @@ public class Elevator extends SubsystemBase {
       .voltage(winchInputs.left.appliedVoltage)
       .linearPosition(winchInputs.left.position)
       .linearVelocity(winchInputs.left.velocity);
+    log.motor("rightMotor")
+      .voltage(winchInputs.right.appliedVoltage)
+      .linearPosition(winchInputs.right.position)
+      .linearVelocity(winchInputs.right.velocity);
   }
 
   @Override
