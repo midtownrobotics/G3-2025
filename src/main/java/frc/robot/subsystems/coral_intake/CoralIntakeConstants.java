@@ -15,12 +15,12 @@ public class CoralIntakeConstants {
     public static final Angle coralIntakeMinAngle = Degrees.of(0);
 
     public final class PID {
-        public static final LoggedTunableNumber coralIntakeS = new LoggedTunableNumber("CoralIntake/coralIntakeS", 0.03);
-        public static final LoggedTunableNumber coralIntakeV = new LoggedTunableNumber("CoralIntake/coralIntakeV", 0.23);
-        public static final LoggedTunableNumber coralIntakeG = new LoggedTunableNumber("CoralIntake/coralIntakeG", 0.8);
-        public static final LoggedTunableNumber coralIntakeP = new LoggedTunableNumber("CoralIntake/coralIntakeP", 5);
-        public static final LoggedTunableNumber coralIntakeI = new LoggedTunableNumber("CoralIntake/coralIntakeI", 0);
-        public static final LoggedTunableNumber coralIntakeD = new LoggedTunableNumber("CoralIntake/coralIntakeD", 0.5);
+        public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralIntake/s", 0.03);
+        public static final LoggedTunableNumber v = new LoggedTunableNumber("CoralIntake/v", 0.23);
+        public static final LoggedTunableNumber g = new LoggedTunableNumber("CoralIntake/g", 0.8);
+        public static final LoggedTunableNumber p = new LoggedTunableNumber("CoralIntake/p", 5);
+        public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralIntake/i", 0);
+        public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralIntake/d", 0.5);
 
         public static final LoggedTunableNumber maxPivotV = new LoggedTunableNumber("CoralIntake/maxV", 3.5);
         public static final LoggedTunableNumber maxPivotA = new LoggedTunableNumber("CoralIntake/maxA", 10);
