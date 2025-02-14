@@ -17,15 +17,12 @@ public class AlgaeClawConstants {
     public static final AngularVelocity MIN_ANGULAR_VELOCITY_PIECE_DETECTION = Units.RotationsPerSecond.of(0); // TODO
 
     public class PID {
+        public static final LoggedTunableNumber p = new LoggedTunableNumber("Elevator/PID_CLIMB/p", 0.0);
+        public static final LoggedTunableNumber i = new LoggedTunableNumber("Elevator/PID_CLIMB/i", 0.0);
+        public static final LoggedTunableNumber d = new LoggedTunableNumber("Elevator/PID_CLIMB/d", 0.0);
         public static final LoggedTunableNumber s = new LoggedTunableNumber("Elevator/PID_CLIMB/s", 0.0);
         public static final LoggedTunableNumber g = new LoggedTunableNumber("Elevator/PID_CLIMB/g", 0.0);
         public static final LoggedTunableNumber v = new LoggedTunableNumber("Elevator/PID_CLIMB/v", 0.0);
         public static final LoggedTunableNumber a = new LoggedTunableNumber("Elevator/PID_CLIMB/a", 0.0);
-        public static final LoggedTunableNumber p = new LoggedTunableNumber("Elevator/PID_CLIMB/p", 0.0);
-        public static final LoggedTunableNumber i = new LoggedTunableNumber("Elevator/PID_CLIMB/i", 0.0);
-        public static final LoggedTunableNumber d = new LoggedTunableNumber("Elevator/PID_CLIMB/d", 0.0);
-
-        public static final LoggedTunableNumber maxV = new LoggedTunableNumber("Elevator/PID_CLIMB/maxV", 0.0);
-        public static final LoggedTunableNumber maxA = new LoggedTunableNumber("Elevator/PID_CLIMB/maxA", 0.0);
     }
 }

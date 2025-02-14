@@ -67,7 +67,6 @@ public class PivotIONeo implements PivotIO {
     inputs.temperature = Units.Celsius.of(pivotMotor.getMotorTemperature());
     inputs.offsetedPosition = inputs.absolutePosition.plus(CoralIntakeConstants.pivotOffset);
 
-
     updateConstants();
   }
 
@@ -87,8 +86,6 @@ public class PivotIONeo implements PivotIO {
         new ClosedLoopConfig()
           .pid(CoralIntakeConstants.coralIntakeP.get(), CoralIntakeConstants.coralIntakeI.get(), CoralIntakeConstants.coralIntakeD.get())
       );
-
-      System.out.println("PID");
 
       pivotMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }, CoralIntakeConstants.coralIntakeP, CoralIntakeConstants.coralIntakeD, CoralIntakeConstants.coralIntakeI);

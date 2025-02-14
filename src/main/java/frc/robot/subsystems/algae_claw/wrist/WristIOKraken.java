@@ -6,6 +6,7 @@ import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
@@ -21,8 +22,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.LoggedTunableNumber;
 import frc.robot.subsystems.algae_claw.AlgaeClawConstants;
-import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
+import frc.robot.utils.Constants;
 import lombok.Getter;
 
 public class WristIOKraken implements WristIO {
@@ -110,9 +111,7 @@ public class WristIOKraken implements WristIO {
       AlgaeClawConstants.PID.s,
       AlgaeClawConstants.PID.v,
       AlgaeClawConstants.PID.g,
-      AlgaeClawConstants.PID.a,
-      AlgaeClawConstants.PID.maxA,
-      AlgaeClawConstants.PID.maxV
+      AlgaeClawConstants.PID.a
     );
   }
 
@@ -126,14 +125,12 @@ public class WristIOKraken implements WristIO {
               .withKD(AlgaeClawConstants.PID.d.get())
               .withKS(AlgaeClawConstants.PID.s.get())
               .withKG(AlgaeClawConstants.PID.g.get())
-              .withKA(AlgaeClawConstants.PID.a.get())
               .withKV(AlgaeClawConstants.PID.v.get())
+              .withKA(AlgaeClawConstants.PID.a.get())
               .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-    krakenConfig.CurrentLimits
-      .withSupplyCurrentLimit(ElevatorConstants.PID_CLIMB.maxA.get());
-    krakenConfig.Voltage
-      .withPeakForwardVoltage(ElevatorConstants.PID_CLIMB.maxV.get())
-      .withPeakReverseVoltage(ElevatorConstants.PID_CLIMB.maxV.get());
+    krakenConfig.CurrentLimits =
+        new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
     wristMotor.getConfigurator().apply(krakenConfig);
   }
 

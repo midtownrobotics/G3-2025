@@ -18,9 +18,6 @@ public class ElevatorConstants {
     public static final LoggedTunableNumber p = new LoggedTunableNumber("Elevator/PID_SCORE/p", 0.0);
     public static final LoggedTunableNumber i = new LoggedTunableNumber("Elevator/PID_SCORE/i", 0.0);
     public static final LoggedTunableNumber d = new LoggedTunableNumber("Elevator/PID_SCORE/d", 0.0);
-
-    public static final LoggedTunableNumber maxV = new LoggedTunableNumber("Elevator/PID_SCORE/maxV", 0.0);
-    public static final LoggedTunableNumber maxA = new LoggedTunableNumber("Elevator/PID_SCORE/maxA", 0.0);
   }
 
   public final class PID_CLIMB {
@@ -31,8 +28,5 @@ public class ElevatorConstants {
     public static final LoggedTunableNumber p = new LoggedTunableNumber("Elevator/PID_CLIMB/p", 0.0);
     public static final LoggedTunableNumber i = new LoggedTunableNumber("Elevator/PID_CLIMB/i", 0.0);
     public static final LoggedTunableNumber d = new LoggedTunableNumber("Elevator/PID_CLIMB/d", 0.0);
-
-    public static final LoggedTunableNumber maxV = new LoggedTunableNumber("Elevator/PID_CLIMB/maxV", 0.0);
-    public static final LoggedTunableNumber maxA = new LoggedTunableNumber("Elevator/PID_CLIMB/maxA", 0.0);
   }
 }
