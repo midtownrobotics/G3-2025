@@ -15,7 +15,6 @@ public class PivotIOSim implements PivotIO {
 
   @Override
   public void updateInputs(PivotInputs inputs) {
-    inputs.absolutePosition = targetPosition;
     inputs.position = targetPosition;
   }
 

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.coral_intake.pivot;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -19,12 +21,13 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.LoggedTunableNumber;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
 import frc.robot.utils.Constants;
-import lombok.Getter;
 
 public class PivotIONeo implements PivotIO {
 
-  private @Getter SparkMax pivotMotor;
-  private @Getter DutyCycleEncoder encoder;
+  private SparkMax pivotMotor;
+  private DutyCycleEncoder encoder;
+
+  private Angle positionOffset;
 
   // Setup for PID, FF, and SVG
 
@@ -32,16 +35,19 @@ public class PivotIONeo implements PivotIO {
 
   private TrapezoidProfile.State currentPivotState = new TrapezoidProfile.State();
   private TrapezoidProfile.State targetPivotState = new TrapezoidProfile.State();
-  private TrapezoidProfile trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(CoralIntakeConstants.maxPivotV.get(), CoralIntakeConstants.maxPivotA.get()));
+  private TrapezoidProfile trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(CoralIntakeConstants.PID.maxPivotV.get(), CoralIntakeConstants.PID.maxPivotA.get()));
 
   /** Constructor for pivotIO for Neo motors. */
-  public PivotIONeo(int pivotMotorID, int ecoderID) {
+  public PivotIONeo(int pivotMotorID, int encoderID) {
+    encoder = new DutyCycleEncoder(encoderID);
+    positionOffset = Units.Rotations.of(encoder.get() * 25).plus(Rotations.of(CoralIntakeConstants.pivotOffset.get()));
+
     pivotMotor = new SparkMax(pivotMotorID, MotorType.kBrushless);
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
     pivotConfig.smartCurrentLimit((int) Constants.NEO_CURRENT_LIMIT.in(Units.Amps));
     pivotConfig.idleMode(IdleMode.kBrake);
     pivotConfig.closedLoop.pidf(0,0,0,0);
-    pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     pivotFeedforward = new ArmFeedforward(0, 0, 0);
     currentPivotState.position = getPosition().in(Units.Degrees);
@@ -55,25 +61,24 @@ public class PivotIONeo implements PivotIO {
   }
 
   private Angle getPosition() {
-    return Units.Rotations.of(pivotMotor.getAbsoluteEncoder().getPosition());
+    return Units.Rotations.of(pivotMotor.getAbsoluteEncoder().getPosition()).plus(positionOffset);
   }
 
   @Override
   public void updateInputs(PivotInputs inputs) {
     inputs.position = getPosition();
-    inputs.velocity = Units.RPM.of(pivotMotor.getAbsoluteEncoder().getVelocity());
+    inputs.velocity = Units.RPM.of(pivotMotor.getEncoder().getVelocity());
     inputs.appliedVoltage = Units.Volts.of(pivotMotor.getBusVoltage());
     inputs.supplyCurrent = Units.Amps.of(pivotMotor.getOutputCurrent());
     inputs.temperature = Units.Celsius.of(pivotMotor.getMotorTemperature());
-    inputs.offsetedPosition = inputs.absolutePosition.plus(CoralIntakeConstants.pivotOffset);
 
     updateConstants();
   }
 
   private void updateConstants() {
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
-        pivotFeedforward = new ArmFeedforward(CoralIntakeConstants.coralIntakeS.get(), CoralIntakeConstants.coralIntakeG.get(), CoralIntakeConstants.coralIntakeV.get());
-    }, CoralIntakeConstants.coralIntakeS, CoralIntakeConstants.coralIntakeV, CoralIntakeConstants.coralIntakeG);
+        pivotFeedforward = new ArmFeedforward(CoralIntakeConstants.PID.coralIntakeS.get(), CoralIntakeConstants.PID.coralIntakeG.get(), CoralIntakeConstants.PID.coralIntakeV.get());
+    }, CoralIntakeConstants.PID.coralIntakeS, CoralIntakeConstants.PID.coralIntakeV, CoralIntakeConstants.PID.coralIntakeG);
 
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
       SparkMaxConfig motorConfig = new SparkMaxConfig();
@@ -84,15 +89,19 @@ public class PivotIONeo implements PivotIO {
           .velocityConversionFactor(1.0/25/60)
       ).apply(
         new ClosedLoopConfig()
-          .pid(CoralIntakeConstants.coralIntakeP.get(), CoralIntakeConstants.coralIntakeI.get(), CoralIntakeConstants.coralIntakeD.get())
+          .pid(CoralIntakeConstants.PID.coralIntakeP.get(), CoralIntakeConstants.PID.coralIntakeI.get(), CoralIntakeConstants.PID.coralIntakeD.get())
       );
 
       pivotMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    }, CoralIntakeConstants.coralIntakeP, CoralIntakeConstants.coralIntakeD, CoralIntakeConstants.coralIntakeI);
+    }, CoralIntakeConstants.PID.coralIntakeP, CoralIntakeConstants.PID.coralIntakeD, CoralIntakeConstants.PID.coralIntakeI);
 
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
-      trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(CoralIntakeConstants.maxPivotV.get(), CoralIntakeConstants.maxPivotA.get()));
-    }, CoralIntakeConstants.maxPivotA, CoralIntakeConstants.maxPivotV);
+      trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(CoralIntakeConstants.PID.maxPivotV.get(), CoralIntakeConstants.PID.maxPivotA.get()));
+    }, CoralIntakeConstants.PID.maxPivotA, CoralIntakeConstants.PID.maxPivotV);
+
+    LoggedTunableNumber.ifChanged(hashCode(), () -> {
+      positionOffset = Units.Rotations.of(encoder.get() * 25).plus(Rotations.of(CoralIntakeConstants.pivotOffset.get()));
+    }, CoralIntakeConstants.pivotOffset);
   }
 
   @Override
