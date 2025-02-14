@@ -13,7 +13,6 @@ import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.subsystems.algae_claw.wrist.WristIO;
 import frc.robot.subsystems.algae_claw.wrist.WristInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.CircularConstraint;
-import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
