@@ -63,7 +63,7 @@ public class PivotIONeo implements PivotIO {
   }
 
   private Angle getPosition() {
-    return Units.Rotations.of(pivotMotor.getEncoder().getPosition() * 50).plus(positionOffset);
+    return Units.Rotations.of(pivotMotor.getEncoder().getPosition() / 50).plus(positionOffset);
   }
 
   @Override
