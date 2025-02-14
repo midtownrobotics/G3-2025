@@ -176,16 +176,24 @@ public class WinchIOKraken implements WinchIO {
     LoggedTunableNumber.ifChanged(
       hashCode(),
       this::configureMotors,
-      ElevatorConstants.PID_CLIMB.p,
-      ElevatorConstants.PID_CLIMB.d,
-      ElevatorConstants.PID_CLIMB.kg,
-      ElevatorConstants.PID_CLIMB.ks,
-      ElevatorConstants.PID_CLIMB.kv,
       ElevatorConstants.PID_SCORE.p,
+      ElevatorConstants.PID_SCORE.i,
       ElevatorConstants.PID_SCORE.d,
-      ElevatorConstants.PID_SCORE.kg,
-      ElevatorConstants.PID_SCORE.ks,
-      ElevatorConstants.PID_SCORE.kv
+      ElevatorConstants.PID_SCORE.s,
+      ElevatorConstants.PID_SCORE.v,
+      ElevatorConstants.PID_SCORE.g,
+      ElevatorConstants.PID_SCORE.a,
+      ElevatorConstants.PID_SCORE.maxA,
+      ElevatorConstants.PID_SCORE.maxV,
+      ElevatorConstants.PID_CLIMB.p,
+      ElevatorConstants.PID_CLIMB.i,
+      ElevatorConstants.PID_CLIMB.d,
+      ElevatorConstants.PID_CLIMB.s,
+      ElevatorConstants.PID_CLIMB.v,
+      ElevatorConstants.PID_CLIMB.g,
+      ElevatorConstants.PID_CLIMB.a,
+      ElevatorConstants.PID_CLIMB.maxA,
+      ElevatorConstants.PID_CLIMB.maxV
     );
   }
 
@@ -230,23 +238,23 @@ public class WinchIOKraken implements WinchIO {
     krakenConfig.Slot0 =
         new Slot0Configs()
             .withKP(ElevatorConstants.PID_SCORE.p.get())
-            .withKI(0)
+            .withKI(ElevatorConstants.PID_SCORE.i.get())
             .withKD(ElevatorConstants.PID_SCORE.d.get())
-            .withKS(ElevatorConstants.PID_SCORE.ks.get())
-            .withKG(ElevatorConstants.PID_SCORE.kg.get())
-            .withKA(0)
-            .withKV(ElevatorConstants.PID_SCORE.kv.get())
+            .withKS(ElevatorConstants.PID_SCORE.s.get())
+            .withKG(ElevatorConstants.PID_SCORE.g.get())
+            .withKA(ElevatorConstants.PID_SCORE.a.get())
+            .withKV(ElevatorConstants.PID_SCORE.v.get())
             .withGravityType(GravityTypeValue.Elevator_Static);
     // Climbing Slot
     krakenConfig.Slot1 =
         new Slot1Configs()
             .withKP(ElevatorConstants.PID_CLIMB.p.get())
-            .withKI(0)
+            .withKI(ElevatorConstants.PID_SCORE.i.get())
             .withKD(ElevatorConstants.PID_CLIMB.d.get())
-            .withKS(ElevatorConstants.PID_CLIMB.ks.get())
-            .withKG(ElevatorConstants.PID_CLIMB.kg.get())
-            .withKA(0)
-            .withKV(ElevatorConstants.PID_CLIMB.kv.get())
+            .withKS(ElevatorConstants.PID_CLIMB.s.get())
+            .withKG(ElevatorConstants.PID_CLIMB.g.get())
+            .withKA(ElevatorConstants.PID_SCORE.a.get())
+            .withKV(ElevatorConstants.PID_CLIMB.v.get())
             .withGravityType(GravityTypeValue.Elevator_Static);
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
