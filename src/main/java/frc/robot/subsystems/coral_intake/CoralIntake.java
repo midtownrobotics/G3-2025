@@ -154,7 +154,7 @@ public class CoralIntake extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput("CoralIntake/currentState🍆", getCurrentGoal());
+    Logger.recordOutput("CoralIntake/currentState", getCurrentGoal());
     Logger.recordOutput("CoralIntake/desiredAngle", desiredAngle);
     Logger.recordOutput("CoralIntake/desiredBeltVoltage", desiredBeltVoltage);
     Logger.recordOutput("CoralIntake/desiredRollerVoltage", desiredRollerVoltage);

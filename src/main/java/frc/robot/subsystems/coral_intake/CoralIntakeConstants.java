@@ -15,10 +15,11 @@ public class CoralIntakeConstants {
     public static final Angle coralIntakeMaxAngle = Degrees.of(0);
     public static final Angle coralIntakeMinAngle = Degrees.of(0);
 
-    public static final LoggedTunableNumber coralIntakeKs = new LoggedTunableNumber("coralIntakeKs", 0.03);
-    public static final LoggedTunableNumber coralIntakeKg = new LoggedTunableNumber("coralIntakeKg", 0.23);
-    public static final LoggedTunableNumber coralIntakeKv = new LoggedTunableNumber("coralIntakeKv", 0.8);
+    public static final LoggedTunableNumber coralIntakeS = new LoggedTunableNumber("coralIntakeS", 0.03);
+    public static final LoggedTunableNumber coralIntakeV = new LoggedTunableNumber("coralIntakeV", 0.23);
+    public static final LoggedTunableNumber coralIntakeG = new LoggedTunableNumber("coralIntakeG", 0.8);
     public static final LoggedTunableNumber coralIntakeP = new LoggedTunableNumber("coralIntakeP", 5);
+    public static final LoggedTunableNumber coralIntakeI = new LoggedTunableNumber("coralIntakeI", 0);
     public static final LoggedTunableNumber coralIntakeD = new LoggedTunableNumber("coralIntakeD", 0.5);
 
     public static final LoggedTunableNumber maxPivotV = new LoggedTunableNumber("maxV", 3.5);

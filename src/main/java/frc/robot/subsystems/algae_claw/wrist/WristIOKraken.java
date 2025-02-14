@@ -1,18 +1,17 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -40,21 +39,13 @@ public class WristIOKraken implements WristIO {
   @Getter private StatusSignal<Current> torqueCurrent;
   @Getter private StatusSignal<Temperature> temperature;
   @Getter private StatusSignal<Double> dutyCycle;
-  private WristConfig wristConfig;
 
   /** Constructor for wristIO for kraken motors. */
   public WristIOKraken(int wristMotorID, int encoderID, CANBusStatusSignalRegistration bus) {
-    wristConfig = new WristConfig();
     wristMotor = new TalonFX(wristMotorID);
     encoder = new DutyCycleEncoder(new DigitalInput(encoderID));
 
-    TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
-    krakenConfig.Feedback = new FeedbackConfigs()
-      .withSensorToMechanismRatio(GEAR_RATIO);
-    // Shooting Slot
-    wristConfig.apply(wristMotor);
-
-    wristMotor.getConfigurator().apply(krakenConfig);
+    configureMotor();
 
     wristMotor.setPosition(encoder.get());
 
@@ -87,7 +78,7 @@ public class WristIOKraken implements WristIO {
 
     tryUntilOk(5, () -> wristMotor.optimizeBusUtilization(0, 1));
 
-    configureMotors();
+    configureMotor();
   }
 
   @Override
@@ -107,34 +98,44 @@ public class WristIOKraken implements WristIO {
     inputs.temperature = temperature.getValue();
     inputs.absolutePosition = Rotations.of(encoder.get());
 
-    LoggedTunableNumber.ifChanged(hashCode(), () -> {
-        configureMotors();
-      }, 
-      AlgaeClawConstants.PID_SCORE.p,
-      AlgaeClawConstants.PID_SCORE.d,
-      AlgaeClawConstants.PID_SCORE.ks,
-      AlgaeClawConstants.PID_SCORE.kg,
-      AlgaeClawConstants.PID_SCORE.kv
+    updateConstants();
+  }
+
+  private void updateConstants() {
+    LoggedTunableNumber.ifChanged(
+      hashCode(),
+      this::configureMotor,
+      AlgaeClawConstants.PID.p,
+      AlgaeClawConstants.PID.i,
+      AlgaeClawConstants.PID.d,
+      AlgaeClawConstants.PID.s,
+      AlgaeClawConstants.PID.v,
+      AlgaeClawConstants.PID.g,
+      AlgaeClawConstants.PID.a
     );
   }
 
-  private void configureMotors() {
+  private void configureMotor() {
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
-    // Scoring Slot
+
     krakenConfig.Slot0 =
-        new Slot0Configs()
-            .withKP(AlgaeClawConstants.PID_SCORE.p.get())
-            .withKI(0)
-            .withKD(AlgaeClawConstants.PID_SCORE.d.get())
-            .withKS(AlgaeClawConstants.PID_SCORE.ks.get())
-            .withKG(AlgaeClawConstants.PID_SCORE.kg.get())
-            .withKA(0)
-            .withKV(AlgaeClawConstants.PID_SCORE.kv.get())
-            .withGravityType(GravityTypeValue.Arm_Cosine);
+          new Slot0Configs()
+              .withKP(AlgaeClawConstants.PID.p.get())
+              .withKI(AlgaeClawConstants.PID.i.get())
+              .withKD(AlgaeClawConstants.PID.d.get())
+              .withKS(AlgaeClawConstants.PID.s.get())
+              .withKG(AlgaeClawConstants.PID.g.get())
+              .withKV(AlgaeClawConstants.PID.v.get())
+              .withKA(AlgaeClawConstants.PID.a.get())
+              .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
             .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
-    krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     wristMotor.getConfigurator().apply(krakenConfig);
+  }
+
+  @Override
+  public void setVoltage(Voltage volts) {
+    wristMotor.setVoltage(volts.in(Volts));
   }
 }

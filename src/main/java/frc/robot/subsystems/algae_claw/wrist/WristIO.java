@@ -90,6 +90,9 @@ public interface WristIO {
   /** sets position */
   public void setPosition(Angle position);
 
+  /** sets voltage */
+  public void setVoltage(Voltage volts);
+
   /**
    * updates input class for Wrist
    *
