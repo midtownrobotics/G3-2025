@@ -28,6 +28,7 @@ public class PivotIONeo implements PivotIO {
   private DutyCycleEncoder encoder;
 
   private Angle positionOffset;
+  private Angle seedPosition;
 
   // Setup for PID, FF, and SVG
 
@@ -40,7 +41,8 @@ public class PivotIONeo implements PivotIO {
   /** Constructor for pivotIO for Neo motors. */
   public PivotIONeo(int pivotMotorID, int encoderID) {
     encoder = new DutyCycleEncoder(encoderID);
-    positionOffset = Units.Rotations.of(encoder.get() * 25).plus(Rotations.of(CoralIntakeConstants.pivotOffset.get()));
+    seedPosition = Units.Rotations.of(encoder.get() / 2);
+    positionOffset = seedPosition.plus(Rotations.of(CoralIntakeConstants.pivotOffset.get()));
 
     pivotMotor = new SparkMax(pivotMotorID, MotorType.kBrushless);
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
@@ -61,7 +63,7 @@ public class PivotIONeo implements PivotIO {
   }
 
   private Angle getPosition() {
-    return Units.Rotations.of(pivotMotor.getAbsoluteEncoder().getPosition()).plus(positionOffset);
+    return Units.Rotations.of(pivotMotor.getEncoder().getPosition() * 50).plus(positionOffset);
   }
 
   @Override
@@ -77,8 +79,8 @@ public class PivotIONeo implements PivotIO {
 
   private void updateConstants() {
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
-        pivotFeedforward = new ArmFeedforward(CoralIntakeConstants.PID.coralIntakeS.get(), CoralIntakeConstants.PID.coralIntakeG.get(), CoralIntakeConstants.PID.coralIntakeV.get());
-    }, CoralIntakeConstants.PID.coralIntakeS, CoralIntakeConstants.PID.coralIntakeV, CoralIntakeConstants.PID.coralIntakeG);
+        pivotFeedforward = new ArmFeedforward(CoralIntakeConstants.PID.s.get(), CoralIntakeConstants.PID.g.get(), CoralIntakeConstants.PID.v.get());
+    }, CoralIntakeConstants.PID.s, CoralIntakeConstants.PID.v, CoralIntakeConstants.PID.g);
 
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
       SparkMaxConfig motorConfig = new SparkMaxConfig();
@@ -89,18 +91,18 @@ public class PivotIONeo implements PivotIO {
           .velocityConversionFactor(1.0/25/60)
       ).apply(
         new ClosedLoopConfig()
-          .pid(CoralIntakeConstants.PID.coralIntakeP.get(), CoralIntakeConstants.PID.coralIntakeI.get(), CoralIntakeConstants.PID.coralIntakeD.get())
+          .pid(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get())
       );
 
       pivotMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    }, CoralIntakeConstants.PID.coralIntakeP, CoralIntakeConstants.PID.coralIntakeD, CoralIntakeConstants.PID.coralIntakeI);
+    }, CoralIntakeConstants.PID.p, CoralIntakeConstants.PID.i, CoralIntakeConstants.PID.d);
 
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
       trapezoidProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(CoralIntakeConstants.PID.maxPivotV.get(), CoralIntakeConstants.PID.maxPivotA.get()));
     }, CoralIntakeConstants.PID.maxPivotA, CoralIntakeConstants.PID.maxPivotV);
 
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
-      positionOffset = Units.Rotations.of(encoder.get() * 25).plus(Rotations.of(CoralIntakeConstants.pivotOffset.get()));
+      positionOffset = seedPosition.plus(Rotations.of(CoralIntakeConstants.pivotOffset.get()));
     }, CoralIntakeConstants.pivotOffset);
   }
 
