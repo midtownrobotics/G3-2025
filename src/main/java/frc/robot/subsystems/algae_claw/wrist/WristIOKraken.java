@@ -34,7 +34,6 @@ public class WristIOKraken implements WristIO {
 
   @Getter private StatusSignal<Angle> position;
   @Getter private StatusSignal<AngularVelocity> velocity;
-  @Getter private StatusSignal<Voltage> voltage;
   @Getter private StatusSignal<Voltage> appliedVoltage;
   @Getter private StatusSignal<Current> supplyCurrent;
   @Getter private StatusSignal<Current> torqueCurrent;
@@ -51,7 +50,6 @@ public class WristIOKraken implements WristIO {
     wristMotor.setPosition(encoder.get() / GEAR_RATIO);
 
     velocity = wristMotor.getVelocity();
-    voltage = wristMotor.getMotorVoltage();
     appliedVoltage = wristMotor.getMotorVoltage();
     supplyCurrent = wristMotor.getSupplyCurrent();
     torqueCurrent = wristMotor.getTorqueCurrent();
@@ -61,7 +59,6 @@ public class WristIOKraken implements WristIO {
     bus
        .register(position)
        .register(velocity)
-       .register(voltage)
        .register(torqueCurrent)
        .register(supplyCurrent)
        .register(temperature)
@@ -71,7 +68,6 @@ public class WristIOKraken implements WristIO {
       50.0,
       position,
       velocity,
-      voltage,
       torqueCurrent,
       supplyCurrent,
       temperature,
