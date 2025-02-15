@@ -111,6 +111,7 @@ public class CoralIntake extends SubsystemBase {
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
+
   /** Sets the goal of the coral outtake. */
   public void setGoal(State state, CircularConstraint constraint) {
     currentState = state;
