@@ -26,27 +26,22 @@ public class Elevator extends SubsystemBase {
   private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
 
   public enum Goal {
-    STOW(0),
-    HANDOFF(0),
-    L1(0),
-    L2(0),
-    L3(0),
-    L4(0),
-    BARGE(0),
-    PROCESSOR(0),
-    CLIMB(0),
-    STATION(0),
-    ALGAE_GROUND(0),
-    ALGAE_STACKED(0),
-    TUNING(0),
-    MANUAL(0);
+    STOW(0), // TODO
+    HANDOFF(0), // TODO
+    L1(0), // TODO
+    L2(0), // TODO
+    L3(0), // TODO
+    L4(0), // TODO
+    BARGE(0), // TODO
+    PROCESSOR(0), // TODO
+    CLIMB(0), // TODO
+    STATION(0), // TODO
+    ALGAE_GROUND(0), // TODO
+    ALGAE_STACKED(0), // TODO
+    TUNING(0), // TODO
+    MANUAL(0); // TODO
 
     private @Getter Distance height;
-
-    /** Goal has no meter height value associated */
-    private Goal() {
-      this.height = null;
-    }
 
     /** Goal has meter height value associated */
     private Goal(int height) {
@@ -57,7 +52,7 @@ public class Elevator extends SubsystemBase {
   private @Getter Goal currentGoal = Goal.STOW;
 
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
-  private @Getter WinchIO winch;
+  private WinchIO winch;
 
   private SysIdRoutine routine;
 
@@ -70,7 +65,7 @@ public class Elevator extends SubsystemBase {
     this.winch = winch;
     winch.updateInputs(winchInputs);
 
-      SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
+    SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         winch::setVoltage,
         this::motorSysIdLog,
         this
