@@ -293,23 +293,33 @@ public class Superstructure extends SubsystemBase {
       }
     }
 
-    if (algaeClaw.hasAlgae()) {
-      
-    }
-
     // Coral intake handoff logic
  
     if (
       possibleCoralIntakeGoals.contains(CoralIntake.Goal.GROUND_INTAKE) 
       && possibleElevatorGoals.contains(Elevator.Goal.HANDOFF)
+      && possibleCoralOuttakeGoals.contains(CoralOuttake.Goal.HANDOFF)
       && coralIntake.isCoralDetected()
     ) {
       possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF);
+      possibleCoralOuttakeGoals = Set.of(CoralOuttake.Goal.HANDOFF);
     }
 
-    if (possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF) && possibleElevatorGoals.contains(Elevator.Goal.HANDOFF)) {
+    if (!coralIntake.isCoralDetected()) {
+      possibleCoralOuttakeGoals.remove(CoralOuttake.Goal.HANDOFF);
+    }
+
+    if (
+      (
+        possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF) 
+        || possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF_ADJUSTING)
+      ) 
+      && possibleElevatorGoals.contains(Elevator.Goal.HANDOFF)
+    ) {
       if (coralIntake.doesCoralNeedAdjusting()) {
         possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF_ADJUSTING);
+      } else {
+        possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF);
       }
     }
 
