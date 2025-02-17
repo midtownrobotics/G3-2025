@@ -15,8 +15,6 @@ package frc.robot.subsystems.drivetrain;
 
 import static edu.wpi.first.units.Units.Radians;
 
-import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -73,7 +71,7 @@ public class GyroIOPigeon2 implements GyroIO {
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
-    inputs.connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
+    inputs.connected = yaw.getValueAsDouble() != 0.0 && yawVelocity.getValueAsDouble() != 0.0;
     inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(yawVelocity.getValueAsDouble());
 
@@ -83,6 +81,7 @@ public class GyroIOPigeon2 implements GyroIO {
         yawPositionQueue.stream()
             .map((Double value) -> Rotation2d.fromDegrees(value))
             .toArray(Rotation2d[]::new);
+
     if (Constants.currentMode == Mode.SIM) {
       inputs.odometryYawTimestamps = new double[] {Timer.getTimestamp()};
       inputs.odometryYawPositions = new Rotation2d[] {inputs.yawPosition};
