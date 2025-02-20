@@ -13,7 +13,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import frc.lib.LoggedTunableMeasures.LoggedTunableAngularAcceleration;
 import frc.lib.LoggedTunableMeasures.LoggedTunableAngularVelocity;
 
-public class LTAnglularProfiledPIDController {
+public class LTAngularProfiledPIDController {
   /** p */
   private final LoggedTunableNumber m_kP;
   /** i */
@@ -30,12 +30,12 @@ public class LTAnglularProfiledPIDController {
   private final ProfiledPIDController m_controller;
 
   /** Empty contstructor makes all 0 */
-  public LTAnglularProfiledPIDController(String path) {
+  public LTAngularProfiledPIDController(String path) {
     this(path, 0, 0, 0, RadiansPerSecond.zero(), RadiansPerSecondPerSecond.zero());
   }
 
   /** Pid controller has loggedtunablenumbers */
-  public LTAnglularProfiledPIDController(
+  public LTAngularProfiledPIDController(
       String path,
       double defaultP,
       double defaultI,

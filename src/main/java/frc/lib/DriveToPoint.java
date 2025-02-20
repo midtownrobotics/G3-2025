@@ -47,8 +47,8 @@ public class DriveToPoint extends Command {
           kMaxLinearAcceleration);
 
 
-  private LTAnglularProfiledPIDController m_headingController =
-      new LTAnglularProfiledPIDController("/DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
+  private LTAngularProfiledPIDController m_headingController =
+      new LTAngularProfiledPIDController("/DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
 
   private double m_ffMinRadius = 0.2, m_ffMaxRadius = 1.1;
 
