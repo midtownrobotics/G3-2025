@@ -226,7 +226,7 @@ public class RobotContainer {
 
     controls.gamePieceLock().onTrue(Commands.none());
 
-    controls.leftPositionLock().whileTrue(AutoBuilder.pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
+    controls.leftPositionLock().onTrue(Commands.none());
 
     controls.rightPositionLock().onTrue(Commands.none());
 

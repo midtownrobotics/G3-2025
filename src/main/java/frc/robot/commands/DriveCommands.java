@@ -330,7 +330,7 @@ public class DriveCommands {
       boolean leftBranch = leftBranchSupplier.getAsBoolean();
 
       if (face == null) {
-        return Commands.none();
+        return drive.stopWithXCommand();
       }
 
       PathConstraints constraints = new PathConstraints(kMaxDriveVelocity, kMaxDriveAcceleration, kMaxAngularVelocity, kMaxAngularAcceleration);
