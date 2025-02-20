@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -44,16 +43,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.DriveToPoint;
+import frc.lib.LoggedTunableMeasures.LoggedTunableAngularAcceleration;
+import frc.lib.LoggedTunableMeasures.LoggedTunableAngularVelocity;
+import frc.lib.LoggedTunableMeasures.LoggedTunableLinearAcceleration;
+import frc.lib.LoggedTunableMeasures.LoggedTunableLinearVelocity;
 import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
@@ -317,11 +316,16 @@ public class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  private static final LinearVelocity kMaxDriveVelocity = FeetPerSecond.of(10);
-  private static final LinearAcceleration kMaxDriveAcceleration = FeetPerSecondPerSecond.of(10);
-  private static final AngularVelocity kMaxAngularVelocity = DegreesPerSecond.of(720);
-  private static final AngularAcceleration kMaxAngularAcceleration = DegreesPerSecondPerSecond.of(720);
-  private static final EnumSet<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
+  private static final LoggedTunableLinearVelocity kMaxLinearVelocity = new LoggedTunableLinearVelocity("PathfindToReef/MaxLinearVelocity", FeetPerSecond.of(10));
+  private static final LoggedTunableLinearAcceleration kMaxLinearAcceleration = new LoggedTunableLinearAcceleration("PathfindToReef/MaxLinearAcceleration", FeetPerSecondPerSecond.of(10));
+  private static final LoggedTunableAngularVelocity kMaxAngularVelocity = new LoggedTunableAngularVelocity("PathfindToReef/MaxAngularVelocity", DegreesPerSecond.of(720));
+  private static final LoggedTunableAngularAcceleration kMaxAngularAcceleration = new LoggedTunableAngularAcceleration("PathfindToReef/MaxAngularAcceleration", DegreesPerSecondPerSecond.of(720));
+
+  private static final Set<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
+  
+  // TODO - Modify this offset to position robot correctly in front of the reef branchs
+  private static final Transform2d kRobotOffset = new Transform2d(new Translation2d(1.0, 0.0), Rotation2d.k180deg);
+
 
   /** Creates a command that drives to a reef position based on POV */
   public static Command pathfindToReef(Drive drive, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBranchSupplier) {
@@ -333,14 +337,12 @@ public class DriveCommands {
         return drive.stopWithXCommand();
       }
 
-      PathConstraints constraints = new PathConstraints(kMaxDriveVelocity, kMaxDriveAcceleration, kMaxAngularVelocity, kMaxAngularAcceleration);
+      PathConstraints constraints = new PathConstraints(kMaxLinearVelocity.get(), kMaxLinearAcceleration.get(), kMaxAngularVelocity.get(), kMaxAngularAcceleration.get());
       boolean flipBranchSide = kFlippedReefFaces.contains(face);
       boolean leftSideToDriver = flipBranchSide ^ leftBranch;
       int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
 
-      Transform2d robotOffset = new Transform2d(new Translation2d(1.0, 0.0), Rotation2d.k180deg);
-
-      Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1).transformBy(robotOffset);
+      Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1).transformBy(kRobotOffset);
 
       Logger.recordOutput("PathfindToReef/ReefFace", face);
       Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
