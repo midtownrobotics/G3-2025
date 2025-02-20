@@ -184,7 +184,7 @@ public class RobotContainer {
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     coralOuttake = new CoralOuttake(rollerIO);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
-    
+
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator);
 
     controls = new MatchXboxControls(0, 1);
@@ -275,6 +275,8 @@ public class RobotContainer {
     controls.coralIntakeRun().onTrue(Commands.none());
 
     controls.coralIntakeReverse().onTrue(Commands.none());
+
+    controls.alignToReef().whileTrue(DriveCommands.pathfindToReef(drive, controls::getDriverPOV, controls.alignToReefLeft()));
   }
 
   /** Handles trigger by enablling priority onTrue and disabling onFalse. */

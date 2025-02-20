@@ -1,5 +1,6 @@
 package frc.robot.controls;
 
+
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public interface Controls {
@@ -130,4 +131,16 @@ public interface Controls {
    * Manual Mode - Reverses Coral Intake Rollers
    */
   public Trigger coralIntakeReverse();
+
+  /** Button to align to the left-most branch of a reef face. */
+  public Trigger alignToReefLeft();
+
+  /** Button to align to the right-most branch of a reef face. */
+  public Trigger alignToReefRight();
+
+  /** Button to align to the reef */
+  public Trigger alignToReef();
+
+  /** Gets the POV value of the driver controller */
+  public int getDriverPOV();
 }

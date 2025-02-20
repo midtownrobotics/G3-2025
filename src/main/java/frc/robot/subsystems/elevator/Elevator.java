@@ -1,6 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -23,7 +22,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
-  private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
+  private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(
+      ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
 
   public enum Goal {
     STOW(0),
@@ -68,13 +68,10 @@ public class Elevator extends SubsystemBase {
    */
   public Elevator(WinchIO winch) {
     this.winch = winch;
-    winch.updateInputs(winchInputs);
-
-      SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
+    SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         winch::setVoltage,
         this::motorSysIdLog,
-        this
-    );
+        this);
 
     routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(3)), sysIdMech);
   }

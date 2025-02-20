@@ -56,6 +56,7 @@ import frc.robot.utils.LocalADStarAK;
 import frc.robot.utils.LoggerUtil;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -302,7 +303,7 @@ public class Drive extends SubsystemBase {
    * modules.
    */
   @AutoLogOutput(key = "SwerveStates/Measured")
-  private SwerveModuleState[] getModuleStates() {
+  public SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
       states[i] = modules[i].getState();
@@ -314,7 +315,7 @@ public class Drive extends SubsystemBase {
    * Returns the module positions (turn angles and drive positions) for all of the
    * modules.
    */
-  private SwerveModulePosition[] getModulePositions() {
+  public SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] states = new SwerveModulePosition[4];
     for (int i = 0; i < 4; i++) {
       states[i] = modules[i].getPosition();
@@ -324,7 +325,7 @@ public class Drive extends SubsystemBase {
 
   /** Returns the measured chassis speeds of the robot. */
   @AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
-  private ChassisSpeeds getChassisSpeeds() {
+  public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
 
@@ -409,5 +410,9 @@ public class Drive extends SubsystemBase {
   /** Returns a command to reset driver heading */
   public Command resetDriveHeadingCommand() {
     return Commands.runOnce(this::resetDriveHeading);
+  }
+
+  public Command driveCommand(Supplier<ChassisSpeeds> speeds) {
+    return run(() -> runVelocity(speeds.get()));
   }
 }

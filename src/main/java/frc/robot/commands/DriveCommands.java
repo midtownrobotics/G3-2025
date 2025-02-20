@@ -13,6 +13,27 @@
 
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -23,18 +44,19 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.DriveToPoint;
 import frc.robot.subsystems.drivetrain.Drive;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
+import frc.robot.utils.FieldConstants;
+import frc.robot.utils.ReefFace;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -293,5 +315,39 @@ public class DriveCommands {
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();
     double gyroDelta = 0.0;
+  }
+
+  private static final LinearVelocity kMaxDriveVelocity = FeetPerSecond.of(10);
+  private static final LinearAcceleration kMaxDriveAcceleration = FeetPerSecondPerSecond.of(10);
+  private static final AngularVelocity kMaxAngularVelocity = DegreesPerSecond.of(720);
+  private static final AngularAcceleration kMaxAngularAcceleration = DegreesPerSecondPerSecond.of(720);
+  private static final EnumSet<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
+
+  public static Command pathfindToReef(Drive drive, IntSupplier povSupplier, BooleanSupplier leftBranchSupplier) {
+    return Commands.defer(() -> {
+      if (povSupplier.getAsInt() < 0) {
+        return Commands.none();
+      }
+
+      PathConstraints constraints = new PathConstraints(kMaxDriveVelocity, kMaxDriveAcceleration, kMaxAngularVelocity, kMaxAngularAcceleration);
+      ReefFace face = ReefFace.fromPOV(povSupplier.getAsInt());
+      boolean flipBranchSide = kFlippedReefFaces.contains(face);
+      boolean leftSideToDriver = flipBranchSide ^ leftBranchSupplier.getAsBoolean();
+      int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
+
+      Transform2d robotOffset = new Transform2d(new Translation2d(1.0, 0.0), Rotation2d.k180deg);
+
+      Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1).transformBy(robotOffset);
+
+      Logger.recordOutput("PathfindToReef/ReefFace", face);
+      Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
+      Logger.recordOutput("PathfindToReef/TargetPose", target);
+
+      return Commands.sequence(
+        AutoBuilder.pathfindToPose(target, constraints),
+        new DriveToPoint(drive, () -> target),
+        drive.stopWithXCommand()
+      );
+    }, Set.of(drive));
   }
 }
