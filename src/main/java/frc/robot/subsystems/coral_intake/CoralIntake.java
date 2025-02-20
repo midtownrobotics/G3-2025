@@ -1,5 +1,6 @@
 package frc.robot.subsystems.coral_intake;
 
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -11,6 +12,8 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -113,6 +116,9 @@ public class CoralIntake extends SubsystemBase {
         .angularVelocity(pivotInputs.velocity);
   }
 
+  private Angle tuningDesiredAngle = Degrees.of(0);
+  private Voltage tuningDesiredRollerVoltage = Volts.of(0);
+
   @Override
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
@@ -132,11 +138,6 @@ public class CoralIntake extends SubsystemBase {
     // Goal switch case
 
     switch (getCurrentGoal()) {
-      case HANDOFF:
-        pivotIO.setPosition(desiredAngle);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        beltIO.setVoltage(desiredBeltVoltage);
-        break;
       case HANDOFF_ADJUSTING:
         pivotIO.setPosition(desiredAngle);
         rollerIO.setVoltage(desiredRollerVoltage);
@@ -146,6 +147,11 @@ public class CoralIntake extends SubsystemBase {
           beltIO.setVoltage(desiredRollerVoltage.times(-1));
         }
       case TUNING:
+        desiredAngle = tuningDesiredAngle;
+        desiredRollerVoltage = tuningDesiredRollerVoltage;
+        pivotIO.setPosition(desiredAngle);
+        beltIO.setVoltage(desiredBeltVoltage);
+        rollerIO.setVoltage(desiredRollerVoltage);
         break;
       default:
         pivotIO.setPosition(desiredAngle);
@@ -216,5 +222,21 @@ public class CoralIntake extends SubsystemBase {
    */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return routine.dynamic(direction);
+  }
+
+  public Command incrementTuningAngle() {
+    return new InstantCommand(() -> tuningDesiredAngle.plus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
+  }
+
+  public Command decrementTuningAngle() {
+    return new InstantCommand(() -> tuningDesiredAngle.minus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
+  }
+
+  public Command runIntakeForTuning() {
+    return new StartEndCommand(() -> {tuningDesiredRollerVoltage = Volts.of(12);}, () -> {tuningDesiredRollerVoltage = Volts.of(0);}, this);
+  }
+
+  public Command reverseIntakeForTuning() {
+    return new StartEndCommand(() -> {tuningDesiredRollerVoltage = Volts.of(-12);}, () -> {tuningDesiredRollerVoltage = Volts.of(0);}, this);
   }
 }

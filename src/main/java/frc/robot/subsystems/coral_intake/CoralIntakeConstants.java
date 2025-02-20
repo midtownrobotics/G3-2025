@@ -10,6 +10,8 @@ import frc.lib.LoggedTunableNumber;
 public class CoralIntakeConstants {
     public static final Time coralDetectionIdleDelay = Milliseconds.of(100);
 
+    public static final Angle tuningAngleIncrementDecrementAmmount = Degrees.of(5);
+
     // TODO: Find out max and min angles
     public static final Angle coralIntakeMaxAngle = Degrees.of(0);
     public static final Angle coralIntakeMinAngle = Degrees.of(0);
