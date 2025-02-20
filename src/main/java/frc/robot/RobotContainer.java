@@ -57,6 +57,7 @@ import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
+import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
 import lombok.Getter;
 
@@ -276,7 +277,7 @@ public class RobotContainer {
 
     controls.coralIntakeReverse().onTrue(Commands.none());
 
-    controls.alignToReef().whileTrue(DriveCommands.pathfindToReef(drive, controls::getDriverPOV, controls.alignToReefLeft()));
+    controls.alignToReef().whileTrue(DriveCommands.pathfindToReef(drive, () -> ReefFace.fromPOV(controls.getDriverPOV()), controls.alignToReefLeft()));
   }
 
   /** Handles trigger by enablling priority onTrue and disabling onFalse. */

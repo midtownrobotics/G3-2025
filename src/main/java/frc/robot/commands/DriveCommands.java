@@ -323,16 +323,19 @@ public class DriveCommands {
   private static final AngularAcceleration kMaxAngularAcceleration = DegreesPerSecondPerSecond.of(720);
   private static final EnumSet<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
 
-  public static Command pathfindToReef(Drive drive, IntSupplier povSupplier, BooleanSupplier leftBranchSupplier) {
+  /** Creates a command that drives to a reef position based on POV */
+  public static Command pathfindToReef(Drive drive, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBranchSupplier) {
     return Commands.defer(() -> {
-      if (povSupplier.getAsInt() < 0) {
+      ReefFace face = reefFaceSupplier.get();
+      boolean leftBranch = leftBranchSupplier.getAsBoolean();
+
+      if (face == null) {
         return Commands.none();
       }
 
       PathConstraints constraints = new PathConstraints(kMaxDriveVelocity, kMaxDriveAcceleration, kMaxAngularVelocity, kMaxAngularAcceleration);
-      ReefFace face = ReefFace.fromPOV(povSupplier.getAsInt());
       boolean flipBranchSide = kFlippedReefFaces.contains(face);
-      boolean leftSideToDriver = flipBranchSide ^ leftBranchSupplier.getAsBoolean();
+      boolean leftSideToDriver = flipBranchSide ^ leftBranch;
       int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
 
       Transform2d robotOffset = new Transform2d(new Translation2d(1.0, 0.0), Rotation2d.k180deg);

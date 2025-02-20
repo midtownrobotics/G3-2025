@@ -160,6 +160,7 @@ public class FieldConstants {
             this.pitch = pitch; // Degrees
         }
 
+        /** Create a ReefLevel from an integer level */
         public static ReefLevel fromLevel(int level) {
             return Arrays.stream(values())
                     .filter(height -> height.ordinal() == level)

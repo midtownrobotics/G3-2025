@@ -412,6 +412,7 @@ public class Drive extends SubsystemBase {
     return Commands.runOnce(this::resetDriveHeading);
   }
 
+  /** Returns a command that drives based on the supplied chassis speeds */
   public Command driveCommand(Supplier<ChassisSpeeds> speeds) {
     return run(() -> runVelocity(speeds.get()));
   }
