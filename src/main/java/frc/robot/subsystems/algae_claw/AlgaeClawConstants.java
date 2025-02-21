@@ -6,7 +6,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.lib.LoggedTunableNumber;
+import frc.lib.dashboard.LoggedTunableNumber;
 
 public class AlgaeClawConstants {
     public static final Voltage INTAKE_ROLLER_VOLTAGE = Volts.of(7); // TODO

@@ -4,16 +4,9 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.FeetPerSecond;
-import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathConstraints;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -57,6 +50,7 @@ import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
+import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
 import lombok.Getter;
 
@@ -184,7 +178,7 @@ public class RobotContainer {
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     coralOuttake = new CoralOuttake(rollerIO);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
-    
+
     superstructure = new Superstructure(algaeClaw, coralIntake, coralOuttake, elevator);
 
     controls = new MatchXboxControls(0, 1);
@@ -225,7 +219,7 @@ public class RobotContainer {
 
     controls.gamePieceLock().onTrue(Commands.none());
 
-    controls.leftPositionLock().whileTrue(AutoBuilder.pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
+    controls.leftPositionLock().onTrue(Commands.none());
 
     controls.rightPositionLock().onTrue(Commands.none());
 
@@ -275,6 +269,8 @@ public class RobotContainer {
     controls.coralIntakeRun().onTrue(Commands.none());
 
     controls.coralIntakeReverse().onTrue(Commands.none());
+
+    controls.alignToReef().whileTrue(DriveCommands.pathfindToReef(drive, () -> ReefFace.fromPOV(controls.getDriverPOV()), controls.alignToReefLeft()));
   }
 
   /** Handles trigger by enablling priority onTrue and disabling onFalse. */

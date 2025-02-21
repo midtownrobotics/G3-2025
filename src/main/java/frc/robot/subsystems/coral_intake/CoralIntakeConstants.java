@@ -5,7 +5,7 @@ import static edu.wpi.first.units.Units.Milliseconds;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
-import frc.lib.LoggedTunableNumber;
+import frc.lib.dashboard.LoggedTunableNumber;
 
 public class CoralIntakeConstants {
     public static final Time coralDetectionIdleDelay = Milliseconds.of(100);
