@@ -42,11 +42,11 @@ public class LTLinearProfiledPIDController {
       double defaultD,
       LinearVelocity defaultMaxVel,
       LinearAcceleration defualtMaxAcc) {
-    m_kP = new LoggedTunableNumber(path + "/P", defaultP);
-    m_kI = new LoggedTunableNumber(path + "/I", defaultI);
-    m_kD = new LoggedTunableNumber(path + "/D", defaultD);
-    m_maxV = new LoggedTunableLinearVelocity(path + "/MaxV", defaultMaxVel);
-    m_maxA = new LoggedTunableLinearAcceleration(path + "/MaxA", defualtMaxAcc);
+    m_kP = new LoggedTunableNumber(path + "/kP", defaultP);
+    m_kI = new LoggedTunableNumber(path + "/kI", defaultI);
+    m_kD = new LoggedTunableNumber(path + "/kD", defaultD);
+    m_maxV = new LoggedTunableLinearVelocity(path + "/Constraints/maxVelocity", defaultMaxVel);
+    m_maxA = new LoggedTunableLinearAcceleration(path + "/Constraints/maxAcceleration", defualtMaxAcc);
     m_controller =
         new ProfiledPIDController(
             defaultP, defaultI, defaultD, new Constraints(defaultMaxVel.in(MetersPerSecond), defualtMaxAcc.in(MetersPerSecondPerSecond)));

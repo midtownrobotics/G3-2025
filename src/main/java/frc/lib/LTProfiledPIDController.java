@@ -32,11 +32,11 @@ public class LTProfiledPIDController {
       double defaultD,
       double defaultMaxVel,
       double defualtMaxAcc) {
-    m_kP = new LoggedTunableNumber(path + "/P", defaultP);
-    m_kI = new LoggedTunableNumber(path + "/I", defaultI);
-    m_kD = new LoggedTunableNumber(path + "/D", defaultD);
-    m_maxV = new LoggedTunableNumber(path + "/MaxV", defaultMaxVel);
-    m_maxA = new LoggedTunableNumber(path + "/MaxA", defualtMaxAcc);
+    m_kP = new LoggedTunableNumber(path + "/kP", defaultP);
+    m_kI = new LoggedTunableNumber(path + "/kI", defaultI);
+    m_kD = new LoggedTunableNumber(path + "/kD", defaultD);
+    m_maxV = new LoggedTunableNumber(path + "/Constraints/maxVelocity", defaultMaxVel);
+    m_maxA = new LoggedTunableNumber(path + "/Constraints/maxAcceleration", defualtMaxAcc);
     m_controller =
         new ProfiledPIDController(
             defaultP, defaultI, defaultD, new Constraints(defaultMaxVel, defualtMaxAcc));

@@ -19,9 +19,9 @@ public class LTPIDController {
   /** Pid controller has loggedtunablenumbers */
   public LTPIDController(
       String path, double defaultP, double defaultI, double defaultD) {
-    m_kP = new LoggedTunableNumber(path + "/P", defaultP);
-    m_kI = new LoggedTunableNumber(path + "/I", defaultI);
-    m_kD = new LoggedTunableNumber(path + "/D", defaultD);
+    m_kP = new LoggedTunableNumber(path + "/kP", defaultP);
+    m_kI = new LoggedTunableNumber(path + "/kI", defaultI);
+    m_kD = new LoggedTunableNumber(path + "/kD", defaultD);
     m_controller = new PIDController(defaultP, defaultI, defaultD);
   }
   /** Updates pid constants if changed */
