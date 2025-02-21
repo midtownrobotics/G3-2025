@@ -15,6 +15,7 @@ import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -71,7 +72,7 @@ public class Superstructure extends SubsystemBase {
     Set<CoralIntake.Goal> possibleCoralIntakeGoals = new HashSet<>(EnumSet.allOf(CoralIntake.Goal.class));
 
     // TODO: Work with somebody to figure out restrictions for each state
-    LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit,Angle>(CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
+    LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit,Angle>(CoralIntakeConstants.coralIntakeMinAngle, Radians.of(CoralIntakeConstants.coralIntakeMaxAngle.get()));
 
     if (Constants.tuningMode.get()) {
       possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.TUNING);

@@ -16,7 +16,7 @@ public class Constants {
   public static final AngularVelocity SPEAKER_SPEED = Units.RPM.of(3100);
   public static final Angle SPEAKER_ANGLE = Units.Rotations.of(0.852);
 
-  public static final LoggedNetworkBoolean tuningMode = new LoggedNetworkBoolean("TuningMode", false);
+  public static final LoggedNetworkBoolean tuningMode = new LoggedNetworkBoolean("TuningMode", true);
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
 
   public enum Mode {

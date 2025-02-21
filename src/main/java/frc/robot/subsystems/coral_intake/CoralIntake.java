@@ -1,7 +1,7 @@
 package frc.robot.subsystems.coral_intake;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -30,7 +30,7 @@ import org.littletonrobotics.junction.Logger;
 public class CoralIntake extends SubsystemBase {
 
   public LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit, Angle>(
-      CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
+      CoralIntakeConstants.coralIntakeMinAngle, Radians.of(CoralIntakeConstants.coralIntakeMaxAngle.get()));
 
   public enum Goal {
     GROUND_INTAKE(Degrees.of(0), Volts.of(7)),
@@ -137,33 +137,43 @@ public class CoralIntake extends SubsystemBase {
 
     // Goal switch case
 
-    switch (getCurrentGoal()) {
-      case HANDOFF_ADJUSTING:
-        pivotIO.setPosition(desiredAngle);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        if (isCoralBlockingMovement()) {
-          beltIO.setVoltage(desiredBeltVoltage);
-        } else {
-          beltIO.setVoltage(desiredRollerVoltage.times(-1));
-        }
-      case TUNING:
-        desiredAngle = tuningDesiredAngle;
-        desiredRollerVoltage = tuningDesiredRollerVoltage;
-        pivotIO.setPosition(desiredAngle);
-        beltIO.setVoltage(desiredBeltVoltage);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        break;
-      default:
-        pivotIO.setPosition(desiredAngle);
-        beltIO.setVoltage(desiredBeltVoltage);
-        rollerIO.setVoltage(desiredRollerVoltage);
-        break;
-    }
+    pivotIO.setPosition(Degrees.of(0));
+
+    // switch (getCurrentGoal()) {
+    //   case HANDOFF_ADJUSTING:
+    //     pivotIO.setPosition(desiredAngle);
+    //     rollerIO.setVoltage(desiredRollerVoltage);
+    //     if (isCoralBlockingMovement()) {
+    //       beltIO.setVoltage(desiredBeltVoltage);
+    //     } else {
+    //       beltIO.setVoltage(desiredRollerVoltage.times(-1));
+    //     }
+    //   case TUNING:
+    //     desiredAngle = tuningDesiredAngle;
+    //     desiredRollerVoltage = tuningDesiredRollerVoltage;
+    //     pivotIO.setPosition(desiredAngle);
+    //     beltIO.setVoltage(desiredBeltVoltage);
+    //     rollerIO.setVoltage(desiredRollerVoltage);
+    //     break;
+    //   default:
+    //     pivotIO.setPosition(desiredAngle);
+    //     beltIO.setVoltage(desiredBeltVoltage);
+    //     rollerIO.setVoltage(desiredRollerVoltage);
+    //     break;
+    // }
 
     Logger.recordOutput("CoralIntake/currentState", getCurrentGoal());
     Logger.recordOutput("CoralIntake/desiredAngle", desiredAngle);
     Logger.recordOutput("CoralIntake/desiredBeltVoltage", desiredBeltVoltage);
     Logger.recordOutput("CoralIntake/desiredRollerVoltage", desiredRollerVoltage);
+
+    Logger.recordOutput("CoralIntake/AngleTuning/g_max", CoralIntakeConstants.g_max);
+    Logger.recordOutput("CoralIntake/AngleTuning/g_min", CoralIntakeConstants.g_min);
+    Logger.recordOutput("CoralIntake/AngleTuning/e_max", CoralIntakeConstants.e_max);
+    Logger.recordOutput("CoralIntake/AngleTuning/e_min", CoralIntakeConstants.e_min);
+    Logger.recordOutput("CoralIntake/AngleTuning/breakpoint", CoralIntakeConstants.breakPoint);
+    Logger.recordOutput("CoralIntake/AngleTuning/zeroOffset", CoralIntakeConstants.zeroOffset);
+    
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
@@ -224,18 +234,34 @@ public class CoralIntake extends SubsystemBase {
     return routine.dynamic(direction);
   }
 
+  /**
+   * incrementTuningAngle
+   * @return
+   */
   public Command incrementTuningAngle() {
     return new InstantCommand(() -> tuningDesiredAngle.plus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
   }
 
+  /**
+   * decrementTuningAngle
+   * @return
+   */
   public Command decrementTuningAngle() {
     return new InstantCommand(() -> tuningDesiredAngle.minus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
   }
 
+  /**
+   * runIntakeForTuning
+   * @return
+   */
   public Command runIntakeForTuning() {
     return new StartEndCommand(() -> {tuningDesiredRollerVoltage = Volts.of(12);}, () -> {tuningDesiredRollerVoltage = Volts.of(0);}, this);
   }
 
+  /**
+   * reverseIntakeForTuning
+   * @return
+   */
   public Command reverseIntakeForTuning() {
     return new StartEndCommand(() -> {tuningDesiredRollerVoltage = Volts.of(-12);}, () -> {tuningDesiredRollerVoltage = Volts.of(0);}, this);
   }

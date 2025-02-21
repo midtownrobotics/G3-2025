@@ -16,12 +16,12 @@ public class Ports {
     }
 
     public static class CoralIntake {
-        public static final int belt = 5;
-        public static final int pivotMotor = 6;
-        public static final int pivotEncoder = 7;
-        public static final int coralIntakeRoller = 8;
-        public static final int centerSensor = 0;
-        public static final int handoffSensor = 1;
+        public static final int belt = 50;
+        public static final int pivotMotor = 52;
+        public static final int pivotEncoder = 0;
+        public static final int coralIntakeRoller = 51;
+        public static final int centerSensor = 1;
+        public static final int handoffSensor = 2;
     }
 
     public static class CoralOuttake {

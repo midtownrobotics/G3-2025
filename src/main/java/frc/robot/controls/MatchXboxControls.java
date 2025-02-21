@@ -32,18 +32,18 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public double getDriveForward() {
-    return isDriverControlInDeadzone()
+    return (isDriverControlInDeadzone()
         ? -Math.signum(driverController.getLeftY())
             * Math.abs(Math.pow(driverController.getLeftY(), 2))
-        : 0;
+        : 0);
   }
 
   @Override
   public double getDriveLeft() {
-    return isDriverControlInDeadzone()
+    return (isDriverControlInDeadzone()
         ? -Math.signum(driverController.getLeftX())
             * Math.abs(Math.pow(driverController.getLeftX(), 2))
-        : 0;
+        : 0);
   }
 
   @Override
