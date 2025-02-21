@@ -21,6 +21,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.dashboard.LTAngularProfiledPIDController;
+import frc.lib.dashboard.LTLinearProfiledPIDController;
 import frc.robot.subsystems.drivetrain.Drive;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -30,7 +32,7 @@ public class DriveToPoint extends Command {
   public static final LinearAcceleration kMaxLinearAcceleration = MetersPerSecondPerSecond.of(4.0);
   public static final Distance kTrackWidthX = Inches.of(15.25);
   public static final Distance kTrackWidthY = Inches.of(16.25);
-  public static final Distance kDriveBaseRadius = Meters.of(Math.hypot(kTrackWidthX.magnitude() / 2.0, kTrackWidthY.magnitude() / 2.0));
+  public static final Distance kDriveBaseRadius = Inches.of(Math.hypot(kTrackWidthX.magnitude() / 2.0, kTrackWidthY.magnitude() / 2.0));
   public static final AngularVelocity kMaxAngularVelocity = DegreesPerSecond.of(720.0);
   public static final AngularAcceleration kMaxAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
@@ -39,7 +41,7 @@ public class DriveToPoint extends Command {
 
   private LTLinearProfiledPIDController m_driveController =
       new LTLinearProfiledPIDController(
-          "/DriveToPoint/DriveController",
+          "DriveToPoint/DriveController",
           4.5,
           0.0,
           0.04,
@@ -48,7 +50,7 @@ public class DriveToPoint extends Command {
 
 
   private LTAngularProfiledPIDController m_headingController =
-      new LTAngularProfiledPIDController("/DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
+      new LTAngularProfiledPIDController("DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
 
   private double m_ffMinRadius = 0.2, m_ffMaxRadius = 1.1;
 

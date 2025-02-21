@@ -1,4 +1,4 @@
-package frc.lib;
+package frc.lib.dashboard;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;

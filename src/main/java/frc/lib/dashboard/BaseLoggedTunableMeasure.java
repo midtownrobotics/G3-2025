@@ -1,4 +1,4 @@
-package frc.lib;
+package frc.lib.dashboard;
 
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;

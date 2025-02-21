@@ -1,4 +1,4 @@
-package frc.lib;
+package frc.lib.dashboard;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;

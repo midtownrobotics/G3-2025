@@ -3,7 +3,7 @@ package frc.robot.subsystems.elevator;
 import static edu.wpi.first.units.Units.Inches;
 
 import edu.wpi.first.units.measure.Distance;
-import frc.lib.LoggedTunableNumber;
+import frc.lib.dashboard.LoggedTunableNumber;
 
 public class ElevatorConstants {
     // TODO: Find out max and min heights

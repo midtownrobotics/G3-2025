@@ -1,4 +1,4 @@
-package frc.lib;
+package frc.lib.dashboard;
 
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -10,16 +10,12 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
-import frc.lib.LoggedTunableMeasures.LoggedTunableAngularAcceleration;
-import frc.lib.LoggedTunableMeasures.LoggedTunableAngularVelocity;
+import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularAcceleration;
+import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularVelocity;
 
 public class LTAngularProfiledPIDController {
-  /** p */
-  private final LoggedTunableNumber m_kP;
-  /** i */
-  private final LoggedTunableNumber m_kI;
-  /** d */
-  private final LoggedTunableNumber m_kD;
+
+  private final LoggedTunablePID m_pid;
 
   /** maxV */
   private final LoggedTunableAngularVelocity m_maxV;
@@ -42,9 +38,8 @@ public class LTAngularProfiledPIDController {
       double defaultD,
       AngularVelocity defaultMaxVel,
       AngularAcceleration defualtMaxAcc) {
-    m_kP = new LoggedTunableNumber(path + "/kP", defaultP);
-    m_kI = new LoggedTunableNumber(path + "/kI", defaultI);
-    m_kD = new LoggedTunableNumber(path + "/kD", defaultD);
+
+    m_pid = new LoggedTunablePID(path, defaultP, defaultI, defaultD);
     m_maxV = new LoggedTunableAngularVelocity(path + "/Constraints/maxVelocity", defaultMaxVel);
     m_maxA = new LoggedTunableAngularAcceleration(path + "/Constraints/maxAcceleration", defualtMaxAcc);
     m_controller =
@@ -54,14 +49,11 @@ public class LTAngularProfiledPIDController {
 
   /** Updates pid constants if changed */
   public void updateValues() {
-    LoggedTunableNumber.ifChanged(
+    m_pid.ifChanged(
         hashCode(),
-        () -> {
-          m_controller.setPID(m_kP.get(), m_kI.get(), m_kD.get());
-        },
-        m_kD,
-        m_kI,
-        m_kP);
+        (pid) -> {
+          m_controller.setPID(pid.kP, pid.kI, pid.kD);
+        });
     LoggedTunableNumber.ifChanged(
         hashCode(),
         () -> {

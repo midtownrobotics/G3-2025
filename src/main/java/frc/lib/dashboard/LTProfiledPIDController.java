@@ -1,15 +1,11 @@
-package frc.lib;
+package frc.lib.dashboard;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 public class LTProfiledPIDController {
-  /** p */
-  private final LoggedTunableNumber m_kP;
-  /** i */
-  private final LoggedTunableNumber m_kI;
-  /** d */
-  private final LoggedTunableNumber m_kD;
+
+  private final LoggedTunablePID m_pid;
 
   /** maxV */
   private final LoggedTunableNumber m_maxV;
@@ -32,9 +28,7 @@ public class LTProfiledPIDController {
       double defaultD,
       double defaultMaxVel,
       double defualtMaxAcc) {
-    m_kP = new LoggedTunableNumber(path + "/kP", defaultP);
-    m_kI = new LoggedTunableNumber(path + "/kI", defaultI);
-    m_kD = new LoggedTunableNumber(path + "/kD", defaultD);
+    m_pid = new LoggedTunablePID(path, defaultP, defaultI, defaultD);
     m_maxV = new LoggedTunableNumber(path + "/Constraints/maxVelocity", defaultMaxVel);
     m_maxA = new LoggedTunableNumber(path + "/Constraints/maxAcceleration", defualtMaxAcc);
     m_controller =
@@ -44,14 +38,11 @@ public class LTProfiledPIDController {
 
   /** Updates pid constants if changed */
   public void updateValues() {
-    LoggedTunableNumber.ifChanged(
+    m_pid.ifChanged(
         hashCode(),
-        () -> {
-          m_controller.setPID(m_kP.get(), m_kI.get(), m_kD.get());
-        },
-        m_kD,
-        m_kI,
-        m_kP);
+        (pid) -> {
+          m_controller.setPID(pid.kP, pid.kI, pid.kD);
+        });
     LoggedTunableNumber.ifChanged(
         hashCode(),
         () -> {

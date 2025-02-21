@@ -1,15 +1,10 @@
-package frc.lib;
+package frc.lib.dashboard;
 
 import edu.wpi.first.math.controller.PIDController;
 
 public class LTPIDController {
-  /** p */
-  private final LoggedTunableNumber m_kP;
-  /** i */
-  private final LoggedTunableNumber m_kI;
-  /** d */
-  private final LoggedTunableNumber m_kD;
-  /** dip controller */
+
+  private final LoggedTunablePID m_pid;
   private final PIDController m_controller;
 
   /** Empty contstructor makes all 0 */
@@ -19,22 +14,18 @@ public class LTPIDController {
   /** Pid controller has loggedtunablenumbers */
   public LTPIDController(
       String path, double defaultP, double defaultI, double defaultD) {
-    m_kP = new LoggedTunableNumber(path + "/kP", defaultP);
-    m_kI = new LoggedTunableNumber(path + "/kI", defaultI);
-    m_kD = new LoggedTunableNumber(path + "/kD", defaultD);
+    m_pid = new LoggedTunablePID(path, defaultP, defaultI, defaultD);
     m_controller = new PIDController(defaultP, defaultI, defaultD);
   }
   /** Updates pid constants if changed */
   public void updateValues() {
-    LoggedTunableNumber.ifChanged(
+    m_pid.ifChanged(
         hashCode(),
-        () -> {
-          m_controller.setPID(m_kP.get(), m_kI.get(), m_kD.get());
-        },
-        m_kD,
-        m_kI,
-        m_kP);
+        (pid) -> {
+          m_controller.setPID(pid.kP, pid.kI, pid.kD);
+        });
   }
+
   /** return pid controller for actual use */
   public PIDController getController() {
     return m_controller;
