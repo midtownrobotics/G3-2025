@@ -2,10 +2,13 @@ package frc.robot.subsystems.coral_intake;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volt;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
@@ -17,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.lib.LoggedTunableNumber;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.sensors.Photoelectric;
@@ -116,7 +120,7 @@ public class CoralIntake extends SubsystemBase {
         .angularVelocity(pivotInputs.velocity);
   }
 
-  private Angle tuningDesiredAngle = Degrees.of(0);
+  private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralIntake/desiredAngle", 0.0);
   private Voltage tuningDesiredRollerVoltage = Volts.of(0);
 
   @Override
@@ -134,10 +138,23 @@ public class CoralIntake extends SubsystemBase {
     Voltage desiredBeltVoltage = currentGoal.getBeltVoltage();
     Voltage desiredRollerVoltage = currentGoal.getRollerVoltage();
     Angle desiredAngle = currentGoal.getAngle();
+    desiredAngle = Degrees.of(tuningDesiredAngle.get());
+
+    Angle deltaIntakePosition = desiredAngle.minus(getPosition());
+    Angle desiredMotorPosition = pivotInputs.position.plus(deltaIntakePosition);
+
+    Voltage ff = CoralIntakeMath.calculateFeedForward(pivotInputs, getPosition(), desiredAngle);
+
+    // System.out.println(ff);
 
     // Goal switch case
 
-    pivotIO.setPosition(Degrees.of(0));
+    pivotIO.setPositionWithFeedforward(desiredMotorPosition, getPosition(), ff);
+    
+    Logger.recordOutput("CoralIntake/Uhh/givenPosition", desiredAngle);
+    Logger.recordOutput("CoralIntake/Uhh/deltaIntakePosition", deltaIntakePosition);
+    Logger.recordOutput("CoralIntake/Uhh/desiredMotorPosition", desiredMotorPosition);
+    Logger.recordOutput("CoralIntake/Uhh/ff", ff);
 
     // switch (getCurrentGoal()) {
     //   case HANDOFF_ADJUSTING:
@@ -173,6 +190,7 @@ public class CoralIntake extends SubsystemBase {
     Logger.recordOutput("CoralIntake/AngleTuning/e_min", CoralIntakeConstants.e_min);
     Logger.recordOutput("CoralIntake/AngleTuning/breakpoint", CoralIntakeConstants.breakPoint);
     Logger.recordOutput("CoralIntake/AngleTuning/zeroOffset", CoralIntakeConstants.zeroOffset);
+    Logger.recordOutput("CoralIntake/AngleTuning/g_position", getPosition());
     
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
@@ -238,17 +256,17 @@ public class CoralIntake extends SubsystemBase {
    * incrementTuningAngle
    * @return
    */
-  public Command incrementTuningAngle() {
-    return new InstantCommand(() -> tuningDesiredAngle.plus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
-  }
+  // public Command incrementTuningAngle() {
+  //   return new InstantCommand(() -> tuningDesiredAngle.plus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
+  // }
 
   /**
    * decrementTuningAngle
    * @return
    */
-  public Command decrementTuningAngle() {
-    return new InstantCommand(() -> tuningDesiredAngle.minus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
-  }
+  // public Command decrementTuningAngle() {
+  //   return new InstantCommand(() -> tuningDesiredAngle.minus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
+  // }
 
   /**
    * runIntakeForTuning
@@ -264,5 +282,21 @@ public class CoralIntake extends SubsystemBase {
    */
   public Command reverseIntakeForTuning() {
     return new StartEndCommand(() -> {tuningDesiredRollerVoltage = Volts.of(-12);}, () -> {tuningDesiredRollerVoltage = Volts.of(0);}, this);
+  }
+
+  private Angle getPosition() {
+    Angle continuousEncoderPosition = pivotInputs.absolutePosition;
+    // if (continuousEncoderPosition.gt(CoralIntakeConstants.breakPoint)) {
+    //   continuousEncoderPosition = continuousEncoderPosition.minus(Rotations.of(1));
+    // }
+
+    if (continuousEncoderPosition.lt(CoralIntakeConstants.breakPoint)) {
+      continuousEncoderPosition = continuousEncoderPosition.plus(Rotations.of(1));
+    }
+    // if ()
+    // Angle continuousEncoderPosition = UnitUtil
+    //     .normalize(Units.Rotations.of(encoder.get()).minus(CoralIntakeConstants.breakPoint))
+    //     .plus(CoralIntakeConstants.breakPoint);
+    return continuousEncoderPosition.times(-0.5).plus(CoralIntakeConstants.zeroOffset);
   }
 }

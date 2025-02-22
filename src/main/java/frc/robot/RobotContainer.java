@@ -20,13 +20,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
+import frc.lib.RollerIO.RollerIOBag;
+import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
+import frc.robot.Ports.CoralOuttake;
 import frc.robot.commands.DriveCommands;
+import frc.robot.controls.AlgaeMode;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.sensors.Photoelectric;
+import frc.robot.subsystems.algae_claw.AlgaeClaw;
+import frc.robot.subsystems.algae_claw.wrist.WristIO;
+import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
+import frc.robot.subsystems.algae_claw.wrist.WristIOReplay;
+import frc.robot.subsystems.algae_claw.wrist.WristIOSim;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
@@ -39,6 +48,11 @@ import frc.robot.subsystems.drivetrain.ModuleIO;
 import frc.robot.subsystems.drivetrain.ModuleIOSim;
 import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
 import frc.robot.subsystems.drivetrain.TunerConstants;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.winch.WinchIO;
+import frc.robot.subsystems.elevator.winch.WinchIOKraken;
+import frc.robot.subsystems.elevator.winch.WinchIOReplay;
+import frc.robot.subsystems.elevator.winch.WinchIOSim;
 import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.CANBusStatusSignalRegistration;
@@ -54,7 +68,9 @@ public class RobotContainer {
 
   SendableChooser<Command> m_autoChooser;
 
+  @Getter private final AlgaeClaw algaeClaw;
   @Getter private final CoralIntake coralIntake;
+  @Getter private final Elevator elevator;
   @Getter private final Drive drive;
 
   @Getter private CANBusStatusSignalRegistration elevatorCANBusHandler = new CANBusStatusSignalRegistration();
@@ -62,6 +78,12 @@ public class RobotContainer {
 
   /** RobotContainer initialization */
   public RobotContainer() {
+    // Algae Claw
+    WristIO wristIO;
+    RollerIO algaeClawRollerIO;
+
+    // Elevator
+    WinchIO winchIO;
 
     // Coral Intake
     RollerIO beltIO;
@@ -69,6 +91,9 @@ public class RobotContainer {
     RollerIO coralIntakeRollerIO;
     Photoelectric centerSensor = new Photoelectric(Ports.CoralIntake.centerSensor);
     Photoelectric handoffSensor = new Photoelectric(Ports.CoralIntake.handoffSensor);
+
+    // Coral Outtake
+    RollerIO rollerIO;
 
     // Drive
     GyroIO gyroIO;
@@ -79,10 +104,20 @@ public class RobotContainer {
 
     switch (Constants.MODE) {
         case REPLAY:
+            // Algae Claw
+            wristIO = new WristIOReplay();
+            algaeClawRollerIO = new RollerIOReplay();
+
+            // Elevator
+            winchIO = new WinchIOReplay();
+
             // Coral Intake
             beltIO = new RollerIOReplay();
             pivotIO = new PivotIOReplay();
             coralIntakeRollerIO = new RollerIOReplay();
+
+            // Coral Outtake
+            rollerIO = new RollerIOReplay();
 
             // Drive
             gyroIO = new GyroIOPigeon2(driveCANBusHandler);
@@ -92,10 +127,17 @@ public class RobotContainer {
             brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
             break;
         case SIM:
+
+            // Elevator
+            winchIO = new WinchIOSim();
+
             // Coral Intake
             beltIO = new RollerIOSim();
             pivotIO = new PivotIOSim();
             coralIntakeRollerIO = new RollerIOSim();
+
+            // Coral Outtake
+            rollerIO = new RollerIOSim();
 
             // Drive
             gyroIO = new GyroIOPigeon2(driveCANBusHandler);
@@ -105,10 +147,23 @@ public class RobotContainer {
             brModuleIO = new ModuleIOSim(TunerConstants.BackRight);
             break;
         default:
+            // Algae Claw
+            // wristIO = new WristIOKraken(Ports.AlgaeClaw.wristMotor, Ports.AlgaeClaw.wristEncoder, elevatorCANBusHandler);
+            // algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.algaeClawRoller, elevatorCANBusHandler);
+
+            // Elevator
+            winchIO = new WinchIOKraken(Ports.Elevator.LeftWinchMotor, 
+                                        Ports.Elevator.RightWinchMotor, 
+                                        Ports.Elevator.WinchEncoder,
+                                        driveCANBusHandler);
+
             // Coral Intake
             beltIO = new RollerIONeo(Ports.CoralIntake.belt);
             pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
             coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller);
+
+            // Coral Outtake
+            rollerIO = new RollerIOBag(Ports.CoralOuttake.roller);
 
             // Drive
             gyroIO = new GyroIOPigeon2(driveCANBusHandler);
@@ -118,11 +173,16 @@ public class RobotContainer {
             brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
             break;
     }
+                // Algae Claw
+                wristIO = new WristIOSim();
+                algaeClawRollerIO = new RollerIOSim();
 
+    algaeClaw = new AlgaeClaw(algaeClawRollerIO, wristIO);
+    elevator = new Elevator(winchIO);
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
     
-    superstructure = new Superstructure(coralIntake);
+    superstructure = new Superstructure(algaeClaw, coralIntake, elevator);
 
     controls = new MatchXboxControls(0, 1);
     configureBindings();
@@ -130,7 +190,7 @@ public class RobotContainer {
 
     new RobotViz(() -> {
       return null;
-    }, () -> coralIntake.getPivotPosition(), null, null);
+    }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition(), () -> algaeClaw.getPosition());
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
       Commands.print("Raising Elevator..."),
@@ -168,6 +228,14 @@ public class RobotContainer {
 
     controls.reefAlgaePositionLock().onTrue(Commands.none());
 
+    controls.algaeModeBarge().onTrue(superstructure.setAlgaeModeCommand(AlgaeMode.BARGE));
+
+    controls.algaeModeProcessor().onTrue(superstructure.setAlgaeModeCommand(AlgaeMode.PROCESSOR));
+
+    controls.incrementCoralMode().onTrue(superstructure.incrementCoralModeCommand());
+
+    controls.decrementCoralMode().onTrue(superstructure.decrementCoralModeCommand());
+
     // Operator
 
     enableDisablePriorityControl(controls.groundIntakeCoral(), Priority.GROUND_INTAKE_CORAL);
@@ -201,13 +269,9 @@ public class RobotContainer {
 
     controls.coralBackward().onTrue(Commands.none());
 
-    controls.coralIntakeRun().onTrue(coralIntake.runIntakeForTuning());
+    controls.coralIntakeRun().onTrue(Commands.none());
 
-    controls.coralIntakeReverse().onTrue(coralIntake.reverseIntakeForTuning());
-
-    controls.incrementCoralMode().onTrue(coralIntake.incrementTuningAngle());
-
-    controls.decrementCoralMode().onTrue(coralIntake.decrementTuningAngle());
+    controls.coralIntakeReverse().onTrue(Commands.none());
   }
 
   /** Handles trigger by enablling priority onTrue and disabling onFalse. */
