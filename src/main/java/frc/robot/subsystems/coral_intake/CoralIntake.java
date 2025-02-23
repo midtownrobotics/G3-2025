@@ -149,7 +149,8 @@ public class CoralIntake extends SubsystemBase {
 
     // Goal switch case
 
-    pivotIO.setPositionWithFeedforward(desiredMotorPosition, getPosition(), ff);
+    // pivotIO.setPositionWithFeedforward(desiredMotorPosition, getPosition(), ff);
+    pivotIO.setPositionWithFeedforward(desiredAngle, getPosition(), ff);
     
     Logger.recordOutput("CoralIntake/Uhh/givenPosition", desiredAngle);
     Logger.recordOutput("CoralIntake/Uhh/deltaIntakePosition", deltaIntakePosition);

@@ -41,18 +41,24 @@ public class PivotIONeo implements PivotIO {
 
     pivotMotor = new SparkMax(pivotMotorID, MotorType.kBrushless);
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
-    pivotConfig.smartCurrentLimit((int) Constants.NEO_CURRENT_LIMIT.in(Units.Amps));
+    pivotConfig.smartCurrentLimit(30);
     pivotConfig.idleMode(IdleMode.kCoast);
     pivotConfig.closedLoop.pidf(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get(), 0);
+    pivotConfig.closedLoop.maxMotion.maxVelocity(0.5);
+    pivotConfig.closedLoop.maxMotion.maxAcceleration(0.5);
     pivotConfig.inverted(true);
+    pivotConfig.encoder.positionConversionFactor(1.0 / 50);
+    pivotConfig.encoder.velocityConversionFactor(1.0 / 50 / 60);
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
-  public void setPositionWithFeedforward(Angle desired, Angle current,  Voltage ff) {
-    pivotMotor.setVoltage(pid.calculate(current.baseUnitMagnitude(), desired.baseUnitMagnitude()) + ff.in(Volts));
+  public void setPositionWithFeedforward(Angle desired, Angle current, Voltage ff) {
+    double desiredVoltage = pid.calculate(current.baseUnitMagnitude(), desired.baseUnitMagnitude()) + ff.in(Volts);
+    Logger.recordOutput("CoralIntake/desiredVoltage", desiredVoltage);
+    pivotMotor.setVoltage(desiredVoltage);
 
-    // pivotMotor.getClosedLoopController().setReference(position.in(Rotations), ControlType.kPosition,
+    // pivotMotor.getClosedLoopController().setReference(desired.in(Rotations), ControlType.kPosition,
     //     ClosedLoopSlot.kSlot0,
     //     ff.in(Volts));
   }
@@ -70,19 +76,11 @@ public class PivotIONeo implements PivotIO {
   }
 
   private void updateConstants() {
-    LoggedTunableNumber.ifChanged(hashCode(), () -> {
-      SparkMaxConfig motorConfig = new SparkMaxConfig();
+    LoggedTunableNumber.ifChanged(hashCode(), (values) -> {
+      // SparkMaxConfig motorConfig = new SparkMaxConfig();
 
+      // motorConfig.closedLoop.pidf(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get(), 0);
       pid = new PIDController(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get());
-
-      // motorConfig.apply(
-      //     new EncoderConfig()
-      //         .positionConversionFactor(1.0 / 50)
-      //         .velocityConversionFactor(1.0 / 50 / 60))
-      //     .apply(
-      //         new ClosedLoopConfig()
-      //             .pid(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(),
-      //                 CoralIntakeConstants.PID.d.get()));
 
       // motorConfig.closedLoop.maxMotion.maxAcceleration(CoralIntakeConstants.PID.maxPivotA.get());
       // motorConfig.closedLoop.maxMotion.maxVelocity(CoralIntakeConstants.PID.maxPivotV.get());
