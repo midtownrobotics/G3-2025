@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -27,22 +28,16 @@ import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
-import frc.robot.Ports.CoralOuttake;
 import frc.robot.commands.DriveCommands;
-import frc.robot.controls.AlgaeMode;
 import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.sensors.Photoelectric;
-import frc.robot.subsystems.algae_claw.AlgaeClaw;
-import frc.robot.subsystems.algae_claw.wrist.WristIO;
-import frc.robot.subsystems.algae_claw.wrist.WristIOKraken;
-import frc.robot.subsystems.algae_claw.wrist.WristIOReplay;
-import frc.robot.subsystems.algae_claw.wrist.WristIOSim;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
 import frc.robot.subsystems.coral_intake.pivot.PivotIOReplay;
 import frc.robot.subsystems.coral_intake.pivot.PivotIOSim;
+import frc.robot.subsystems.coral_outtake.CoralOuttake;
 import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.drivetrain.GyroIO;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon2;
@@ -70,8 +65,8 @@ public class RobotContainer {
 
   SendableChooser<Command> m_autoChooser;
 
-  @Getter private final AlgaeClaw algaeClaw;
   @Getter private final CoralIntake coralIntake;
+  @Getter private final CoralOuttake coralOuttake;
   @Getter private final Elevator elevator;
   @Getter private final Drive drive;
 
@@ -81,7 +76,6 @@ public class RobotContainer {
   /** RobotContainer initialization */
   public RobotContainer() {
     // Algae Claw
-    WristIO wristIO;
     RollerIO algaeClawRollerIO;
 
     // Elevator
@@ -107,7 +101,6 @@ public class RobotContainer {
     switch (Constants.MODE) {
         case REPLAY:
             // Algae Claw
-            wristIO = new WristIOReplay();
             algaeClawRollerIO = new RollerIOReplay();
 
             // Elevator
@@ -176,15 +169,14 @@ public class RobotContainer {
             break;
     }
                 // Algae Claw
-                wristIO = new WristIOSim();
                 algaeClawRollerIO = new RollerIOSim();
 
-    algaeClaw = new AlgaeClaw(algaeClawRollerIO, wristIO);
     elevator = new Elevator(winchIO);
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
+    coralOuttake = new CoralOuttake(rollerIO);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
     
-    // superstructure = new Superstructure(algaeClaw, coralIntake, elevator);
+    superstructure = new Superstructure(coralIntake, elevator, coralOuttake);
 
     controls = new MatchXboxControls(0, 1);
     configureBindings();
@@ -192,7 +184,7 @@ public class RobotContainer {
 
     new RobotViz(() -> {
       return null;
-    }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition(), () -> algaeClaw.getPosition());
+    }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition());
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
       Commands.print("Raising Elevator..."),
@@ -216,9 +208,9 @@ public class RobotContainer {
   private void configureBindings() {
     // Driver
 
-    drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
+    // drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
 
-    controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
+    // controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
     // controls.driveBrake().onTrue(drive.stopWithXCommand());
 
@@ -234,13 +226,13 @@ public class RobotContainer {
 
     // controls.algaeModeProcessor().onTrue(superstructure.setAlgaeModeCommand(AlgaeMode.PROCESSOR));
 
-    // controls.incrementCoralMode().onTrue(superstructure.incrementCoralModeCommand());
+    controls.incrementCoralMode().onTrue(superstructure.incrementCoralModeCommand());
 
-    // controls.decrementCoralMode().onTrue(superstructure.decrementCoralModeCommand());
+    controls.decrementCoralMode().onTrue(superstructure.decrementCoralModeCommand());
 
     // Operator
 
-    // enableDisablePriorityControl(controls.groundIntakeCoral(), Priority.GROUND_INTAKE_CORAL);
+    enableDisablePriorityControl(controls.groundIntakeCoral(), Priority.GROUND_INTAKE_CORAL);
     // enableDisablePriorityControl(controls.groundVomitCoral(), Priority.GROUND_VOMIT_CORAL);
     // enableDisablePriorityControl(controls.sourceIntakeCoral(), Priority.STATION_INTAKE_CORAL);
 
@@ -249,7 +241,7 @@ public class RobotContainer {
     // enableDisablePriorityControl(controls.stackedIntakeAlgae(), Priority.STACKED_INTAKE_ALGAE);
     // enableDisablePriorityControl(controls.stackedVomitAlgae(), Priority.STACKED_VOMIT_ALGAE);
 
-    // enableDisablePriorityControl(controls.prepareScoreCoral(), Priority.PREPARE_SCORE_CORAL);
+    enableDisablePriorityControl(controls.prepareScoreCoral(), Priority.PREPARE_SCORE_CORAL);
     // enableDisablePriorityControl(controls.prepareScoreAlgae(), Priority.PREPARE_SCORE_ALGAE);
 
     // enableDisablePriorityControl(controls.handoffCoral(), Priority.HANDOFF_CORAL);
@@ -283,11 +275,11 @@ public class RobotContainer {
     // testController.y().whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
   }
 
-  /** Handles trigger by enablling priority onTrue and d[]\
-   * []\
-   * \][
-   * isabling onFalse. */
+  /** Handles trigger by enablling priority onTrue and disabling onFalse. */
   public void enableDisablePriorityControl(Trigger trigger, Priority priority) {
+    trigger.whileTrue(superstructure.enablePriorityCommand(priority));
+    trigger.whileTrue(superstructure.disablePriorityCommand(priority));
+
     trigger
         .onTrue(superstructure.enablePriorityCommand(priority))
         .onFalse(superstructure.disablePriorityCommand(priority));

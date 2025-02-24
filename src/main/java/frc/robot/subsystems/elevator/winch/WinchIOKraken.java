@@ -263,7 +263,7 @@ public class WinchIOKraken implements WinchIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
-    leftMotor.setVoltage(voltage.in(Units.Volts));
+    // leftMotor.setVoltage(voltage.in(Units.Volts));
   }
 
 }

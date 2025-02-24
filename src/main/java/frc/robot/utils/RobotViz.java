@@ -18,14 +18,12 @@ public class RobotViz extends VirtualSubsystem {
     private final Supplier<Pose2d> robotPose;
     private final Supplier<Angle> intakePosition;
     private final Supplier<Distance> elevatorPosition;
-    private final Supplier<Angle> clawPosition;
 
     /** Constructor for RobotViz */
-    public RobotViz(Supplier<Pose2d> robotPose, Supplier<Angle> intakePosition, Supplier<Distance> elevatorPosition, Supplier<Angle> clawPosition) {
+    public RobotViz(Supplier<Pose2d> robotPose, Supplier<Angle> intakePosition, Supplier<Distance> elevatorPosition) {
         this.robotPose = robotPose;
         this.intakePosition = intakePosition;
         this.elevatorPosition = elevatorPosition;
-        this.clawPosition = clawPosition;
     }
 
     @Override
@@ -56,7 +54,8 @@ public class RobotViz extends VirtualSubsystem {
 
         Pose3d clawPose = new Pose3d(
             new Translation3d(0.175, 0, 0.375),
-            new Rotation3d(Degrees.zero(), clawPosition.get().unaryMinus(), Degrees.zero())
+            // new Rotation3d(Degrees.zero(), clawPosition.get().unaryMinus(), Degrees.zero())
+            new Rotation3d()
         );
 
         Pose3d[] componentPoses = new Pose3d[]{

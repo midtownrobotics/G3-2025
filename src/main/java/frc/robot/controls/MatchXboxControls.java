@@ -2,21 +2,23 @@ package frc.robot.controls;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.DoublePressTracker;
 import frc.lib.IOProtectionXboxController;
 import java.util.function.BooleanSupplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class MatchXboxControls implements Controls {
 
   private final IOProtectionXboxController driverController;
   private final IOProtectionXboxController operatorController;
 
-  private boolean manualMode;
+  private LoggedNetworkBoolean manualMode = new LoggedNetworkBoolean("Controls/manualMode", false);
 
-  private BooleanSupplier getManualMode = () -> manualMode;
-  private BooleanSupplier getNotManualMode = () -> !manualMode;
+  private BooleanSupplier getManualMode = () -> manualMode.get();
+  private BooleanSupplier getNotManualMode = () -> !manualMode.get();
 
   /** Initalizes Xbox controls for matches. */
   public MatchXboxControls(int driverPort, int operatorPort) {
@@ -97,6 +99,7 @@ public class MatchXboxControls implements Controls {
   }
 
   /** Ground coral trigger. */
+  @AutoLogOutput
   private Trigger groundCoral() {
     return operatorController.b().and(getNotManualMode);
   }

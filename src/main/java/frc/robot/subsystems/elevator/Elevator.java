@@ -30,18 +30,14 @@ public class Elevator extends SubsystemBase {
   private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
 
   public enum Goal {
-    STOW(0),
-    HANDOFF(0),
-    L1(0),
-    L2(0),
-    L3(0),
-    L4(0),
-    BARGE(0),
-    PROCESSOR(0),
-    CLIMB(0),
-    STATION(0),
-    ALGAE_GROUND(0),
-    ALGAE_STACKED(0),
+    STOW(0.05),
+    HANDOFF(0.05),
+    L1(0.2),
+    L2(0.5),
+    L3(0.75),
+    L4(1.3),
+    CLIMB(0.05),
+    STATION(0.05),
     TUNING(0),
     MANUAL(0);
 
@@ -53,7 +49,7 @@ public class Elevator extends SubsystemBase {
     }
 
     /** Goal has meter height value associated */
-    private Goal(int height) {
+    private Goal(double height) {
       this.height = Units.Meters.of(height);
     }
   }
@@ -106,23 +102,25 @@ public class Elevator extends SubsystemBase {
 
     desiredTuningHeight = UnitUtil.clamp(desiredTuningHeight, Feet.of(0), Feet.of(5.3));
 
-    winch.setClimbPosition(desiredTuningHeight);
+    // winch.setClimbPosition(desiredTuningHeight);
 
-    // switch (getCurrentGoal()) {
-    //   case CLIMB:
-    //     winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
-    //     break;
-    //   case TUNING:
-    //     winch.setClimbPosition(desiredTuningHeight);
-    //     break;
-    //   case MANUAL:
-    //   default:
-    //     winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
-    //     break;
-    // }
+    switch (getCurrentGoal()) {
+      // case CLIMB:
+      //   winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
+      //   break;
+      // case TUNING:      //   winch.setClimbPosition(desiredTuningHeight);
+      //   break;
+      // case MANUAL:
+      default:
+        // Distance constrainedGoal = elevatorConstraint.getClosestToDesired(winchInputs.left.position, getCurrentGoal().getHeight());
+        
+        Logger.recordOutput("Elevator/desiredPosition", getCurrentGoal().getHeight());
+        winch.setScorePosition(getCurrentGoal().getHeight());
+        break;
+    }
 
     Logger.recordOutput("Elevator/currentState", getCurrentGoal());
-    Logger.recordOutput("Elevator/desiredPosition", getCurrentGoal().getHeight());
+
     Logger.recordOutput("Elevator/Tuning/DesiredHeightInches", desiredTuningHeight.in(Inches));
     Logger.recordOutput("Elevator/Tuning/CurrentHeightInches", getPosition().in(Inches));
 

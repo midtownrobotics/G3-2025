@@ -11,12 +11,12 @@ public class ElevatorConstants {
     public static final Distance elevatorMinHeight = Inches.of(0);
 
   public final class PID_SCORE {
-    public static final LoggedTunableNumber s = new LoggedTunableNumber("Elevator/PID_SCORE/s", 0.0);
-    public static final LoggedTunableNumber g = new LoggedTunableNumber("Elevator/PID_SCORE/g", 0.0);
-    public static final LoggedTunableNumber v = new LoggedTunableNumber("Elevator/PID_SCORE/v", 0.0);
+    public static final LoggedTunableNumber s = new LoggedTunableNumber("Elevator/PID_SCORE/s", 0.12);
+    public static final LoggedTunableNumber g = new LoggedTunableNumber("Elevator/PID_SCORE/g", 0.33);
+    public static final LoggedTunableNumber v = new LoggedTunableNumber("Elevator/PID_SCORE/v", 0.08);
     public static final LoggedTunableNumber a = new LoggedTunableNumber("Elevator/PID_SCORE/a", 0.0);
-    public static final LoggedTunableNumber p = new LoggedTunableNumber("Elevator/PID_SCORE/p", 0.0);
-    public static final LoggedTunableNumber i = new LoggedTunableNumber("Elevator/PID_SCORE/i", 0.0);
+    public static final LoggedTunableNumber p = new LoggedTunableNumber("Elevator/PID_SCORE/p", 0.5);
+    public static final LoggedTunableNumber i = new LoggedTunableNumber("Elevator/PID_SCORE/i", 0.06);
     public static final LoggedTunableNumber d = new LoggedTunableNumber("Elevator/PID_SCORE/d", 0.0);
   }
 
