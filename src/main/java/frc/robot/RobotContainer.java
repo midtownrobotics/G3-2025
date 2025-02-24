@@ -208,9 +208,9 @@ public class RobotContainer {
   private void configureBindings() {
     // Driver
 
-    // drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
+    drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
 
-    // controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
+    controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
     // controls.driveBrake().onTrue(drive.stopWithXCommand());
 
