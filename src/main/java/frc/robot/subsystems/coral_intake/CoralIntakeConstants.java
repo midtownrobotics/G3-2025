@@ -25,7 +25,7 @@ public class CoralIntakeConstants {
     /** True angle of intake when all the way forward */
     public static final Angle g_min = Degrees.of(-21.783);
     /** Encoder reading when arm is at max. Configurable */
-    public static final Angle e_max = Radians.of(2.935);
+    public static final Angle e_max = Radians.of(5.945);
     /** Encoder reading when arm is at min */
     public static final Angle e_min = UnitUtil.normalize(e_max.plus(g_max.minus(g_min).times(2)));
     /** Breakpoint */
@@ -36,15 +36,15 @@ public class CoralIntakeConstants {
     public static final Angle zeroOffset = g_max.plus(e_max.times(0.5));
 
     public final class PID {
-        public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralIntake/s", 0.0);
-        public static final LoggedTunableNumber v = new LoggedTunableNumber("CoralIntake/v", 10.5);
-        public static final LoggedTunableNumber g = new LoggedTunableNumber("CoralIntake/g", 0.39);
-        public static final LoggedTunableNumber p = new LoggedTunableNumber("CoralIntake/p", 2);
+        public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralIntake/s", 0.04);
+        public static final LoggedTunableNumber v = new LoggedTunableNumber("CoralIntake/v", 0.8);
+        public static final LoggedTunableNumber g = new LoggedTunableNumber("CoralIntake/g", 0.4);
+        public static final LoggedTunableNumber p = new LoggedTunableNumber("CoralIntake/p", 3.7);
         public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralIntake/i", 0);
         public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralIntake/d", 0.2);
 
-        public static final LoggedTunableNumber maxPivotV = new LoggedTunableNumber("CoralIntake/maxV", 1);
-        public static final LoggedTunableNumber maxPivotA = new LoggedTunableNumber("CoralIntake/maxA", 1);
+        public static final LoggedTunableNumber maxPivotV = new LoggedTunableNumber("CoralIntake/maxV", 8);
+        public static final LoggedTunableNumber maxPivotA = new LoggedTunableNumber("CoralIntake/maxA", 8);
 
     }
 

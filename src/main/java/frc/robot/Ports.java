@@ -24,6 +24,6 @@ public class Ports {
     }
 
     public static class CoralOuttake {
-        public static final int roller = 9;
+        public static final int roller = 60;
     }
 }

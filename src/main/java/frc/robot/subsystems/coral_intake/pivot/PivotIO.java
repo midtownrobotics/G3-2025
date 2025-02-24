@@ -21,9 +21,6 @@ public interface PivotIO {
     public Angle absolutePosition = Units.Radians.zero();
   }
 
-  /** sets position */
-  public void setPositionWithFeedforward(Angle desired, Angle current, Voltage ff);
-
   /** Sets the motor voltage. */
   public void setVoltage(Voltage voltage);
 

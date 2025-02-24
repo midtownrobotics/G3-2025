@@ -26,11 +26,6 @@ public class WinchIOSim implements WinchIO {
   }
 
   @Override
-  public Distance getPosition() {
-    return Inches.zero();
-  }
-
-  @Override
   public void setVoltage(Voltage voltage) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");

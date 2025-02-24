@@ -2,20 +2,26 @@ package frc.robot.subsystems.coral_intake;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volt;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.epilogue.Logged;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -29,7 +35,6 @@ import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
-import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
 
@@ -87,6 +92,11 @@ public class CoralIntake extends SubsystemBase {
   private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
 
+    private ArmFeedforward pivotFeedforward = new ArmFeedforward(
+        CoralIntakeConstants.PID.s.get(), CoralIntakeConstants.PID.g.get(), CoralIntakeConstants.PID.v.get());
+
+    private ProfiledPIDController pidController = new ProfiledPIDController(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get(), new Constraints(CoralIntakeConstants.PID.maxPivotV.get(), CoralIntakeConstants.PID.maxPivotA.get()));
+
   private SysIdRoutine routine;
 
   /**
@@ -121,11 +131,32 @@ public class CoralIntake extends SubsystemBase {
   }
 
   private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralIntake/desiredAngle", 0.0);
-  private Voltage tuningDesiredRollerVoltage = Volts.of(0);
 
   @Override
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
+
+    if (RobotState.isDisabled()) {
+      double position = getPosition().in(Radians);
+      pidController.setGoal(position);
+      pidController.reset(position);
+    }
+
+    LoggedTunableNumber.ifChanged(hashCode(), () -> {
+      pidController.setConstraints(new TrapezoidProfile.Constraints(CoralIntakeConstants.PID.maxPivotV.get(),
+          CoralIntakeConstants.PID.maxPivotA.get()));
+  }, CoralIntakeConstants.PID.maxPivotA, CoralIntakeConstants.PID.maxPivotV);
+
+  LoggedTunableNumber.ifChanged(hashCode(), () -> {
+      pivotFeedforward = new ArmFeedforward(CoralIntakeConstants.PID.s.get(), CoralIntakeConstants.PID.g.get(),
+          CoralIntakeConstants.PID.v.get());
+  }, CoralIntakeConstants.PID.s, CoralIntakeConstants.PID.v, CoralIntakeConstants.PID.g);
+
+  LoggedTunableNumber.ifChanged(hashCode(), () -> {
+    pidController.setPID(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get());
+}, CoralIntakeConstants.PID.p, CoralIntakeConstants.PID.i, CoralIntakeConstants.PID.d);
+
+    beltIO.updateInputs(beltInputs);
     pivotIO.updateInputs(pivotInputs);
     rollerIO.updateInputs(rollerInputs);
 
@@ -133,29 +164,32 @@ public class CoralIntake extends SubsystemBase {
     Logger.processInputs(getName() + "/pivot", pivotInputs);
     Logger.processInputs(getName() + "/roller", rollerInputs);
 
-    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
+    // currentGoal = Goal.CLIMB;
 
     Voltage desiredBeltVoltage = currentGoal.getBeltVoltage();
     Voltage desiredRollerVoltage = currentGoal.getRollerVoltage();
-    Angle desiredAngle = currentGoal.getAngle();
-    desiredAngle = Degrees.of(tuningDesiredAngle.get());
+    // Angle desiredAngle = currentGoal.getAngle();
 
-    Angle deltaIntakePosition = desiredAngle.minus(getPosition());
-    Angle desiredMotorPosition = pivotInputs.position.plus(deltaIntakePosition);
+    // desiredAngle = Degrees.of(tuningDesiredAngle.get());
 
-    Voltage ff = CoralIntakeMath.calculateFeedForward(pivotInputs, getPosition(), desiredAngle);
+    Angle desiredAngle = Degrees.of(
+      85);
 
-    // System.out.println(ff);
+    Voltage pidVoltage = Volts.of(pidController.calculate(getPosition().in(Radians), desiredAngle.in(Radians)));
 
-    // Goal switch case
+    TrapezoidProfile.State setpoint = pidController.getSetpoint();
 
-    // pivotIO.setPositionWithFeedforward(desiredMotorPosition, getPosition(), ff);
-    pivotIO.setPositionWithFeedforward(desiredAngle, getPosition(), ff);
+    Voltage ffVoltage = Volts.of(pivotFeedforward.calculate(setpoint.position, setpoint.velocity));
+
+    Voltage totalVoltage = pidVoltage.plus(ffVoltage);
+
+    pivotIO.setVoltage(totalVoltage);
     
     Logger.recordOutput("CoralIntake/Uhh/givenPosition", desiredAngle);
-    Logger.recordOutput("CoralIntake/Uhh/deltaIntakePosition", deltaIntakePosition);
-    Logger.recordOutput("CoralIntake/Uhh/desiredMotorPosition", desiredMotorPosition);
-    Logger.recordOutput("CoralIntake/Uhh/ff", ff);
+    Logger.recordOutput("CoralIntake/Uhh/setpointPosition", setpoint.position);
+    Logger.recordOutput("CoralIntake/Uhh/pidVoltage", pidVoltage);
+    Logger.recordOutput("CoralIntake/Uhh/ffVoltage", ffVoltage);
+    Logger.recordOutput("CoralIntake/Uhh/desiredPivotVoltage", totalVoltage);
 
     // switch (getCurrentGoal()) {
     //   case HANDOFF_ADJUSTING:
@@ -192,6 +226,7 @@ public class CoralIntake extends SubsystemBase {
     Logger.recordOutput("CoralIntake/AngleTuning/breakpoint", CoralIntakeConstants.breakPoint);
     Logger.recordOutput("CoralIntake/AngleTuning/zeroOffset", CoralIntakeConstants.zeroOffset);
     Logger.recordOutput("CoralIntake/AngleTuning/g_position", getPosition());
+    Logger.recordOutput("CoralIntake/AngleTuning/g_velocity", getVelocity());
     
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
@@ -236,7 +271,7 @@ public class CoralIntake extends SubsystemBase {
    * @return {@code boolean} Wheter coral is blocking movement.
    */
   public boolean isCoralBlockingMovement() {
-    return handoffSensor.isTriggered() && !centerSensor.isTriggered();
+  return handoffSensor.isTriggered() && !centerSensor.isTriggered();
   }
 
   /**
@@ -269,22 +304,6 @@ public class CoralIntake extends SubsystemBase {
   //   return new InstantCommand(() -> tuningDesiredAngle.minus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
   // }
 
-  /**
-   * runIntakeForTuning
-   * @return
-   */
-  public Command runIntakeForTuning() {
-    return new StartEndCommand(() -> {tuningDesiredRollerVoltage = Volts.of(12);}, () -> {tuningDesiredRollerVoltage = Volts.of(0);}, this);
-  }
-
-  /**
-   * reverseIntakeForTuning
-   * @return
-   */
-  public Command reverseIntakeForTuning() {
-    return new StartEndCommand(() -> {tuningDesiredRollerVoltage = Volts.of(-12);}, () -> {tuningDesiredRollerVoltage = Volts.of(0);}, this);
-  }
-
   private Angle getPosition() {
     Angle continuousEncoderPosition = pivotInputs.absolutePosition;
     // if (continuousEncoderPosition.gt(CoralIntakeConstants.breakPoint)) {
@@ -299,5 +318,10 @@ public class CoralIntake extends SubsystemBase {
     //     .normalize(Units.Rotations.of(encoder.get()).minus(CoralIntakeConstants.breakPoint))
     //     .plus(CoralIntakeConstants.breakPoint);
     return continuousEncoderPosition.times(-0.5).plus(CoralIntakeConstants.zeroOffset);
+
+  }
+
+  private AngularVelocity getVelocity() {
+    return pivotInputs.velocity.unaryMinus();
   }
 }

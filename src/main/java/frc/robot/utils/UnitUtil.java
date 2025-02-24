@@ -24,6 +24,13 @@ public class UnitUtil {
     }
 
     /**
+     * Util which returns the min of two measures
+     */
+    public static <U extends Unit, T extends Measure<U>> T clamp (T a, T min, T max) {
+        return min(max(a, min), max);
+    }
+
+    /**
      * Normalizes an angle to be between 0 and 360 degrees
      */
     public static Angle normalize(Angle angle) {

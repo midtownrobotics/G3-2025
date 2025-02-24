@@ -42,9 +42,6 @@ public interface WinchIO {
    */
   public void setClimbPosition(Distance position);
 
-  /** Gets the position of the winch. */
-  public Distance getPosition();
-
   /**
    * Sets the motor voltage.
    */

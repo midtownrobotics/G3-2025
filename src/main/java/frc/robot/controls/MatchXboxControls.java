@@ -1,6 +1,8 @@
 package frc.robot.controls;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.DoublePressTracker;
 import frc.lib.IOProtectionXboxController;
@@ -32,26 +34,29 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public double getDriveForward() {
-    return (isDriverControlInDeadzone()
-        ? -Math.signum(driverController.getLeftY())
-            * Math.abs(Math.pow(driverController.getLeftY(), 2))
-        : 0);
+    return -MathUtil.applyDeadband(driverController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
+    // return (isDriverControlInDeadzone()
+    //     ? -Math.signum(driverController.getLeftY())
+    //         * Math.abs(Math.pow(driverController.getLeftY(), 2))
+    //     : 0);
   }
 
   @Override
   public double getDriveLeft() {
-    return (isDriverControlInDeadzone()
-        ? -Math.signum(driverController.getLeftX())
-            * Math.abs(Math.pow(driverController.getLeftX(), 2))
-        : 0);
+    return -MathUtil.applyDeadband(driverController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
+    // return (isDriverControlInDeadzone()
+    //     ? -Math.signum(driverController.getLeftX())
+    //         * Math.abs(Math.pow(driverController.getLeftX(), 2))
+    //     : 0);
   }
 
   @Override
   public double getDriveRotation() {
-    return isDriverControlInDeadzone()
-        ? -Math.signum(driverController.getRightX())
-            * Math.abs(Math.pow(driverController.getRightX(), 3))
-        : 0;
+    return -MathUtil.applyDeadband(driverController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
+    // return isDriverControlInDeadzone()
+    //     ? -Math.signum(driverController.getRightX())
+    //         * Math.abs(Math.pow(driverController.getRightX(), 3))
+    //     : 0;
   }
 
   @Override

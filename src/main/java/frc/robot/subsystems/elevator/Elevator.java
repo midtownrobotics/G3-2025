@@ -1,6 +1,8 @@
 package frc.robot.subsystems.elevator;
 
 
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -14,10 +16,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.lib.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
+import frc.robot.utils.UnitUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -61,6 +65,9 @@ public class Elevator extends SubsystemBase {
 
   private SysIdRoutine routine;
 
+  private LoggedTunableNumber tuningDesiredHeight = new LoggedTunableNumber("Elevator/Tuning/DesiredHeight", 0.0);
+
+
   /**
    * Constructs elevator :)
    *
@@ -68,7 +75,6 @@ public class Elevator extends SubsystemBase {
    */
   public Elevator(WinchIO winch) {
     this.winch = winch;
-    winch.updateInputs(winchInputs);
 
       SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         winch::setVoltage,
@@ -76,7 +82,7 @@ public class Elevator extends SubsystemBase {
         this
     );
 
-    routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(3)), sysIdMech);
+    routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(5)), sysIdMech);
   }
 
   private void motorSysIdLog(SysIdRoutineLog log) {
@@ -94,20 +100,31 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
     winch.updateInputs(winchInputs);
+    Logger.processInputs("Elevator", winchInputs);
 
-    switch (getCurrentGoal()) {
-      case CLIMB:
-        winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
-        break;
-      case TUNING:
-        break;
-      default:
-        winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
-        break;
-    }
+    Distance desiredTuningHeight = Feet.of(tuningDesiredHeight.get());
+
+    desiredTuningHeight = UnitUtil.clamp(desiredTuningHeight, Feet.of(0), Feet.of(5.3));
+
+    winch.setClimbPosition(desiredTuningHeight);
+
+    // switch (getCurrentGoal()) {
+    //   case CLIMB:
+    //     winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
+    //     break;
+    //   case TUNING:
+    //     winch.setClimbPosition(desiredTuningHeight);
+    //     break;
+    //   case MANUAL:
+    //   default:
+    //     winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
+    //     break;
+    // }
 
     Logger.recordOutput("Elevator/currentState", getCurrentGoal());
     Logger.recordOutput("Elevator/desiredPosition", getCurrentGoal().getHeight());
+    Logger.recordOutput("Elevator/Tuning/DesiredHeightInches", desiredTuningHeight.in(Inches));
+    Logger.recordOutput("Elevator/Tuning/CurrentHeightInches", getPosition().in(Inches));
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
@@ -119,7 +136,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Distance getPosition() {
-    return winch.getPosition();
+    return winchInputs.left.position;
   }
 
   /**

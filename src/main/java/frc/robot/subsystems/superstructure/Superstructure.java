@@ -367,7 +367,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   private boolean isElevatorExtended() {
-    return elevator.getPosition().lt(Units.Inches.of(5));
+    return elevator.getPosition().gt(Units.Inches.of(5));
   }
 
   private boolean isCoralIntakeOutside() {

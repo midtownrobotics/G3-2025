@@ -23,6 +23,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.LoggedTunableNumber;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
@@ -33,7 +34,6 @@ public class PivotIONeo implements PivotIO {
 
   private SparkMax pivotMotor;
   private DutyCycleEncoder encoder;
-  private PIDController pid = new PIDController(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get());
 
   /** Constructor for pivotIO for Neo motors. */
   public PivotIONeo(int pivotMotorID, int encoderID) {
@@ -42,7 +42,7 @@ public class PivotIONeo implements PivotIO {
     pivotMotor = new SparkMax(pivotMotorID, MotorType.kBrushless);
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
     pivotConfig.smartCurrentLimit(30);
-    pivotConfig.idleMode(IdleMode.kCoast);
+    pivotConfig.idleMode(IdleMode.kBrake);
     pivotConfig.closedLoop.pidf(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get(), 0);
     pivotConfig.closedLoop.maxMotion.maxVelocity(0.5);
     pivotConfig.closedLoop.maxMotion.maxAcceleration(0.5);
@@ -52,16 +52,7 @@ public class PivotIONeo implements PivotIO {
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  @Override
-  public void setPositionWithFeedforward(Angle desired, Angle current, Voltage ff) {
-    double desiredVoltage = pid.calculate(current.baseUnitMagnitude(), desired.baseUnitMagnitude()) + ff.in(Volts);
-    Logger.recordOutput("CoralIntake/desiredVoltage", desiredVoltage);
-    pivotMotor.setVoltage(desiredVoltage);
-
-    // pivotMotor.getClosedLoopController().setReference(desired.in(Rotations), ControlType.kPosition,
-    //     ClosedLoopSlot.kSlot0,
-    //     ff.in(Volts));
-  }
+  double previousDesiredVoltage = 0;
 
   @Override
   public void updateInputs(PivotInputs inputs) {
@@ -71,27 +62,10 @@ public class PivotIONeo implements PivotIO {
     inputs.appliedVoltage = Units.Volts.of(pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
     inputs.supplyCurrent = Units.Amps.of(pivotMotor.getOutputCurrent());
     inputs.temperature = Units.Celsius.of(pivotMotor.getMotorTemperature());
-
-    updateConstants();
-  }
-
-  private void updateConstants() {
-    LoggedTunableNumber.ifChanged(hashCode(), (values) -> {
-      // SparkMaxConfig motorConfig = new SparkMaxConfig();
-
-      // motorConfig.closedLoop.pidf(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get(), 0);
-      pid = new PIDController(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get());
-
-      // motorConfig.closedLoop.maxMotion.maxAcceleration(CoralIntakeConstants.PID.maxPivotA.get());
-      // motorConfig.closedLoop.maxMotion.maxVelocity(CoralIntakeConstants.PID.maxPivotV.get());
-
-
-      // pivotMotor.configure(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    }, CoralIntakeConstants.PID.p, CoralIntakeConstants.PID.i, CoralIntakeConstants.PID.d, CoralIntakeConstants.PID.maxPivotA, CoralIntakeConstants.PID.maxPivotV);
   }
 
   @Override
   public void setVoltage(Voltage voltage) {
-    // pivotMotor.setVoltage(voltage);
+    pivotMotor.setVoltage(voltage);
   }
 }

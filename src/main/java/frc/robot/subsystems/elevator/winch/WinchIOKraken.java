@@ -1,5 +1,14 @@
 package frc.robot.subsystems.elevator.winch;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Second;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -9,9 +18,14 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -26,12 +40,11 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
-import org.littletonrobotics.junction.Logger;
 
 public class WinchIOKraken implements WinchIO {
 
-  private static final double GEARING = 12;
-  private static final Distance WHEEL_RADIUS = Units.Inches.of(1);
+  private static final double GEARING = 20;
+  private static final Distance WHEEL_RADIUS = Units.Inches.of(1.074);
 
   @Getter private TalonFX leftMotor;
   @Getter private TalonFX rightMotor;
@@ -54,13 +67,16 @@ public class WinchIOKraken implements WinchIO {
                        int encoderID, 
                        CANBusStatusSignalRegistration bus) {
 
-    leftMotor = new TalonFX(leftMotorID);
-    rightMotor = new TalonFX(rightMotorID);
+    leftMotor = new TalonFX(leftMotorID, "Drivetrain");
+    rightMotor = new TalonFX(rightMotorID, "Drivetrain");
 
     encoder = new DutyCycleEncoder(encoderID);
 
-    tryUntilOk(5, () -> leftMotor.setPosition(encoder.get()));
-    tryUntilOk(5, () -> rightMotor.setPosition(encoder.get()));
+    Angle absoluteOffset = Radians.of(2.022);
+    Angle position = Rotations.of(encoder.get()).minus(absoluteOffset).times(20);
+
+    tryUntilOk(5, () -> leftMotor.setPosition(position));
+    tryUntilOk(5, () -> rightMotor.setPosition(position));
     
     configureMotors();
 
@@ -129,15 +145,13 @@ public class WinchIOKraken implements WinchIO {
    * @param slot PID slot to set to.
    */
   public void setPosition(Distance position, int slot) {
-    // double p = meterToRotation(position);
-
-    // PositionTorqueCurrentFOC leftRequest = new PositionTorqueCurrentFOC(p).withSlot(slot);
-    // leftMotor.setControl(leftRequest);
-    // Logger.recordOutput("Elevator/Winch/TargetPosition", position);
+    MotionMagicVoltage leftRequest = new MotionMagicVoltage(meterToRotation(position)).withSlot(slot);
+    leftMotor.setControl(leftRequest);
   }
 
   @Override
   public void updateInputs(WinchInputs inputs) {
+    inputs.absolutePosition = Rotations.of(encoder.get());
     inputs.left.connected = leftMotor.isConnected();
     inputs.left.position = rotationToDistance(leftMotor.getPosition().getValue());
     inputs.left.velocity = rotationToLinearVelocity(leftMotor.getVelocity().getValue());
@@ -180,19 +194,14 @@ public class WinchIOKraken implements WinchIO {
     );
   }
 
-  @Override
-  public Distance getPosition() {
-    return rotationToDistance(leftMotor.getPosition().getValue());
-  }
-
   /**
    * Converts distance unit to kraken rotations
    *
    * @param m
    * @return
    */
-  public double meterToRotation(Distance m) {
-    return m.in(Units.Meter) / (2 * Math.PI * WHEEL_RADIUS.in(Units.Meter)) * GEARING;
+  public Angle meterToRotation(Distance m) {
+    return m.div(Inches.of(6.75)).times(Rotations.of(GEARING)).div(3);
   }
 
   /**
@@ -202,7 +211,7 @@ public class WinchIOKraken implements WinchIO {
    * @return Linear velocity
    */
   public LinearVelocity rotationToLinearVelocity(AngularVelocity velocity) {
-    return Units.MetersPerSecond.of((2 * Math.PI * WHEEL_RADIUS.in(Units.Meter) * velocity.in(Units.RotationsPerSecond)) / GEARING);
+    return Units.MetersPerSecond.of((6.75 * velocity.in(Units.RotationsPerSecond)) / GEARING).times(3);
   }
 
   /**
@@ -212,7 +221,7 @@ public class WinchIOKraken implements WinchIO {
    * @return
    */
   public Distance rotationToDistance(Angle a) {
-    return Units.Meters.of((2 * Math.PI * WHEEL_RADIUS.in(Units.Meter) * a.in(Units.Rotation)) / GEARING);
+    return a.div(Rotations.of(GEARING)).times(Inches.of(6.75)).times(3);
   }
 
   private void configureMotors() {
@@ -242,7 +251,10 @@ public class WinchIOKraken implements WinchIO {
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
             .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
-    krakenConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    krakenConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    krakenConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    krakenConfig.MotionMagic.withMotionMagicCruiseVelocity(meterToRotation(Feet.of(5)).per(Second));
+    krakenConfig.MotionMagic.withMotionMagicAcceleration(meterToRotation(Feet.of(5)).per(Second).per(Second));
 
     tryUntilOk(5, () -> leftMotor.getConfigurator().apply(krakenConfig));
     tryUntilOk(5, () -> rightMotor.getConfigurator().apply(krakenConfig));
@@ -251,7 +263,7 @@ public class WinchIOKraken implements WinchIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
-    // leftMotor.setVoltage(voltage.in(Units.Volts));
+    leftMotor.setVoltage(voltage.in(Units.Volts));
   }
 
 }

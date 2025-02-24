@@ -6,11 +6,6 @@ import edu.wpi.first.units.measure.Voltage;
 public class PivotIOReplay implements PivotIO {
 
   @Override
-  public void setPositionWithFeedforward(Angle position, Angle a, Voltage ff) {
-    throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
-  }
-
-  @Override
   public void updateInputs(PivotInputs inputs) {
     throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
   }

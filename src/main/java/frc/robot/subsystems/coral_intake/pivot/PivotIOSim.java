@@ -9,11 +9,6 @@ public class PivotIOSim implements PivotIO {
   private Angle targetPosition = Degrees.of(0);
 
   @Override
-  public void setPositionWithFeedforward(Angle position, Angle a, Voltage ff) {
-    targetPosition = position;
-  }
-
-  @Override
   public void updateInputs(PivotInputs inputs) {
     inputs.position = targetPosition;
   }
