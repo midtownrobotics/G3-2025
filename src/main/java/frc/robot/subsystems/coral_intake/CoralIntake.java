@@ -1,5 +1,6 @@
 package frc.robot.subsystems.coral_intake;
 
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.LoggedTunableNumber;
@@ -44,10 +46,11 @@ public class CoralIntake extends SubsystemBase {
 
   public enum Goal {
     STOW(Degrees.of(120), Volts.of(0)),
-    GROUND_INTAKE(Degrees.of(5), Volts.of(7)),
-    GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-7)),
+    GROUND_INTAKE(Degrees.of(-10), Volts.of(12)),
+    GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-12)),
     STATION_INTAKE(Degrees.of(0), Volts.of(0)),
     HANDOFF(STOW.getAngle(), Volts.of(0)),
+    HANDOFF_PUSH_CORAL(STOW.getAngle(), Volts.of(7)),
     HANDOFF_ADJUSTING(HANDOFF.getAngle(), Volts.of(0), Volts.of(7)),
     CLIMB(Degrees.of(45), Volts.of(0)),
     TUNING(Degrees.of(0), Volts.of(0)),
@@ -58,7 +61,7 @@ public class CoralIntake extends SubsystemBase {
     private @Getter Voltage beltVoltage = Volts.of(0);
 
     /**
-     * Goal has angle, and rollerVoltage associated.
+     * Goal has angle and rollerVoltage associated.
      * 
      * @param angle
      * @param rollerVoltage
@@ -80,6 +83,11 @@ public class CoralIntake extends SubsystemBase {
       this.beltVoltage = beltVoltage;
     }
   }
+
+  public final Trigger atGoalTrigger = new Trigger(this::atGoal);
+  public final Trigger handoffSensorTrigger;
+  public final Trigger centerSensorTrigger;
+  public final Trigger pieceDetectedTrigger;
 
   private @Getter Goal currentGoal = Goal.STOW;
 
@@ -115,6 +123,10 @@ public class CoralIntake extends SubsystemBase {
     this.beltIO = beltIO;
     this.centerSensor = centerSensor;
     this.handoffSensor = handoffSensor;
+
+    this.handoffSensorTrigger = new Trigger(handoffSensor::isTriggered);
+    this.centerSensorTrigger = new Trigger(centerSensor::isTriggered);
+    this.pieceDetectedTrigger = handoffSensorTrigger.or(centerSensorTrigger);
 
     SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         pivotIO::setVoltage,
@@ -171,30 +183,30 @@ public class CoralIntake extends SubsystemBase {
     Voltage desiredRollerVoltage = currentGoal.getRollerVoltage();
     Angle desiredAngle = currentGoal.getAngle();
 
-    // if (Constants.tuningMode.get()) {
-    //   desiredAngle = Degrees.of(tuningDesiredAngle.get());
-    // }
+    if (Constants.tuningMode.get()) {
+      desiredAngle = Degrees.of(tuningDesiredAngle.get());
+    }
 
     switch (getCurrentGoal()) {
-    //   case HANDOFF_ADJUSTING:
-    //     pivotIO.setPosition(desiredAngle);
-    //     rollerIO.setVoltage(desiredRollerVoltage);
-    //     if (isCoralBlockingMovement()) {
-    //       beltIO.setVoltage(desiredBeltVoltage);
-    //     } else {
-    //       beltIO.setVoltage(desiredRollerVoltage.times(-1));
-    //     }
-    //   case TUNING:
-    //     desiredAngle = tuningDesiredAngle;
-    //     desiredRollerVoltage = tuningDesiredRollerVoltage;
-    //     pivotIO.setPosition(desiredAngle);
-    //     beltIO.setVoltage(desiredBeltVoltage);
-    //     rollerIO.setVoltage(desiredRollerVoltage);
-    //     break;
+      case HANDOFF_ADJUSTING:
+        pivotIO.setVoltage(calculateVoltageForPosition(desiredAngle));
+        rollerIO.setVoltage(desiredRollerVoltage);
+        if (isCoralBlockingMovement()) {
+          beltIO.setVoltage(desiredBeltVoltage);
+        } else {
+          beltIO.setVoltage(desiredRollerVoltage.times(-1));
+        }
+      // case TUNING:
+      //   desiredAngle = tuningDesiredAngle;
+      //   desiredRollerVoltage = tuningDesiredRollerVoltage;
+      //   pivotIO.setPosition(desiredAngle);
+      //   beltIO.setVoltage(desiredBeltVoltage);
+      //   rollerIO.setVoltage(desiredRollerVoltage);
+      //   break;
       default:
         pivotIO.setVoltage(calculateVoltageForPosition(desiredAngle));
-        // beltIO.setVoltage(desiredBeltVoltage);
-        // rollerIO.setVoltage(desiredRollerVoltage);
+        beltIO.setVoltage(desiredBeltVoltage);
+        rollerIO.setVoltage(desiredRollerVoltage);
         break;
     }
 
@@ -252,10 +264,10 @@ public class CoralIntake extends SubsystemBase {
 
   /**
    * Uses photoelectric sensors to detect if coral will block the intake from moving into handoff mode.
-   * @return {@code boolean} Wheter coral is blocking movement.
+   * @return {@code boolean} Wheter coral is triggering handoff sensor but not center sensor.
    */
   public boolean isCoralBlockingMovement() {
-  return handoffSensor.isTriggered() && !centerSensor.isTriggered();
+    return handoffSensor.isTriggered() && !centerSensor.isTriggered();
   }
 
   /**
@@ -324,5 +336,17 @@ public class CoralIntake extends SubsystemBase {
     Logger.recordOutput("CoralIntake/AnglePID/desiredPivotVoltage", totalVoltage);
 
     return totalVoltage;
+  }
+
+  public boolean atGoal() {
+    return atGoal(getCurrentGoal());
+  }
+
+  public boolean atGoal(Goal goal) {
+    return getCurrentGoal() == goal && getPivotPosition().isNear(goal.getAngle(), Degrees.of(0.5));
+  }
+
+  public Trigger atGoalTrigger(Goal goal) {
+    return new Trigger(() -> atGoal(goal));
   }
 }

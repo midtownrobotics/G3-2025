@@ -1,12 +1,15 @@
 package frc.robot.subsystems.coral_outtake;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.utils.LoggerUtil;
@@ -35,9 +38,12 @@ public class CoralOuttake extends SubsystemBase {
     }
   }
 
+  public final Trigger currentSpikeTrigger;
+
   private @Getter Goal currentGoal = Goal.IDLE;
   private RollerIO rollerIO;
   private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
+  
 
   /**
    * Initializes Coral Outtake
@@ -45,6 +51,15 @@ public class CoralOuttake extends SubsystemBase {
    */
   public CoralOuttake(RollerIO rollerIO) {
     this.rollerIO = rollerIO;
+
+    currentSpikeTrigger = new Trigger(this::currentSpikeFiltered);
+  }
+
+  private LinearFilter currentSpikeFilter = LinearFilter.movingAverage(5);
+
+  private boolean currentSpikeFiltered() {
+    // TODO: FIGURE OUT CURRENT!
+    return currentSpikeFilter.calculate(rollerInputs.supplyCurrent.in(Amps)) > 20;
   }
 
   public AngularVelocity getRollerSpeed() {

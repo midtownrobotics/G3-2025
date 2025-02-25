@@ -233,7 +233,7 @@ public class RobotContainer {
     // Operator
 
     enableDisablePriorityControl(controls.groundIntakeCoral(), Priority.GROUND_INTAKE_CORAL);
-    // enableDisablePriorityControl(controls.groundVomitCoral(), Priority.GROUND_VOMIT_CORAL);
+    enableDisablePriorityControl(controls.groundVomitCoral(), Priority.GROUND_VOMIT_CORAL);
     // enableDisablePriorityControl(controls.sourceIntakeCoral(), Priority.STATION_INTAKE_CORAL);
 
     // enableDisablePriorityControl(controls.groundIntakeAlgae(), Priority.GROUND_INTAKE_ALGAE);

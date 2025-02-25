@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.LoggedTunableNumber;
@@ -23,7 +26,6 @@ import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import frc.robot.utils.UnitUtil;
 import lombok.Getter;
-import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
@@ -54,6 +56,8 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  public final Trigger atGoalTrigger = new Trigger(this::atGoal);
+
   private @Getter Goal currentGoal = Goal.STOW;
 
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
@@ -62,7 +66,6 @@ public class Elevator extends SubsystemBase {
   private SysIdRoutine routine;
 
   private LoggedTunableNumber tuningDesiredHeight = new LoggedTunableNumber("Elevator/Tuning/DesiredHeight", 0.0);
-
 
   /**
    * Constructs elevator :)
@@ -105,16 +108,17 @@ public class Elevator extends SubsystemBase {
     // winch.setClimbPosition(desiredTuningHeight);
 
     switch (getCurrentGoal()) {
-      // case CLIMB:
-      //   winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
-      //   break;
-      // case TUNING:      //   winch.setClimbPosition(desiredTuningHeight);
-      //   break;
-      // case MANUAL:
+      case CLIMB:
+        winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
+        break;
+      case TUNING:      
+        winch.setClimbPosition(desiredTuningHeight);
+        break;
+      case MANUAL:
       default:
-        // Distance constrainedGoal = elevatorConstraint.getClosestToDesired(winchInputs.left.position, getCurrentGoal().getHeight());
+        Distance constrainedGoal = elevatorConstraint.getClosestToDesired(winchInputs.left.position, getCurrentGoal().getHeight());
         
-        Logger.recordOutput("Elevator/desiredPosition", getCurrentGoal().getHeight());
+        Logger.recordOutput("Elevator/desiredPosition", constrainedGoal);
         winch.setScorePosition(getCurrentGoal().getHeight());
         break;
     }
@@ -149,5 +153,17 @@ public class Elevator extends SubsystemBase {
    */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return routine.dynamic(direction);
+  }
+
+  public boolean atGoal() {
+    return atGoal(getCurrentGoal());
+  }
+
+  public boolean atGoal(Goal goal) {
+    return getCurrentGoal() == goal && getPosition().isNear(goal.getHeight(), Inches.of(0.5));
+  }
+
+  public Trigger atGoalTrigger(Goal goal) {
+    return new Trigger(() -> atGoal(goal));
   }
 }

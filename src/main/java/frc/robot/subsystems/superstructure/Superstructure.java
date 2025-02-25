@@ -8,7 +8,9 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
@@ -39,12 +41,22 @@ public class Superstructure extends SubsystemBase {
   @AutoLogOutput
   private CoralMode coralMode = CoralMode.L4;
 
+  private Trigger coralIntakeAtStowGoal;
+  private Trigger elevatorAtStowGoal;
+
   /** Construct the robot supersctructure. */
   public Superstructure(CoralIntake coralIntake, Elevator elevator, CoralOuttake coralOuttake) {
     this.coralIntake = coralIntake;
     this.coralOuttake = coralOuttake;
     this.elevator = elevator;
 
+    coralIntakeAtStowGoal = coralIntake.atGoalTrigger(CoralIntake.Goal.STOW);
+    elevatorAtStowGoal = elevator.atGoalTrigger(Elevator.Goal.STOW);
+    
+    coralIntakeAtStowGoal.and(elevatorAtStowGoal).and(coralIntake.pieceDetectedTrigger).onTrue(Commands.sequence(
+      enablePriorityCommand(Priority.HANDOFF_CORAL),
+      Commands.waitUntil(coralOuttake.currentSpikeTrigger)
+    ));
   }
 
   public void setCoralMode(CoralMode coralMode) {
@@ -173,14 +185,19 @@ public class Superstructure extends SubsystemBase {
             if (!possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF)) continue;
 
             possibleElevatorGoals = Set.of(Elevator.Goal.HANDOFF);
-            possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF);
+
+            if (coralOuttake.currentSpikeTrigger.getAsBoolean()) {
+              possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF_PUSH_CORAL);
+            } else {
+              possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF);
+            }
 
             break;
         }
       }}
 
     // Coral intake handoff logic
- 
+
     // if (
     //   possibleCoralIntakeGoals.contains(CoralIntake.Goal.GROUND_INTAKE) 
     //   && possibleElevatorGoals.contains(Elevator.Goal.HANDOFF)
@@ -189,7 +206,15 @@ public class Superstructure extends SubsystemBase {
     //   possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF);
     // }
 
-    // if (possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF) && possibleElevatorGoals.contains(Elevator.Goal.HANDOFF)) {
+    // if (possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF) && possibleCoralOuttakeGoals.contains(CoralOuttake.Goal.HANDOFF) && possibleElevatorGoals.contains(Elevator.Goal.HANDOFF) && coralIntake.isCoralDetected()) {
+    //   if (coralIntake.atSetPoint() && elevator.atSetPoint()) {
+    //     if (coralIntake.isCoralBlockingMovement()) {
+    //       possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF_PUSH_CORAL);
+    //     }
+    //   }
+    // }
+    
+    // if (possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF) && coralIntake.isCoralDetected()) {
     //   if (coralIntake.doesCoralNeedAdjusting()) {
     //     possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF_ADJUSTING);
     //   }
@@ -228,7 +253,7 @@ public class Superstructure extends SubsystemBase {
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   
-  } 
+  }
 
   private boolean isElevatorExtended() {
     return elevator.getPosition().gt(Units.Inches.of(5));
@@ -252,6 +277,7 @@ public class Superstructure extends SubsystemBase {
   private boolean canMoveCoralIntakeOutside(Set<CoralIntake.Goal> possibleGoals) {
     return isAnyPossibleGoals(possibleGoals, insideCoralIntakeGoals);
   }
+
   private void moveCoralIntakeOutside(Set<CoralIntake.Goal> possibleGoals) {
     possibleGoals.removeAll(insideCoralIntakeGoals);
   }

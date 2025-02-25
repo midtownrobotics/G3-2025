@@ -26,7 +26,7 @@ public class RollerIONeo implements RollerIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
-    // motor.setVoltage(voltage);
+    motor.setVoltage(voltage);
   }
 
 
