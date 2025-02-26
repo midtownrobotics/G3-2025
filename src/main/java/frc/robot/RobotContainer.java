@@ -4,27 +4,15 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.FeetPerSecond;
-import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathConstraints;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOBag;
-import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
@@ -50,7 +38,6 @@ import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.elevator.winch.WinchIOReplay;
 import frc.robot.subsystems.elevator.winch.WinchIOSim;
-import frc.robot.subsystems.superstructure.Priority;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
@@ -212,13 +199,15 @@ public class RobotContainer {
 
     controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
-    // controls.driveBrake().onTrue(drive.stopWithXCommand());
+    controls.driveBrake().onTrue(drive.stopWithXCommand());
 
     // controls.gamePieceLock().onTrue(Commands.none());
 
     // controls.leftPositionLock().whileTrue(AutoBuilder.pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
 
-    // controls.rightPositionLock().onTrue(Commands.none());
+    controls.rightPositionLock().whileTrue(coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_INTAKE, CoralIntake.Goal.STOW));
+
+    controls.leftPositionLock().whileTrue(elevator.setGoalEndCommand(Elevator.Goal.L4, Elevator.Goal.STOW));
 
     // controls.reefAlgaePositionLock().onTrue(Commands.none());
 
@@ -226,32 +215,11 @@ public class RobotContainer {
 
     // controls.algaeModeProcessor().onTrue(superstructure.setAlgaeModeCommand(AlgaeMode.PROCESSOR));
 
-    controls.incrementCoralMode().onTrue(superstructure.incrementCoralModeCommand());
+    // controls.incrementCoralMode().onTrue(superstructure.incrementCoralModeCommand());
 
-    controls.decrementCoralMode().onTrue(superstructure.decrementCoralModeCommand());
+    // controls.decrementCoralMode().onTrue(superstructure.decrementCoralModeCommand());
 
     // Operator
-
-    enableDisablePriorityControl(controls.groundIntakeCoral(), Priority.GROUND_INTAKE_CORAL);
-    enableDisablePriorityControl(controls.groundVomitCoral(), Priority.GROUND_VOMIT_CORAL);
-    // enableDisablePriorityControl(controls.sourceIntakeCoral(), Priority.STATION_INTAKE_CORAL);
-
-    // enableDisablePriorityControl(controls.groundIntakeAlgae(), Priority.GROUND_INTAKE_ALGAE);
-    // enableDisablePriorityControl(controls.groundVomitAlgae(), Priority.GROUND_VOMIT_ALGAE);
-    // enableDisablePriorityControl(controls.stackedIntakeAlgae(), Priority.STACKED_INTAKE_ALGAE);
-    // enableDisablePriorityControl(controls.stackedVomitAlgae(), Priority.STACKED_VOMIT_ALGAE);
-
-    enableDisablePriorityControl(controls.prepareScoreCoral(), Priority.PREPARE_SCORE_CORAL);
-    // enableDisablePriorityControl(controls.prepareScoreAlgae(), Priority.PREPARE_SCORE_ALGAE);
-
-    // enableDisablePriorityControl(controls.handoffCoral(), Priority.HANDOFF_CORAL);
-
-    // enableDisablePriorityControl(controls.scoreGamePiece(), Priority.SCORE_GAME_PIECE);
-
-    // enableDisablePriorityControl(controls.climb(), Priority.CLIMB);
-
-    // enableDisablePriorityControl(controls.panic(), Priority.PANIC);
-    // enableDisablePriorityControl(controls.setManualMode(), Priority.MANUAL);
 
     // TODO: Use Elevator and Wrist axes as well
 
@@ -273,16 +241,6 @@ public class RobotContainer {
     // testController.b().whileTrue(elevator.sysIdDynamic(Direction.kReverse));
     // testController.x().whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
     // testController.y().whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
-  }
-
-  /** Handles trigger by enablling priority onTrue and disabling onFalse. */
-  public void enableDisablePriorityControl(Trigger trigger, Priority priority) {
-    trigger.whileTrue(superstructure.enablePriorityCommand(priority));
-    trigger.whileTrue(superstructure.disablePriorityCommand(priority));
-
-    trigger
-        .onTrue(superstructure.enablePriorityCommand(priority))
-        .onFalse(superstructure.disablePriorityCommand(priority));
   }
 
   /** Returns the autonomous command */

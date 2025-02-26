@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
@@ -101,10 +102,12 @@ public class CoralIntake extends SubsystemBase {
   private final RollerIO rollerIO;
   private final RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
 
-    private ArmFeedforward pivotFeedforward = new ArmFeedforward(
-        CoralIntakeConstants.PID.s.get(), CoralIntakeConstants.PID.g.get(), CoralIntakeConstants.PID.v.get());
+  private ArmFeedforward pivotFeedforward = new ArmFeedforward(
+      CoralIntakeConstants.PID.s.get(), CoralIntakeConstants.PID.g.get(), CoralIntakeConstants.PID.v.get());
 
-    private ProfiledPIDController pidController = new ProfiledPIDController(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get(), new Constraints(CoralIntakeConstants.PID.maxPivotV.get(), CoralIntakeConstants.PID.maxPivotA.get()));
+  private ProfiledPIDController pidController = new ProfiledPIDController(CoralIntakeConstants.PID.p.get(),
+      CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get(),
+      new Constraints(CoralIntakeConstants.PID.maxPivotV.get(), CoralIntakeConstants.PID.maxPivotA.get()));
 
   private SysIdRoutine routine;
 
@@ -158,16 +161,17 @@ public class CoralIntake extends SubsystemBase {
     LoggedTunableNumber.ifChanged(hashCode(), () -> {
       pidController.setConstraints(new TrapezoidProfile.Constraints(CoralIntakeConstants.PID.maxPivotV.get(),
           CoralIntakeConstants.PID.maxPivotA.get()));
-  }, CoralIntakeConstants.PID.maxPivotA, CoralIntakeConstants.PID.maxPivotV);
+    }, CoralIntakeConstants.PID.maxPivotA, CoralIntakeConstants.PID.maxPivotV);
 
-  LoggedTunableNumber.ifChanged(hashCode(), () -> {
+    LoggedTunableNumber.ifChanged(hashCode(), () -> {
       pivotFeedforward = new ArmFeedforward(CoralIntakeConstants.PID.s.get(), CoralIntakeConstants.PID.g.get(),
           CoralIntakeConstants.PID.v.get());
-  }, CoralIntakeConstants.PID.s, CoralIntakeConstants.PID.v, CoralIntakeConstants.PID.g);
+    }, CoralIntakeConstants.PID.s, CoralIntakeConstants.PID.v, CoralIntakeConstants.PID.g);
 
-  LoggedTunableNumber.ifChanged(hashCode(), () -> {
-    pidController.setPID(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get());
-}, CoralIntakeConstants.PID.p, CoralIntakeConstants.PID.i, CoralIntakeConstants.PID.d);
+    LoggedTunableNumber.ifChanged(hashCode(), () -> {
+      pidController.setPID(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(),
+          CoralIntakeConstants.PID.d.get());
+    }, CoralIntakeConstants.PID.p, CoralIntakeConstants.PID.i, CoralIntakeConstants.PID.d);
 
     beltIO.updateInputs(beltInputs);
     pivotIO.updateInputs(pivotInputs);
@@ -183,28 +187,15 @@ public class CoralIntake extends SubsystemBase {
     Voltage desiredRollerVoltage = currentGoal.getRollerVoltage();
     Angle desiredAngle = currentGoal.getAngle();
 
+    Angle constrainedAngle = coralIntakeConstraint.getClampedValue(desiredAngle);
+
     if (Constants.tuningMode.get()) {
-      desiredAngle = Degrees.of(tuningDesiredAngle.get());
+      constrainedAngle = Degrees.of(tuningDesiredAngle.get());
     }
 
     switch (getCurrentGoal()) {
-      case HANDOFF_ADJUSTING:
-        pivotIO.setVoltage(calculateVoltageForPosition(desiredAngle));
-        rollerIO.setVoltage(desiredRollerVoltage);
-        if (isCoralBlockingMovement()) {
-          beltIO.setVoltage(desiredBeltVoltage);
-        } else {
-          beltIO.setVoltage(desiredRollerVoltage.times(-1));
-        }
-      // case TUNING:
-      //   desiredAngle = tuningDesiredAngle;
-      //   desiredRollerVoltage = tuningDesiredRollerVoltage;
-      //   pivotIO.setPosition(desiredAngle);
-      //   beltIO.setVoltage(desiredBeltVoltage);
-      //   rollerIO.setVoltage(desiredRollerVoltage);
-      //   break;
       default:
-        pivotIO.setVoltage(calculateVoltageForPosition(desiredAngle));
+        pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
         beltIO.setVoltage(desiredBeltVoltage);
         rollerIO.setVoltage(desiredRollerVoltage);
         break;
@@ -212,6 +203,10 @@ public class CoralIntake extends SubsystemBase {
 
     Logger.recordOutput("CoralIntake/currentState", getCurrentGoal());
     Logger.recordOutput("CoralIntake/desiredAngle", desiredAngle);
+    Logger.recordOutput("CoralIntake/constraintMax", coralIntakeConstraint.getUpper());
+    Logger.recordOutput("CoralIntake/constraintMin", coralIntakeConstraint.getLower());
+    Logger.recordOutput("CoralIntake/constrainedAngle", constrainedAngle);
+    Logger.recordOutput("CoralIntake/currentPosition", getPivotPosition());
     Logger.recordOutput("CoralIntake/desiredBeltVoltage", desiredBeltVoltage);
     Logger.recordOutput("CoralIntake/desiredRollerVoltage", desiredRollerVoltage);
 
@@ -223,14 +218,17 @@ public class CoralIntake extends SubsystemBase {
     Logger.recordOutput("CoralIntake/AngleTuning/zeroOffset", CoralIntakeConstants.zeroOffset);
     Logger.recordOutput("CoralIntake/AngleTuning/g_position", getPosition());
     Logger.recordOutput("CoralIntake/AngleTuning/g_velocity", getVelocity());
-    
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
-  /** Sets the goal of the coral outtake. */
-  public void setGoal(Goal goal, LinearConstraint<AngleUnit, Angle> constraint) {
+  /** Sets the goal of the coral intake pivot. */
+  public void setGoal(Goal goal) {
     currentGoal = goal;
+  }
+
+  /** Sets the constraints of the coral intake pivot. */
+  public void setConstraints(LinearConstraint<AngleUnit, Angle> constraint) {
     coralIntakeConstraint = constraint;
   }
 
@@ -242,6 +240,7 @@ public class CoralIntake extends SubsystemBase {
 
   /**
    * Uses photoelectric sensors to detect coral.
+   * 
    * @return {@code boolean} Wheter coral is detected.
    */
   public boolean isCoralDetected() {
@@ -255,7 +254,9 @@ public class CoralIntake extends SubsystemBase {
   }
 
   /**
-   * Uses photoelectric sensors to detect if coral needs to be adjusted to be centered.
+   * Uses photoelectric sensors to detect if coral needs to be adjusted to be
+   * centered.
+   * 
    * @return {@code boolean} Whether coral needs adjusting.
    */
   public boolean doesCoralNeedAdjusting() {
@@ -263,8 +264,11 @@ public class CoralIntake extends SubsystemBase {
   }
 
   /**
-   * Uses photoelectric sensors to detect if coral will block the intake from moving into handoff mode.
-   * @return {@code boolean} Wheter coral is triggering handoff sensor but not center sensor.
+   * Uses photoelectric sensors to detect if coral will block the intake from
+   * moving into handoff mode.
+   * 
+   * @return {@code boolean} Wheter coral is triggering handoff sensor but not
+   *         center sensor.
    */
   public boolean isCoralBlockingMovement() {
     return handoffSensor.isTriggered() && !centerSensor.isTriggered();
@@ -286,35 +290,28 @@ public class CoralIntake extends SubsystemBase {
 
   /**
    * incrementTuningAngle
+   * 
    * @return
    */
   // public Command incrementTuningAngle() {
-  //   return new InstantCommand(() -> tuningDesiredAngle.plus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
+  // return new InstantCommand(() ->
+  // tuningDesiredAngle.plus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount),
+  // this);
   // }
 
   /**
    * decrementTuningAngle
+   * 
    * @return
    */
   // public Command decrementTuningAngle() {
-  //   return new InstantCommand(() -> tuningDesiredAngle.minus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount), this);
+  // return new InstantCommand(() ->
+  // tuningDesiredAngle.minus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount),
+  // this);
   // }
 
   private Angle getPosition() {
-    Angle continuousEncoderPosition = pivotInputs.absolutePosition;
-    // if (continuousEncoderPosition.gt(CoralIntakeConstants.breakPoint)) {
-    //   continuousEncoderPosition = continuousEncoderPosition.minus(Rotations.of(1));
-    // }
-
-    if (continuousEncoderPosition.lt(CoralIntakeConstants.breakPoint)) {
-      continuousEncoderPosition = continuousEncoderPosition.plus(Rotations.of(1));
-    }
-    // if ()
-    // Angle continuousEncoderPosition = UnitUtil
-    //     .normalize(Units.Rotations.of(encoder.get()).minus(CoralIntakeConstants.breakPoint))
-    //     .plus(CoralIntakeConstants.breakPoint);
-    return continuousEncoderPosition.times(-0.5).plus(CoralIntakeConstants.zeroOffset);
-
+    return pivotInputs.absolutePosition;
   }
 
   private AngularVelocity getVelocity() {
@@ -329,8 +326,8 @@ public class CoralIntake extends SubsystemBase {
 
     Voltage totalVoltage = pidVoltage.plus(ffVoltage);
 
-    Logger.recordOutput("CoralIntake/AnglePID/givenPosition", desired);
-    Logger.recordOutput("CoralIntake/AnglePID/setpointPosition", setpoint.position);
+    Logger.recordOutput("CoralIntake/AnglePID/GoalPosition", desired);
+    Logger.recordOutput("CoralIntake/AnglePID/SetpointPosition", setpoint.position);
     Logger.recordOutput("CoralIntake/AnglePID/pidVoltage", pidVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/ffVoltage", ffVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/desiredPivotVoltage", totalVoltage);
@@ -338,15 +335,42 @@ public class CoralIntake extends SubsystemBase {
     return totalVoltage;
   }
 
+  /**
+   * Returns true if the intake is within a small threshold distance to the goal.
+   */
   public boolean atGoal() {
     return atGoal(getCurrentGoal());
   }
 
+  /**
+   * Returns true if the intake is within a small threshold distance to the
+   * specified goal.
+   */
   public boolean atGoal(Goal goal) {
     return getCurrentGoal() == goal && getPivotPosition().isNear(goal.getAngle(), Degrees.of(0.5));
   }
 
+  /**
+   * Returns a trigger for if the intake is within a small threshold distance to
+   * the goal.
+   */
   public Trigger atGoalTrigger(Goal goal) {
     return new Trigger(() -> atGoal(goal));
+  }
+
+  public Command setGoalCommand(Goal goal) {
+    return runOnce(() -> setGoal(goal));
+  }
+
+  public Command setGoalEndCommand(Goal goal, Goal endGoal) {
+    return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
+  }
+
+  public Command setGoalAndWait(Goal goal) {
+    return run(() -> setGoal(goal)).until(this::atGoal);
+  }
+
+  public Command setGoalAndWait(Goal goal, Time timeout) {
+    return setGoalAndWait(goal).withTimeout(timeout);
   }
 }

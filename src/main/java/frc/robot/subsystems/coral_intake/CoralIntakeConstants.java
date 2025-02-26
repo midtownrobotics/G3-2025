@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
 import frc.lib.LoggedTunableNumber;
@@ -17,8 +18,8 @@ public class CoralIntakeConstants {
     // TODO: Find out max and min angles
     /** *** In radians *** */
     public static final LoggedTunableNumber coralIntakeMaxAngle = new LoggedTunableNumber("CoralIntake/maxAngleRadians",
-            0);
-    public static final Angle coralIntakeMinAngle = Radians.of(0);
+            Units.degreesToRadians(135));
+    public static final Angle coralIntakeMinAngle = Degrees.of(-10);
 
     /** True angle of intake when all the way back */
     public static final Angle g_max = Degrees.of(141);
