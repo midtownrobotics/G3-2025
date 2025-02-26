@@ -165,32 +165,33 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
-  public Trigger prepareScoreCoral() {
-    return operatorController.rightBumper().and(getNotManualMode);
-  }
-
-  @Override
   public Trigger handoffCoral() {
     return new Trigger(() -> true).and(getNotManualMode);
   }
 
+
+  @Override
+  public Trigger prepareScoreCoralL1() {
+    return new Trigger(operatorController.povRight());
+  }
+
+  @Override
+  public Trigger prepareScoreCoralL2() {
+    return new Trigger(operatorController.povDown());
+  }
+  
+  @Override
+  public Trigger prepareScoreCoralL3() {
+    return new Trigger(operatorController.povLeft());
+  }
+  @Override
+  public Trigger prepareScoreCoralL4() {
+    return new Trigger(operatorController.povUp());
+  }
+
   @Override
   public Trigger scoreGamePiece() {
-    return operatorController.rightTrigger().and(getNotManualMode);
-  }
-
-  @Override
-  public Trigger incrementCoralMode() {
-    return     operatorController
-    .povUp()
-    .and(getNotManualMode);
-  }
-
-  @Override
-  public Trigger decrementCoralMode() {
-   return operatorController
-    .povDown()
-    .and(getNotManualMode);
+    return new Trigger(operatorController.rightTrigger());
   }
 
   @Override

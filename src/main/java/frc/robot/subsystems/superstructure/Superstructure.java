@@ -27,6 +27,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
+import lombok.Getter;
 
 public class Superstructure extends SubsystemBase {
 
@@ -42,8 +43,6 @@ public class Superstructure extends SubsystemBase {
   private static final Angle kMaxCoralIntakeAngleElevatorUpThreshold = Degrees.of(5);
 
 
-  @AutoLogOutput
-  private CoralMode coralMode = CoralMode.L4;
 
   /** Construct the robot supersctructure. */
   public Superstructure(CoralIntake coralIntake, Elevator elevator, CoralOuttake coralOuttake) {

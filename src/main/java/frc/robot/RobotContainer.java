@@ -203,11 +203,18 @@ public class RobotContainer {
 
     // controls.gamePieceLock().onTrue(Commands.none());
 
-    // controls.leftPositionLock().whileTrue(AutoBuilder.pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
+    // controls.leftPositionLock().whileTrue(AutoBuilder.7pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
 
     controls.rightPositionLock().whileTrue(coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_INTAKE, CoralIntake.Goal.STOW));
 
     controls.leftPositionLock().whileTrue(elevator.setGoalEndCommand(Elevator.Goal.L4, Elevator.Goal.STOW));
+
+    controls.prepareScoreCoralL1().whileTrue(elevator.setGoalEndCommand(Elevator.Goal.L1, Elevator.Goal.STOW));
+    controls.prepareScoreCoralL2().whileTrue(elevator.setGoalEndCommand(Elevator.Goal.L2, Elevator.Goal.STOW));
+    controls.prepareScoreCoralL3().whileTrue(elevator.setGoalEndCommand(Elevator.Goal.L3, Elevator.Goal.STOW));
+    controls.prepareScoreCoralL4().whileTrue(elevator.setGoalEndCommand(Elevator.Goal.L4, Elevator.Goal.STOW));
+
+    controls.scoreGamePiece().whileTrue(coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.IDLE));
 
     // controls.reefAlgaePositionLock().onTrue(Commands.none());
 

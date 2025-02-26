@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.DistanceUnit;
@@ -186,6 +188,10 @@ public class Elevator extends SubsystemBase {
 
   public Command setGoalCommand(Goal goal) {
     return runOnce(() -> setGoal(goal));
+  }
+
+  public Command setGoalCommand(Supplier<Goal> goalSupplier) {
+    return run(() -> setGoal(goalSupplier.get()));
   }
 
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {

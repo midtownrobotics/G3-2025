@@ -56,18 +56,19 @@ public interface Controls {
 
   /** Prepares to score algae. */
   public Trigger prepareScoreAlgae();
-  /** Prepares to score coral. */
-  public Trigger prepareScoreCoral();
   /** Hands off coral. */
   public Trigger handoffCoral();
   /** Scores a game piece. */
   public Trigger scoreGamePiece();
 
-  /** Increments the coral mode */
-  public Trigger incrementCoralMode();
+  public Trigger prepareScoreCoralL1();
 
-  /** Decrements the coral mode */
-  public Trigger decrementCoralMode();
+  public Trigger prepareScoreCoralL2();
+
+  public Trigger prepareScoreCoralL3();
+
+  public Trigger prepareScoreCoralL4();
+
 
   /** Sets the algae claw to barge mode */
   public Trigger algaeModeBarge();
