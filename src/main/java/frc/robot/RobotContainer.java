@@ -173,7 +173,7 @@ public class RobotContainer {
 
     elevator = new Elevator(winchIO);
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
-    coralOuttake = new CoralOuttake(rollerIO);
+    coralOuttake = new CoralOuttake(rollerIO, handoffSensor);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
     
     superstructure = new Superstructure(coralIntake, elevator, coralOuttake);
@@ -208,9 +208,9 @@ public class RobotContainer {
   private void configureBindings() {
     // Driver
 
-    drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
+    // drive.setDefauCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
 
-    controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
+    // controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
     // controls.driveBrake().onTrue(drive.stopWithXCommand());
 
@@ -234,7 +234,7 @@ public class RobotContainer {
 
     enableDisablePriorityControl(controls.groundIntakeCoral(), Priority.GROUND_INTAKE_CORAL);
     enableDisablePriorityControl(controls.groundVomitCoral(), Priority.GROUND_VOMIT_CORAL);
-    // enableDisablePriorityControl(controls.sourceIntakeCoral(), Priority.STATION_INTAKE_CORAL);
+    enableDisablePriorityControl(controls.sourceIntakeCoral(), Priority.STATION_INTAKE_CORAL);
 
     // enableDisablePriorityControl(controls.groundIntakeAlgae(), Priority.GROUND_INTAKE_ALGAE);
     // enableDisablePriorityControl(controls.groundVomitAlgae(), Priority.GROUND_VOMIT_ALGAE);
@@ -244,9 +244,9 @@ public class RobotContainer {
     enableDisablePriorityControl(controls.prepareScoreCoral(), Priority.PREPARE_SCORE_CORAL);
     // enableDisablePriorityControl(controls.prepareScoreAlgae(), Priority.PREPARE_SCORE_ALGAE);
 
-    // enableDisablePriorityControl(controls.handoffCoral(), Priority.HANDOFF_CORAL);
+    enableDisablePriorityControl(controls.handoffCoral(), Priority.HANDOFF_CORAL);
 
-    // enableDisablePriorityControl(controls.scoreGamePiece(), Priority.SCORE_GAME_PIECE);
+    enableDisablePriorityControl(controls.scoreGamePiece(), Priority.SCORE_GAME_PIECE);
 
     // enableDisablePriorityControl(controls.climb(), Priority.CLIMB);
 

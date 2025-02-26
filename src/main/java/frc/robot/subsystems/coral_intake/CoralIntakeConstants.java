@@ -25,7 +25,7 @@ public class CoralIntakeConstants {
     /** True angle of intake when all the way forward */
     public static final Angle g_min = Degrees.of(-21.783);
     /** Encoder reading when arm is at max. Configurable */
-    public static final Angle e_max = Radians.of(5.970);
+    public static final Angle e_max = Radians.of(6.033);
     /** Encoder reading when arm is at min */
     public static final Angle e_min = UnitUtil.normalize(e_max.plus(g_max.minus(g_min).times(2)));
     /** Breakpoint */
@@ -43,8 +43,8 @@ public class CoralIntakeConstants {
         public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralIntake/i", 0);
         public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralIntake/d", 0.2);
 
-        public static final LoggedTunableNumber maxPivotV = new LoggedTunableNumber("CoralIntake/maxV", 8);
-        public static final LoggedTunableNumber maxPivotA = new LoggedTunableNumber("CoralIntake/maxA", 8);
+        public static final LoggedTunableNumber maxPivotV = new LoggedTunableNumber("CoralIntake/maxV", 16);
+        public static final LoggedTunableNumber maxPivotA = new LoggedTunableNumber("CoralIntake/maxA", 16);
 
     }
 

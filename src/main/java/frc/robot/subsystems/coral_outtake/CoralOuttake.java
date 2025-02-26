@@ -12,17 +12,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
+import frc.robot.sensors.Photoelectric;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.Idle;
 
 public class CoralOuttake extends SubsystemBase {
 
   public enum Goal {
     // TODO: Set correct voltages
     IDLE(0),
-    SHOOT(12),
-    HANDOFF(12),
+    SHOOT(-12),
+    HANDOFF(-12),
+    HANDOFF_PUSH_UP(-3),
     TUNING(),
     MANUAL();
 
@@ -43,14 +47,16 @@ public class CoralOuttake extends SubsystemBase {
   private @Getter Goal currentGoal = Goal.IDLE;
   private RollerIO rollerIO;
   private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
+  private final Photoelectric handoffSensor;
   
 
   /**
    * Initializes Coral Outtake
    * @param rollerIO
    */
-  public CoralOuttake(RollerIO rollerIO) {
+  public CoralOuttake(RollerIO rollerIO, Photoelectric handoffSensor) {
     this.rollerIO = rollerIO;
+    this.handoffSensor = handoffSensor;
 
     currentSpikeTrigger = new Trigger(this::currentSpikeFiltered);
   }
@@ -77,6 +83,21 @@ public class CoralOuttake extends SubsystemBase {
       case TUNING:
       case MANUAL:
         rollerIO.setVoltage(Units.Volts.zero());
+        break;
+      case IDLE:
+      case HANDOFF:
+        if (handoffSensor.isTriggered()) {
+          rollerIO.setVoltage(Volts.of(-8));
+        } else {
+          rollerIO.setVoltage(Volts.zero());
+        }
+        break;
+      case HANDOFF_PUSH_UP:
+        if (handoffSensor.isTriggered()) {
+          rollerIO.setVoltage(Volts.of(-4.2));
+        } else {
+          rollerIO.setVoltage(Volts.zero());
+        }
         break;
       default:
         rollerIO.setVoltage(getCurrentGoal().getVoltage());

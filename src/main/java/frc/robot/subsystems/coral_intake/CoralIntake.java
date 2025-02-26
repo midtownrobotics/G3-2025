@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -45,14 +46,14 @@ public class CoralIntake extends SubsystemBase {
       CoralIntakeConstants.coralIntakeMinAngle, Radians.of(CoralIntakeConstants.coralIntakeMaxAngle.get()));
 
   public enum Goal {
-    STOW(Degrees.of(120), Volts.of(0)),
-    GROUND_INTAKE(Degrees.of(-10), Volts.of(12)),
-    GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-12)),
-    STATION_INTAKE(Degrees.of(0), Volts.of(0)),
+    STOW(Degrees.of(137), Volts.of(0)),
+    GROUND_INTAKE(Degrees.of(-9), Volts.of(12)),
+    GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-7)),
+    STATION_INTAKE(STOW.getAngle(), Volts.of(4)),
     HANDOFF(STOW.getAngle(), Volts.of(0)),
-    HANDOFF_PUSH_CORAL(STOW.getAngle(), Volts.of(7)),
-    HANDOFF_ADJUSTING(HANDOFF.getAngle(), Volts.of(0), Volts.of(7)),
-    CLIMB(Degrees.of(45), Volts.of(0)),
+    HANDOFF_PUSH_CORAL(STOW.getAngle(), Volts.of(-1)),
+    HANDOFF_ADJUSTING(HANDOFF.getAngle(), Volts.of(-1), Volts.of(7)),
+    CLIMB(Degrees.of(65), Volts.of(0)),
     TUNING(Degrees.of(0), Volts.of(0)),
     MANUAL(Degrees.of(0), Volts.of(0));
 
@@ -88,6 +89,7 @@ public class CoralIntake extends SubsystemBase {
   public final Trigger handoffSensorTrigger;
   public final Trigger centerSensorTrigger;
   public final Trigger pieceDetectedTrigger;
+  private final Trigger pieceWillCollideTrigger;
 
   private @Getter Goal currentGoal = Goal.STOW;
 
@@ -127,6 +129,7 @@ public class CoralIntake extends SubsystemBase {
     this.handoffSensorTrigger = new Trigger(handoffSensor::isTriggered);
     this.centerSensorTrigger = new Trigger(centerSensor::isTriggered);
     this.pieceDetectedTrigger = handoffSensorTrigger.or(centerSensorTrigger);
+    this.pieceWillCollideTrigger = handoffSensorTrigger.and(centerSensorTrigger.negate());
 
     SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         pivotIO::setVoltage,
@@ -180,6 +183,16 @@ public class CoralIntake extends SubsystemBase {
     // currentGoal = Goal.CLIMB;
 
     Voltage desiredBeltVoltage = currentGoal.getBeltVoltage();
+    if (desiredBeltVoltage.equals(Volts.zero()) && pieceDetectedTrigger.getAsBoolean()) {
+      if (getPosition().lte(Degrees.of(135))) {
+        if (!centerSensor.isTriggered()) {
+          desiredBeltVoltage = Volts.of(4);
+        } 
+      } else {
+          desiredBeltVoltage = Volts.of(-3);
+      }
+    }
+
     Voltage desiredRollerVoltage = currentGoal.getRollerVoltage();
     Angle desiredAngle = currentGoal.getAngle();
 

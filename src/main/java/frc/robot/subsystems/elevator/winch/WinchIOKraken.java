@@ -72,7 +72,7 @@ public class WinchIOKraken implements WinchIO {
 
     encoder = new DutyCycleEncoder(encoderID);
 
-    Angle absoluteOffset = Radians.of(2.022);
+    Angle absoluteOffset = Radians.of(4.842);
     Angle position = Rotations.of(encoder.get()).minus(absoluteOffset).times(20);
 
     tryUntilOk(5, () -> leftMotor.setPosition(position));
@@ -145,8 +145,8 @@ public class WinchIOKraken implements WinchIO {
    * @param slot PID slot to set to.
    */
   public void setPosition(Distance position, int slot) {
-    MotionMagicVoltage leftRequest = new MotionMagicVoltage(meterToRotation(position)).withSlot(slot);
-    leftMotor.setControl(leftRequest);
+    // MotionMagicVoltage leftRequest = new MotionMagicVoltage(meterToRotation(position)).withSlot(slot);
+    // leftMotor.setControl(leftRequest);
   }
 
   @Override

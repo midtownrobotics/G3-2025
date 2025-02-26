@@ -171,7 +171,8 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger handoffCoral() {
-    return new Trigger(() -> true).and(getNotManualMode);
+    // return new Trigger(() -> true).and(getNotManualMode);
+    return operatorController.povUp().and(getNotManualMode);
   }
 
   @Override

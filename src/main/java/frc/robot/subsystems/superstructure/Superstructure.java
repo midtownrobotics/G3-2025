@@ -173,24 +173,35 @@ public class Superstructure extends SubsystemBase {
             possibleCoralOuttakeGoals = Set.of(CoralOuttake.Goal.SHOOT);
             break;
           case HANDOFF_CORAL:
-            if (isElevatorExtended()) {
-              if (!canMoveCoralIntakeOutside(possibleCoralIntakeGoals)) continue;
-
-              moveCoralIntakeOutside(possibleCoralIntakeGoals);
-
-              possibleElevatorGoals = Set.of(Elevator.Goal.HANDOFF);
+            if (!possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF_PUSH_CORAL)) {
               continue;
             }
 
-            if (!possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF)) continue;
-
-            possibleElevatorGoals = Set.of(Elevator.Goal.HANDOFF);
-
-            if (coralOuttake.currentSpikeTrigger.getAsBoolean()) {
-              possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF_PUSH_CORAL);
-            } else {
-              possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF);
+            if (!possibleCoralOuttakeGoals.contains(CoralOuttake.Goal.HANDOFF_PUSH_UP)) {
+              continue;
             }
+
+            possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF_PUSH_CORAL);
+            possibleCoralOuttakeGoals = Set.of(CoralOuttake.Goal.HANDOFF_PUSH_UP);
+
+            // if (isElevatorExtended()) {
+            //   if (!canMoveCoralIntakeOutside(possibleCoralIntakeGoals)) continue;
+
+            //   moveCoralIntakeOutside(possibleCoralIntakeGoals);
+
+            //   possibleElevatorGoals = Set.of(Elevator.Goal.HANDOFF);
+            //   continue;
+            // }
+
+            // if (!possibleCoralIntakeGoals.contains(CoralIntake.Goal.HANDOFF)) continue;
+
+            // possibleElevatorGoals = Set.of(Elevator.Goal.HANDOFF);
+
+            // if (coralOuttake.currentSpikeTrigger.getAsBoolean()) {
+            //   possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF_PUSH_CORAL);
+            // } else {
+            //   possibleCoralIntakeGoals = Set.of(CoralIntake.Goal.HANDOFF);
+            // }
 
             break;
         }
@@ -249,6 +260,7 @@ public class Superstructure extends SubsystemBase {
     // }
 
     coralIntake.setGoal(possibleCoralIntakeGoals.iterator().next(), coralIntakeConstraint);
+    coralOuttake.setGoal(possibleCoralOuttakeGoals.iterator().next());
     elevator.setGoal(possibleElevatorGoals.iterator().next(), elevatorConstraint);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
