@@ -26,4 +26,9 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
     public M getClampedValue(M value) {
         return clamp(value, lower, upper);
     }
+
+    public void restrictToValue(M value) {
+        lower = value;
+        upper = value;
+    }
 }
