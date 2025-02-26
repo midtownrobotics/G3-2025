@@ -8,6 +8,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
@@ -92,6 +93,10 @@ public class CoralOuttake extends SubsystemBase {
   /** Sets the goal of the coral outtake. */
   public void setGoal(Goal goal) {
     currentGoal = goal;
+  }
+
+  public Command setGoalCommand(Goal goal) {
+    return runOnce(() -> setGoal(goal));
   }
 
   public Voltage getRollerVoltage() {

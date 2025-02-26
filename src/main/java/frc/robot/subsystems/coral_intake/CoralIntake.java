@@ -50,9 +50,9 @@ public class CoralIntake extends SubsystemBase {
     GROUND_INTAKE(Degrees.of(-10), Volts.of(12)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-12)),
     STATION_INTAKE(Degrees.of(0), Volts.of(0)),
-    HANDOFF(STOW.getAngle(), Volts.of(0)),
-    HANDOFF_PUSH_CORAL(STOW.getAngle(), Volts.of(7)),
-    HANDOFF_ADJUSTING(HANDOFF.getAngle(), Volts.of(0), Volts.of(7)),
+    HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(-10)),
+    HANDOFF_PUSH_CORAL(HANDOFF.getAngle(), Volts.of(7), Volts.of(-10)),
+    HANDOFF_ADJUSTING(Degrees.of(90), Volts.zero(), Volts.of(7)),
     CLIMB(Degrees.of(45), Volts.of(0)),
     TUNING(Degrees.of(0), Volts.of(0)),
     MANUAL(Degrees.of(0), Volts.of(0));
@@ -70,6 +70,7 @@ public class CoralIntake extends SubsystemBase {
     private Goal(Angle angle, Voltage rollerVoltage) {
       this.angle = angle;
       this.rollerVoltage = rollerVoltage;
+      this.beltVoltage = Volts.zero();
     }
 
     /**
@@ -287,28 +288,6 @@ public class CoralIntake extends SubsystemBase {
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return routine.dynamic(direction);
   }
-
-  /**
-   * incrementTuningAngle
-   * 
-   * @return
-   */
-  // public Command incrementTuningAngle() {
-  // return new InstantCommand(() ->
-  // tuningDesiredAngle.plus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount),
-  // this);
-  // }
-
-  /**
-   * decrementTuningAngle
-   * 
-   * @return
-   */
-  // public Command decrementTuningAngle() {
-  // return new InstantCommand(() ->
-  // tuningDesiredAngle.minus(CoralIntakeConstants.tuningAngleIncrementDecrementAmmount),
-  // this);
-  // }
 
   private Angle getPosition() {
     return pivotInputs.absolutePosition;

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOBag;
 import frc.lib.RollerIO.RollerIONeo;
@@ -21,6 +22,7 @@ import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.sensors.Photoelectric;
 import frc.robot.subsystems.coral_intake.CoralIntake;
+import frc.robot.subsystems.coral_intake.CoralIntake.Goal;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
 import frc.robot.subsystems.coral_intake.pivot.PivotIOReplay;
@@ -59,6 +61,9 @@ public class RobotContainer {
 
   @Getter private CANBusStatusSignalRegistration elevatorCANBusHandler = new CANBusStatusSignalRegistration();
   @Getter private CANBusStatusSignalRegistration driveCANBusHandler = new CANBusStatusSignalRegistration();
+
+  private Trigger coralIntakeAtStowGoal;
+  private Trigger elevatorAtStowGoal;
 
   /** RobotContainer initialization */
   public RobotContainer() {
@@ -155,8 +160,9 @@ public class RobotContainer {
             brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
             break;
     }
-                // Algae Claw
-                algaeClawRollerIO = new RollerIOSim();
+
+    // Algae Claw
+    algaeClawRollerIO = new RollerIOSim();
 
     elevator = new Elevator(winchIO);
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
@@ -165,13 +171,32 @@ public class RobotContainer {
     
     superstructure = new Superstructure(coralIntake, elevator, coralOuttake);
 
-    controls = new MatchXboxControls(0, 1);
-    configureBindings();
-
-
     new RobotViz(() -> {
       return null;
     }, () -> coralIntake.getPivotPosition(), () -> elevator.getPosition());
+
+    controls = new MatchXboxControls(0, 1);
+    configureBindings();
+
+    coralIntakeAtStowGoal = new Trigger(coralIntake.atGoalTrigger(CoralIntake.Goal.STOW));
+    elevatorAtStowGoal = new Trigger(elevator.atGoalTrigger(Elevator.Goal.STOW));
+
+    coralIntakeAtStowGoal.and(elevatorAtStowGoal).and(coralIntake.pieceDetectedTrigger).onTrue(Commands.sequence(
+      Commands.parallel(
+        elevator.setGoalCommand(Elevator.Goal.HANDOFF),
+        coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
+        coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)
+      ),
+      Commands.waitUntil(coralOuttake.currentSpikeTrigger),
+      coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL),
+      Commands.waitUntil(coralIntake.pieceDetectedTrigger.negate()),
+      Commands.waitSeconds(0.1),
+      Commands.parallel(
+        coralOuttake.setGoalCommand(CoralOuttake.Goal.IDLE),
+        coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
+        elevator.setGoalCommand(Elevator.Goal.STOW)
+      )
+    ));
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
       Commands.print("Raising Elevator..."),
@@ -231,7 +256,19 @@ public class RobotContainer {
 
     // controls.coralBackward().onTrue(Commands.none());
 
-    // controls.coralIntakeRun().onTrue(Commands.none());
+    controls.coralIntakeRun().whileTrue(      
+      coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE)
+    ).onFalse(
+      Commands.either(
+        Commands.sequence(
+          coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_ADJUSTING),
+          Commands.waitUntil(coralIntake.atGoalTrigger.and(coralIntake.handoffSensorTrigger.negate())),
+          coralIntake.setGoalCommand(CoralIntake.Goal.STOW)
+        ),
+        coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
+        coralIntake.centerSensorTrigger.and(coralIntake.handoffSensorTrigger.negate())
+      )
+    );
 
     // controls.coralIntakeReverse().onTrue(Commands.none());
 
