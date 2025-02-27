@@ -22,7 +22,6 @@ import frc.robot.controls.Controls;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.sensors.Photoelectric;
 import frc.robot.subsystems.coral_intake.CoralIntake;
-import frc.robot.subsystems.coral_intake.CoralIntake.Goal;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
 import frc.robot.subsystems.coral_intake.pivot.PivotIOReplay;
@@ -187,9 +186,9 @@ public class RobotContainer {
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
         coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)
       ),
-      Commands.waitUntil(coralOuttake.currentSpikeTrigger),
+      Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(1),
       coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL),
-      Commands.waitUntil(coralIntake.pieceDetectedTrigger.negate()).withTimeout(0.4),
+      Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(0.4),
       Commands.waitSeconds(0.1),
       Commands.parallel(
         coralOuttake.setGoalCommand(CoralOuttake.Goal.IDLE),
@@ -220,7 +219,7 @@ public class RobotContainer {
   private void configureBindings() {
     // Driver
 
-    // drive.setDefauCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
+    drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
 
     // controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 

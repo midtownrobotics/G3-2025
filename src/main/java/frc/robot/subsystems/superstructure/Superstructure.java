@@ -39,7 +39,7 @@ public class Superstructure extends SubsystemBase {
   private final MechanismLigament2d elevatorLigament = mechanism2d.getRoot("Elevator", Units.inchesToMeters(8), Units.inchesToMeters(5)).append(new MechanismLigament2d("Elevator", Units.inchesToMeters(20), 90, 20, new Color8Bit(edu.wpi.first.wpilibj.util.Color.kGreen)));
   private final MechanismLigament2d intakeLigament = mechanism2d.getRoot("Intake", Units.inchesToMeters(30), Units.inchesToMeters(10)).append(new MechanismLigament2d("Intake Pivot", Units.inchesToMeters(22), 135));
 
-  private static final Angle kMaxCoralIntakeAngleElevatorUp = Degrees.of(100);
+  private static final Angle kMaxCoralIntakeAngleElevatorUp = Degrees.of(88);
   private static final Angle kMaxCoralIntakeAngleElevatorUpThreshold = Degrees.of(5);
 
 

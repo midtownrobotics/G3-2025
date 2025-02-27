@@ -25,9 +25,8 @@ public class CoralOuttake extends SubsystemBase {
   public enum Goal {
     // TODO: Set correct voltages
     IDLE(0),
-    SHOOT(-12),
-    HANDOFF(-12),
-    HANDOFF_PUSH_UP(-3),
+    SHOOT(4),
+    HANDOFF(4),
     TUNING(),
     MANUAL();
 
@@ -62,11 +61,10 @@ public class CoralOuttake extends SubsystemBase {
     currentSpikeTrigger = new Trigger(this::currentSpikeFiltered);
   }
 
-  private LinearFilter currentSpikeFilter = LinearFilter.movingAverage(5);
+  private LinearFilter currentSpikeFilter = LinearFilter.movingAverage(3);
 
   private boolean currentSpikeFiltered() {
-    // TODO: FIGURE OUT CURRENT!
-    return currentSpikeFilter.calculate(rollerInputs.supplyCurrent.in(Amps)) > 20;
+    return currentSpikeFilter.calculate(rollerInputs.supplyCurrent.in(Amps)) > 10;
   }
 
   public AngularVelocity getRollerSpeed() {
@@ -93,13 +91,13 @@ public class CoralOuttake extends SubsystemBase {
           rollerIO.setVoltage(Volts.zero());
         }
         break;
-      case HANDOFF_PUSH_UP:
-        if (handoffSensor.isTriggered()) {
-          rollerIO.setVoltage(Volts.of(-4.2));
-        } else {
-          rollerIO.setVoltage(Volts.zero());
-        }
-        break;
+      // case HANDOFF_PUSH_UP:
+      //   if (handoffSensor.isTriggered()) {
+      //     rollerIO.setVoltage(Volts.of(-4.2));
+      //   } else {
+      //     rollerIO.setVoltage(Volts.zero());
+      //   }
+      //   break;
       default:
         rollerIO.setVoltage(getCurrentGoal().getVoltage());
         break;
