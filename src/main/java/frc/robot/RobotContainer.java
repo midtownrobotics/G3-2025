@@ -34,6 +34,7 @@ import frc.robot.subsystems.drivetrain.ModuleIOSim;
 import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.lock.LockIOServo;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.elevator.winch.WinchIOReplay;
@@ -158,7 +159,7 @@ public class RobotContainer {
                 // Algae Claw
                 algaeClawRollerIO = new RollerIOSim();
 
-    elevator = new Elevator(winchIO);
+    elevator = new Elevator(winchIO, new LockIOServo(0));
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     coralOuttake = new CoralOuttake(rollerIO);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
