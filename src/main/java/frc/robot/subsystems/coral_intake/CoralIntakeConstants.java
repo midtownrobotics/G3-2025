@@ -7,7 +7,7 @@ import static edu.wpi.first.units.Units.Radians;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
-import frc.lib.LoggedTunableNumber;
+import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.utils.UnitUtil;
 
 public class CoralIntakeConstants {

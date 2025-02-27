@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inch;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -10,7 +11,6 @@ import static edu.wpi.first.units.Units.Volts;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.DistanceUnit;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import frc.lib.LoggedTunableNumber;
+import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -33,16 +33,14 @@ public class Elevator extends SubsystemBase {
   private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
 
   public enum Goal {
-    STOW(0.05),
-    HANDOFF(0.05),
-    L1(0.2),
-    L2(0.5),
-    L3(0.75),
-    L4(1.3),
-    CLIMB(0.05),
-    STATION(0.05),
-    TUNING(0),
-    MANUAL(0);
+    STOW(Feet.zero()),
+    L1(Feet.of(1.5)),
+    L2(Feet.of((2.5))),
+    L3(Feet.of(3.5)),
+    L4(Feet.of(4.5)),
+    CLIMB(Inches.of(5)),
+    TUNING(Feet.zero()),
+    MANUAL(Feet.zero());
 
     private @Getter Distance height;
 
@@ -52,8 +50,8 @@ public class Elevator extends SubsystemBase {
     }
 
     /** Goal has meter height value associated */
-    private Goal(double height) {
-      this.height = Units.Meters.of(height);
+    private Goal(Distance height) {
+      this.height = height;
     }
   }
 
