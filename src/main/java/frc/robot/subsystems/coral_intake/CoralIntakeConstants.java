@@ -26,7 +26,7 @@ public class CoralIntakeConstants {
     /** True angle of intake when all the way forward */
     public static final Angle g_min = Degrees.of(-21.783);
     /** Encoder reading when arm is at max. Configurable */
-    public static final Angle e_max = Radians.of(5.970);
+    public static final Angle e_max = Radians.of(6.033);
     /** Encoder reading when arm is at min */
     public static final Angle e_min = UnitUtil.normalize(e_max.plus(g_max.minus(g_min).times(2)));
     /** Breakpoint */

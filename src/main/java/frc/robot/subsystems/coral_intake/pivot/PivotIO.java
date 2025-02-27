@@ -19,6 +19,7 @@ public interface PivotIO {
     public Temperature temperature = Units.Fahrenheit.zero();
 
     public Angle absolutePosition = Units.Radians.zero();
+    public Angle encoderPosition = Units.Radians.zero();
   }
 
   /** Sets the motor voltage. */

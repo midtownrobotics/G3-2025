@@ -46,13 +46,13 @@ public class CoralIntake extends SubsystemBase {
       CoralIntakeConstants.coralIntakeMinAngle, Radians.of(CoralIntakeConstants.coralIntakeMaxAngle.get()));
 
   public enum Goal {
-    STOW(Degrees.of(120), Volts.of(0)),
-    GROUND_INTAKE(Degrees.of(-10), Volts.of(12)),
-    GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-12)),
+    STOW(Degrees.of(137), Volts.of(0)),
+    GROUND_INTAKE(Degrees.of(-8), Volts.of(12)),
+    GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
     STATION_INTAKE(Degrees.of(0), Volts.of(0)),
-    HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(-10)),
-    HANDOFF_PUSH_CORAL(HANDOFF.getAngle(), Volts.of(7), Volts.of(-10)),
-    HANDOFF_ADJUSTING(Degrees.of(90), Volts.zero(), Volts.of(7)),
+    HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(5)),
+    HANDOFF_PUSH_CORAL(HANDOFF.getAngle(), Volts.of(1), HANDOFF.getBeltVoltage()),
+    HANDOFF_ADJUSTING(Degrees.of(90), Volts.zero(), Volts.of(5)),
     CLIMB(Degrees.of(45), Volts.of(0)),
     TUNING(Degrees.of(0), Volts.of(0)),
     MANUAL(Degrees.of(0), Volts.of(0));

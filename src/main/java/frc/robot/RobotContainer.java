@@ -183,13 +183,13 @@ public class RobotContainer {
 
     coralIntakeAtStowGoal.and(elevatorAtStowGoal).and(coralIntake.pieceDetectedTrigger).onTrue(Commands.sequence(
       Commands.parallel(
-        elevator.setGoalCommand(Elevator.Goal.HANDOFF),
+        elevator.setGoalCommand(Elevator.Goal.STOW),
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
         coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)
       ),
       Commands.waitUntil(coralOuttake.currentSpikeTrigger),
       coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL),
-      Commands.waitUntil(coralIntake.pieceDetectedTrigger.negate()),
+      Commands.waitUntil(coralIntake.pieceDetectedTrigger.negate()).withTimeout(0.4),
       Commands.waitSeconds(0.1),
       Commands.parallel(
         coralOuttake.setGoalCommand(CoralOuttake.Goal.IDLE),
@@ -230,9 +230,9 @@ public class RobotContainer {
 
     // controls.leftPositionLock().whileTrue(AutoBuilder.pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
 
-    controls.rightPositionLock().whileTrue(coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_INTAKE, CoralIntake.Goal.STOW));
+    // controls.groundIntakeCoral().whileTrue(coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_INTAKE, CoralIntake.Goal.STOW));
 
-    controls.leftPositionLock().whileTrue(elevator.setGoalEndCommand(Elevator.Goal.L4, Elevator.Goal.STOW));
+    controls.prepareScoreCoral().whileTrue(elevator.setGoalEndCommand(Elevator.Goal.L4, Elevator.Goal.STOW));
 
     // controls.reefAlgaePositionLock().onTrue(Commands.none());
 
@@ -256,17 +256,17 @@ public class RobotContainer {
 
     // controls.coralBackward().onTrue(Commands.none());
 
-    controls.coralIntakeRun().whileTrue(      
+    controls.groundIntakeCoral().whileTrue(      
       coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE)
     ).onFalse(
       Commands.either(
         Commands.sequence(
           coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_ADJUSTING),
-          Commands.waitUntil(coralIntake.atGoalTrigger.and(coralIntake.handoffSensorTrigger.negate())),
+          Commands.waitUntil(coralIntake.atGoalTrigger.and(coralIntake.handoffSensorTrigger.negate())).withTimeout(0.5),
           coralIntake.setGoalCommand(CoralIntake.Goal.STOW)
         ),
         coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
-        coralIntake.centerSensorTrigger.and(coralIntake.handoffSensorTrigger.negate())
+        coralIntake.handoffSensorTrigger
       )
     );
 

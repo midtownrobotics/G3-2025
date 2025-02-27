@@ -72,7 +72,7 @@ public class WinchIOKraken implements WinchIO {
 
     encoder = new DutyCycleEncoder(encoderID);
 
-    Angle absoluteOffset = Radians.of(2.022);
+    Angle absoluteOffset = Radians.of(4.818);
     Angle position = Rotations.of(encoder.get()).minus(absoluteOffset).times(20);
 
     tryUntilOk(5, () -> leftMotor.setPosition(position));

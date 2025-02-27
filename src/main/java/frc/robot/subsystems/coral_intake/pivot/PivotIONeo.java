@@ -56,8 +56,15 @@ public class PivotIONeo implements PivotIO {
 
   @Override
   public void updateInputs(PivotInputs inputs) {
+    Angle absolutePosition = Rotations.of(encoder.get());
+
+    if (absolutePosition.lt(CoralIntakeConstants.breakPoint)) {
+      absolutePosition = absolutePosition.plus(Rotations.one());
+    }
+
     inputs.position = Rotations.of(pivotMotor.getEncoder().getPosition());
-    inputs.absolutePosition = Rotations.of(encoder.get());
+    inputs.absolutePosition = absolutePosition.times(-0.5).plus(CoralIntakeConstants.zeroOffset);
+    inputs.encoderPosition = Rotations.of(encoder.get());
     inputs.velocity = Units.RPM.of(pivotMotor.getEncoder().getVelocity());
     inputs.appliedVoltage = Units.Volts.of(pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
     inputs.supplyCurrent = Units.Amps.of(pivotMotor.getOutputCurrent());

@@ -257,7 +257,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger coralIntakeRun() {
-    return operatorController.leftBumper().and(getManualMode);
+    return operatorController.b().and(getManualMode);
   };
 
   @Override
