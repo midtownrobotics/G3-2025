@@ -122,10 +122,11 @@ public class Elevator extends SubsystemBase {
     }
 
     Logger.recordOutput("Elevator/currentState", getCurrentGoal());
-    Logger.recordOutput("Elevator/desiredHeight", currentGoal.getHeight());
-    Logger.recordOutput("Elevator/constrainedMaxHeight", elevatorConstraint.getUpper());
-    Logger.recordOutput("Elevator/constrainedMinHeight", elevatorConstraint.getLower());
-    Logger.recordOutput("Elevator/constrainedHeight", constrainedHeight);
+    Logger.recordOutput("Elevator/desiredHeight", currentGoal.getHeight().in(Inches));
+    Logger.recordOutput("Elevator/constrainedMaxHeight", elevatorConstraint.getUpper().in(Inches));
+    Logger.recordOutput("Elevator/constrainedMinHeight", elevatorConstraint.getLower().in(Inches));
+    Logger.recordOutput("Elevator/constrainedHeight", constrainedHeight.in(Inches));
+    Logger.recordOutput("Elevator/AtGoal", atGoal());
     Logger.recordOutput("Elevator/currentState", getCurrentGoal());
 
     Logger.recordOutput("Elevator/Tuning/DesiredHeightInches", desiredTuningHeight.in(Inches));

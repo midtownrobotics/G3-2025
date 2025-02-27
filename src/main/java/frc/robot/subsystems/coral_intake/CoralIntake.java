@@ -216,11 +216,13 @@ public class CoralIntake extends SubsystemBase {
     }
 
     Logger.recordOutput("CoralIntake/currentState", getCurrentGoal());
-    Logger.recordOutput("CoralIntake/desiredAngle", desiredAngle);
-    Logger.recordOutput("CoralIntake/constraintMax", coralIntakeConstraint.getUpper());
-    Logger.recordOutput("CoralIntake/constraintMin", coralIntakeConstraint.getLower());
-    Logger.recordOutput("CoralIntake/constrainedAngle", constrainedAngle);
-    Logger.recordOutput("CoralIntake/currentPosition", getPivotPosition());
+    Logger.recordOutput("CoralIntake/desiredAngle", desiredAngle.in(Degrees));
+    Logger.recordOutput("CoralIntake/constraintMax", coralIntakeConstraint.getUpper().in(Degrees));
+    Logger.recordOutput("CoralIntake/constraintMin", coralIntakeConstraint.getLower().in(Degrees));
+    Logger.recordOutput("CoralIntake/constrainedAngle", constrainedAngle.in(Degrees));
+    Logger.recordOutput("CoralIntake/currentPosition", getPivotPosition().in(Degrees));
+    Logger.recordOutput("CoralIntake/AtGoal", atGoal());
+
     Logger.recordOutput("CoralIntake/desiredBeltVoltage", desiredBeltVoltage);
     Logger.recordOutput("CoralIntake/desiredRollerVoltage", desiredRollerVoltage);
 
