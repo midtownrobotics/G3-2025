@@ -81,7 +81,6 @@ public class Superstructure extends SubsystemBase {
     intakeLigament.setAngle(new Rotation2d(coralIntakePosition));
     elevatorLigament.setLength(elevatorPosition.in(Meters) + Units.inchesToMeters(20));
 
-
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 }

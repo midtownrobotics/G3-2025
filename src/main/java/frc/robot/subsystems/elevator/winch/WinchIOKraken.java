@@ -145,8 +145,8 @@ public class WinchIOKraken implements WinchIO {
    * @param slot PID slot to set to.
    */
   public void setPosition(Distance position, int slot) {
-    MotionMagicVoltage leftRequest = new MotionMagicVoltage(meterToRotation(position)).withSlot(slot);
-    leftMotor.setControl(leftRequest);
+    // MotionMagicVoltage leftRequest = new MotionMagicVoltage(meterToRotation(position)).withSlot(slot);
+    // leftMotor.setControl(leftRequest);
   }
 
   @Override

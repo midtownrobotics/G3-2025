@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -90,6 +91,7 @@ public class CoralIntake extends SubsystemBase {
   public final Trigger handoffSensorTrigger;
   public final Trigger centerSensorTrigger;
   public final Trigger pieceDetectedTrigger;
+  private final Trigger pieceWillCollideTrigger;
 
   private @Getter Goal currentGoal = Goal.STOW;
 
@@ -131,6 +133,7 @@ public class CoralIntake extends SubsystemBase {
     this.handoffSensorTrigger = new Trigger(handoffSensor::isTriggered);
     this.centerSensorTrigger = new Trigger(centerSensor::isTriggered);
     this.pieceDetectedTrigger = handoffSensorTrigger.or(centerSensorTrigger);
+    this.pieceWillCollideTrigger = handoffSensorTrigger.and(centerSensorTrigger.negate());
 
     SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         pivotIO::setVoltage,
@@ -185,6 +188,16 @@ public class CoralIntake extends SubsystemBase {
     // currentGoal = Goal.CLIMB;
 
     Voltage desiredBeltVoltage = currentGoal.getBeltVoltage();
+    if (desiredBeltVoltage.equals(Volts.zero()) && pieceDetectedTrigger.getAsBoolean()) {
+      if (getPosition().lte(Degrees.of(135))) {
+        if (!centerSensor.isTriggered()) {
+          desiredBeltVoltage = Volts.of(4);
+        } 
+      } else {
+          desiredBeltVoltage = Volts.of(-3);
+      }
+    }
+
     Voltage desiredRollerVoltage = currentGoal.getRollerVoltage();
     Angle desiredAngle = currentGoal.getAngle();
 

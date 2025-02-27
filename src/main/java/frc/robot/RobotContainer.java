@@ -166,7 +166,7 @@ public class RobotContainer {
 
     elevator = new Elevator(winchIO);
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
-    coralOuttake = new CoralOuttake(rollerIO);
+    coralOuttake = new CoralOuttake(rollerIO, handoffSensor);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
     
     superstructure = new Superstructure(coralIntake, elevator, coralOuttake);
@@ -220,9 +220,9 @@ public class RobotContainer {
   private void configureBindings() {
     // Driver
 
-    drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
+    // drive.setDefauCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
 
-    controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
+    // controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
     controls.driveBrake().onTrue(drive.stopWithXCommand());
 
