@@ -15,6 +15,7 @@ public class PivotIOSim implements PivotIO {
   private final SingleJointedArmSim m_sim;
   private final MutVoltage voltage = Volts.mutable(0);
 
+  /** simulates pivot */
   public PivotIOSim() {
     m_sim = new SingleJointedArmSim(DCMotor.getNEO(1), 20, SingleJointedArmSim.estimateMOI(Units.inchesToMeters(10), 0.01), Units.inchesToMeters(10), Units.degreesToRadians(-7), Units.degreesToRadians(135), true, 0, 0.001, 0.001);
   }

@@ -186,22 +186,27 @@ public class Elevator extends SubsystemBase {
     return new Trigger(() -> atGoal(goal));
   }
 
+  /** Gives a command that sets to a given goal */
   public Command setGoalCommand(Goal goal) {
     return runOnce(() -> setGoal(goal));
   }
 
+  /** Gives a command that sets to the supplier value */
   public Command setGoalCommand(Supplier<Goal> goalSupplier) {
     return run(() -> setGoal(goalSupplier.get()));
   }
 
+  /** Gives a command that sets goal to a given value then ends on another given value */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
   }
 
+  /** Sets goal and waits until subsystem reaches goal */
   public Command setGoalAndWait(Goal goal) {
     return run(() -> setGoal(goal)).until(this::atGoal);
   }
 
+  /** Sets goal and waits a set amount of time */
   public Command setGoalAndWait(Goal goal, Time timeout) {
     return setGoalAndWait(goal).withTimeout(timeout);
   }

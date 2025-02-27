@@ -99,10 +99,12 @@ public class CoralOuttake extends SubsystemBase {
     return rollerInputs.appliedVoltage;
   }
 
+  /** Returns the command that sets a goal */
   public Command setGoalCommand(Goal goal) {
     return runOnce(() -> setGoal(goal));
   }
 
+  /** Returns a command that sets a goal and then sets another goal at the end */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
   }

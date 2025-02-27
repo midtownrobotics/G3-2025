@@ -23,10 +23,12 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
         this.upper = upper;
     }
 
+    /** Returns a value within the set bounds */
     public M getClampedValue(M value) {
         return clamp(value, lower, upper);
     }
 
+    /** Puts upper and lower constraints at the given value */
     public void restrictToValue(M value) {
         lower = value;
         upper = value;

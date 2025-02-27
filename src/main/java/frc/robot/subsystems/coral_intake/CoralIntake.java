@@ -358,18 +358,22 @@ public class CoralIntake extends SubsystemBase {
     return new Trigger(() -> atGoal(goal));
   }
 
+  /** Gives a command that sets the goal of the intake to the given goal*/
   public Command setGoalCommand(Goal goal) {
     return runOnce(() -> setGoal(goal));
   }
 
+  /** Sets a goal at the start and a goal at the end of a command */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
   }
 
+  /** Sets the goal and waits until subsystem is at goal */
   public Command setGoalAndWait(Goal goal) {
     return run(() -> setGoal(goal)).until(this::atGoal);
   }
 
+  /** Sets goal and waits a set amount of time */
   public Command setGoalAndWait(Goal goal, Time timeout) {
     return setGoalAndWait(goal).withTimeout(timeout);
   }

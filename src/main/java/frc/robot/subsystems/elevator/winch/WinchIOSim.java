@@ -17,6 +17,7 @@ public class WinchIOSim implements WinchIO {
   private final ElevatorSim m_sim;
   private final ProfiledPIDController m_controller;
 
+  /** Simulates the winch */
   public WinchIOSim() {
     m_controller = new ProfiledPIDController(1.5, 0, 0, new Constraints(Units.feetToMeters(5), Units.feetToMeters(5)));
     m_sim = new ElevatorSim(DCMotor.getKrakenX60(2), 20, 3, 1.075 / 2, 0, Units.feetToMeters(5.5), true, 0, 0.001, 0.001);
