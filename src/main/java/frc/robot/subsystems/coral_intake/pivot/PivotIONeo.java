@@ -25,7 +25,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.lib.LoggedTunableNumber;
+import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
 import frc.robot.utils.Constants;
 import frc.robot.utils.UnitUtil;
