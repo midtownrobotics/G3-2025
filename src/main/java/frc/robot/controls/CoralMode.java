@@ -21,7 +21,7 @@ public enum CoralMode {
   public CoralMode decrement() {
     int nextOrdinal = this.ordinal() - 1;
 
-    if (nextOrdinal >= CoralMode.values().length) {
+    if (nextOrdinal < 0) {
       nextOrdinal = this.ordinal();
     }
 

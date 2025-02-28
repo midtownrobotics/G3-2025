@@ -5,8 +5,8 @@ import static frc.robot.utils.UnitUtil.max;
 import static frc.robot.utils.UnitUtil.min;
 
 import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.utils.UnitUtil;
 import lombok.NonNull;
 
 public class CircularConstraint {
@@ -25,8 +25,8 @@ public class CircularConstraint {
      * Adds a constraint that the final angle must be between two angles
      */
     public CircularConstraint addStayInConstraint(Angle start, Angle end) {
-        start = normalize(start);
-        end = normalize(end);
+        start = UnitUtil.normalize(start);
+        end = UnitUtil.normalize(end);
 
         RealNumberSet<AngleUnit, Angle> intersectedSet = new RealNumberSet<>();
         if (end.gt(start)) {
@@ -45,8 +45,8 @@ public class CircularConstraint {
      * Adds a constraint that the final angle must be outside of two angles
      */
     public CircularConstraint addKeepOutConstraint(Angle start, Angle end) {
-        start = normalize(start);
-        end = normalize(end);
+        start = UnitUtil.normalize(start);
+        end = UnitUtil.normalize(end);
 
         RealNumberSet<AngleUnit, Angle> differenceSet = new RealNumberSet<>();
         if (end.gte(start)) {
@@ -70,20 +70,10 @@ public class CircularConstraint {
     }
 
     /**
-     * Normalizes an angle to be between 0 and 360 degrees
-     */
-    private Angle normalize(Angle angle) {
-        double degrees = angle.in(Units.Degrees);
-        degrees = degrees % 360;
-        if (degrees < 0) degrees += 360;
-        return Units.Degrees.of(degrees);
-    }
-
-    /**
      * Checks if an angle is valid to reach under the current constraints.
      */
     public boolean isValid(Angle angle) {
-        angle = normalize(angle);
+        angle = UnitUtil.normalize(angle);
         Interval<AngleUnit, Angle> interval = unwrapInterval(intervals.getIntervalOfValue(angle));
 
         if (interval == null) return false;
@@ -198,7 +188,7 @@ public class CircularConstraint {
      * @return Best angle to target based on constraints. Null if the current position is impossible.
      */
     public Angle getClosestToDesired(Angle current, Angle desired) {
-        Angle delta = getDeltaToDesired(normalize(current), normalize(desired));
+        Angle delta = getDeltaToDesired(UnitUtil.normalize(current), UnitUtil.normalize(desired));
 
         return current.plus(delta);
     }

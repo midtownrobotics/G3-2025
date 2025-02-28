@@ -16,6 +16,7 @@ package frc.robot.subsystems.drivetrain;
 
 import com.ctre.phoenix6.sim.Pigeon2SimState;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface GyroIO {
@@ -26,6 +27,7 @@ public interface GyroIO {
     public double yawVelocityRadPerSec = 0.0;
     public double[] odometryYawTimestamps = new double[] {};
     public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
+    public Rotation3d rotation3d = new Rotation3d();
   }
 
 

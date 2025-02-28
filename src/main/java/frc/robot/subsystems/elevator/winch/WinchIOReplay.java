@@ -20,11 +20,6 @@ public class WinchIOReplay implements WinchIO {
   }
 
   @Override
-  public Distance getPosition() {
-    throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
-  }
-
-  @Override
   public void setVoltage(Voltage voltage) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");

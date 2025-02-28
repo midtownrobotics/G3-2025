@@ -1,20 +1,23 @@
 package frc.robot.controls;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.DoublePressTracker;
 import frc.lib.IOProtectionXboxController;
 import java.util.function.BooleanSupplier;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class MatchXboxControls implements Controls {
 
   private final IOProtectionXboxController driverController;
   private final IOProtectionXboxController operatorController;
 
-  private boolean manualMode;
+  private LoggedNetworkBoolean manualMode = new LoggedNetworkBoolean("Controls/manualMode", false);
 
-  private BooleanSupplier getManualMode = () -> manualMode;
-  private BooleanSupplier getNotManualMode = () -> !manualMode;
+  private BooleanSupplier getManualMode = () -> manualMode.get();
+  private BooleanSupplier getNotManualMode = () -> !manualMode.get();
 
   /** Initalizes Xbox controls for matches. */
   public MatchXboxControls(int driverPort, int operatorPort) {
@@ -32,26 +35,29 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public double getDriveForward() {
-    return isDriverControlInDeadzone()
-        ? -Math.signum(driverController.getLeftY())
-            * Math.abs(Math.pow(driverController.getLeftY(), 2))
-        : 0;
+    return -MathUtil.applyDeadband(driverController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
+    // return (isDriverControlInDeadzone()
+    //     ? -Math.signum(driverController.getLeftY())
+    //         * Math.abs(Math.pow(driverController.getLeftY(), 2))
+    //     : 0);
   }
 
   @Override
   public double getDriveLeft() {
-    return isDriverControlInDeadzone()
-        ? -Math.signum(driverController.getLeftX())
-            * Math.abs(Math.pow(driverController.getLeftX(), 2))
-        : 0;
+    return -MathUtil.applyDeadband(driverController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
+    // return (isDriverControlInDeadzone()
+    //     ? -Math.signum(driverController.getLeftX())
+    //         * Math.abs(Math.pow(driverController.getLeftX(), 2))
+    //     : 0);
   }
 
   @Override
   public double getDriveRotation() {
-    return isDriverControlInDeadzone()
-        ? -Math.signum(driverController.getRightX())
-            * Math.abs(Math.pow(driverController.getRightX(), 3))
-        : 0;
+    return -MathUtil.applyDeadband(driverController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
+    // return isDriverControlInDeadzone()
+    //     ? -Math.signum(driverController.getRightX())
+    //         * Math.abs(Math.pow(driverController.getRightX(), 3))
+    //     : 0;
   }
 
   @Override
@@ -92,6 +98,7 @@ public class MatchXboxControls implements Controls {
   }
 
   /** Ground coral trigger. */
+  @AutoLogOutput
   private Trigger groundCoral() {
     return operatorController.b().and(getNotManualMode);
   }
@@ -163,26 +170,33 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger handoffCoral() {
-    return new Trigger(() -> true).and(getNotManualMode);
+    // return new Trigger(() -> true).and(getNotManualMode);
+    return operatorController.leftBumper().and(getNotManualMode);
+  }
+
+
+  @Override
+  public Trigger prepareScoreCoralL1() {
+    return new Trigger(operatorController.povRight());
+  }
+
+  @Override
+  public Trigger prepareScoreCoralL2() {
+    return new Trigger(operatorController.povDown());
+  }
+
+  @Override
+  public Trigger prepareScoreCoralL3() {
+    return new Trigger(operatorController.povLeft());
+  }
+  @Override
+  public Trigger prepareScoreCoralL4() {
+    return new Trigger(operatorController.povUp());
   }
 
   @Override
   public Trigger scoreGamePiece() {
-    return operatorController.rightTrigger().and(getNotManualMode);
-  }
-
-  @Override
-  public Trigger incrementCoralMode() {
-    return     operatorController
-    .povUp()
-    .and(getNotManualMode);
-  }
-
-  @Override
-  public Trigger decrementCoralMode() {
-   return operatorController
-    .povDown()
-    .and(getNotManualMode);
+    return new Trigger(operatorController.rightTrigger());
   }
 
   @Override
@@ -249,7 +263,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger coralIntakeRun() {
-    return operatorController.leftBumper().and(getManualMode);
+    return operatorController.b().and(getManualMode);
   };
 
   @Override

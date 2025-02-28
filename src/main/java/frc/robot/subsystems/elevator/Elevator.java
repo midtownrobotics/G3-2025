@@ -1,23 +1,31 @@
 package frc.robot.subsystems.elevator;
 
 
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.DistanceUnit;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.lib.dashboard.LoggedTunableNumber;
+import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
+import frc.robot.utils.UnitUtil;
+import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,20 +34,16 @@ public class Elevator extends SubsystemBase {
   private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
 
   public enum Goal {
-    STOW(0),
-    HANDOFF(0),
-    L1(0),
-    L2(0),
-    L3(0),
-    L4(0),
-    BARGE(0),
-    PROCESSOR(0),
-    CLIMB(0),
-    STATION(0),
-    ALGAE_GROUND(0),
-    ALGAE_STACKED(0),
-    TUNING(0),
-    MANUAL(0);
+    STOW(Feet.zero()),
+    HANDOFF(Inches.of(0.75)),
+    L1(Feet.of(1.5)),
+    L2(Feet.of((1.5)).plus(Inches.of(2))),
+    L3(Feet.of(3.5).minus(Inches.of(4.5))),
+    L4(Feet.of(4.5).plus(Inches.of(5.5))),
+    CLIMB(Feet.of(1.8)),
+    CLIMB_BOTTOM(Feet.zero()),
+    TUNING(Feet.zero()),
+    MANUAL(Feet.zero());
 
     private @Getter Distance height;
 
@@ -49,10 +53,25 @@ public class Elevator extends SubsystemBase {
     }
 
     /** Goal has meter height value associated */
-    private Goal(int height) {
-      this.height = Units.Meters.of(height);
+    private Goal(Distance height) {
+      this.height = height;
+    }
+
+    /**
+     * Converts a CoralMode to an Elevator Goal
+     */
+    public static Goal fromCoralMode(CoralMode mode) {
+      return switch (mode) {
+        case L1 -> L1;
+        case L2 -> L2;
+        case L3 -> L3;
+        case L4 -> L4;
+        default -> STOW;
+      };
     }
   }
+
+  public final Trigger atGoalTrigger = new Trigger(this::atGoal);
 
   private @Getter Goal currentGoal = Goal.STOW;
 
@@ -61,6 +80,8 @@ public class Elevator extends SubsystemBase {
 
   private SysIdRoutine routine;
 
+  private LoggedTunableNumber tuningDesiredHeight = new LoggedTunableNumber("Elevator/Tuning/DesiredHeight", 0.0);
+
   /**
    * Constructs elevator :)
    *
@@ -68,7 +89,6 @@ public class Elevator extends SubsystemBase {
    */
   public Elevator(WinchIO winch) {
     this.winch = winch;
-    winch.updateInputs(winchInputs);
 
       SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         winch::setVoltage,
@@ -76,7 +96,7 @@ public class Elevator extends SubsystemBase {
         this
     );
 
-    routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(3)), sysIdMech);
+    routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(5)), sysIdMech);
   }
 
   private void motorSysIdLog(SysIdRoutineLog log) {
@@ -94,32 +114,57 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
     winch.updateInputs(winchInputs);
+    Logger.processInputs("Elevator", winchInputs);
+
+    Distance constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight());
+
+    Distance desiredTuningHeight = Feet.of(tuningDesiredHeight.get());
+
+    desiredTuningHeight = UnitUtil.clamp(desiredTuningHeight, Feet.of(0), Feet.of(5.3));
 
     switch (getCurrentGoal()) {
+      case CLIMB_BOTTOM:
       case CLIMB:
-        winch.setClimbPosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
+        winch.setClimbPosition(constrainedHeight);
         break;
       case TUNING:
+        winch.setClimbPosition(desiredTuningHeight);
         break;
+      case MANUAL:
       default:
-        winch.setScorePosition(elevatorConstraint.getClosestToDesired(getPosition(), currentGoal.height));
+        winch.setScorePosition(constrainedHeight);
         break;
     }
 
-    Logger.recordOutput("Elevator/currentState", getCurrentGoal());
-    Logger.recordOutput("Elevator/desiredPosition", getCurrentGoal().getHeight());
+    Logger.recordOutput("Elevator/currentGoal", getCurrentGoal());
+    Logger.recordOutput("Elevator/goalHeightInches", currentGoal.getHeight().in(Inches));
+    Logger.recordOutput("Elevator/atGoal", atGoal());
+
+    Logger.recordOutput("Elevator/currentHeightInches", getPosition().in(Inches));
+    Logger.recordOutput("Elevator/currentVelocityInchesPerSecond", getVelocity().in(InchesPerSecond));
+
+    Logger.recordOutput("Elevator/constrainedMaxHeightInches", elevatorConstraint.getUpper().in(Inches));
+    Logger.recordOutput("Elevator/constrainedMinHeightInches", elevatorConstraint.getLower().in(Inches));
+    Logger.recordOutput("Elevator/constrainedGoalHeightInches", constrainedHeight.in(Inches));
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   /** Sets the goal of the elevator. */
-  public void setGoal(Goal goal, LinearConstraint<DistanceUnit, Distance> constraint) {
+  public void setGoal(Goal goal) {
     currentGoal = goal;
-    elevatorConstraint = constraint;
+  }
+
+  public void setConstraints(LinearConstraint<DistanceUnit, Distance> constraints) {
+    elevatorConstraint = constraints;
   }
 
   public Distance getPosition() {
-    return winch.getPosition();
+    return winchInputs.left.position;
+  }
+
+  public LinearVelocity getVelocity() {
+    return winchInputs.left.velocity;
   }
 
   /**
@@ -134,5 +179,54 @@ public class Elevator extends SubsystemBase {
    */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return routine.dynamic(direction);
+  }
+
+  /**
+   * Returns true if the elevator is within a small threshold distance to the goal.
+   */
+  public boolean atGoal() {
+    return atGoal(getCurrentGoal());
+  }
+
+  /**
+   * Returns true if the elevator is within a small threshold distance to the specified goal.
+   */
+  public boolean atGoal(Goal goal) {
+    return getCurrentGoal() == goal && getPosition().isNear(goal.getHeight(), Inches.of(0.5));
+  }
+
+  /**
+   * Returns a trigger for if the elevator is within a small threshold distance to the goal.
+   */
+  public Trigger atGoalTrigger(Goal goal) {
+    return new Trigger(() -> atGoal(goal));
+  }
+
+  /**
+   * Returns a command that sets the goal of the elevator and finishes immediately.
+   */
+  public Command setGoalCommand(Goal goal) {
+    return runOnce(() -> setGoal(goal));
+  }
+
+  /**
+   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
+   */
+  public Command setGoalEndCommand(Goal goal, Goal endGoal) {
+    return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
+  }
+
+  /**
+   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
+   */
+  public Command setGoalEndCommand(Supplier<Goal> goal, Goal endGoal) {
+    return run(() -> setGoal(goal.get())).finallyDo(() -> setGoal(endGoal));
+  }
+
+  /**
+   * Returns a command that sets the goal of the elevator and waits until the elevator is at the goal.
+   */
+  public Command setGoalAndWait(Goal goal) {
+    return run(() -> setGoal(goal)).until(this::atGoal);
   }
 }

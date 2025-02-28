@@ -23,7 +23,7 @@ import java.util.HashSet;
 public class Limelight {
 
   // Keeps track of already used Limelight names to prevent duplication.
-  private static HashSet<String> takenNames;
+  private static HashSet<String> takenNames = new HashSet<>();
 
   // The NetworkTable used to interact with the Limelight system.
   private NetworkTable table;
@@ -257,7 +257,7 @@ public class Limelight {
    * @return The double array value from the network table.
    */
   private double[] getDoubleArray(String key) {
-    return get(key).getDoubleArray((double[]) null);
+    return get(key).getDoubleArray(new double[20]);
   }
 
   /**

@@ -33,7 +33,7 @@ public class CoralCamera extends AprilTagCamera {
     }
 
     @Getter
-    private Pipeline currentPipeline = Pipeline.APRILTAG_MT1;
+    private Pipeline currentPipeline = Pipeline.CORAL;
 
     /**
      * Constructor for CoralCamera
