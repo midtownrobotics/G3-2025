@@ -273,6 +273,6 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger algaeClawReverse() {
-    throw new UnsupportedOperationException("Unimplemented method 'algaeClawReverse'");
+    return new Trigger(() -> false);
   };
 }

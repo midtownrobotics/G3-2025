@@ -187,30 +187,33 @@ public class RobotContainer {
     coralIntakeAtStowGoal = coralIntake.atGoalTrigger(CoralIntake.Goal.STOW, Degrees.of(1.5));
     elevatorAtStowGoal = new Trigger(elevator.atGoalTrigger(Elevator.Goal.STOW));
 
-    coralIntakeAtStowGoal.and(elevatorAtStowGoal).and(controls.handoffCoral()).debounce(0.5).onTrue(Commands.sequence(
-      Commands.parallel(
-        elevator.setGoalCommand(Elevator.Goal.HANDOFF),
-        coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
-            coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)),
-      Commands.waitUntil(coralIntake.handoffSensorTrigger),
-      Commands.waitSeconds(0.05),
-      Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(2),
-      Commands.waitSeconds(0.2),
-      coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP),
-      Commands.waitSeconds(0.2),
-      elevator.setGoalCommand(Elevator.Goal.STOW),
-        Commands.repeatingSequence(
-          Commands.waitSeconds(2),
+    coralIntakeAtStowGoal.and(elevatorAtStowGoal).and(() -> coralMode != CoralMode.L1).and(controls.handoffCoral()).debounce(0.1)
+      .onTrue(Commands.sequence(
+        Commands.parallel(
           elevator.setGoalCommand(Elevator.Goal.HANDOFF),
-          Commands.waitSeconds(0.6),
-            elevator.setGoalCommand(Elevator.Goal.STOW)).until(coralIntake.handoffSensorTrigger.negate())
-            .withTimeout(10),
-      Commands.parallel(
-        coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
-        coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
-            elevator.setGoalCommand(Elevator.Goal.STOW)),
-      Commands.waitSeconds(0.2),
-        coralOuttake.setGoalCommand(Goal.IDLE)));
+          coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
+              coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)),
+        Commands.waitUntil(coralIntake.handoffSensorTrigger),
+        Commands.waitSeconds(0.05),
+        Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(2),
+        Commands.waitSeconds(0.2),
+        coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP),
+        Commands.waitSeconds(0.2),
+        elevator.setGoalCommand(Elevator.Goal.STOW),
+          Commands.repeatingSequence(
+            Commands.waitSeconds(2),
+            elevator.setGoalCommand(Elevator.Goal.HANDOFF),
+            Commands.waitSeconds(0.6),
+              elevator.setGoalCommand(Elevator.Goal.STOW)).until(coralIntake.handoffSensorTrigger.negate())
+              .withTimeout(10),
+        Commands.parallel(
+          coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
+          coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
+              elevator.setGoalCommand(Elevator.Goal.STOW)),
+        Commands.waitSeconds(0.2),
+          coralOuttake.setGoalCommand(Goal.IDLE)
+      )
+    );
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
       Commands.print("Raising Elevator..."),
@@ -253,16 +256,25 @@ public class RobotContainer {
 
     // controls.groundIntakeCoral().whileTrue(coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_INTAKE, CoralIntake.Goal.STOW));
 
-    controls.prepareScoreCoral().whileTrue(elevator.setGoalEndCommand(() -> Elevator.Goal.fromCoralMode(coralMode), Elevator.Goal.STOW));
+    controls.prepareScoreCoral().whileTrue(
+      Commands.either(
+        coralIntake.setGoalEndCommand(CoralIntake.Goal.L1_Prepare, CoralIntake.Goal.STOW),
+        elevator.setGoalEndCommand(() -> Elevator.Goal.fromCoralMode(coralMode), Elevator.Goal.STOW),
+        () -> coralMode == CoralMode.L1)
+    );
 
-    controls.scoreGamePiece().whileTrue(coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.IDLE));
+    controls.scoreGamePiece().whileTrue(
+      Commands.either(
+        coralIntake.setGoalEndCommand(CoralIntake.Goal.L1, CoralIntake.Goal.STOW),
+        coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.IDLE), 
+        () -> coralMode == CoralMode.L1
+      )
+    );
 
     controls.prepareScoreCoralL1().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L1));
     controls.prepareScoreCoralL2().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L2));
     controls.prepareScoreCoralL3().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L3));
     controls.prepareScoreCoralL4().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L4));
-
-    controls.scoreGamePiece().whileTrue(coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.IDLE));
 
     // controls.reefAlgaePositionLock().onTrue(Commands.none());
 
@@ -308,11 +320,16 @@ public class RobotContainer {
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, null)
     );
 
-    controls.climb().whileTrue(
-      elevator.setGoalEndCommand(Elevator.Goal.CLIMB, Elevator.Goal.CLIMB_BOTTOM)
+    controls.sourceVomitCoral().whileTrue(
+      coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_VOMIT, CoralIntake.Goal.STOW)
     );
 
-    // controls.coralIntakeReverse().onTrue(Commands.none());
+    controls.climb().whileTrue(
+      Commands.parallel(
+        elevator.setGoalEndCommand(Elevator.Goal.CLIMB, Elevator.Goal.CLIMB_BOTTOM),
+        coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB)
+      )
+    );
 
     // CommandXboxController testController = new CommandXboxController(5);
 
