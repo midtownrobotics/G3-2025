@@ -2,8 +2,8 @@ package frc.robot.subsystems.elevator;
 
 
 import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.Inch;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -12,7 +12,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -105,9 +105,7 @@ public class Elevator extends SubsystemBase {
     Distance desiredTuningHeight = Feet.of(tuningDesiredHeight.get());
 
     desiredTuningHeight = UnitUtil.clamp(desiredTuningHeight, Feet.of(0), Feet.of(5.3));
-
-    // winch.setClimbPosition(desiredTuningHeight);
-
+    
     switch (getCurrentGoal()) {
       case CLIMB:
         winch.setClimbPosition(constrainedHeight);
@@ -121,16 +119,16 @@ public class Elevator extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput("Elevator/currentState", getCurrentGoal());
-    Logger.recordOutput("Elevator/desiredHeight", currentGoal.getHeight().in(Inches));
-    Logger.recordOutput("Elevator/constrainedMaxHeight", elevatorConstraint.getUpper().in(Inches));
-    Logger.recordOutput("Elevator/constrainedMinHeight", elevatorConstraint.getLower().in(Inches));
-    Logger.recordOutput("Elevator/constrainedHeight", constrainedHeight.in(Inches));
-    Logger.recordOutput("Elevator/AtGoal", atGoal());
-    Logger.recordOutput("Elevator/currentState", getCurrentGoal());
+    Logger.recordOutput("Elevator/currentGoal", getCurrentGoal());
+    Logger.recordOutput("Elevator/goalHeightInches", currentGoal.getHeight().in(Inches));
+    Logger.recordOutput("Elevator/atGoal", atGoal());
 
-    Logger.recordOutput("Elevator/Tuning/DesiredHeightInches", desiredTuningHeight.in(Inches));
-    Logger.recordOutput("Elevator/Tuning/CurrentHeightInches", getPosition().in(Inches));
+    Logger.recordOutput("Elevator/currentHeightInches", getPosition().in(Inches));
+    Logger.recordOutput("Elevator/currentVelocityInchesPerSecond", getVelocity().in(InchesPerSecond));
+
+    Logger.recordOutput("Elevator/constrainedMaxHeightInches", elevatorConstraint.getUpper().in(Inches));
+    Logger.recordOutput("Elevator/constrainedMinHeightInches", elevatorConstraint.getLower().in(Inches));
+    Logger.recordOutput("Elevator/constrainedGoalHeightInches", constrainedHeight.in(Inches));
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
@@ -146,6 +144,10 @@ public class Elevator extends SubsystemBase {
 
   public Distance getPosition() {
     return winchInputs.left.position;
+  }
+
+  public LinearVelocity getVelocity() {
+    return winchInputs.left.velocity;
   }
 
   /**
@@ -183,19 +185,24 @@ public class Elevator extends SubsystemBase {
     return new Trigger(() -> atGoal(goal));
   }
 
+  /**
+   * Returns a command that sets the goal of the elevator and finishes immediately.
+   */
   public Command setGoalCommand(Goal goal) {
     return runOnce(() -> setGoal(goal));
   }
 
+  /**
+   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
+   */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
   }
 
+  /**
+   * Returns a command that sets the goal of the elevator and waits until the elevator is at the goal.
+   */
   public Command setGoalAndWait(Goal goal) {
     return run(() -> setGoal(goal)).until(this::atGoal);
-  }
-
-  public Command setGoalAndWait(Goal goal, Time timeout) {
-    return setGoalAndWait(goal).withTimeout(timeout);
   }
 }

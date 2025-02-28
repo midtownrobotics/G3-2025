@@ -1,6 +1,5 @@
 package frc.robot.sensors;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
@@ -12,7 +11,7 @@ public class Photoelectric extends VirtualSubsystem {
     private final DigitalInput sensor;
     private final int port;
 
-    public class PhotoelectricInputs implements LoggableInputs, Cloneable {
+    public class PhotoelectricInputs implements LoggableInputs {
         public boolean triggered;
 
         @Override
@@ -23,12 +22,6 @@ public class Photoelectric extends VirtualSubsystem {
         @Override
         public void fromLog(LogTable table) {
             triggered = table.get("Triggered", triggered);
-        }
-
-        public PhotoelectricInputs clone() {
-            PhotoelectricInputs copy = new PhotoelectricInputs();
-            copy.triggered = this.triggered;
-            return copy;
         }
     }
 

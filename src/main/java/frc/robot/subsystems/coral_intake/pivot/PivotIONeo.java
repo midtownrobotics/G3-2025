@@ -1,34 +1,23 @@
 package frc.robot.subsystems.coral_intake.pivot;
 
-import static edu.wpi.first.units.Units.Degree;
-import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
-import frc.robot.utils.Constants;
-import frc.robot.utils.UnitUtil;
 
 public class PivotIONeo implements PivotIO {
 
@@ -50,29 +39,52 @@ public class PivotIONeo implements PivotIO {
     pivotConfig.encoder.positionConversionFactor(1.0 / 50);
     pivotConfig.encoder.velocityConversionFactor(1.0 / 50 / 60);
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-  }
 
-  double previousDesiredVoltage = 0;
+    pivotMotor.getEncoder().setPosition(getAbsolutePosition().in(Rotations));
+  }
 
   @Override
   public void updateInputs(PivotInputs inputs) {
-    Angle absolutePosition = Rotations.of(encoder.get());
-
-    if (absolutePosition.lt(CoralIntakeConstants.breakPoint)) {
-      absolutePosition = absolutePosition.plus(Rotations.one());
-    }
-
     inputs.position = Rotations.of(pivotMotor.getEncoder().getPosition());
-    inputs.absolutePosition = absolutePosition.times(-0.5).plus(CoralIntakeConstants.zeroOffset);
-    inputs.encoderPosition = Rotations.of(encoder.get());
+    inputs.absolutePosition =  getAbsolutePosition();
+    inputs.encoderPosition = getAbsoluteEncoderPosition();
     inputs.velocity = Units.RPM.of(pivotMotor.getEncoder().getVelocity());
     inputs.appliedVoltage = Units.Volts.of(pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
     inputs.supplyCurrent = Units.Amps.of(pivotMotor.getOutputCurrent());
     inputs.temperature = Units.Celsius.of(pivotMotor.getMotorTemperature());
+
+    Logger.recordOutput("CoralIntake/ZeroedAbsoluteEncoder", getZeroedAbsoluteEncoderPosition());
+
+
   }
 
   @Override
   public void setVoltage(Voltage voltage) {
     pivotMotor.setVoltage(voltage);
+  }
+
+  /**
+   * Gets the real absolute position of the coral intake pivot arm
+   */
+  private Angle getAbsolutePosition() {
+    return CoralIntakeConstants.coralIntakeMaxAngle.minus(getZeroedAbsoluteEncoderPosition().times(0.5));
+  }
+
+  /**
+   * Gets the zeroed absolute encoder position
+   */
+  private Angle getZeroedAbsoluteEncoderPosition() {
+    double rads = getAbsoluteEncoderPosition().minus(CoralIntakeConstants.absoluteEncoderOffset).in(Radians);
+
+    rads = (rads + 0.5 + 2 * Math.PI) % (2 * Math.PI) - 0.5;
+
+    return Radians.of(rads);
+  }
+
+  /**
+   * Gets the raw absolute encoder position in rotations
+   */
+  private Angle getAbsoluteEncoderPosition() {
+    return Rotations.of(encoder.get());
   }
 }

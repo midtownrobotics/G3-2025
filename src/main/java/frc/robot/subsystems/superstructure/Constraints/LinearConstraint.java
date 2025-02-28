@@ -1,8 +1,6 @@
 package frc.robot.subsystems.superstructure.Constraints;
 
 import static frc.robot.utils.UnitUtil.clamp;
-import static frc.robot.utils.UnitUtil.max;
-import static frc.robot.utils.UnitUtil.min;
 
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
@@ -23,10 +21,16 @@ public class LinearConstraint<U extends Unit, M extends Measure<U>> {
         this.upper = upper;
     }
 
+    /**
+     * Clamps the value to the range of the constraint
+     */
     public M getClampedValue(M value) {
         return clamp(value, lower, upper);
     }
 
+    /**
+     * Sets the lower and upper bounds to the same value
+     */
     public void restrictToValue(M value) {
         lower = value;
         upper = value;

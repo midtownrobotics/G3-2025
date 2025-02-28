@@ -3,13 +3,12 @@ package frc.robot.subsystems.elevator.winch;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -19,13 +18,12 @@ import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -44,7 +42,6 @@ import lombok.Getter;
 public class WinchIOKraken implements WinchIO {
 
   private static final double GEARING = 20;
-  private static final Distance WHEEL_RADIUS = Units.Inches.of(1.074);
 
   @Getter private TalonFX leftMotor;
   @Getter private TalonFX rightMotor;
@@ -72,8 +69,7 @@ public class WinchIOKraken implements WinchIO {
 
     encoder = new DutyCycleEncoder(encoderID);
 
-    Angle absoluteOffset = Radians.of(4.818);
-    Angle position = Rotations.of(encoder.get()).minus(absoluteOffset).times(20);
+    Angle position = getInitialAngle();
 
     tryUntilOk(5, () -> leftMotor.setPosition(position));
     tryUntilOk(5, () -> rightMotor.setPosition(position));
@@ -151,7 +147,7 @@ public class WinchIOKraken implements WinchIO {
 
   @Override
   public void updateInputs(WinchInputs inputs) {
-    inputs.absolutePosition = Rotations.of(encoder.get());
+    inputs.absolutePosition = getAbsoluteEncoderPosition();
     inputs.left.connected = leftMotor.isConnected();
     inputs.left.position = rotationToDistance(leftMotor.getPosition().getValue());
     inputs.left.velocity = rotationToLinearVelocity(leftMotor.getVelocity().getValue());
@@ -167,6 +163,9 @@ public class WinchIOKraken implements WinchIO {
     inputs.right.supplyCurrent = rightSupplyCurrent.getValue();
     inputs.right.torqueCurrent = rightTorqueCurrent.getValue();
     inputs.right.temperature = rightTemperature.getValue();
+
+    Logger.recordOutput("Elevator/ZeroedAbsoluteEncoder", getZeroedAbsoluteEncoderPosition().in(Degrees));
+    Logger.recordOutput("Elevator/InitialAngle", getInitialAngle().in(Degrees));
 
     updateConstants();
   }
@@ -266,4 +265,17 @@ public class WinchIOKraken implements WinchIO {
     // leftMotor.setVoltage(voltage.in(Units.Volts));
   }
 
+  private Angle getInitialAngle() {
+    Angle absoluteEncoderPosition = Radians.of((MathUtil.angleModulus(getZeroedAbsoluteEncoderPosition().in(Radians)) + Math.PI) % (2 * Math.PI) - Math.PI);
+
+    return absoluteEncoderPosition.times(20);
+  }
+
+  private Angle getZeroedAbsoluteEncoderPosition() {
+    return getAbsoluteEncoderPosition().minus(ElevatorConstants.absoluteEncoderOffset);
+  }
+
+  private Angle getAbsoluteEncoderPosition() {
+    return Rotations.of(encoder.get());
+  }
 }

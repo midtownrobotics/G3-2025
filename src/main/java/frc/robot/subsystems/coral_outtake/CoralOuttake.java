@@ -25,8 +25,9 @@ public class CoralOuttake extends SubsystemBase {
   public enum Goal {
     // TODO: Set correct voltages
     IDLE(0),
-    SHOOT(4),
-    HANDOFF(4),
+    CORAL_BACKWARDS(2),
+    SHOOT(-12),
+    HANDOFF(-7),
     TUNING(),
     MANUAL();
 
@@ -84,12 +85,7 @@ public class CoralOuttake extends SubsystemBase {
         rollerIO.setVoltage(Units.Volts.zero());
         break;
       case IDLE:
-      case HANDOFF:
-        if (handoffSensor.isTriggered()) {
-          rollerIO.setVoltage(Volts.of(-8));
-        } else {
           rollerIO.setVoltage(Volts.zero());
-        }
         break;
       // case HANDOFF_PUSH_UP:
       //   if (handoffSensor.isTriggered()) {
@@ -114,11 +110,24 @@ public class CoralOuttake extends SubsystemBase {
     currentGoal = goal;
   }
 
+  /**
+   * Returns a command that sets the goal of the coral outtake.
+   */
   public Command setGoalCommand(Goal goal) {
     return runOnce(() -> setGoal(goal));
   }
 
+  /**
+   * Returns the voltage of the roller motor
+   */
   public Voltage getRollerVoltage() {
     return rollerInputs.appliedVoltage;
+  }
+
+    /**
+   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
+   */
+  public Command setGoalEndCommand(Goal goal, Goal endGoal) {
+    return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
   }
 }
