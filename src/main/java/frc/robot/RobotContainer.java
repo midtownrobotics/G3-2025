@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,9 +21,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.controls.Controls;
 import frc.robot.controls.CoralMode;
 import frc.robot.controls.MatchXboxControls;
-import frc.robot.sensors.CoralCamera;
 import frc.robot.sensors.Photoelectric;
-import frc.robot.sensors.vision.VisionIOLimelight;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
@@ -148,8 +144,8 @@ public class RobotContainer {
             // algaeClawRollerIO = new RollerIOKraken(Ports.AlgaeClaw.algaeClawRoller, elevatorCANBusHandler);
 
             // Elevator
-            winchIO = new WinchIOKraken(Ports.Elevator.LeftWinchMotor, 
-                                        Ports.Elevator.RightWinchMotor, 
+            winchIO = new WinchIOKraken(Ports.Elevator.LeftWinchMotor,
+                                        Ports.Elevator.RightWinchMotor,
                                         Ports.Elevator.WinchEncoder,
                                         driveCANBusHandler);
 
@@ -177,7 +173,7 @@ public class RobotContainer {
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     coralOuttake = new CoralOuttake(rollerIO, handoffSensor);
     drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
-    
+
     superstructure = new Superstructure(coralIntake, elevator, coralOuttake);
 
     new RobotViz(() -> {
@@ -296,7 +292,7 @@ public class RobotContainer {
 
     // controls.coralBackward().onTrue(Commands.none());
 
-    controls.groundIntakeCoral().whileTrue(      
+    controls.groundIntakeCoral().whileTrue(
       coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE)
     ).onFalse(
       Commands.either(
@@ -311,7 +307,7 @@ public class RobotContainer {
     );
 
     controls.groundVomitCoral().whileTrue(
-        coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_VOMIT, CoralIntake.Goal.STOW) 
+        coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_VOMIT, CoralIntake.Goal.STOW)
     );
 
     controls.sourceIntakeCoral().whileTrue(

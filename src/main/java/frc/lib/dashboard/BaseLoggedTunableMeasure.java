@@ -1,9 +1,8 @@
 package frc.lib.dashboard;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Unit;
+import java.util.function.Supplier;
 
 public abstract class BaseLoggedTunableMeasure<U extends Unit, M extends Measure<U>> implements Supplier<M> {
   private LoggedTunableNumber m_value;

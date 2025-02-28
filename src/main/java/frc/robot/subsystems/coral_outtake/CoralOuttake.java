@@ -48,7 +48,7 @@ public class CoralOuttake extends SubsystemBase {
   private RollerIO rollerIO;
   private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
   private final Photoelectric handoffSensor;
-  
+
 
   /**
    * Initializes Coral Outtake

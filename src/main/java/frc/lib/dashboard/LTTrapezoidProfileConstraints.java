@@ -1,13 +1,12 @@
 package frc.lib.dashboard;
 
-import java.util.function.Consumer;
-
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.AccelerationUnit;
 import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.VelocityUnit;
 import edu.wpi.first.units.measure.Acceleration;
 import edu.wpi.first.units.measure.Velocity;
+import java.util.function.Consumer;
 
 public class LTTrapezoidProfileConstraints<U extends Unit, V extends Velocity<U>, A extends Acceleration<U>> {
     private final BaseLoggedTunableMeasure<VelocityUnit<U>, V> maxVelocity;

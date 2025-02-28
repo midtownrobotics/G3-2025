@@ -8,10 +8,6 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -29,7 +25,9 @@ import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import frc.robot.utils.UnitUtil;
+import java.util.function.Supplier;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
@@ -123,13 +121,13 @@ public class Elevator extends SubsystemBase {
     Distance desiredTuningHeight = Feet.of(tuningDesiredHeight.get());
 
     desiredTuningHeight = UnitUtil.clamp(desiredTuningHeight, Feet.of(0), Feet.of(5.3));
-    
+
     switch (getCurrentGoal()) {
       case CLIMB_BOTTOM:
       case CLIMB:
         winch.setClimbPosition(constrainedHeight);
         break;
-      case TUNING:      
+      case TUNING:
         winch.setClimbPosition(desiredTuningHeight);
         break;
       case MANUAL:
@@ -196,7 +194,7 @@ public class Elevator extends SubsystemBase {
   public boolean atGoal(Goal goal) {
     return getCurrentGoal() == goal && getPosition().isNear(goal.getHeight(), Inches.of(0.5));
   }
-  
+
   /**
    * Returns a trigger for if the elevator is within a small threshold distance to the goal.
    */

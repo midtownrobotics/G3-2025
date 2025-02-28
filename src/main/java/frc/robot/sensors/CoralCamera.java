@@ -10,7 +10,6 @@ import frc.robot.sensors.vision.VisionIO.TargetObservation;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 public class CoralCamera extends AprilTagCamera {
     private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();

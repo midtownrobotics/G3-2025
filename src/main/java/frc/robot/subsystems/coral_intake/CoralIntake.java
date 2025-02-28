@@ -7,8 +7,6 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -35,6 +33,7 @@ import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
 
@@ -60,7 +59,7 @@ public class CoralIntake extends SubsystemBase {
 
     /**
      * Goal has angle and rollerVoltage associated.
-     * 
+     *
      * @param angle
      * @param rollerVoltage
      */
@@ -72,7 +71,7 @@ public class CoralIntake extends SubsystemBase {
 
     /**
      * Goal has angle, rollerVoltage, and beltVoltage associated.
-     * 
+     *
      * @param angle
      * @param rollerVoltage
      * @param beltVoltage
@@ -112,7 +111,7 @@ public class CoralIntake extends SubsystemBase {
 
   /**
    * Initializes Coral Intake with IO classes
-   * 
+   *
    * @param beltIO
    * @param pivotIO
    * @param rollerIO
@@ -190,7 +189,7 @@ public class CoralIntake extends SubsystemBase {
     //   if (getPosition().lte(Degrees.of(135))) {
     //     if (!centerSensor.isTriggered()) {
     //       desiredBeltVoltage = Volts.of(4);
-    //     } 
+    //     }
     //   } else {
     //       desiredBeltVoltage = Volts.of(-3);
     //   }
@@ -221,7 +220,7 @@ public class CoralIntake extends SubsystemBase {
     Logger.recordOutput("CoralIntake/currentGoal", getCurrentGoal());
     Logger.recordOutput("CoralIntake/goalAngleDegrees", desiredAngle.in(Degrees));
     Logger.recordOutput("CoralIntake/atGoal", atGoal());
-    
+
     Logger.recordOutput("CoralIntake/currentAngleDegrees", getPosition().in(Degrees));
     Logger.recordOutput("CoralIntake/velocityDegreesPerSecond", getVelocity().in(DegreesPerSecond));
 
@@ -247,7 +246,7 @@ public class CoralIntake extends SubsystemBase {
 
   /**
    * Uses photoelectric sensors to detect coral.
-   * 
+   *
    * @return {@code boolean} Wheter coral is detected.
    */
   public boolean isCoralDetected() {
@@ -263,7 +262,7 @@ public class CoralIntake extends SubsystemBase {
   /**
    * Uses photoelectric sensors to detect if coral needs to be adjusted to be
    * centered.
-   * 
+   *
    * @return {@code boolean} Whether coral needs adjusting.
    */
   public boolean doesCoralNeedAdjusting() {
@@ -273,7 +272,7 @@ public class CoralIntake extends SubsystemBase {
   /**
    * Uses photoelectric sensors to detect if coral will block the intake from
    * moving into handoff mode.
-   * 
+   *
    * @return {@code boolean} Wheter coral is triggering handoff sensor but not
    *         center sensor.
    */

@@ -3,8 +3,6 @@ package frc.robot.subsystems.superstructure;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;

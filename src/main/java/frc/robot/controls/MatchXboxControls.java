@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.DoublePressTracker;
 import frc.lib.IOProtectionXboxController;
 import java.util.function.BooleanSupplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
@@ -185,7 +184,7 @@ public class MatchXboxControls implements Controls {
   public Trigger prepareScoreCoralL2() {
     return new Trigger(operatorController.povDown());
   }
-  
+
   @Override
   public Trigger prepareScoreCoralL3() {
     return new Trigger(operatorController.povLeft());

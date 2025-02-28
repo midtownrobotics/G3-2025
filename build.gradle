@@ -136,46 +136,46 @@ gversion {
 }
 
 // // Spotless formatting
-// project.compileJava.dependsOn(spotlessApply)
-// spotless {
-//     java {
-//         target fileTree(".") {
-//             include "**/*.java"
-//             exclude "**/build/**", "**/build-*/**"
-//         }
-//         toggleOffOn()
-//         removeUnusedImports()
-//         trimTrailingWhitespace()
-//         endWithNewline()
-//         importOrder()
-//     }
-//     groovyGradle {
-//         target fileTree(".") {
-//             include "**/*.gradle"
-//             exclude "**/build/**", "**/build-*/**"
-//         }
-//         greclipse()
-//         indentWithSpaces(4)
-//         trimTrailingWhitespace()
-//         endWithNewline()
-//     }
-//     json {
-//         target fileTree(".") {
-//             include "**/*.json"
-//             exclude "**/build/**", "**/build-*/**", "/.vscode/**"
-//         }
-//         gson().indentWithSpaces(4)
-//     }
-//     format "misc", {
-//         target fileTree(".") {
-//             include "**/*.md", "**/.gitignore"
-//             exclude "**/build/**", "**/build-*/**"
-//         }
-//         trimTrailingWhitespace()
-//         indentWithSpaces(4)
-//         endWithNewline()
-//     }
-// }
+project.compileJava.dependsOn(spotlessApply)
+spotless {
+    java {
+        target fileTree(".") {
+            include "**/*.java"
+            exclude "**/build/**", "**/build-*/**"
+        }
+        toggleOffOn()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+        importOrder()
+    }
+    groovyGradle {
+        target fileTree(".") {
+            include "**/*.gradle"
+            exclude "**/build/**", "**/build-*/**"
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    json {
+        target fileTree(".") {
+            include "**/*.json"
+            exclude "**/build/**", "**/build-*/**", "/.vscode/**"
+        }
+        gson().indentWithSpaces(4)
+    }
+    format "misc", {
+        target fileTree(".") {
+            include "**/*.md", "**/.gitignore"
+            exclude "**/build/**", "**/build-*/**"
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(4)
+        endWithNewline()
+    }
+}
 
 // Define checkstyle scope
 tasks.checkstyleMain {

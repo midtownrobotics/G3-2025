@@ -1,11 +1,10 @@
 package frc.robot.sensors;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import frc.lib.VirtualSubsystem;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
-
-import edu.wpi.first.wpilibj.DigitalInput;
-import frc.lib.VirtualSubsystem;
 
 public class Photoelectric extends VirtualSubsystem {
     private final DigitalInput sensor;
@@ -46,5 +45,5 @@ public class Photoelectric extends VirtualSubsystem {
         return inputs.triggered;
     }
 
-    
+
 }

@@ -42,7 +42,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import java.util.Queue;
-
 import org.littletonrobotics.junction.Logger;
 
 /**

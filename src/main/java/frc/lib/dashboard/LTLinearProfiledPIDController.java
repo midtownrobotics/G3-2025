@@ -52,7 +52,7 @@ public class LTLinearProfiledPIDController {
         (pid) -> {
           m_controller.setPID(pid.kP, pid.kI, pid.kD);
         });
-        
+
     LoggedTunableNumber.ifChanged(
         hashCode(),
         () -> {

@@ -1,8 +1,7 @@
 package frc.lib.dashboard;
 
-import java.util.function.Consumer;
-
 import com.pathplanner.lib.config.PIDConstants;
+import java.util.function.Consumer;
 
 public class LoggedTunablePID {
       /** p */
