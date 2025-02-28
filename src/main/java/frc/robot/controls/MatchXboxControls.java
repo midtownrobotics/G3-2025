@@ -275,5 +275,25 @@ public class MatchXboxControls implements Controls {
   @Override
   public Trigger algaeClawReverse() {
     throw new UnsupportedOperationException("Unimplemented method 'algaeClawReverse'");
-  };
+  }
+
+  @Override
+  public Trigger alignToReef() {
+    return alignToReefLeftBranch().or(alignToReefRightBranch()).and(driverController.povCenter().negate());
+  }
+
+  @Override
+  public Trigger alignToReefLeftBranch() {
+      return driverController.leftBumper();
+  }
+
+  @Override
+  public Trigger alignToReefRightBranch() {
+      return driverController.rightBumper();
+  }
+
+  @Override
+  public int getDriverPOV() {
+    return driverController.getHID().getPOV();
+  }
 }

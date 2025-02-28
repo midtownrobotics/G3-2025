@@ -48,6 +48,7 @@ import frc.robot.subsystems.elevator.winch.WinchIOSim;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
+import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
 import lombok.Getter;
 
@@ -305,6 +306,10 @@ public class RobotContainer {
 
     controls.groundVomitCoral().whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_VOMIT, CoralIntake.Goal.STOW) 
+    );
+
+    controls.alignToReef().whileTrue(DriveCommands.pathfindToReef(drive,
+      () -> ReefFace.fromPOV(controls.getDriverPOV()), controls.alignToReefLeftBranch())
     );
 
     controls.sourceIntakeCoral().whileTrue(
