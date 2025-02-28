@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -21,7 +23,9 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.controls.Controls;
 import frc.robot.controls.CoralMode;
 import frc.robot.controls.MatchXboxControls;
+import frc.robot.sensors.CoralCamera;
 import frc.robot.sensors.Photoelectric;
+import frc.robot.sensors.vision.VisionIOLimelight;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
@@ -59,6 +63,8 @@ public class RobotContainer {
   @Getter private final CoralOuttake coralOuttake;
   @Getter private final Elevator elevator;
   @Getter private final Drive drive;
+
+  // @Getter private final CoralCamera coralCamera;
 
   @Getter private CANBusStatusSignalRegistration elevatorCANBusHandler = new CANBusStatusSignalRegistration();
   @Getter private CANBusStatusSignalRegistration driveCANBusHandler = new CANBusStatusSignalRegistration();
@@ -190,10 +196,10 @@ public class RobotContainer {
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
         coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)
       ),
-      Commands.waitSeconds(0.2),
+      Commands.waitSeconds(0.1),
       Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(2),
       coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP),
-      Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(2),
+      Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(4),
       Commands.parallel(
         coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
         coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
@@ -219,6 +225,8 @@ public class RobotContainer {
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
+
+    // coralCamera = new CoralCamera(new VisionIOLimelight("limelight", drive::getPose));
   }
 
   /** Configures bindings to oi */
@@ -227,11 +235,16 @@ public class RobotContainer {
 
     drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
 
-    // controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
+    controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
     controls.driveBrake().onTrue(drive.stopWithXCommand());
 
-    // controls.gamePieceLock().onTrue(Commands.none());
+    // controls.gamePieceLock().onTrue(DriveCommands.joystickDriveAtAngle(drive, controls::getDriveForward, controls::getDriveLeft, () -> {
+    //   Logger.recordOutput("AutoIntakeDebug/coralOffset", coralCamera.getCoralOffset().tx());
+    //   Logger.recordOutput("AutoIntakeDebug/driveRot", drive.getRotation());
+    //   Logger.recordOutput("AutoIntakeDebug/desiredRot", coralCamera.getCoralOffset().tx().plus(drive.getRotation()));
+    //   return coralCamera.getCoralOffset().tx().plus(drive.getRotation());
+    // }));
 
     // controls.leftPositionLock().whileTrue(AutoBuilder.7pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
 
@@ -290,6 +303,10 @@ public class RobotContainer {
 
     controls.sourceIntakeCoral().whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, null)
+    );
+
+    controls.climb().whileTrue(
+      elevator.setGoalEndCommand(Elevator.Goal.CLIMB, Elevator.Goal.CLIMB_BOTTOM)
     );
 
     // controls.coralIntakeReverse().onTrue(Commands.none());

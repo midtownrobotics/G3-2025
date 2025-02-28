@@ -50,6 +50,7 @@ public class CoralIntake extends SubsystemBase {
     HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1), HANDOFF.getBeltVoltage()),
     PRE_HANDOFF_ADJUST_CORAL(Degrees.of(90), Volts.of(12), Volts.of(5)),
     CLIMB(Degrees.of(45), Volts.of(0)),
+    L1(Degrees.of(80), Volts.of(-4)),
     TUNING(Degrees.of(0), Volts.of(0)),
     MANUAL(Degrees.of(0), Volts.of(0));
 
@@ -205,6 +206,11 @@ public class CoralIntake extends SubsystemBase {
     }
 
     switch (getCurrentGoal()) {
+      case L1:
+        pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
+        if (atGoal()) {
+          rollerIO.setVoltage(desiredRollerVoltage);
+        }
       default:
         pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
         beltIO.setVoltage(desiredBeltVoltage);
@@ -326,7 +332,7 @@ public class CoralIntake extends SubsystemBase {
    * specified goal.
    */
   public boolean atGoal(Goal goal) {
-    return getCurrentGoal() == goal && getPosition().isNear(goal.getAngle(), Degrees.of(0.8));
+    return getCurrentGoal() == goal && getPosition().isNear(goal.getAngle(), Degrees.of(1.2));
   }
 
   /**

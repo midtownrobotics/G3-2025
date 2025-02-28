@@ -10,6 +10,7 @@ import frc.robot.sensors.vision.VisionIO.TargetObservation;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 public class CoralCamera extends AprilTagCamera {
     private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
@@ -33,7 +34,7 @@ public class CoralCamera extends AprilTagCamera {
     }
 
     @Getter
-    private Pipeline currentPipeline = Pipeline.APRILTAG_MT1;
+    private Pipeline currentPipeline = Pipeline.CORAL;
 
     /**
      * Constructor for CoralCamera
