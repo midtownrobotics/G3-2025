@@ -347,10 +347,16 @@ public class CoralIntake extends SubsystemBase {
     return getVelocity().lte(DegreesPerSecond.of(0.04));
   }
 
+  /**
+   * Trigger for when subsystem is at goal and stationary
+   */
   public Trigger atGoalAndStationaryTrigger(Goal goal) {
     return new Trigger(() -> atGoal(goal) && isStationary());
   }
 
+  /**
+   * Trigger for when the intake is at stow and stationary
+   */
   public Trigger atStowAndStationaryTrigger() {
     return new Trigger(() -> getCurrentGoal() == Goal.STOW && getPosition().gt(Degrees.of(135.5)) && isStationary());
   }
