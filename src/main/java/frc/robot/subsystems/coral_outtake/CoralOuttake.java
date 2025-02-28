@@ -23,9 +23,10 @@ public class CoralOuttake extends SubsystemBase {
   public enum Goal {
     // TODO: Set correct voltages
     IDLE(0),
-    CORAL_BACKWARDS(2),
+    CORAL_BACKWARDS(3),
+    CORAL_TINY_ADJUST(-1),
     SHOOT(-12),
-    HANDOFF(-7),
+    HANDOFF(-4.5),
     TUNING(),
     MANUAL();
 

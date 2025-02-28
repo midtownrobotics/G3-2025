@@ -42,12 +42,12 @@ public class CoralIntake extends SubsystemBase {
       CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
   public enum Goal {
-    STOW(Degrees.of(135), Volts.of(0)),
+    STOW(Degrees.of(136.5), Volts.of(0)),
     GROUND_INTAKE(Degrees.of(-8), Volts.of(12)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
     STATION_INTAKE(STOW.getAngle(), Volts.of(5)),
-    HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(-5)),
-    HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1), HANDOFF.getBeltVoltage()),
+    HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(-3)),
+    HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.5), HANDOFF.getBeltVoltage()),
     PRE_HANDOFF_ADJUST_CORAL(Degrees.of(90), Volts.of(12), Volts.of(5)),
     CLIMB(Degrees.of(45), Volts.of(0)),
     L1(Degrees.of(80), Volts.of(-4)),
@@ -341,6 +341,18 @@ public class CoralIntake extends SubsystemBase {
    */
   public Trigger atGoalTrigger(Goal goal) {
     return new Trigger(() -> atGoal(goal));
+  }
+
+  public boolean isStationary() {
+    return getVelocity().lte(DegreesPerSecond.of(0.04));
+  }
+
+  public Trigger atGoalAndStationaryTrigger(Goal goal) {
+    return new Trigger(() -> atGoal(goal) && isStationary());
+  }
+
+  public Trigger atStowAndStationaryTrigger() {
+    return new Trigger(() -> getCurrentGoal() == Goal.STOW && getPosition().gt(Degrees.of(135.5)) && isStationary());
   }
 
   /**

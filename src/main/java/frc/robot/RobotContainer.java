@@ -187,19 +187,32 @@ public class RobotContainer {
     controls = new MatchXboxControls(0, 1);
     configureBindings();
 
-    coralIntakeAtStowGoal = new Trigger(coralIntake.atGoalTrigger(CoralIntake.Goal.STOW));
+    coralIntakeAtStowGoal = new Trigger(coralIntake.atStowAndStationaryTrigger());
     elevatorAtStowGoal = new Trigger(elevator.atGoalTrigger(Elevator.Goal.STOW));
 
     coralIntakeAtStowGoal.and(elevatorAtStowGoal).and(controls.handoffCoral()).debounce(0.5).onTrue(Commands.sequence(
       Commands.parallel(
-        elevator.setGoalCommand(Elevator.Goal.STOW),
+        elevator.setGoalCommand(Elevator.Goal.HANDOFF),
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
         coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)
       ),
-      Commands.waitSeconds(0.1),
+      Commands.waitUntil(coralIntake.handoffSensorTrigger),
+      Commands.waitSeconds(0.05),
       Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(2),
+      Commands.waitSeconds(0.2),
       coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP),
-      Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(4),
+      Commands.waitSeconds(0.2),
+      elevator.setGoalCommand(Elevator.Goal.STOW),
+      Commands.race(
+        Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()),
+        Commands.sequence(
+          Commands.waitSeconds(2),
+          elevator.setGoalCommand(Elevator.Goal.HANDOFF),
+          Commands.waitSeconds(0.6),
+          elevator.setGoalCommand(Elevator.Goal.STOW)
+        ).repeatedly()
+      ).withTimeout(10),
+      Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(10),
       Commands.parallel(
         coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
         coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
