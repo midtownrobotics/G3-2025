@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.Degrees;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -187,15 +187,14 @@ public class RobotContainer {
     controls = new MatchXboxControls(0, 1);
     configureBindings();
 
-    coralIntakeAtStowGoal = new Trigger(coralIntake.atStowAndStationaryTrigger());
+    coralIntakeAtStowGoal = coralIntake.atGoalTrigger(CoralIntake.Goal.STOW, Degrees.of(1.5));
     elevatorAtStowGoal = new Trigger(elevator.atGoalTrigger(Elevator.Goal.STOW));
 
     coralIntakeAtStowGoal.and(elevatorAtStowGoal).and(controls.handoffCoral()).debounce(0.5).onTrue(Commands.sequence(
       Commands.parallel(
         elevator.setGoalCommand(Elevator.Goal.HANDOFF),
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
-        coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)
-      ),
+            coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)),
       Commands.waitUntil(coralIntake.handoffSensorTrigger),
       Commands.waitSeconds(0.05),
       Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(2),
@@ -203,24 +202,18 @@ public class RobotContainer {
       coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP),
       Commands.waitSeconds(0.2),
       elevator.setGoalCommand(Elevator.Goal.STOW),
-      Commands.race(
-        Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()),
-        Commands.sequence(
+        Commands.repeatingSequence(
           Commands.waitSeconds(2),
           elevator.setGoalCommand(Elevator.Goal.HANDOFF),
           Commands.waitSeconds(0.6),
-          elevator.setGoalCommand(Elevator.Goal.STOW)
-        ).repeatedly()
-      ).withTimeout(10),
-      Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(10),
+            elevator.setGoalCommand(Elevator.Goal.STOW)).until(coralIntake.handoffSensorTrigger.negate())
+            .withTimeout(10),
       Commands.parallel(
         coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
         coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
-        elevator.setGoalCommand(Elevator.Goal.STOW)
-      ),
+            elevator.setGoalCommand(Elevator.Goal.STOW)),
       Commands.waitSeconds(0.2),
-      coralOuttake.setGoalCommand(Goal.IDLE)
-    ));
+        coralOuttake.setGoalCommand(Goal.IDLE)));
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
       Commands.print("Raising Elevator..."),

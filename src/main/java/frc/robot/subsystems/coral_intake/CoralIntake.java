@@ -332,7 +332,15 @@ public class CoralIntake extends SubsystemBase {
    * specified goal.
    */
   public boolean atGoal(Goal goal) {
-    return getCurrentGoal() == goal && getPosition().isNear(goal.getAngle(), Degrees.of(1.2));
+    return atGoal(goal, Degrees.of(1.0));
+  }
+
+  /**
+   * Returns true if the intake is within a small threshold distance to the
+   * specified goal.
+   */
+  public boolean atGoal(Goal goal, Angle angleTolerance) {
+    return getCurrentGoal() == goal && getPosition().isNear(goal.getAngle(), angleTolerance);
   }
 
   /**
@@ -343,16 +351,12 @@ public class CoralIntake extends SubsystemBase {
     return new Trigger(() -> atGoal(goal));
   }
 
-  public boolean isStationary() {
-    return getVelocity().lte(DegreesPerSecond.of(0.04));
-  }
-
-  public Trigger atGoalAndStationaryTrigger(Goal goal) {
-    return new Trigger(() -> atGoal(goal) && isStationary());
-  }
-
-  public Trigger atStowAndStationaryTrigger() {
-    return new Trigger(() -> getCurrentGoal() == Goal.STOW && getPosition().gt(Degrees.of(135.5)) && isStationary());
+  /**
+   * Returns a trigger for if the intake is within a small threshold distance to
+   * the goal.
+   */
+  public Trigger atGoalTrigger(Goal goal, Angle angleTolerance) {
+    return new Trigger(() -> atGoal(goal, angleTolerance));
   }
 
   /**
