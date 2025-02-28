@@ -27,7 +27,7 @@ public class LTAngularProfiledPIDController {
 
   /** Empty contstructor makes all 0 */
   public LTAngularProfiledPIDController(String path) {
-    this(path, 0, 0, 0, RadiansPerSecond.zero().mutableCopy(), RadiansPerSecondPerSecond.zero().mutableCopy());
+    this(path, 0, 0, 0, RadiansPerSecond.zero(), RadiansPerSecondPerSecond.zero());
   }
 
   /** Pid controller has loggedtunablenumbers */
