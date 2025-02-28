@@ -249,11 +249,12 @@ public class WinchIOKraken implements WinchIO {
             .withGravityType(GravityTypeValue.Elevator_Static);
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
-            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
+            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT)
+            .withSupplyCurrentLimitEnable(true);
     krakenConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     krakenConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    krakenConfig.MotionMagic.withMotionMagicCruiseVelocity(meterToRotation(Feet.of(5)).per(Second));
-    krakenConfig.MotionMagic.withMotionMagicAcceleration(meterToRotation(Feet.of(5)).per(Second).per(Second));
+    krakenConfig.MotionMagic.withMotionMagicCruiseVelocity(meterToRotation(Feet.of(10)).per(Second));
+    krakenConfig.MotionMagic.withMotionMagicAcceleration(meterToRotation(Feet.of(10)).per(Second).per(Second));
 
     tryUntilOk(5, () -> leftMotor.getConfigurator().apply(krakenConfig));
     tryUntilOk(5, () -> rightMotor.getConfigurator().apply(krakenConfig));

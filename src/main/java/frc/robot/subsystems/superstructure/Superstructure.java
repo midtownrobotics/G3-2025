@@ -11,7 +11,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
 import frc.robot.subsystems.coral_outtake.CoralOuttake;
@@ -30,8 +29,6 @@ public class Superstructure extends SubsystemBase {
   private static final Angle kMaxCoralIntakeAngleElevatorUpThreshold = Degrees.of(5);
 
 
-  @AutoLogOutput
-  private CoralMode coralMode = CoralMode.L4;
 
   /** Construct the robot supersctructure. */
   public Superstructure(CoralIntake coralIntake, Elevator elevator, CoralOuttake coralOuttake) {

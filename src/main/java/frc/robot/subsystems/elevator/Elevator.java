@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.DistanceUnit;
@@ -21,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.dashboard.LoggedTunableNumber;
+import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -35,9 +38,9 @@ public class Elevator extends SubsystemBase {
   public enum Goal {
     STOW(Feet.zero()),
     L1(Feet.of(1.5)),
-    L2(Feet.of((2.5))),
-    L3(Feet.of(3.5)),
-    L4(Feet.of(4.5)),
+    L2(Feet.of((1.5)).plus(Inches.of(2))),
+    L3(Feet.of(3.5).minus(Inches.of(4.5))),
+    L4(Feet.of(4.5).plus(Inches.of(7))),
     CLIMB(Inches.of(5)),
     TUNING(Feet.zero()),
     MANUAL(Feet.zero());
@@ -52,6 +55,19 @@ public class Elevator extends SubsystemBase {
     /** Goal has meter height value associated */
     private Goal(Distance height) {
       this.height = height;
+    }
+
+    /**
+     * Converts a CoralMode to an Elevator Goal
+     */
+    public static Goal fromCoralMode(CoralMode mode) {
+      return switch (mode) {
+        case L1 -> L1;
+        case L2 -> L2;
+        case L3 -> L3;
+        case L4 -> L4;
+        default -> STOW;
+      };
     }
   }
 
@@ -197,6 +213,13 @@ public class Elevator extends SubsystemBase {
    */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
+  }
+
+  /**
+   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
+   */
+  public Command setGoalEndCommand(Supplier<Goal> goal, Goal endGoal) {
+    return run(() -> setGoal(goal.get())).finallyDo(() -> setGoal(endGoal));
   }
 
   /**

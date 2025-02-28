@@ -19,6 +19,7 @@ import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.commands.DriveCommands;
 import frc.robot.controls.Controls;
+import frc.robot.controls.CoralMode;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.sensors.Photoelectric;
 import frc.robot.subsystems.coral_intake.CoralIntake;
@@ -64,6 +65,8 @@ public class RobotContainer {
 
   private Trigger coralIntakeAtStowGoal;
   private Trigger elevatorAtStowGoal;
+
+  private CoralMode coralMode = CoralMode.L4;
 
   /** RobotContainer initialization */
   public RobotContainer() {
@@ -181,12 +184,13 @@ public class RobotContainer {
     coralIntakeAtStowGoal = new Trigger(coralIntake.atGoalTrigger(CoralIntake.Goal.STOW));
     elevatorAtStowGoal = new Trigger(elevator.atGoalTrigger(Elevator.Goal.STOW));
 
-    coralIntakeAtStowGoal.and(elevatorAtStowGoal).and(controls.prepareScoreAlgae()).debounce(0.5).onTrue(Commands.sequence(
+    coralIntakeAtStowGoal.and(elevatorAtStowGoal).and(controls.handoffCoral()).debounce(0.5).onTrue(Commands.sequence(
       Commands.parallel(
         elevator.setGoalCommand(Elevator.Goal.STOW),
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
         coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)
       ),
+      Commands.waitSeconds(0.2),
       Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(2),
       coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP),
       Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(2),
@@ -229,11 +233,18 @@ public class RobotContainer {
 
     // controls.gamePieceLock().onTrue(Commands.none());
 
-    // controls.leftPositionLock().whileTrue(AutoBuilder.pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
+    // controls.leftPositionLock().whileTrue(AutoBuilder.7pathfindToPose(new Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new PathConstraints(FeetPerSecond.of(8), FeetPerSecondPerSecond.of(5), DegreesPerSecond.of(720), DegreesPerSecondPerSecond.of(480))));
 
     // controls.groundIntakeCoral().whileTrue(coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_INTAKE, CoralIntake.Goal.STOW));
 
-    controls.prepareScoreCoral().whileTrue(elevator.setGoalEndCommand(Elevator.Goal.L4, Elevator.Goal.STOW));
+    controls.prepareScoreCoral().whileTrue(elevator.setGoalEndCommand(() -> Elevator.Goal.fromCoralMode(coralMode), Elevator.Goal.STOW));
+
+    controls.scoreGamePiece().whileTrue(coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.IDLE));
+
+    controls.prepareScoreCoralL1().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L1));
+    controls.prepareScoreCoralL2().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L2));
+    controls.prepareScoreCoralL3().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L3));
+    controls.prepareScoreCoralL4().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L4));
 
     controls.scoreGamePiece().whileTrue(coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.IDLE));
 

@@ -18,8 +18,6 @@ import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.Idle;
-
 public class CoralOuttake extends SubsystemBase {
 
   public enum Goal {
@@ -101,6 +99,7 @@ public class CoralOuttake extends SubsystemBase {
 
     Logger.recordOutput("CoralOuttake/currentState", getCurrentGoal());
     Logger.recordOutput("CoralOuttake/desiredVoltage", getCurrentGoal().getVoltage());
+    Logger.recordOutput("CoralOuttake/currentSpikeTrigger", currentSpikeTrigger);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
@@ -111,6 +110,13 @@ public class CoralOuttake extends SubsystemBase {
   }
 
   /**
+   * Returns the voltage of the roller motor
+   */
+  public Voltage getRollerVoltage() {
+    return rollerInputs.appliedVoltage;
+  }
+
+  /**
    * Returns a command that sets the goal of the coral outtake.
    */
   public Command setGoalCommand(Goal goal) {
@@ -118,13 +124,6 @@ public class CoralOuttake extends SubsystemBase {
   }
 
   /**
-   * Returns the voltage of the roller motor
-   */
-  public Voltage getRollerVoltage() {
-    return rollerInputs.appliedVoltage;
-  }
-
-    /**
    * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
    */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {

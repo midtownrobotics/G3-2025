@@ -63,11 +63,15 @@ public interface Controls {
   /** Scores a game piece. */
   public Trigger scoreGamePiece();
 
-  /** Increments the coral mode */
-  public Trigger incrementCoralMode();
+  /** Moves elevator into position to score L1 */
+  public Trigger prepareScoreCoralL1();
+  /** Moves elevator into position to score L2 */
+  public Trigger prepareScoreCoralL2();
+  /** Moves elevator into position to score L3 */
+  public Trigger prepareScoreCoralL3();
+  /** Moves elevator into position to score L4 */
+  public Trigger prepareScoreCoralL4();
 
-  /** Decrements the coral mode */
-  public Trigger decrementCoralMode();
 
   /** Sets the algae claw to barge mode */
   public Trigger algaeModeBarge();
