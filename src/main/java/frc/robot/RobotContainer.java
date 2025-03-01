@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -22,10 +23,8 @@ import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.commands.DriveCommands;
 import frc.robot.controls.Controls;
 import frc.robot.controls.CoralMode;
-import frc.robot.controls.MatchXboxControls;
-import frc.robot.sensors.CoralCamera;
+import frc.robot.controls.NickXboxControls;
 import frc.robot.sensors.Photoelectric;
-import frc.robot.sensors.vision.VisionIOLimelight;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
@@ -77,6 +76,7 @@ public class RobotContainer {
 
   /** RobotContainer initialization */
   public RobotContainer() {
+
     // Algae Claw
     RollerIO algaeClawRollerIO;
 
@@ -185,7 +185,8 @@ public class RobotContainer {
       return null;
     }, () -> coralIntake.getPosition(), () -> elevator.getPosition());
 
-    controls = new MatchXboxControls(0, 1);
+    controls = new NickXboxControls(0);
+    // controls = new MatchXboxControls(0, 1);
     configureBindings();
 
     coralIntakeAtStowGoal = coralIntake.atGoalTrigger(CoralIntake.Goal.STOW, Degrees.of(1.5));
@@ -217,18 +218,18 @@ public class RobotContainer {
         coralOuttake.setGoalCommand(Goal.IDLE)));
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
-      Commands.print("Raising Elevator..."),
-      Commands.waitSeconds(1),
-      Commands.print("Scoring..."),
-      Commands.waitSeconds(0.5),
-      Commands.print("Lowering Elevator..."),
-      Commands.waitSeconds(0.3),
-      Commands.print("Done.")));
+      elevator.setGoalAndWait(Elevator.Goal.L4),
+      coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.IDLE).withTimeout(0.5),
+      elevator.setGoalCommand(Elevator.Goal.STOW)));
 
-    NamedCommands.registerCommand("IntakeFromLoadingStation", Commands.sequence(
-      Commands.print("Intaking..."),
-      Commands.waitSeconds(0.7),
-      Commands.print("Done.")));
+    NamedCommands.registerCommand("PrepareLevel4", elevator.setGoalCommand(Elevator.Goal.L4));
+    NamedCommands.registerCommand("PrepareLoadingStationIntake", coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE));
+
+
+
+    NamedCommands.registerCommand("IntakeFromLoadingStation", coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
+    .until(coralIntake.pieceDetectedTrigger)
+    .withTimeout(1.0));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
@@ -313,7 +314,7 @@ public class RobotContainer {
     );
 
     controls.sourceIntakeCoral().whileTrue(
-        coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, null)
+        coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
     );
 
     controls.climb().whileTrue(

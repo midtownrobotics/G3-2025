@@ -3,38 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.093451967592593,
-        "y": 5.245078125
+        "x": 1.5519319422104778,
+        "y": 7.095006606158088
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.819787715757376,
-        "y": 5.255794194329029
+        "x": 2.4590213551240807,
+        "y": 6.465328440946691
       },
       "isLocked": false,
-      "linkedName": "Start"
+      "linkedName": "Top Loading Station"
     },
     {
       "anchor": {
-        "x": 5.303029875578703,
-        "y": 5.120228587962963
+        "x": 3.905474853515625,
+        "y": 5.346526022518383
       },
       "prevControl": {
-        "x": 6.405059484935833,
-        "y": 5.136646981214093
+        "x": 3.7643017455032513,
+        "y": 5.552851381052244
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef 3"
+      "linkedName": "Branch K"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6917271860328639,
+      "rotationDegrees": -61.09871186671859
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.6,
+    "maxAcceleration": 2.2,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -120.42757070656636
+    "rotation": -59.58873790181269
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Top Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.6566721497386
+    "rotation": 35.56059256324648
   },
   "useDefaultConstraints": true
 }

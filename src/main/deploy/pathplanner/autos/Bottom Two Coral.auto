@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start to Branch I"
+            "pathName": "Start to Branch F"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Branch I to Loading Station"
+            "pathName": "Branch F to Loading Station"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station to Branch J"
+            "pathName": "Loading Station Branch E"
           }
         },
         {
@@ -44,6 +44,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Top Side",
+  "folder": "Bottom Side",
   "choreoAuto": false
 }

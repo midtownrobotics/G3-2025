@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start to 3"
+            "pathName": "Start to Branch I"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Reef 3 to Loading Station"
+            "pathName": "Branch I to Loading Station"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station to Reef 4"
+            "pathName": "Loading Station to Branch J"
           }
         },
         {
@@ -43,7 +43,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Reef 4 to Loading Station"
+            "pathName": "Branch J to Loading Station"
           }
         },
         {
@@ -55,7 +55,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station to Reef 5"
+            "pathName": "Loading Station to Branch K"
           }
         },
         {
@@ -68,6 +68,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Top Side",
   "choreoAuto": false
 }

@@ -59,10 +59,10 @@ public class DriveToPoint extends Command {
     m_targetPose = targetPose;
     addRequirements(m_drive);
 
-    m_driveController.getController().setTolerance(Units.inchesToMeters(0.5));
+    m_driveController.getController().setTolerance(Units.inchesToMeters(0.2), Units.inchesToMeters(0.5));
 
     m_headingController.getController().enableContinuousInput(-Math.PI, Math.PI);
-    m_headingController.getController().setTolerance(Units.degreesToRadians(0.5));
+    m_headingController.getController().setTolerance(Units.degreesToRadians(0.3));
 
     Logger.recordOutput("DriveToPoint/TargetPose", m_targetPose.get());
   }
