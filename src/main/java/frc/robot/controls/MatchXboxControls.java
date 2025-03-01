@@ -100,7 +100,7 @@ public class MatchXboxControls implements Controls {
   /** Ground coral trigger. */
   @AutoLogOutput
   private Trigger groundCoral() {
-    return operatorController.b().and(getNotManualMode);
+    return operatorController.rightBumper().and(getNotManualMode);
   }
 
   /** Source coral trigger. */
@@ -165,7 +165,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger prepareScoreCoral() {
-    return operatorController.rightBumper().and(getNotManualMode);
+    return operatorController.a().and(getNotManualMode);
   }
 
   @Override

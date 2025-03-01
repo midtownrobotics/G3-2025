@@ -39,7 +39,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class WinchIOKraken implements WinchIO {
 
-  private static final double GEARING = 20;
+  private static final double GEARING = 14;
 
   @Getter private TalonFX leftMotor;
   @Getter private TalonFX rightMotor;
@@ -267,7 +267,7 @@ public class WinchIOKraken implements WinchIO {
   private Angle getInitialAngle() {
     Angle absoluteEncoderPosition = Radians.of((MathUtil.angleModulus(getZeroedAbsoluteEncoderPosition().in(Radians)) + Math.PI) % (2 * Math.PI) - Math.PI);
 
-    return absoluteEncoderPosition.times(20);
+    return absoluteEncoderPosition.times(GEARING);
   }
 
   private Angle getZeroedAbsoluteEncoderPosition() {
