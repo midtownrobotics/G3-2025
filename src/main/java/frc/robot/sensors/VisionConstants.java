@@ -13,26 +13,33 @@
 
 package frc.robot.sensors;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // Camera names, must match names configured on coprocessor
-  public static String camera0Name = "camera_0";
-  public static String camera1Name = "camera_1";
+  public static String kModuleTagCameraName = "limelight";
+  public static String kElevatorTagCameraName = "elevatorLimelight"; // TODO Change to correct name
 
-  // Robot to camera transforms
-  // (Not used by Limelight, configure in web UI instead)
-  public static Transform3d robotToCamera0 =
-      new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
-  public static Transform3d robotToCamera1 =
-      new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+      public static final Transform3d kModuleTagRobotToCamera = new Transform3d(
+        new Translation3d(Inches.of(8.431), Inches.of(12.458), Inches.of(8.053)),
+        new Rotation3d(Degrees.zero(), Degrees.of(-15), Degrees.of(15))
+    );
+
+      public static final Transform3d kElevatorTagRobotToCamera = new Transform3d(
+        new Translation3d(Inches.of(-2.998), Inches.of(-12.74), Inches.of(10.918)),
+        new Rotation3d(Degrees.zero(), Degrees.of(-10), Degrees.of(-20))
+    );
 
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;

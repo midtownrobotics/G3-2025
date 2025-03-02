@@ -134,4 +134,16 @@ public interface Controls {
    * Manual Mode - Reverses Coral Intake Rollers
    */
   public Trigger coralIntakeReverse();
+
+  /** Button to align to the left-most branch of a reef face. */
+  public Trigger alignToReefLeftBranch();
+
+  /** Button to align to the right-most branch of a reef face. */
+  public Trigger alignToReefRightBranch();
+
+  /** Button to align to the reef */
+  public Trigger alignToReef();
+
+  /** Gets the POV value of the driver controller */
+  public int getDriverPOV();
 }

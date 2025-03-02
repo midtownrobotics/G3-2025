@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6043623408564804,
-        "y": 7.302125651041666
+        "x": 1.5519319422104778,
+        "y": 7.095006606158088
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5821406832646856,
-        "y": 6.884957963153356
+        "x": 2.4590213551240807,
+        "y": 6.465328440946691
       },
       "isLocked": false,
-      "linkedName": "Loading Station"
+      "linkedName": "Top Loading Station"
     },
     {
       "anchor": {
-        "x": 3.9461646412037026,
-        "y": 5.27797923900463
+        "x": 3.905474853515625,
+        "y": 5.346526022518383
       },
       "prevControl": {
-        "x": 3.8049915331913287,
-        "y": 5.484304597538491
+        "x": 3.7643017455032513,
+        "y": 5.552851381052244
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Branch K"
     }
   ],
   "rotationTargets": [
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.6,
+    "maxAcceleration": 2.2,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -47,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -58.48863152178299
+    "rotation": -59.58873790181269
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Top Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 125.36619010616316
+    "rotation": 35.56059256324648
   },
   "useDefaultConstraints": true
 }

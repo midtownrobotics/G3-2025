@@ -12,7 +12,10 @@ public class ElevatorConstants {
     public static final Distance elevatorMaxHeight = Feet.of(5.5);
     public static final Distance elevatorMinHeight = Feet.of(0);
 
-    public static final Angle absoluteEncoderOffset = Radians.of(5.143);
+    public static final double kGearing = 14;
+
+
+    public static final Angle absoluteEncoderOffset = Radians.of(5.094);
 
   public final class PID_SCORE {
     public static final LoggedTunableNumber s = new LoggedTunableNumber("Elevator/PID_SCORE/s", 0.12);

@@ -20,7 +20,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -38,8 +37,6 @@ import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class WinchIOKraken implements WinchIO {
-
-  private static final double GEARING = 14;
 
   @Getter private TalonFX leftMotor;
   @Getter private TalonFX rightMotor;
@@ -198,7 +195,7 @@ public class WinchIOKraken implements WinchIO {
    * @return
    */
   public Angle meterToRotation(Distance m) {
-    return m.div(Inches.of(6.75)).times(Rotations.of(GEARING)).div(3);
+    return m.div(Inches.of(6.75)).times(Rotations.of(ElevatorConstants.kGearing)).div(3);
   }
 
   /**
@@ -208,7 +205,7 @@ public class WinchIOKraken implements WinchIO {
    * @return Linear velocity
    */
   public LinearVelocity rotationToLinearVelocity(AngularVelocity velocity) {
-    return Units.MetersPerSecond.of((6.75 * velocity.in(Units.RotationsPerSecond)) / GEARING).times(3);
+    return Units.MetersPerSecond.of((6.75 * velocity.in(Units.RotationsPerSecond)) / ElevatorConstants.kGearing).times(3);
   }
 
   /**
@@ -218,7 +215,7 @@ public class WinchIOKraken implements WinchIO {
    * @return
    */
   public Distance rotationToDistance(Angle a) {
-    return a.div(Rotations.of(GEARING)).times(Inches.of(6.75)).times(3);
+    return a.div(Rotations.of(ElevatorConstants.kGearing)).times(Inches.of(6.75)).times(3);
   }
 
   private void configureMotors() {
@@ -265,9 +262,9 @@ public class WinchIOKraken implements WinchIO {
   }
 
   private Angle getInitialAngle() {
-    Angle absoluteEncoderPosition = Radians.of((MathUtil.angleModulus(getZeroedAbsoluteEncoderPosition().in(Radians)) + Math.PI) % (2 * Math.PI) - Math.PI);
+    double radians = (getZeroedAbsoluteEncoderPosition().in(Radians) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
 
-    return absoluteEncoderPosition.times(GEARING);
+    return Radians.of(radians).times(ElevatorConstants.kGearing);
   }
 
   private Angle getZeroedAbsoluteEncoderPosition() {

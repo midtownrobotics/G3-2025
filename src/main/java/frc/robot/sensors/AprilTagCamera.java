@@ -12,8 +12,6 @@ public class AprilTagCamera extends VirtualSubsystem {
   @Getter private final VisionIO visionController;
   private VisionIOInputsAutoLogged visionInputs = new VisionIOInputsAutoLogged();
 
-
-
   @Override
   public void periodic() {
     visionController.updateInputs(visionInputs);

@@ -52,12 +52,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.sensors.VisionConstants;
 import frc.robot.utils.Constants;
 import frc.robot.utils.Constants.Mode;
 import frc.robot.utils.LocalADStarAK;
 import frc.robot.utils.LoggerUtil;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -416,5 +418,10 @@ public class Drive extends SubsystemBase {
   /** Returns a command to reset driver heading */
   public Command resetDriveHeadingCommand() {
     return Commands.runOnce(this::resetDriveHeading);
+  }
+
+  /** Returns a command that drives based on the supplied chassis speeds */
+  public Command driveCommand(Supplier<ChassisSpeeds> speeds) {
+    return run(() -> runVelocity(speeds.get()));
   }
 }
