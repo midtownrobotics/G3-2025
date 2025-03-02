@@ -401,23 +401,32 @@ public class RobotContainer {
   }
 
   private Command handoffCommand() {
-    return Commands.parallel(
+    return Commands.sequence(
+      Commands.parallel(
+        elevator.setGoalCommand(Elevator.Goal.STOW),
+        coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
+        coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)),
+      Commands.waitUntil(coralIntake.handoffSensorTrigger),
+      Commands.waitSeconds(0.05),
+      Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(2),
+      Commands.waitSeconds(0.2),
+      coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP),
       elevator.setGoalCommand(Elevator.Goal.HANDOFF),
-      // coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
-      coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
-      coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)
-    )
-    .until(coralIntake.centerSensorTrigger.negate().and(coralOuttake.currentSpikeTrigger)).withTimeout(2.0)
-    .andThen(Commands.waitSeconds(0.2))
-    .andThen(coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP))
-    .until(coralIntake.pieceDetectedTrigger.negate()).withTimeout(10.0)
-    .andThen(
-      coralOuttake.setGoalEndCommand(CoralOuttake.Goal.CORAL_BACKWARDS, CoralOuttake.Goal.IDLE).withTimeout(0.1)
-    )
-    .finallyDo(() -> {
-      elevator.setGoal(Elevator.Goal.STOW);
-      coralIntake.setGoal(CoralIntake.Goal.STOW);
-      coralOuttake.setGoal(CoralOuttake.Goal.IDLE);
-    });
+      Commands.waitSeconds(0.2),
+      Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()),
+      // elevator.setGoalCommand(Elevator.Goal.STOW),
+      //   Commands.repeatingSequence(
+      //     Commands.waitSeconds(2),
+      //     elevator.setGoalCommand(Elevator.Goal.HANDOFF),
+      //     Commands.waitSeconds(0.6),
+      //       elevator.setGoalCommand(Elevator.Goal.STOW)).until(coralIntake.handoffSensorTrigger.negate())
+      //       .withTimeout(10),
+      Commands.parallel(
+        coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
+        coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
+            elevator.setGoalCommand(Elevator.Goal.STOW)),
+      Commands.waitSeconds(0.2),
+        coralOuttake.setGoalCommand(CoralOuttake.Goal.IDLE)
+    );
   }
 }
