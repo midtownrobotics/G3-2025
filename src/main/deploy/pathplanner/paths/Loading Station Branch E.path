@@ -33,6 +33,17 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "Handoff",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Handoff"
+        }
+      }
+    },
+    {
       "name": "PrepareLevel4",
       "waypointRelativePos": 0.5222780079250722,
       "endWaypointRelativePos": null,
