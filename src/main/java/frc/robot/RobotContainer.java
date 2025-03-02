@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -180,9 +181,9 @@ public class RobotContainer {
                                         driveCANBusHandler);
 
             // Coral Intake
-            beltIO = new RollerIONeo(Ports.CoralIntake.belt);
+            beltIO = new RollerIONeo(Ports.CoralIntake.belt, IdleMode.kBrake);
             pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
-            coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller);
+            coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kCoast);
 
             // Coral Outtake
             rollerIO = new RollerIOBag(Ports.CoralOuttake.roller);
@@ -402,13 +403,14 @@ public class RobotContainer {
   private Command handoffCommand() {
     return Commands.parallel(
       elevator.setGoalCommand(Elevator.Goal.HANDOFF),
-      coralIntake.setGoalEndCommand(CoralIntake.Goal.HANDOFF, CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP)
-        .until(coralIntake.centerSensorTrigger.negate().and(coralOuttake.currentSpikeTrigger))
-        .withTimeout(2.0),
-      coralOuttake.setGoalEndCommand(CoralOuttake.Goal.HANDOFF, CoralOuttake.Goal.IDLE)
+      // coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
+      coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
+      coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)
     )
-    .until(coralIntake.pieceDetectedTrigger.negate())
-    .withTimeout(10.0)
+    .until(coralIntake.centerSensorTrigger.negate().and(coralOuttake.currentSpikeTrigger)).withTimeout(2.0)
+    .andThen(Commands.waitSeconds(0.2))
+    .andThen(coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP))
+    .until(coralIntake.pieceDetectedTrigger.negate()).withTimeout(10.0)
     .andThen(
       coralOuttake.setGoalEndCommand(CoralOuttake.Goal.CORAL_BACKWARDS, CoralOuttake.Goal.IDLE).withTimeout(0.1)
     )

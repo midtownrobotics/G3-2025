@@ -30,6 +30,11 @@ public class RollerIOBag implements RollerIO {
     }
 
     @Override
+    public void setOutput(double output) {
+        motor.set(output);
+    }
+
+    @Override
     public void updateInputs(RollerInputs inputs) {
         inputs.appliedVoltage = Units.Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
         inputs.velocity = Units.RPM.of(-1);

@@ -15,10 +15,10 @@ public class RollerIONeo implements RollerIO {
  private @Getter SparkMax motor;
 
   /** Constructor for rollerIO for Neo motors. */
-  public RollerIONeo(int motorID) {
+  public RollerIONeo(int motorID, IdleMode idleMode) {
     motor = new SparkMax(motorID, MotorType.kBrushless);
     motor.configure(new SparkMaxConfig().smartCurrentLimit((int) Constants.NEO_CURRENT_LIMIT.in(Units.Amps))
-    .idleMode(IdleMode.kBrake),
+    .idleMode(idleMode),
 
     ResetMode.kResetSafeParameters,
     PersistMode.kPersistParameters);
@@ -27,6 +27,11 @@ public class RollerIONeo implements RollerIO {
   @Override
   public void setVoltage(Voltage voltage) {
     motor.setVoltage(voltage);
+  }
+
+  @Override
+  public void setOutput(double output) {
+      motor.set(output);
   }
 
 

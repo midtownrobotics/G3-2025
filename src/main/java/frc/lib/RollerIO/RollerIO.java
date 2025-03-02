@@ -26,6 +26,9 @@ public interface RollerIO {
    * @param voltage
    */
   public void setVoltage(Voltage voltage);
+
+  public void setOutput(double output);
+
   /**
    * Update input class for Roller
    *

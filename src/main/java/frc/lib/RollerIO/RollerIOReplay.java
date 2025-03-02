@@ -10,6 +10,11 @@ public class RollerIOReplay implements RollerIO {
   }
 
   @Override
+  public void setOutput(double output) {
+
+  }
+
+  @Override
   public void updateInputs(RollerInputs inputs) {
     throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
   }
