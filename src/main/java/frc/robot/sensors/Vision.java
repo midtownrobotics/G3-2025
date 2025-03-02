@@ -38,6 +38,9 @@ public class Vision extends SubsystemBase {
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
 
+  /**
+   * Creates a new Vision subsystem.
+   */
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
@@ -183,6 +186,9 @@ public class Vision extends SubsystemBase {
 
   @FunctionalInterface
   public static interface VisionConsumer {
+    /**
+     * Accepts a vision measurement to update the robot pose estimate.
+     */
     public void accept(
         Pose2d visionRobotPoseMeters,
         double timestampSeconds,

@@ -421,6 +421,7 @@ public class RobotContainer {
     // testController.y().whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
   }
 
+  /** Called when the robot enters teleop */
   public void teleopInit() {
     elevator.setGoal(Elevator.Goal.STOW);
     coralIntake.setGoal(CoralIntake.Goal.STOW);

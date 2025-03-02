@@ -90,6 +90,9 @@ public interface VisionIO {
     PHOTONVISION
   }
 
+  /**
+   * Gets the name of the vision system.
+   */
   public String getName();
 
   /**

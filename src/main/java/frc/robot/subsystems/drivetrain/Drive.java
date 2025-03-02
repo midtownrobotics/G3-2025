@@ -52,7 +52,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.sensors.VisionConstants;
 import frc.robot.utils.Constants;
 import frc.robot.utils.Constants.Mode;
 import frc.robot.utils.LocalADStarAK;

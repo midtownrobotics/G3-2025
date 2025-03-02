@@ -11,9 +11,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import frc.lib.VirtualSubsystem;
 import frc.robot.sensors.VisionConstants;
-
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 public class RobotViz extends VirtualSubsystem {
