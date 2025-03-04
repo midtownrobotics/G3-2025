@@ -9,6 +9,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.algae_claw.AlgaeClaw;
+import frc.robot.subsystems.algae_claw.AlgaeClawConstants;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
 import frc.robot.subsystems.coral_outtake.CoralOuttake;
@@ -21,6 +23,7 @@ public class Superstructure extends SubsystemBase {
 
   private final CoralIntake coralIntake;
   private final CoralOuttake coralOuttake;
+  private final AlgaeClaw algaeClaw;
   private final Elevator elevator;
 
   private static final Angle kMaxCoralIntakeAngleElevatorUp = Degrees.of(88);
@@ -29,10 +32,11 @@ public class Superstructure extends SubsystemBase {
 
 
   /** Construct the robot supersctructure. */
-  public Superstructure(CoralIntake coralIntake, Elevator elevator, CoralOuttake coralOuttake) {
+  public Superstructure(CoralIntake coralIntake, Elevator elevator, CoralOuttake coralOuttake, AlgaeClaw algaeClaw) {
     this.coralIntake = coralIntake;
     this.coralOuttake = coralOuttake;
     this.elevator = elevator;
+    this.algaeClaw = algaeClaw;
   }
 
   @Override
@@ -41,6 +45,7 @@ public class Superstructure extends SubsystemBase {
 
     LinearConstraint<DistanceUnit, Distance> elevatorConstraints = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
     LinearConstraint<AngleUnit, Angle> coralIntakeConstraints = new LinearConstraint<AngleUnit,Angle>(CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
+    LinearConstraint<AngleUnit, Angle> algaeClawConstraint = new LinearConstraint<AngleUnit,Angle>(AlgaeClawConstants.algaeClawMinAngle, AlgaeClawConstants.algaeClawMaxAngle);
 
     Angle coralIntakePosition = coralIntake.getPosition();
     Angle coralIntakeGoalPosition = coralIntake.getCurrentGoal().getAngle();
@@ -57,6 +62,7 @@ public class Superstructure extends SubsystemBase {
 
     coralIntake.setConstraints(coralIntakeConstraints);
     elevator.setConstraints(elevatorConstraints);
+    algaeClaw.setConstraints(algaeClawConstraint);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
