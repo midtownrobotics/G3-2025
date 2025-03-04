@@ -199,6 +199,7 @@ public class RobotContainer {
 
             aprilTagVisionIOs = new VisionIO[] {
               // new VisionIOPhotonVision("limelight", VisionConstants.kModuleTagRobotToCamera),
+              new VisionIOLimelight("limelight-nick", drive::getRotation),
               new VisionIOLimelight("limelight-woody", drive::getRotation)
             };
 
@@ -217,7 +218,6 @@ public class RobotContainer {
 
     new RobotViz(drive::getPose, coralIntake::getPosition, elevator::getPosition);
 
-    // controls = new NickXboxControls(0);
     controls = new MatchXboxControls(0, 1);
     configureBindings();
 
@@ -238,7 +238,8 @@ public class RobotContainer {
       elevator.setGoalCommand(Elevator.Goal.STOW)));
 
     NamedCommands.registerCommand("Handoff", handoffCommand());
-    NamedCommands.registerCommand("PrepareLevel4", elevator.setGoalCommand(Elevator.Goal.L4));
+    NamedCommands.registerCommand("PrepareLevel4", Commands.none());
+    // NamedCommands.registerCommand("PrepareLevel4", elevator.setGoalCommand(Elevator.Goal.L4));
     NamedCommands.registerCommand("PrepareLoadingStationIntake", coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE));
 
     NamedCommands.registerCommand("IntakeFromLoadingStation", coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
