@@ -6,6 +6,9 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static frc.robot.sensors.VisionConstants.kElevatorTagCameraName;
+import static frc.robot.sensors.VisionConstants.kModuleTagCameraName;
+import static frc.robot.sensors.VisionConstants.kPoleTagCameraName;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -211,8 +214,9 @@ public class RobotContainer {
 
             aprilTagVisionIOs = new VisionIO[] {
               // new VisionIOPhotonVision("limelight", VisionConstants.kModuleTagRobotToCamera),
-              new VisionIOLimelight("limelight-nick", drive::getRotation),
-              new VisionIOLimelight("limelight-woody", drive::getRotation)
+              new VisionIOLimelight(kPoleTagCameraName, drive::getRotation),
+              new VisionIOLimelight(kModuleTagCameraName, drive::getRotation),
+              new VisionIOLimelight(kElevatorTagCameraName, drive::getRotation)
             };
 
             aprilTagVision = new Vision(drive::addVisionMeasurement, aprilTagVisionIOs);

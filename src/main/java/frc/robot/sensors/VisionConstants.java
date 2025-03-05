@@ -28,8 +28,9 @@ public class VisionConstants {
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // Camera names, must match names configured on coprocessor
-  public static String kModuleTagCameraName = "limelight";
-  public static String kElevatorTagCameraName = "elevatorLimelight"; // TODO Change to correct name
+  public static String kModuleTagCameraName = "limelight-nick";
+  public static String kElevatorTagCameraName = "limelight-woody";
+  public static String kPoleTagCameraName = "limelight-gray";
 
       public static final Transform3d kModuleTagRobotToCamera = new Transform3d(
         new Translation3d(Inches.of(8.431), Inches.of(12.458), Inches.of(8.053)),
@@ -39,6 +40,11 @@ public class VisionConstants {
       public static final Transform3d kElevatorTagRobotToCamera = new Transform3d(
         new Translation3d(Inches.of(-2.998), Inches.of(-12.74), Inches.of(10.918)),
         new Rotation3d(Degrees.zero(), Degrees.of(-10), Degrees.of(-20))
+    );
+
+    public static final Transform3d kPoleTagRobotToCamera = new Transform3d(
+        new Translation3d(Inches.of(9.549), Inches.of(4.813), Inches.of(13.162)),
+        new Rotation3d(Degrees.zero(), Degrees.zero(), Degrees.zero())
     );
 
   // Basic filtering thresholds
