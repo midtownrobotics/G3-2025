@@ -277,10 +277,15 @@ public class RobotContainer {
       NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-ankit");
       double coralOffset = table.getEntry("tx").getDouble(0.0);
 
+      if (Math.abs(coralOffset) != 0.0) {
+        coralOffset += 10;
+      }
+
       Logger.recordOutput("AutoIntakeDebug/coralOffset", coralOffset);
       Logger.recordOutput("AutoIntakeDebug/driveRot", drive.getRotation());
       Logger.recordOutput("AutoIntakeDebug/desiredRot", drive.getRotation().getDegrees() + coralOffset);
       // return coralCamera.getCoralOffset().tx().plus(drive.getRotation());
+
       return drive.getRotation().minus(Rotation2d.fromDegrees(coralOffset));
     }));
 
@@ -419,7 +424,7 @@ public class RobotContainer {
         coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
         coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW)),
-      Commands.waitSeconds(0.2),
+      Commands.waitSeconds(0.3),
         coralOuttake.setGoalCommand(CoralOuttake.Goal.IDLE)
     ).finallyDo(() -> {
       elevator.setGoal(Elevator.Goal.STOW);

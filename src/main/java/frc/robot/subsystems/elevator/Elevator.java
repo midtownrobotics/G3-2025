@@ -39,7 +39,7 @@ public class Elevator extends SubsystemBase {
     L1(Feet.of(1.5)),
     L2(Feet.of((1.5)).plus(Inches.of(2))),
     L3(Feet.of(3.5).minus(Inches.of(4.5))),
-    L4(Feet.of(4.5).plus(Inches.of(5.5))),
+    L4(Feet.of(4.65).plus(Inches.of(5.5))),
     CLIMB(Feet.of(1.8)),
     CLIMB_BOTTOM(Feet.zero()),
     TUNING(Feet.zero()),

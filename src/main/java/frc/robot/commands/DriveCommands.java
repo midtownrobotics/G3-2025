@@ -322,7 +322,8 @@ public class DriveCommands {
   private static final Set<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
 
   // TODO - Modify this offset to position robot correctly in front of the reef branches
-  private static final Transform2d kRobotOffset = new Transform2d(new Translation2d(Inches.of(30), Inches.of(-1.5)), Rotation2d.k180deg);
+  private static final Transform2d kRobotOffset = new Transform2d(new Translation2d(Inches.of(25), Inches.of(2.5)), Rotation2d.k180deg);
+  private static final Transform2d pathPlannerOffset = new Transform2d(new Translation2d(Inches.of(33), Inches.of(2.5)), Rotation2d.k180deg);
 
 
   /** Creates a command that drives to a reef position based on POV */
@@ -340,14 +341,17 @@ public class DriveCommands {
       boolean leftSideToDriver = flipBranchSide ^ leftBranch;
       int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
 
+      Pose2d pathPlannerTarget = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1).transformBy(pathPlannerOffset);
+
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1).transformBy(kRobotOffset);
 
       Logger.recordOutput("PathfindToReef/ReefFace", face);
       Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
+      Logger.recordOutput("PathfindToReef/PPTargetPose", pathPlannerTarget);
       Logger.recordOutput("PathfindToReef/TargetPose", target);
 
       return Commands.sequence(
-        AutoBuilder.pathfindToPose(target, constraints),
+        AutoBuilder.pathfindToPose(pathPlannerTarget, constraints),
         new DriveToPoint(drive, () -> target),
         drive.stopWithXCommand()
       );
@@ -367,6 +371,7 @@ public class DriveCommands {
       boolean flipBranchSide = kFlippedReefFaces.contains(face);
       boolean leftSideToDriver = flipBranchSide ^ leftBranch;
       int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
+
 
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1).transformBy(kRobotOffset);
 

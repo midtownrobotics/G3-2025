@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -30,7 +31,6 @@ import frc.robot.sensors.Photoelectric;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
-import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -44,7 +44,7 @@ public class CoralIntake extends SubsystemBase {
     STOW(Degrees.of(136.5), Volts.of(0)),
     GROUND_INTAKE(Degrees.of(-8), Volts.of(12)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
-    STATION_VOMIT(STOW.getAngle(), Volts.of(-5)),
+    STATION_VOMIT(Degrees.of(45), Volts.of(-5)),
     STATION_INTAKE(Degrees.of(97), Volts.of(5)),
     HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(-5)),
     HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), HANDOFF.getBeltVoltage()),
@@ -198,12 +198,14 @@ public class CoralIntake extends SubsystemBase {
     //   }
     // }
 
+    // currentGoal = Goal.TUNING;
+
     Voltage desiredRollerVoltage = currentGoal.getRollerVoltage();
     Angle desiredAngle = currentGoal.getAngle();
 
     Angle constrainedAngle = coralIntakeConstraint.getClampedValue(desiredAngle);
 
-    if (Constants.tuningMode.get()) {
+    if (currentGoal == Goal.TUNING) {
       constrainedAngle = Degrees.of(tuningDesiredAngle.get());
     }
 
@@ -313,8 +315,8 @@ public class CoralIntake extends SubsystemBase {
 
     Voltage totalVoltage = pidVoltage.plus(ffVoltage);
 
-    Logger.recordOutput("CoralIntake/AnglePID/GoalPosition", desired);
-    Logger.recordOutput("CoralIntake/AnglePID/SetpointPosition", setpoint.position);
+    Logger.recordOutput("CoralIntake/AnglePID/GoalPosition", desired.in(Degrees));
+    Logger.recordOutput("CoralIntake/AnglePID/SetpointPosition", Units.radiansToDegrees(setpoint.position));
     Logger.recordOutput("CoralIntake/AnglePID/pidVoltage", pidVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/ffVoltage", ffVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/desiredPivotVoltage", totalVoltage);
