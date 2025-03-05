@@ -1,26 +1,15 @@
 package frc.robot.subsystems.algae_claw.wrist;
 
-import static edu.wpi.first.units.Units.Rotations;
-import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.lib.dashboard.LoggedTunableNumber;
-import frc.robot.subsystems.algae_claw.AlgaeClawConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
-import frc.robot.utils.Constants;
 import lombok.Getter;
 
 public class WristIOKraken implements WristIO {
@@ -38,41 +27,41 @@ public class WristIOKraken implements WristIO {
 
   /** Constructor for wristIO for kraken motors. */
   public WristIOKraken(int wristMotorID, int encoderID, CANBusStatusSignalRegistration bus) {
-    wristMotor = new TalonFX(wristMotorID);
-    encoder = new DutyCycleEncoder(new DigitalInput(encoderID));
+    // wristMotor = new TalonFX(wristMotorID, "Elevator");
+    // encoder = new DutyCycleEncoder(new DigitalInput(encoderID));
 
-    configureMotor();
+    // configureMotor();
 
-    wristMotor.setPosition(encoder.get() + AlgaeClawConstants.absolutePositionOffset.in(Rotations));
+    // wristMotor.setPosition(encoder.get() + AlgaeClawConstants.absolutePositionOffset.in(Rotations));
 
-    velocity = wristMotor.getVelocity();
-    appliedVoltage = wristMotor.getMotorVoltage();
-    supplyCurrent = wristMotor.getSupplyCurrent();
-    torqueCurrent = wristMotor.getTorqueCurrent();
-    temperature = wristMotor.getDeviceTemp();
-    dutyCycle = wristMotor.getDutyCycle();
+    // velocity = wristMotor.getVelocity();
+    // appliedVoltage = wristMotor.getMotorVoltage();
+    // supplyCurrent = wristMotor.getSupplyCurrent();
+    // torqueCurrent = wristMotor.getTorqueCurrent();
+    // temperature = wristMotor.getDeviceTemp();
+    // dutyCycle = wristMotor.getDutyCycle();
 
-    bus
-       .register(position)
-       .register(velocity)
-       .register(torqueCurrent)
-       .register(supplyCurrent)
-       .register(temperature)
-       .register(dutyCycle);
+    // bus
+    //    .register(position)
+    //    .register(velocity)
+    //    .register(torqueCurrent)
+    //    .register(supplyCurrent)
+    //    .register(temperature)
+    //    .register(dutyCycle);
 
-    tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
-      50.0,
-      position,
-      velocity,
-      torqueCurrent,
-      supplyCurrent,
-      temperature,
-      dutyCycle
-    ));
+    // tryUntilOk(5, () -> BaseStatusSignal.setUpdateFrequencyForAll(
+    //   50.0,
+    //   position,
+    //   velocity,
+    //   torqueCurrent,
+    //   supplyCurrent,
+    //   temperature,
+    //   dutyCycle
+    // ));
 
-    tryUntilOk(5, () -> wristMotor.optimizeBusUtilization(0, 1));
+    // tryUntilOk(5, () -> wristMotor.optimizeBusUtilization(0, 1));
 
-    configureMotor();
+    // configureMotor();
   }
 
   @Override
@@ -83,50 +72,50 @@ public class WristIOKraken implements WristIO {
 
   @Override
   public void updateInputs(WristInputs inputs) {
-    inputs.connected = wristMotor.isConnected();
-    inputs.position = position.getValue();
-    inputs.velocity = velocity.getValue();
-    inputs.appliedVoltage = appliedVoltage.getValue();
-    inputs.supplyCurrent = supplyCurrent.getValue();
-    inputs.torqueCurrent = torqueCurrent.getValue();
-    inputs.temperature = temperature.getValue();
-    inputs.absolutePosition = Rotations.of(encoder.get());
+    // inputs.connected = wristMotor.isConnected();
+    // inputs.position = position.getValue();
+    // inputs.velocity = velocity.getValue();
+    // inputs.appliedVoltage = appliedVoltage.getValue();
+    // inputs.supplyCurrent = supplyCurrent.getValue();
+    // inputs.torqueCurrent = torqueCurrent.getValue();
+    // inputs.temperature = temperature.getValue();
+    // inputs.absolutePosition = Rotations.of(encoder.get());
 
-    updateConstants();
+    // updateConstants();
   }
 
-  private void updateConstants() {
-    LoggedTunableNumber.ifChanged(
-      hashCode(),
-      this::configureMotor,
-      AlgaeClawConstants.PID.p,
-      AlgaeClawConstants.PID.i,
-      AlgaeClawConstants.PID.d,
-      AlgaeClawConstants.PID.s,
-      AlgaeClawConstants.PID.v,
-      AlgaeClawConstants.PID.g,
-      AlgaeClawConstants.PID.a
-    );
-  }
+  // private void updateConstants() {
+  //   LoggedTunableNumber.ifChanged(
+  //     hashCode(),
+  //     this::configureMotor,
+  //     AlgaeClawConstants.PID.p,
+  //     AlgaeClawConstants.PID.i,
+  //     AlgaeClawConstants.PID.d,
+  //     AlgaeClawConstants.PID.s,
+  //     AlgaeClawConstants.PID.v,
+  //     AlgaeClawConstants.PID.g,
+  //     AlgaeClawConstants.PID.a
+  //   );
+  // }
 
-  private void configureMotor() {
-    TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
+  // private void configureMotor() {
+  //   TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 
-    krakenConfig.Slot0 =
-          new Slot0Configs()
-              .withKP(AlgaeClawConstants.PID.p.get())
-              .withKI(AlgaeClawConstants.PID.i.get())
-              .withKD(AlgaeClawConstants.PID.d.get())
-              .withKS(AlgaeClawConstants.PID.s.get())
-              .withKG(AlgaeClawConstants.PID.g.get())
-              .withKV(AlgaeClawConstants.PID.v.get())
-              .withKA(AlgaeClawConstants.PID.a.get())
-              .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-    krakenConfig.CurrentLimits =
-        new CurrentLimitsConfigs()
-            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
-    wristMotor.getConfigurator().apply(krakenConfig);
-  }
+  //   krakenConfig.Slot0 =
+  //         new Slot0Configs()
+  //             .withKP(AlgaeClawConstants.PID.p.get())
+  //             .withKI(AlgaeClawConstants.PID.i.get())
+  //             .withKD(AlgaeClawConstants.PID.d.get())
+  //             .withKS(AlgaeClawConstants.PID.s.get())
+  //             .withKG(AlgaeClawConstants.PID.g.get())
+  //             .withKV(AlgaeClawConstants.PID.v.get())
+  //             .withKA(AlgaeClawConstants.PID.a.get())
+  //             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+  //   krakenConfig.CurrentLimits =
+  //       new CurrentLimitsConfigs()
+  //           .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT);
+  //   wristMotor.getConfigurator().apply(krakenConfig);
+  // }
 
   @Override
   public void setVoltage(Voltage volts) {

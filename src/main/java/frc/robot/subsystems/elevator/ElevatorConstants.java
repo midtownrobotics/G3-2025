@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevator;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Radians;
 
@@ -8,6 +9,9 @@ import edu.wpi.first.units.measure.Distance;
 import frc.lib.dashboard.LoggedTunableNumber;
 
 public class ElevatorConstants {
+  public static final Angle lockLockedPosition = Degrees.of(0); // TODO
+  public static final Angle lockUnlockedPosition = Degrees.of(0); // TODO
+
     // TODO: Find out max and min heights
     public static final Distance elevatorMaxHeight = Feet.of(5.5);
     public static final Distance elevatorMinHeight = Feet.of(0);

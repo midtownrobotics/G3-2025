@@ -13,6 +13,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -53,6 +55,7 @@ import frc.robot.subsystems.drivetrain.ModuleIOSim;
 import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.lock.LockIOServo;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.elevator.winch.WinchIOReplay;
@@ -98,8 +101,24 @@ public class RobotContainer {
 
   private CoralMode coralMode = CoralMode.L4;
 
+  // private AddressableLED ledBack = new AddressableLED(1);
+  // private AddressableLEDBuffer ledBackBuffer = new AddressableLEDBuffer(19);
+  private AddressableLED ledFront = new AddressableLED(2);
+  private AddressableLEDBuffer ledFrontBuffer = new AddressableLEDBuffer(31);
+
+
   /** RobotContainer initialization */
   public RobotContainer() {
+    // ledBackBuffer.forEach((i,r,g,b)->ledBackBuffer.setRGB(i, 0, 255, 0));
+    // ledBack.setLength(ledBackBuffer.getLength());
+    // ledBack.setData(ledBackBuffer);
+    // ledBack.start();
+
+    ledFrontBuffer.forEach((i,r,g,b)->ledFrontBuffer.setRGB(i, 255, 255, 0));
+    ledFront.setLength(ledFrontBuffer.getLength());
+    ledFront.setData(ledFrontBuffer);
+    ledFront.start();
+
     SignalLogger.start();
 
     // Algae Claw
@@ -224,7 +243,7 @@ public class RobotContainer {
         break;
     }
 
-    elevator = new Elevator(winchIO);
+    elevator = new Elevator(winchIO, new LockIOServo(0));
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     coralOuttake = new CoralOuttake(rollerIO, handoffSensor);
     algaeClaw = new AlgaeClaw(algaeClawWristIO);

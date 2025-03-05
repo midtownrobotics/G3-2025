@@ -3,7 +3,7 @@ package frc.robot;
 // Define port variables
 public class Ports {
     public static class AlgaeClaw {
-        public static final int wristMotor = 14;
+        public static final int wristMotor = 56;
         public static final int wristEncoder = 2;
     }
 

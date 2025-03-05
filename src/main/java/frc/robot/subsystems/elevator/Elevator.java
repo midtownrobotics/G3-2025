@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.controls.CoralMode;
+import frc.robot.subsystems.elevator.lock.LockIO;
+import frc.robot.subsystems.elevator.lock.LockInputsAutoLogged;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -37,24 +39,34 @@ public class Elevator extends SubsystemBase {
     STOW(Feet.zero()),
     HANDOFF(Inches.of(0.5)),
     L1(Feet.of(1.5)),
-    L2(Feet.of((1.5)).plus(Inches.of(2))),
-    L3(Feet.of(3.5).minus(Inches.of(4.5))),
-    L4(Feet.of(4.5).plus(Inches.of(5.5))),
-    CLIMB(Feet.of(1.8)),
+    L2(Feet.of((2.5))),
+    L3(Feet.of(3.5)),
+    L4(Feet.of(4.5)),
+    CLIMB(Inches.of(5)),
     CLIMB_BOTTOM(Feet.zero()),
+    CLIMB_LOCK(Inches.of(5), true),
     TUNING(Feet.zero()),
     MANUAL(Feet.zero());
 
     private @Getter Distance height;
+    private @Getter boolean enableLock;
 
     /** Goal has no meter height value associated */
     private Goal() {
       this.height = null;
+      this.enableLock = false;
     }
 
     /** Goal has meter height value associated */
     private Goal(Distance height) {
       this.height = height;
+      this.enableLock = false;
+    }
+
+    /** Goal has meter height value associated, and whether to enable the lock or not */
+    private Goal(Distance height, boolean enableLock) {
+      this.height = height;
+      this.enableLock = enableLock;
     }
 
     /**
@@ -78,6 +90,9 @@ public class Elevator extends SubsystemBase {
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
   private @Getter WinchIO winch;
 
+  private LockInputsAutoLogged lockInputs = new LockInputsAutoLogged();
+  private @Getter LockIO lock;
+
   private SysIdRoutine routine;
 
   private LoggedTunableNumber tuningDesiredHeight = new LoggedTunableNumber("Elevator/Tuning/DesiredHeight", 0.0);
@@ -87,13 +102,13 @@ public class Elevator extends SubsystemBase {
    *
    * @param winch
    */
-  public Elevator(WinchIO winch) {
+  public Elevator(WinchIO winch, LockIO lock) {
     this.winch = winch;
 
-      SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
-        winch::setVoltage,
-        this::motorSysIdLog,
-        this
+    SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
+      winch::setVoltage,
+      this::motorSysIdLog,
+      this
     );
 
     routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(5)), sysIdMech);
@@ -114,13 +129,20 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
     winch.updateInputs(winchInputs);
-    Logger.processInputs("Elevator", winchInputs);
+    Logger.processInputs("Winch", winchInputs);
+
+    lock.updateInputs(lockInputs);
+    Logger.processInputs("Lock", lockInputs);
 
     Distance constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight());
 
     Distance desiredTuningHeight = Feet.of(tuningDesiredHeight.get());
 
     desiredTuningHeight = UnitUtil.clamp(desiredTuningHeight, Feet.of(0), Feet.of(5.3));
+
+    lock.setPosition(getCurrentGoal().enableLock ? ElevatorConstants.lockLockedPosition : ElevatorConstants.lockUnlockedPosition);
+
+    // winch.setClimbPosition(desiredTuningHeight);
 
     switch (getCurrentGoal()) {
       case CLIMB_BOTTOM:
