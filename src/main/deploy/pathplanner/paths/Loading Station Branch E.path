@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5581843171296286,
-        "y": 0.7935865162037032
+        "x": 1.4805027488425915,
+        "y": 0.7290653935185173
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5568864247099654,
-        "y": 1.2944172391523319
+        "x": 2.4792048564229283,
+        "y": 1.2298961164671458
       },
       "isLocked": false,
       "linkedName": "Bottom Loading Station"
     },
     {
       "anchor": {
-        "x": 4.985373987268518,
-        "y": 2.6497334346064805
+        "x": 4.963071108217592,
+        "y": 2.7015017361111107
       },
       "prevControl": {
-        "x": 4.733054470486111,
-        "y": 2.1671061197916655
+        "x": 4.7107515914351845,
+        "y": 2.2188744212962956
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Handoff",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.42116579610951044,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -45,7 +45,7 @@
     },
     {
       "name": "PrepareLevel4",
-      "waypointRelativePos": 0.5222780079250722,
+      "waypointRelativePos": 0.647120407060519,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

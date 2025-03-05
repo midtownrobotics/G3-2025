@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4317042824074062,
-        "y": 7.096158854166666
+        "x": 1.311862702546295,
+        "y": 7.156079644097222
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.338793695321009,
-        "y": 6.4664806889552695
+        "x": 2.218952115459898,
+        "y": 6.526401478885825
       },
       "isLocked": false,
       "linkedName": "Top Loading Station"
@@ -36,7 +36,30 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Handoff",
+      "waypointRelativePos": 0.3009951368876081,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Handoff"
+        }
+      }
+    },
+    {
+      "name": "PrepareLevel4",
+      "waypointRelativePos": 0.6162869236311233,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLevel4"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.6,
     "maxAcceleration": 2.2,

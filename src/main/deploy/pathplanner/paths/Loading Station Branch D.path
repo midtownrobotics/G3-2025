@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.375703486689814,
-        "y": 5.121917317708332
+        "x": 1.4805027488425915,
+        "y": 0.7290653935185173
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.860932074652776,
-        "y": 5.843936631944444
+        "x": 2.4792048564229283,
+        "y": 1.2298961164671458
       },
       "isLocked": false,
-      "linkedName": "Branch I"
+      "linkedName": "Bottom Loading Station"
     },
     {
       "anchor": {
-        "x": 1.311862702546295,
-        "y": 7.156079644097222
+        "x": 3.87931423611111,
+        "y": 2.7645088252314816
       },
       "prevControl": {
-        "x": 2.1163486806902663,
-        "y": 6.65699915093891
+        "x": 3.6070118933215807,
+        "y": 2.2928673324999798
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Top Loading Station"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,13 +33,24 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "PrepareLoadingStationIntake",
-      "waypointRelativePos": 0.4530349423631129,
+      "name": "Handoff",
+      "waypointRelativePos": 0.42116579610951044,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "PrepareLoadingStationIntake"
+          "name": "Handoff"
+        }
+      }
+    },
+    {
+      "name": "PrepareLevel4",
+      "waypointRelativePos": 0.647120407060519,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLevel4"
         }
       }
     }
@@ -54,13 +65,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.56059256324648
+    "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Bottom Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -120.42757070656636
+    "rotation": 143.52272134051793
   },
   "useDefaultConstraints": true
 }

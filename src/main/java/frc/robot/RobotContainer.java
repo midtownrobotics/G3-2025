@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -13,6 +14,10 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,6 +53,7 @@ import frc.robot.subsystems.drivetrain.ModuleIOSim;
 import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.elevator.winch.WinchIOReplay;
@@ -57,6 +63,7 @@ import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
+import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -84,12 +91,22 @@ public class RobotContainer {
 
   private CoralMode coralMode = CoralMode.L4;
 
+  private AddressableLED led = new AddressableLED(2);
+  private AddressableLEDBuffer buffer = new AddressableLEDBuffer(31);
+
   /** RobotContainer initialization */
   public RobotContainer() {
     SignalLogger.start();
 
-    // Algae Claw
-    RollerIO algaeClawRollerIO;
+    LEDPattern pattern = LEDPattern.rainbow(255, 128);
+
+    pattern.applyTo(buffer);
+
+    led.setLength(buffer.getLength());
+
+    led.setData(buffer);
+
+    led.start();
 
     // Elevator
     WinchIO winchIO;
@@ -115,9 +132,6 @@ public class RobotContainer {
 
     switch (Constants.MODE) {
         case REPLAY:
-            // Algae Claw
-            algaeClawRollerIO = new RollerIOReplay();
-
             // Elevator
             winchIO = new WinchIOReplay();
 
@@ -207,9 +221,6 @@ public class RobotContainer {
             break;
     }
 
-    // Algae Claw
-    algaeClawRollerIO = new RollerIOSim();
-
     elevator = new Elevator(winchIO);
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     coralOuttake = new CoralOuttake(rollerIO, handoffSensor);
@@ -243,8 +254,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("PrepareLoadingStationIntake", coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE));
 
     NamedCommands.registerCommand("IntakeFromLoadingStation", coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
-    .until(coralIntake.pieceDetectedTrigger)
-    .withTimeout(1.0));
+    .until(coralIntake.pieceDetectedTrigger.debounce(0.5))
+    .withTimeout(2.5));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
@@ -252,11 +263,24 @@ public class RobotContainer {
     // coralCamera = new CoralCamera(new VisionIOLimelight("limelight", drive::getPose));
   }
 
+  private double mapInput(double input, double inputMin, double inputMax, double outputMin, double outputMax) {
+    return (input - inputMin) * (outputMax - outputMin) / (inputMax - inputMin) + outputMin;
+  }
+
   /** Configures bindings to oi */
   private void configureBindings() {
     // Driver
 
-    drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation));
+    DoubleSupplier speedMultiplier = () -> {
+      if (elevator.getPosition().gt(Inches.of(10))) {
+        double elevatorHeight = elevator.getPosition().in(Inches);
+        return mapInput(elevatorHeight, 10, 60, 8.0, 0.2);
+      }
+
+      return 1.0;
+    };
+
+    drive.setDefaultCommand(DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft, controls::getDriveRotation, speedMultiplier));
     // elevator.setDefaultCommand(new InstantCommand(() -> {
     //   if (elevator.getCurrentGoal() != Elevator.Goal.STOW && elevator.getCurrentGoal() != Elevator.Goal.CLIMB_BOTTOM) {
     //     elevator.setGoal(Elevator.Goal.STOW);

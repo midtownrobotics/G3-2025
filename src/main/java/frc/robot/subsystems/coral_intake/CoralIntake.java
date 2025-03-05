@@ -45,8 +45,8 @@ public class CoralIntake extends SubsystemBase {
     GROUND_INTAKE(Degrees.of(-8), Volts.of(12)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
     STATION_VOMIT(Degrees.of(45), Volts.of(-5)),
-    STATION_INTAKE(Degrees.of(97), Volts.of(5)),
-    HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(-5)),
+    STATION_INTAKE(Degrees.of(107), Volts.of(8)),
+    HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(-6.5)),
     HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), HANDOFF.getBeltVoltage()),
     PRE_HANDOFF_ADJUST_CORAL(Degrees.of(90), Volts.of(12), Volts.of(5)),
     CLIMB(Degrees.of(88), Volts.of(0)),
@@ -134,6 +134,7 @@ public class CoralIntake extends SubsystemBase {
     this.pieceWillCollideTrigger = handoffSensorTrigger.and(centerSensorTrigger.negate());
 
     pidController.setIntegratorRange(-0.2, 0.2);
+    pidController.setIZone(0.2);
 
     SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         pivotIO::setVoltage,

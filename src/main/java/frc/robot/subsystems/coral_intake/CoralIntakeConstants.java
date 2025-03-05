@@ -21,7 +21,7 @@ public class CoralIntakeConstants {
         public static final LoggedTunableNumber v = new LoggedTunableNumber("CoralIntake/v", 0.6);
         public static final LoggedTunableNumber g = new LoggedTunableNumber("CoralIntake/g", 0.45);
         public static final LoggedTunableNumber p = new LoggedTunableNumber("CoralIntake/p", 6.5);
-        public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralIntake/i", 0.2);
+        public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralIntake/i", 0.08);
         public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralIntake/d", 0.1);
 
         public static final LoggedTunableNumber maxPivotV = new LoggedTunableNumber("CoralIntake/maxV", 8);

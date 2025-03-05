@@ -45,6 +45,24 @@
           "data": {
             "pathName": "Branch E to Loading Station"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeFromLoadingStation"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Loading Station Branch D"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
         }
       ]
     }

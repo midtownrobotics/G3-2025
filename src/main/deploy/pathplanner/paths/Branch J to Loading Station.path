@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.012626591435184,
-        "y": 5.2853747106481475
+        "x": 5.06940285011574,
+        "y": 5.249969618055555
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.4978551793981465,
-        "y": 6.007394024884259
+        "x": 4.554631438078702,
+        "y": 5.971988932291667
       },
       "isLocked": false,
       "linkedName": "Branch J"
     },
     {
       "anchor": {
-        "x": 1.4317042824074062,
-        "y": 7.096158854166666
+        "x": 1.311862702546295,
+        "y": 7.156079644097222
       },
       "prevControl": {
-        "x": 2.2361902605513775,
-        "y": 6.5970783610083545
+        "x": 2.1163486806902663,
+        "y": 6.65699915093891
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "PrepareLoadingStationIntake",
+      "waypointRelativePos": 0.5198802233429397,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLoadingStationIntake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.6,
     "maxAcceleration": 2.2,
