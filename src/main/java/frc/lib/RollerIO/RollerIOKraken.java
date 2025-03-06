@@ -76,6 +76,11 @@ public class RollerIOKraken implements RollerIO {
   }
 
   @Override
+  public void setOutput(double output) {
+      motor.set(output);
+  }
+
+  @Override
   public void updateInputs(RollerInputs inputs) {
     inputs.connected = motor.isConnected();
     inputs.position = position.getValue();

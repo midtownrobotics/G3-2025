@@ -35,11 +35,12 @@ public class Elevator extends SubsystemBase {
 
   public enum Goal {
     STOW(Feet.zero()),
-    HANDOFF(Inches.of(0.75)),
-    L1(Feet.of(1.5)),
-    L2(Feet.of((1.5)).plus(Inches.of(2))),
-    L3(Feet.of(3.5).minus(Inches.of(4.5))),
-    L4(Feet.of(4.5).plus(Inches.of(5.5))),
+    HANDOFF(Inches.of(0.5)),
+    L1(Inches.of(18)),
+    L2(Inches.of(20)),
+    L3(Inches.of(46.5)),
+    AUTO_L4(Inches.of(62)),
+    L4(Inches.of(60.5)),
     CLIMB(Feet.of(1.8)),
     CLIMB_BOTTOM(Feet.zero()),
     TUNING(Feet.zero()),

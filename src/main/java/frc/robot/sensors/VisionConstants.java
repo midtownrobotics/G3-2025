@@ -13,35 +13,48 @@
 
 package frc.robot.sensors;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 public class VisionConstants {
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // Camera names, must match names configured on coprocessor
-  public static String camera0Name = "camera_0";
-  public static String camera1Name = "camera_1";
+  public static String kModuleTagCameraName = "limelight-nick";
+  public static String kElevatorTagCameraName = "limelight-woody";
+  public static String kPoleTagCameraName = "limelight-gray";
 
-  // Robot to camera transforms
-  // (Not used by Limelight, configure in web UI instead)
-  public static Transform3d robotToCamera0 =
-      new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
-  public static Transform3d robotToCamera1 =
-      new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+      public static final Transform3d kModuleTagRobotToCamera = new Transform3d(
+        new Translation3d(Inches.of(8.431), Inches.of(12.458), Inches.of(8.053)),
+        new Rotation3d(Degrees.zero(), Degrees.of(-15), Degrees.of(15))
+    );
+
+      public static final Transform3d kElevatorTagRobotToCamera = new Transform3d(
+        new Translation3d(Inches.of(-2.998), Inches.of(-12.74), Inches.of(10.918)),
+        new Rotation3d(Degrees.zero(), Degrees.of(-10), Degrees.of(-20))
+    );
+
+    public static final Transform3d kPoleTagRobotToCamera = new Transform3d(
+        new Translation3d(Inches.of(9.549), Inches.of(4.813), Inches.of(13.162)),
+        new Rotation3d(Degrees.zero(), Degrees.zero(), Degrees.zero())
+    );
 
   // Basic filtering thresholds
-  public static double maxAmbiguity = 0.3;
-  public static double maxZError = 0.75;
+  public static double maxAmbiguity = 0.2;
+  public static double maxZError = 0.3;
 
   // Standard deviation baselines, for 1 meter distance and 1 tag
   // (Adjusted automatically based on distance and # of tags)
-  public static double linearStdDevBaseline = 0.02; // Meters
-  public static double angularStdDevBaseline = 0.06; // Radians
+  public static double linearStdDevBaseline = 0.09; // Meters
+  public static double angularStdDevBaseline = 0.3; // Radians
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)

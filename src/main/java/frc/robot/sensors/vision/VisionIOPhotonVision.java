@@ -25,6 +25,7 @@ import org.photonvision.PhotonCamera;
 
 /** IO implementation for real PhotonVision hardware. */
 public class VisionIOPhotonVision implements VisionIO {
+  protected final String name;
   protected final PhotonCamera camera;
   protected final Transform3d robotToCamera;
 
@@ -35,6 +36,7 @@ public class VisionIOPhotonVision implements VisionIO {
    * @param robotToCamera The 3D position of the camera relative to the robot.
    */
   public VisionIOPhotonVision(String name, Transform3d robotToCamera) {
+    this.name = name;
     camera = new PhotonCamera(name);
     this.robotToCamera = robotToCamera;
   }
@@ -132,5 +134,10 @@ public class VisionIOPhotonVision implements VisionIO {
     /** THIS METHOD IS UNIMPLIMENTED BECAUSE PHOTON VISION DOES NOT HAVE PIPELINES */
     public void setPipeline(long pipelineID) {
         throw new UnsupportedOperationException("Unimplemented method 'setPipeline'");
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

@@ -1,6 +1,7 @@
 package frc.robot.controls;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.DoublePressTracker;
@@ -100,7 +101,7 @@ public class MatchXboxControls implements Controls {
   /** Ground coral trigger. */
   @AutoLogOutput
   private Trigger groundCoral() {
-    return operatorController.b().and(getNotManualMode);
+    return operatorController.rightBumper().and(getNotManualMode);
   }
 
   /** Source coral trigger. */
@@ -110,7 +111,7 @@ public class MatchXboxControls implements Controls {
 
   /** Ground algae trigger. */
   private Trigger groundAlgae() {
-    return operatorController.a().and(getNotManualMode);
+    return operatorController.b().and(getNotManualMode);
   }
 
   /** Stacked algae trigger. */
@@ -165,7 +166,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger prepareScoreCoral() {
-    return operatorController.rightBumper().and(getNotManualMode);
+    return operatorController.a().and(getNotManualMode);
   }
 
   @Override
@@ -187,16 +188,21 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger prepareScoreCoralL3() {
-    return new Trigger(operatorController.povLeft());
+    return operatorController.povLeft();
   }
   @Override
   public Trigger prepareScoreCoralL4() {
-    return new Trigger(operatorController.povUp());
+    return operatorController.povUp();
   }
 
   @Override
   public Trigger scoreGamePiece() {
-    return new Trigger(operatorController.rightTrigger());
+    return operatorController.rightTrigger();
+  }
+
+  @Override
+  public Trigger reverseGamePiece() {
+    return operatorController.rightTrigger().and(vomit()).and(getNotManualMode);
   }
 
   @Override
@@ -273,6 +279,36 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger algaeClawReverse() {
-    throw new UnsupportedOperationException("Unimplemented method 'algaeClawReverse'");
-  };
+    return new Trigger(() -> false);
+  }
+
+  @Override
+  public Trigger alignToReef() {
+    return alignToReefLeftBranch().or(alignToReefRightBranch());
+  }
+
+  @Override
+  public Trigger alignToReefLeftBranch() {
+      return driverController.leftBumper();
+  }
+
+  @Override
+  public Trigger alignToReefRightBranch() {
+      return driverController.rightBumper();
+  }
+
+  @Override
+  public int getDriverPOV() {
+    return driverController.getHID().getPOV();
+  }
+
+  @Override
+  public void setDriverRumble(double rumble) {
+    driverController.setRumble(RumbleType.kBothRumble, rumble);
+  }
+
+  @Override
+  public void setOperatorRumble(double rumble) {
+    operatorController.setRumble(RumbleType.kBothRumble, rumble);
+  }
 }

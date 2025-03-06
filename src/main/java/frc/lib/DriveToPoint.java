@@ -36,15 +36,15 @@ public class DriveToPoint extends Command {
   public static final AngularVelocity kMaxAngularVelocity = DegreesPerSecond.of(720.0);
   public static final AngularAcceleration kMaxAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
-  private Drive m_drive;
-  private Supplier<Pose2d> m_targetPose;
+  private final Drive m_drive;
+  private final Supplier<Pose2d> m_targetPose;
 
   private LTLinearProfiledPIDController m_driveController =
       new LTLinearProfiledPIDController(
           "DriveToPoint/DriveController",
-          4.5,
+          3.2,
           0.0,
-          0.04,
+          0.01,
           kMaxLinearVelocity,
           kMaxLinearAcceleration);
 
@@ -52,17 +52,17 @@ public class DriveToPoint extends Command {
   private LTAngularProfiledPIDController m_headingController =
       new LTAngularProfiledPIDController("DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
 
-  private double m_ffMinRadius = 0.2, m_ffMaxRadius = 1.1;
+  private double m_ffMinRadius = 0.25, m_ffMaxRadius = 1.2;
 
   public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose) {
     m_drive = drive;
     m_targetPose = targetPose;
     addRequirements(m_drive);
 
-    m_driveController.getController().setTolerance(Units.inchesToMeters(0.5));
+    m_driveController.getController().setTolerance(Units.inchesToMeters(0.2), Units.inchesToMeters(0.5));
 
     m_headingController.getController().enableContinuousInput(-Math.PI, Math.PI);
-    m_headingController.getController().setTolerance(Units.degreesToRadians(0.5));
+    m_headingController.getController().setTolerance(Units.degreesToRadians(0.3));
 
     Logger.recordOutput("DriveToPoint/TargetPose", m_targetPose.get());
   }
@@ -101,6 +101,11 @@ public class DriveToPoint extends Command {
     Pose2d targetPose = m_targetPose.get();
     Pose2d currentPose = m_drive.getPose();
 
+    if (targetPose == null) {
+      m_drive.stopWithX();
+      return;
+    }
+
     Translation2d linearError = targetPose.getTranslation().minus(currentPose.getTranslation());
 
     Distance distanceFromTarget = Meters.of(linearError.getNorm());
@@ -111,6 +116,7 @@ public class DriveToPoint extends Command {
     double driveVelocityScalar =
         m_driveController.getSetpoint().velocity * ffScaler
             + m_driveController.calculate(distanceFromTarget, Meters.zero());
+
     if (distanceFromTarget.lt(m_driveController.getTolerance())) {
       driveVelocityScalar = 0.0;
     }

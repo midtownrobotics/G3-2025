@@ -91,6 +91,11 @@ public interface VisionIO {
   }
 
   /**
+   * Gets the name of the vision system.
+   */
+  public String getName();
+
+  /**
    * Updates the provided inputs object with the latest vision data from the vision system.
    * This method typically gets called to refresh the latest target and pose information.
    *

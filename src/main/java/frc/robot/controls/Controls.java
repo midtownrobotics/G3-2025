@@ -1,5 +1,8 @@
 package frc.robot.controls;
 
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public interface Controls {
@@ -62,6 +65,8 @@ public interface Controls {
   public Trigger handoffCoral();
   /** Scores a game piece. */
   public Trigger scoreGamePiece();
+  /** Reverses a game piece. */
+  public Trigger reverseGamePiece();
 
   /** Moves elevator into position to score L1 */
   public Trigger prepareScoreCoralL1();
@@ -134,4 +139,39 @@ public interface Controls {
    * Manual Mode - Reverses Coral Intake Rollers
    */
   public Trigger coralIntakeReverse();
+
+  /** Button to align to the left-most branch of a reef face. */
+  public Trigger alignToReefLeftBranch();
+
+  /** Button to align to the right-most branch of a reef face. */
+  public Trigger alignToReefRightBranch();
+
+  /** Button to align to the reef */
+  public Trigger alignToReef();
+
+  /** Gets the POV value of the driver controller */
+  public int getDriverPOV();
+
+  /** Sets the rumble of the driver controller */
+  public void setDriverRumble(double rumble);
+
+  /** Sets the rumble of the operator controller */
+  public void setOperatorRumble(double rumble);
+
+  /** Returns a command that sets the rumble of both controllers */
+  public default Command setRumbleCommand(double rumble) {
+    return Commands.runOnce(() -> {
+      setDriverRumble(rumble);
+      setOperatorRumble(rumble);
+    });
+  }
+
+  /** Returns a command that sets the rumble of both controllers for a duration */
+  public default Command setRumbleCommand(double rumble, Time duration) {
+    return Commands.sequence(
+      setRumbleCommand(1.0),
+      Commands.waitSeconds(0.5),
+      setRumbleCommand(0.0)
+    );
+  }
 }

@@ -58,6 +58,7 @@ import frc.robot.utils.LocalADStarAK;
 import frc.robot.utils.LoggerUtil;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -413,8 +414,18 @@ public class Drive extends SubsystemBase {
     return runOnce(this::stopWithX);
   }
 
+  /** Returns a command to stop */
+  public Command stopCommand() {
+    return runOnce(this::stop);
+  }
+
   /** Returns a command to reset driver heading */
   public Command resetDriveHeadingCommand() {
     return Commands.runOnce(this::resetDriveHeading);
+  }
+
+  /** Returns a command that drives based on the supplied chassis speeds */
+  public Command driveCommand(Supplier<ChassisSpeeds> speeds) {
+    return run(() -> runVelocity(speeds.get()));
   }
 }
