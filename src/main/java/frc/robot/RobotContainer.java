@@ -362,7 +362,7 @@ public class RobotContainer {
 
     // controls.outtakeShoot().onTrue(Commands.none());
 
-    // controls.algaeClawIntake().onTrue(Commands.none());
+    controls.algaeClawIntake().onTrue(coralIntake.setGoalCommand(CoralIntake.Goal.ALGAE_INTAKE)).onFalse(coralIntake.setGoalCommand(CoralIntake.Goal.HOLD_ALGAE));
 
     // controls.coralForward().onTrue(Commands.none());
 

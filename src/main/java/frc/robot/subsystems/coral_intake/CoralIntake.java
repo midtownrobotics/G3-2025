@@ -44,7 +44,7 @@ public class CoralIntake extends SubsystemBase {
     STOW(Degrees.of(136.5), Volts.of(0)),
     GROUND_INTAKE(Degrees.of(-8), Volts.of(12)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
-    STATION_VOMIT(Degrees.of(45), Volts.of(-5)),
+    STATION_VOMIT(Degrees.of(107), Volts.of(-5)),
     STATION_INTAKE(Degrees.of(107), Volts.of(8)),
     HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(-6.5)),
     HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), HANDOFF.getBeltVoltage()),
@@ -52,7 +52,8 @@ public class CoralIntake extends SubsystemBase {
     CLIMB(Degrees.of(88), Volts.of(0)),
     L1(Degrees.of(80), Volts.of(-4)),
     L1_Prepare(L1.getAngle(), Volts.zero()),
-    ALGAE_INTAKE(Degrees.of(25), Volts.of(12)),
+    ALGAE_INTAKE(Degrees.of(45), Volts.of(-6)),
+    HOLD_ALGAE(Degrees.of(55), Volts.of(-1)),
     TUNING(Degrees.of(0), Volts.of(0)),
     MANUAL(Degrees.of(0), Volts.of(0));
 
