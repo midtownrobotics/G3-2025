@@ -65,6 +65,7 @@ public interface Controls {
   public Trigger handoffCoral();
   /** Scores a game piece. */
   public Trigger scoreGamePiece();
+  /** Reverses a game piece. */
   public Trigger reverseGamePiece();
 
   /** Moves elevator into position to score L1 */
@@ -151,10 +152,13 @@ public interface Controls {
   /** Gets the POV value of the driver controller */
   public int getDriverPOV();
 
+  /** Sets the rumble of the driver controller */
   public void setDriverRumble(double rumble);
 
+  /** Sets the rumble of the operator controller */
   public void setOperatorRumble(double rumble);
 
+  /** Returns a command that sets the rumble of both controllers */
   public default Command setRumbleCommand(double rumble) {
     return Commands.runOnce(() -> {
       setDriverRumble(rumble);
@@ -162,6 +166,7 @@ public interface Controls {
     });
   }
 
+  /** Returns a command that sets the rumble of both controllers for a duration */
   public default Command setRumbleCommand(double rumble, Time duration) {
     return Commands.sequence(
       setRumbleCommand(1.0),
