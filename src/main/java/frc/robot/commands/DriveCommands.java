@@ -362,30 +362,31 @@ public class DriveCommands {
   }
 
   /** Creates a command that drives to a reef position based on POV */
-  public static Command driveToClosestReefFace(Drive drive, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBranchSupplier) {
-    return Commands.defer(() -> {
-      ReefFace face = reefFaceSupplier.get();
-      boolean leftBranch = leftBranchSupplier.getAsBoolean();
+  public static Command alignToReefFace(Drive drive, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBranchSupplier) {
+      Supplier<Pose2d> branchPoseSupplier = () -> {
+        ReefFace face = reefFaceSupplier.get();
+        boolean leftBranch = leftBranchSupplier.getAsBoolean();
 
-      if (face == null) {
-        return drive.stopWithXCommand();
-      }
+        if (face == null) {
+          return null;
+        }
 
-      boolean flipBranchSide = kFlippedReefFaces.contains(face);
-      boolean leftSideToDriver = flipBranchSide ^ leftBranch;
-      int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
+        boolean flipBranchSide = kFlippedReefFaces.contains(face);
+        boolean leftSideToDriver = flipBranchSide ^ leftBranch;
+        int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
 
+        Pose2d target =  FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1).transformBy(kRobotOffset);
 
-      Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1).transformBy(kRobotOffset);
+        Logger.recordOutput("PathfindToReef/ReefFace", face);
+        Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
+        Logger.recordOutput("PathfindToReef/TargetPose", target);
 
-      Logger.recordOutput("PathfindToReef/ReefFace", face);
-      Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
-      Logger.recordOutput("PathfindToReef/TargetPose", target);
+        return target;
+      };
 
       return Commands.sequence(
-        new DriveToPoint(drive, () -> target),
+        new DriveToPoint(drive, branchPoseSupplier),
         drive.stopWithXCommand()
       );
-    }, Set.of(drive));
   }
 }

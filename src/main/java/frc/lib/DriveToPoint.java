@@ -42,9 +42,9 @@ public class DriveToPoint extends Command {
   private LTLinearProfiledPIDController m_driveController =
       new LTLinearProfiledPIDController(
           "DriveToPoint/DriveController",
-          4.5,
+          3.2,
           0.0,
-          0.04,
+          0.01,
           kMaxLinearVelocity,
           kMaxLinearAcceleration);
 
@@ -52,7 +52,7 @@ public class DriveToPoint extends Command {
   private LTAngularProfiledPIDController m_headingController =
       new LTAngularProfiledPIDController("DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
 
-  private double m_ffMinRadius = 0.2, m_ffMaxRadius = 1.1;
+  private double m_ffMinRadius = 0.1, m_ffMaxRadius = 1.1;
 
   public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose) {
     m_drive = drive;
@@ -100,6 +100,11 @@ public class DriveToPoint extends Command {
 
     Pose2d targetPose = m_targetPose.get();
     Pose2d currentPose = m_drive.getPose();
+
+    if (targetPose == null) {
+      m_drive.stopWithX();
+      return;
+    }
 
     Translation2d linearError = targetPose.getTranslation().minus(currentPose.getTranslation());
 

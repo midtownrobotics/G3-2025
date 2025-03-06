@@ -66,8 +66,8 @@ public class WinchIOKraken implements WinchIO {
 
     Angle position = getInitialAngle();
 
-    tryUntilOk(5, () -> leftMotor.setPosition(position));
-    tryUntilOk(5, () -> rightMotor.setPosition(position));
+    tryUntilOk(5, () -> leftMotor.setPosition(Degrees.zero()));
+    tryUntilOk(5, () -> rightMotor.setPosition(Degrees.zero()));
 
     configureMotors();
 
@@ -262,7 +262,7 @@ public class WinchIOKraken implements WinchIO {
   }
 
   private Angle getInitialAngle() {
-    double radians = (getZeroedAbsoluteEncoderPosition().in(Radians) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+    double radians = (getZeroedAbsoluteEncoderPosition().in(Radians) + 2 * Math.PI + 0.2) % (2 * Math.PI) - 0.2;
 
     return Radians.of(radians).times(ElevatorConstants.kGearing);
   }
