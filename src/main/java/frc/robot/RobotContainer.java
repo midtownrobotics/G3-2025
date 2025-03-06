@@ -21,7 +21,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -313,9 +312,8 @@ public class RobotContainer {
 
     controls.driveBrake().onTrue(drive.stopWithXCommand());
 
-    LEDPattern pickupPiecePattern = LEDPattern.solid(Color.kGreen).blink(Seconds.of(0.2));
     RobotModeTriggers.teleop().and(coralIntake.centerSensorTrigger.debounce(0.15)).onTrue(
-        led.applyPatternCommand(pickupPiecePattern, Seconds.of(1.0))
+        led.blinkCommand(Color.kGreen).withTimeout(1.0)
             .alongWith(controls.setRumbleCommand(1.0, Seconds.of(0.4))));
 
     controls.gamePieceLock()
@@ -405,10 +403,10 @@ public class RobotContainer {
         coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_VOMIT, CoralIntake.Goal.STOW));
 
     // Align to reef using the driver's POV
-    // controls.alignToReef().whileTrue(DriveCommands.alignToReefFace(drive,
+    // controls.alignToReef().whileTrue(DriveCommands.alignToReefFace(drive, led,
     //     () -> ReefFace.fromPOV(controls.getDriverPOV()), controls.alignToReefLeftBranch()));
 
-    controls.alignToReef().whileTrue(DriveCommands.alignToReefFace(drive,
+    controls.alignToReef().whileTrue(DriveCommands.alignToReefFace(drive, led,
         () -> {
           ReefFace closestFace = null;
           Distance closestDistance = Meters.of(Double.MAX_VALUE);

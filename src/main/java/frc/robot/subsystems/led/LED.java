@@ -1,6 +1,7 @@
 package frc.robot.subsystems.led;
 
-import static edu.wpi.first.units.Units.Hertz;
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.measure.Time;
@@ -13,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LED extends SubsystemBase {
-    private static final LEDPattern kDefaultPattern = LEDPattern.gradient(GradientType.kContinuous, Color.kFirstRed, Color.kDarkRed).breathe(Seconds.of(8)).scrollAtRelativeSpeed(Hertz.of(0.5));
+    private static final LEDPattern kDefaultPattern = LEDPattern.gradient(GradientType.kContinuous, Color.kFirstRed, Color.kDarkRed).breathe(Seconds.of(8)).scrollAtRelativeSpeed(Percent.per(Second).of(50));
     private AddressableLED led = new AddressableLED(2);
     private AddressableLEDBuffer buffer = new AddressableLEDBuffer(31);
 
@@ -51,5 +52,16 @@ public class LED extends SubsystemBase {
     /** Returns a command that turns off the LEDs */
     public Command applyOffPatternCommand() {
         return applyPatternCommand(LEDPattern.kOff);
+    }
+
+    /** Returns a command that blinks the LEDs */
+    public Command blinkCommand(Color color) {
+        return applyPatternCommand(LEDPattern.solid(color).blink(Seconds.of(0.2)));
+    }
+
+    /** Returns a command that shows the driver something finished */
+    public Command jobDonePatternCommand(Color color) {
+        Color darker = new Color(color.red / 3, color.green / 3, color.blue / 3);
+        return applyPatternCommand(LEDPattern.gradient(GradientType.kContinuous, darker, color).scrollAtRelativeSpeed(Percent.per(Second).of(300)));
     }
 }

@@ -36,8 +36,8 @@ public class DriveToPoint extends Command {
   public static final AngularVelocity kMaxAngularVelocity = DegreesPerSecond.of(720.0);
   public static final AngularAcceleration kMaxAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
-  private Drive m_drive;
-  private Supplier<Pose2d> m_targetPose;
+  private final Drive m_drive;
+  private final Supplier<Pose2d> m_targetPose;
 
   private LTLinearProfiledPIDController m_driveController =
       new LTLinearProfiledPIDController(

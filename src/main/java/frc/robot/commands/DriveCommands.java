@@ -34,6 +34,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.AllianceFlipUtil;
@@ -43,6 +44,7 @@ import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularVelocity;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearVelocity;
 import frc.robot.subsystems.drivetrain.Drive;
+import frc.robot.subsystems.led.LED;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import java.text.DecimalFormat;
@@ -331,7 +333,7 @@ public class DriveCommands {
 
 
   /** Creates a command that drives to a reef position based on POV */
-  public static Command pathfindToReef(Drive drive, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBranchSupplier) {
+  public static Command pathfindToReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBranchSupplier) {
     return Commands.defer(() -> {
       ReefFace face = reefFaceSupplier.get();
       boolean leftBranch = leftBranchSupplier.getAsBoolean();
@@ -365,7 +367,7 @@ public class DriveCommands {
   }
 
   /** Creates a command that drives to a reef position based on POV */
-  public static Command alignToReefFace(Drive drive, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBranchSupplier) {
+  public static Command alignToReefFace(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBranchSupplier) {
       Supplier<Pose2d> branchPoseSupplier = () -> {
         ReefFace face = reefFaceSupplier.get();
         boolean leftBranch = leftBranchSupplier.getAsBoolean();
@@ -391,7 +393,7 @@ public class DriveCommands {
 
       return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopWithXCommand()
+        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy())
       );
   }
 }
