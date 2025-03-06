@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.sensors.VisionConstants.kElevatorTagCameraName;
 import static frc.robot.sensors.VisionConstants.kModuleTagCameraName;
@@ -15,9 +16,11 @@ import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.AllianceFlipUtil;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOBag;
 import frc.lib.RollerIO.RollerIONeo;
@@ -63,6 +67,7 @@ import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
+import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
 import java.util.function.DoubleSupplier;
@@ -399,8 +404,29 @@ public class RobotContainer {
     controls.groundVomitCoral().whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_VOMIT, CoralIntake.Goal.STOW));
 
+    // Align to reef using the driver's POV
+    // controls.alignToReef().whileTrue(DriveCommands.alignToReefFace(drive,
+    //     () -> ReefFace.fromPOV(controls.getDriverPOV()), controls.alignToReefLeftBranch()));
+
     controls.alignToReef().whileTrue(DriveCommands.alignToReefFace(drive,
-        () -> ReefFace.fromPOV(controls.getDriverPOV()), controls.alignToReefLeftBranch()));
+        () -> {
+          ReefFace closestFace = null;
+          Distance closestDistance = Meters.of(Double.MAX_VALUE);
+          Pose2d currentPose = drive.getPose();
+
+          for (ReefFace face : ReefFace.values()) {
+            Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+            Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+            Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
+            if (distance.lt(closestDistance)) {
+              closestFace = face;
+              closestDistance = distance;
+            }
+          }
+
+          return closestFace;
+        }, controls.alignToReefLeftBranch()));
+
 
     controls.sourceIntakeCoral().whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW));

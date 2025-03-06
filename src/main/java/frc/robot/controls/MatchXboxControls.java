@@ -284,7 +284,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger alignToReef() {
-    return alignToReefLeftBranch().or(alignToReefRightBranch()).and(driverController.povCenter().negate());
+    return alignToReefLeftBranch().or(alignToReefRightBranch());
   }
 
   @Override

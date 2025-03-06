@@ -52,7 +52,7 @@ public class DriveToPoint extends Command {
   private LTAngularProfiledPIDController m_headingController =
       new LTAngularProfiledPIDController("DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
 
-  private double m_ffMinRadius = 0.1, m_ffMaxRadius = 1.1;
+  private double m_ffMinRadius = 0.25, m_ffMaxRadius = 1.2;
 
   public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose) {
     m_drive = drive;
@@ -116,6 +116,7 @@ public class DriveToPoint extends Command {
     double driveVelocityScalar =
         m_driveController.getSetpoint().velocity * ffScaler
             + m_driveController.calculate(distanceFromTarget, Meters.zero());
+
     if (distanceFromTarget.lt(m_driveController.getTolerance())) {
       driveVelocityScalar = 0.0;
     }
