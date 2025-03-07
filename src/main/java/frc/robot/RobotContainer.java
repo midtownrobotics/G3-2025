@@ -204,7 +204,7 @@ public class RobotContainer {
         // Coral Intake
         beltIO = new RollerIONeo(Ports.CoralIntake.belt, IdleMode.kBrake);
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
-        coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kCoast);
+        coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
 
         // Coral Outtake
         rollerIO = new RollerIOBag(Ports.CoralOuttake.roller);
@@ -361,10 +361,12 @@ public class RobotContainer {
     controls.prepareScoreCoralL3().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L3));
     controls.prepareScoreCoralL4().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L4));
 
-    controls.handoffCoral().onTrue(Commands.parallel(
-        elevator.setGoalCommand(Elevator.Goal.STOW),
-        coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
-        coralOuttake.setGoalCommand(CoralOuttake.Goal.IDLE)));
+    // controls.handoffCoral().onTrue(Commands.parallel(
+    //     elevator.setGoalCommand(Elevator.Goal.STOW),
+    //     coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
+    //     coralOuttake.setGoalCommand(CoralOuttake.Goal.IDLE)));
+
+    controls.handoffCoral().onTrue(handoffCommand());
 
     // controls.reefAlgaePositionLock().onTrue(Commands.none());
 

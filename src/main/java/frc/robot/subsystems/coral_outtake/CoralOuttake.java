@@ -26,7 +26,8 @@ public class CoralOuttake extends SubsystemBase {
     CORAL_BACKWARDS(3),
     CORAL_TINY_ADJUST(-1),
     SHOOT(-10),
-    HANDOFF(-5),
+    HANDOFF(-8),
+    SLOWER_HANDOFF(-5),
     TUNING(),
     MANUAL();
 
