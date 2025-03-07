@@ -12,6 +12,7 @@ public class Ports {
         public static final int LeftWinchMotor = 62;
         public static final int RightWinchMotor = 61;
         public static final int WinchEncoder = 1;
+        public static final int LockServo = 0;
     }
 
     public static class CoralIntake {

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.controls.CoralMode;
+import frc.robot.subsystems.elevator.lock.LockIO;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -47,15 +48,23 @@ public class Elevator extends SubsystemBase {
     MANUAL(Feet.zero());
 
     private @Getter Distance height;
+    private @Getter boolean lockEnabled;
 
     /** Goal has no meter height value associated */
     private Goal() {
       this.height = null;
+      lockEnabled = false;
     }
 
     /** Goal has meter height value associated */
     private Goal(Distance height) {
       this.height = height;
+      lockEnabled = false;
+    }
+
+    private Goal(Distance height, boolean lockEnabled) {
+      this.height = height;
+      this.lockEnabled = lockEnabled;
     }
 
     /**
@@ -78,6 +87,7 @@ public class Elevator extends SubsystemBase {
 
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
   private @Getter WinchIO winch;
+  private @Getter LockIO lock;
 
   private SysIdRoutine routine;
 
@@ -88,8 +98,9 @@ public class Elevator extends SubsystemBase {
    *
    * @param winch
    */
-  public Elevator(WinchIO winch) {
+  public Elevator(WinchIO winch, LockIO lock) {
     this.winch = winch;
+    this.lock = lock;
 
       SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         winch::setVoltage,
@@ -122,6 +133,8 @@ public class Elevator extends SubsystemBase {
     Distance desiredTuningHeight = Feet.of(tuningDesiredHeight.get());
 
     desiredTuningHeight = UnitUtil.clamp(desiredTuningHeight, Feet.of(0), Feet.of(5.3));
+
+    lock.setLockEnabled(getCurrentGoal().lockEnabled);
 
     switch (getCurrentGoal()) {
       case CLIMB_BOTTOM:
