@@ -15,7 +15,7 @@ public class LockIOServo implements LockIO {
     }
 
     public void setLockEnabled(boolean value) {
-        servo.set(value ? lockedPosition.in(Degrees) : unlockedPosition.in(Degrees));
+        servo.setAngle(value ? lockedPosition.in(Degrees) : unlockedPosition.in(Degrees));
     }
 
 }

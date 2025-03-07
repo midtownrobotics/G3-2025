@@ -442,10 +442,19 @@ public class RobotContainer {
     controls.sourceVomitCoral().whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_VOMIT, CoralIntake.Goal.STOW));
 
-    controls.climb().whileTrue(
+    controls.climb()
+      .onTrue(
         Commands.parallel(
-            elevator.setGoalEndCommand(Elevator.Goal.CLIMB, Elevator.Goal.CLIMB_BOTTOM),
-            coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB)));
+          elevator.setGoalCommand(Elevator.Goal.CLIMB),
+          coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB)
+        )
+      )
+      .onFalse(
+        Commands.sequence(
+          elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2),
+          elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)
+        )
+      );
 
     // CommandXboxController testController = new CommandXboxController(5);
 
