@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.311862702546295,
-        "y": 7.156079644097222
+        "x": 1.282684426229508,
+        "y": 7.207735655737704
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.218952115459898,
-        "y": 6.526401478885825
+        "x": 2.189773839143111,
+        "y": 6.578057490526307
       },
       "isLocked": false,
       "linkedName": "Top Loading Station"
     },
     {
       "anchor": {
-        "x": 3.905474853515625,
-        "y": 5.346526022518383
+        "x": 3.7042008196721308,
+        "y": 5.205788934426229
       },
       "prevControl": {
-        "x": 3.7643017455032513,
-        "y": 5.552851381052244
+        "x": 3.563027711659757,
+        "y": 5.412114292960091
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6917271860328639,
+      "waypointRelativePos": 0.4124824026278862,
       "rotationDegrees": -61.09871186671859
     }
   ],
@@ -38,24 +38,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff",
-      "waypointRelativePos": 0.3009951368876081,
+      "name": "Handoff and PrepareScoreLevel4",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "sequential",
         "data": {
-          "name": "Handoff"
-        }
-      }
-    },
-    {
-      "name": "PrepareLevel4",
-      "waypointRelativePos": 0.6162869236311233,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareLevel4"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Handoff"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "PrepareLevel4"
+              }
+            }
+          ]
         }
       }
     }
