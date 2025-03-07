@@ -12,7 +12,6 @@ public class LockIOServo implements LockIO {
     public LockIOServo(int id) {
         servo = new Servo(id);
         servo.setBoundsMicroseconds(2500, 0, 1500, 0, 500);
-
     }
 
     public void setLockEnabled(boolean value) {

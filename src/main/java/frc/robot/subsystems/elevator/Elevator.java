@@ -43,7 +43,7 @@ public class Elevator extends SubsystemBase {
     AUTO_L4(Inches.of(62)),
     L4(Inches.of(60.5)),
     CLIMB(Feet.of(1.8)),
-    CLIMB_BOTTOM(Feet.zero()),
+    CLIMB_BOTTOM(Feet.zero(), true),
     TUNING(Feet.zero()),
     MANUAL(Feet.zero());
 
