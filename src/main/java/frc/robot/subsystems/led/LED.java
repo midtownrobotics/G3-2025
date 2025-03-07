@@ -7,8 +7,10 @@ import static edu.wpi.first.units.Units.Seconds;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.LEDPattern.GradientType;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,7 +19,10 @@ public class LED extends SubsystemBase {
     private static final LEDPattern kDefaultPattern = LEDPattern.gradient(GradientType.kContinuous, Color.kFirstRed, Color.kDarkRed).breathe(Seconds.of(8)).scrollAtRelativeSpeed(Percent.per(Second).of(50));
     private AddressableLED led = new AddressableLED(2);
     private AddressableLEDBuffer buffer = new AddressableLEDBuffer(31);
+    private AddressableLEDBufferView rslView = buffer.createView(30, 30);
+    private AddressableLEDBufferView patternView = buffer.createView(0, 29);
 
+    private LEDPattern rslPattern = LEDPattern.solid(Color.kOrange).synchronizedBlink(RobotController::getRSLState);
     /** Creates a new LED subsystem */
     public LED() {
         led.setLength(buffer.getLength());
@@ -26,12 +31,13 @@ public class LED extends SubsystemBase {
 
     @Override
     public void periodic() {
+        rslPattern.applyTo(rslView);
         led.setData(buffer);
     }
 
     /** Applies an LEDPattern to the LED buffer */
     public void applyPattern(LEDPattern pattern) {
-        pattern.applyTo(buffer);
+        pattern.applyTo(patternView);
     }
 
     /** Returns a command that applies an LEDPattern to the LED buffer */
