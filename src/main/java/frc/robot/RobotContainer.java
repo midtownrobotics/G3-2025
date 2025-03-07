@@ -260,7 +260,7 @@ public class RobotContainer {
         coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.IDLE).withTimeout(0.5),
         elevator.setGoalCommand(Elevator.Goal.STOW)));
 
-    NamedCommands.registerCommand("Handoff", handoffCommand());
+    NamedCommands.registerCommand("Handoff", autoHandoffCommand());
     // NamedCommands.registerCommand("PrepareLevel4", Commands.none());
     NamedCommands.registerCommand("PrepareLevel4", elevator.setGoalCommand(Elevator.Goal.AUTO_L4));
     NamedCommands.registerCommand("PrepareLoadingStationIntake",
