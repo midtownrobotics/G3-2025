@@ -24,10 +24,11 @@ public class CoralOuttake extends SubsystemBase {
     // TODO: Set correct voltages
     IDLE(0),
     CORAL_BACKWARDS(3),
+    REVERSE_SHOOT(5),
     CORAL_TINY_ADJUST(-1),
     SHOOT(-10),
-    HANDOFF(-8),
-    SLOWER_HANDOFF(-5),
+    HANDOFF(-7),
+    SLOWER_HANDOFF(-5.5),
     TUNING(),
     MANUAL();
 
