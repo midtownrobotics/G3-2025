@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.267100694444443,
-        "y": 2.8577965856481478
+        "x": 5.25525,
+        "y": 2.871
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.971805917245369,
-        "y": 2.5367632378472216
+        "x": 4.959955222800926,
+        "y": 2.549966652199074
       },
       "isLocked": false,
       "linkedName": "Branch F"
@@ -57,7 +57,7 @@
     "rotation": 143.52272134051793
   },
   "reversed": false,
-  "folder": "Bottom Side",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 119.75609030500216
