@@ -15,7 +15,7 @@ public class ElevatorConstants {
     public static final double kGearing = 14;
 
 
-    public static final Angle absoluteEncoderOffset = Radians.of(0.202);
+    public static final Angle absoluteEncoderOffset = Radians.of(0.564);
 
   public final class PID_SCORE {
     public static final LoggedTunableNumber s = new LoggedTunableNumber("Elevator/PID_SCORE/s", 0.12);
