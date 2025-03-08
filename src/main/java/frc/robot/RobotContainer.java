@@ -451,6 +451,7 @@ public class RobotContainer {
       )
       .onFalse(
         Commands.sequence(
+          coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB_BOTTOM),
           elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2),
           elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)
         )
