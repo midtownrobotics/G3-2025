@@ -38,7 +38,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
   public SlewRateLimiter voltageRateLimiter = new SlewRateLimiter(10);
-  
+
   public LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit, Angle>(
       CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
