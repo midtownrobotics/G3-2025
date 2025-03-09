@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
@@ -36,6 +37,7 @@ import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
+  public SlewRateLimiter voltageRateLimiter = new SlewRateLimiter(10);
 
   public LinearConstraint<AngleUnit, Angle> coralIntakeConstraint = new LinearConstraint<AngleUnit, Angle>(
       CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
@@ -46,11 +48,12 @@ public class CoralIntake extends SubsystemBase {
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
     STATION_VOMIT(Degrees.of(107), Volts.of(-5)),
     STATION_INTAKE(Degrees.of(107), Volts.of(10)),
-    HANDOFF(STOW.getAngle(), Volts.of(0), Volts.of(-5)),
-    HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), HANDOFF.getBeltVoltage()),
+    HANDOFF(STOW.getAngle(), Volts.of(1.0), Volts.of(-5)),
+    HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), Volts.of(-5)),
     PRE_HANDOFF_ADJUST_CORAL(Degrees.of(90), Volts.of(12), Volts.of(5)),
     CLIMB(Degrees.of(88), Volts.of(0)),
-    L1(Degrees.of(80), Volts.of(-4)),
+    CLIMB_BOTTOM(Degrees.of(110), Volts.of(0)),
+    L1(Degrees.of(80), Volts.of(-7)),
     L1_Prepare(L1.getAngle(), Volts.zero()),
     ALGAE_INTAKE(Degrees.of(45), Volts.of(-9.5)),
     HOLD_ALGAE(Degrees.of(55), Volts.of(-1)),
@@ -189,7 +192,7 @@ public class CoralIntake extends SubsystemBase {
 
     // currentGoal = Goal.CLIMB;
 
-    Voltage desiredBeltVoltage = currentGoal.getBeltVoltage();
+    Voltage desiredBeltVoltage = Volts.of(voltageRateLimiter.calculate(currentGoal.getBeltVoltage().in(Volts)));
     // if (desiredBeltVoltage.equals(Volts.zero()) && pieceDetectedTrigger.getAsBoolean()) {
     //   if (getPosition().lte(Degrees.of(135))) {
     //     if (!centerSensor.isTriggered()) {

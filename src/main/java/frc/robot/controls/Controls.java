@@ -158,6 +158,12 @@ public interface Controls {
   /** Sets the rumble of the operator controller */
   public void setOperatorRumble(double rumble);
 
+  /** */
+  public Trigger increaseElevatorOffset();
+
+  /** */
+  public Trigger decreaseElevatorOffset();
+
   /** Returns a command that sets the rumble of both controllers */
   public default Command setRumbleCommand(double rumble) {
     return Commands.runOnce(() -> {

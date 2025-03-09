@@ -328,7 +328,7 @@ public class DriveCommands {
   private static final Set<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
 
   // TODO - Modify this offset to position robot correctly in front of the reef branches
-  private static final Transform2d kRobotOffset = new Transform2d(new Translation2d(Inches.of(28), Inches.of(-1.5)), Rotation2d.k180deg);
+  private static final Transform2d kRobotOffset = new Transform2d(new Translation2d(Inches.of(21), Inches.of(-3)), Rotation2d.k180deg);
   private static final Transform2d pathPlannerOffset = new Transform2d(new Translation2d(Inches.of(33), Inches.of(-1.5)), Rotation2d.k180deg);
 
 
