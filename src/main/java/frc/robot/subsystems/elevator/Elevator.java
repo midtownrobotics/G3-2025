@@ -32,6 +32,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
+  public Distance driverOffset = Inches.zero();
+
   private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
 
   public enum Goal {
@@ -130,6 +132,10 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs("Elevator", winchInputs);
 
     Distance constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight());
+
+    if (getCurrentGoal() == Goal.L4 || getCurrentGoal() == Goal.L3 || getCurrentGoal() == Goal.L2) {
+      constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight()).plus(driverOffset);
+    }
 
     Distance desiredTuningHeight = Feet.of(tuningDesiredHeight.get());
 

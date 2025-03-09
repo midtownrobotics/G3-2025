@@ -292,6 +292,14 @@ public class RobotContainer {
   private void configureBindings() {
     // Driver
 
+    controls.increaseElevatorOffset().onTrue(Commands.runOnce(() -> {
+      elevator.driverOffset = elevator.driverOffset.plus(Inches.of(1));
+    }));
+
+    controls.decreaseElevatorOffset().onTrue(Commands.runOnce(() -> {
+      elevator.driverOffset = elevator.driverOffset.minus(Inches.of(1));
+    }));
+
     DoubleSupplier speedMultiplier = () -> {
       if (elevator.getPosition().gt(Inches.of(10))) {
         double elevatorHeight = elevator.getPosition().in(Inches);

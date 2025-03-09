@@ -61,6 +61,18 @@ public class MatchXboxControls implements Controls {
     //     : 0;
   }
 
+
+
+  @Override
+  public Trigger decreaseElevatorOffset() {
+    return driverController.povDown();
+  }
+
+  @Override
+  public Trigger increaseElevatorOffset() {
+    return driverController.povUp();
+  }
+
   @Override
   public Trigger resetDriveHeading() {
     return driverController.a();
