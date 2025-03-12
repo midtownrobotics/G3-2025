@@ -1,10 +1,14 @@
 package frc.robot.subsystems.coral_outtake;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Time;
 import frc.lib.dashboard.LoggedTunableNumber;
 
@@ -25,9 +29,8 @@ public class CoralOuttakeConstants {
         public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralIntake/i", 0.08);
         public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralIntake/d", 0.1);
 
-        public static final LoggedTunableNumber maxPivotV = new LoggedTunableNumber("CoralIntake/maxV", 8);
-        public static final LoggedTunableNumber maxPivotA = new LoggedTunableNumber("CoralIntake/maxA", 10);
-
+        public static final AngularVelocity maxPivotV = DegreesPerSecond.of(0);
+        public static final AngularAcceleration maxPivotA = DegreesPerSecondPerSecond.of(0);
     }
 
     public static final LoggedTunableNumber pivotOffset = new LoggedTunableNumber(

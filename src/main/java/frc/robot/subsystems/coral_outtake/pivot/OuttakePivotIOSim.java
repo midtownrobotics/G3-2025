@@ -7,18 +7,19 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
-public class PivotIOSim implements PivotIO {
+public class OuttakePivotIOSim implements OuttakePivotIO {
   private final SingleJointedArmSim m_sim;
   private final MutVoltage voltage = Volts.mutable(0);
 
   /**
    * Creates a new PivotIOSim.
    */
-  public PivotIOSim() {
+  public OuttakePivotIOSim() {
     m_sim = new SingleJointedArmSim(DCMotor.getNEO(1), 20, SingleJointedArmSim.estimateMOI(Units.inchesToMeters(10), 1.5), Units.inchesToMeters(10), Units.degreesToRadians(-10), Units.degreesToRadians(141), true, 0, 0.001, 0.001);
   }
 
@@ -37,5 +38,11 @@ public class PivotIOSim implements PivotIO {
   @Override
   public void setVoltage(Voltage voltage) {
     this.voltage.mut_replace(voltage);
+  }
+
+  @Override
+  public void setPosition(Angle angle) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
   }
 }

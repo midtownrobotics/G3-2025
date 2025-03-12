@@ -64,8 +64,6 @@ public class WinchIOKraken implements WinchIO {
 
     encoder = new DutyCycleEncoder(encoderID);
 
-    Angle position = getInitialAngle();
-
     tryUntilOk(5, () -> leftMotor.setPosition(Degrees.zero()));
     tryUntilOk(5, () -> rightMotor.setPosition(Degrees.zero()));
 

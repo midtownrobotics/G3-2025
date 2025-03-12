@@ -8,7 +8,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface PivotIO {
+public interface OuttakePivotIO {
 
   @AutoLog
   public class PivotInputs {
@@ -25,6 +25,9 @@ public interface PivotIO {
 
   /** Sets the motor voltage. */
   public void setVoltage(Voltage voltage);
+
+  /** Sets the position */
+  public void setPosition(Angle angle);
 
   /**
    * Update input class for Pivot

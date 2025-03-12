@@ -1,10 +1,14 @@
 package frc.robot.subsystems.coral_outtake;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Volts;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
@@ -14,40 +18,43 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.robot.sensors.Photoelectric;
+import frc.robot.subsystems.coral_outtake.pivot.OuttakePivotIO;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
-import org.littletonrobotics.junction.Logger;
 
 public class CoralOuttake extends SubsystemBase {
 
   public enum Goal {
     // TODO: Set correct voltages
-    IDLE(0),
-    CORAL_BACKWARDS(3),
-    REVERSE_SHOOT(5),
-    CORAL_TINY_ADJUST(-1),
-    SHOOT(-10),
-    HANDOFF(-7),
-    SLOWER_HANDOFF(-5.5),
+    STOW(Volts.zero(), Degrees.of(0)),
+    CORAL_BACKWARDS(Volts.of(3), Degrees.of(0)),
+    REVERSE_SHOOT(Volts.of(5), Degrees.of(0)),
+    CORAL_TINY_ADJUST(Volts.of(-1), Degrees.of(0)),
+    SHOOT(Volts.of(-10), Degrees.of(0)),
+    HANDOFF(Volts.of(-7), Degrees.of(0)),
+    SLOWER_HANDOFF(Volts.of(-5.5), Degrees.of(0)),
     TUNING(),
     MANUAL();
 
     private @Getter Voltage voltage;
+    private @Getter Angle position;
 
     /** Goal has no meter height value associated */
     private Goal() {
       this.voltage = null;
     }
 
-    Goal(double voltage) {
-      this.voltage = Volts.of(voltage);
+    Goal(Voltage voltage, Angle position) {
+      this.voltage = voltage;
+      this.position = position;
     }
   }
 
   public final Trigger currentSpikeTrigger;
 
-  private @Getter Goal currentGoal = Goal.IDLE;
+  private @Getter Goal currentGoal = Goal.STOW;
   private RollerIO rollerIO;
+  private OuttakePivotIO pivotIO;
   private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
   private final Photoelectric handoffSensor;
 
@@ -56,8 +63,9 @@ public class CoralOuttake extends SubsystemBase {
    * Initializes Coral Outtake
    * @param rollerIO
    */
-  public CoralOuttake(RollerIO rollerIO, Photoelectric handoffSensor) {
+  public CoralOuttake(RollerIO rollerIO, OuttakePivotIO pivotIO, Photoelectric handoffSensor) {
     this.rollerIO = rollerIO;
+    this.pivotIO = pivotIO;
     this.handoffSensor = handoffSensor;
 
     currentSpikeTrigger = new Trigger(this::currentSpikeFiltered);
@@ -85,20 +93,15 @@ public class CoralOuttake extends SubsystemBase {
       case MANUAL:
         rollerIO.setVoltage(Units.Volts.zero());
         break;
-      case IDLE:
+      case STOW:
           rollerIO.setVoltage(Volts.zero());
         break;
-      // case HANDOFF_PUSH_UP:
-      //   if (handoffSensor.isTriggered()) {
-      //     rollerIO.setVoltage(Volts.of(-4.2));
-      //   } else {
-      //     rollerIO.setVoltage(Volts.zero());
-      //   }
-      //   break;
       default:
         rollerIO.setVoltage(getCurrentGoal().getVoltage());
         break;
     }
+
+    pivotIO.setPosition(getCurrentGoal().getPosition());
 
     Logger.recordOutput("CoralOuttake/currentState", getCurrentGoal());
     Logger.recordOutput("CoralOuttake/desiredVoltage", getCurrentGoal().getVoltage());
