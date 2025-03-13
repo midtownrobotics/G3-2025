@@ -17,6 +17,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Distance;
@@ -70,6 +71,8 @@ import frc.robot.utils.Constants;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
+import frc.robot.utils.FieldConstants.ReefLevel;
+
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -482,18 +485,35 @@ public class RobotContainer {
 
   /** Returns the autonomous command */
   public Command getAutonomousCommand() {
+    Pose2d robotPoseAtBranchE = new Pose2d(4.963, 2.702, Rotation2d.fromDegrees(143.523));
+
+    Pose2d branchEPose = FieldConstants.Reef.branchPositions2d.get(4).get(ReefLevel.L1);
+
+    Transform2d offset = branchEPose.minus(robotPoseAtBranchE);
+
+    for (int i = 0; i < 12; i++) {
+      Pose2d branchPose = FieldConstants.Reef.branchPositions2d.get(i).get(ReefLevel.L1);
+
+      Pose2d robotPose = branchPose.transformBy(offset);
+
+      System.out.println("Pose for branch " + i + " is " + robotPose);
+
+    }
+
+    /*
     if (auto == null) {
       return Commands.print("AHHHH");
     }
 
     return auto;
-    // var selected = m_autoChooser.getSelected();
+    */
+    var selected = m_autoChooser.getSelected();
 
-    // if (selected == null) {
+    if (selected == null) {
 
-    // }
+    }
 
-    // return selected;
+    return selected;
   }
 
   private Command autoHandoffCommand() {

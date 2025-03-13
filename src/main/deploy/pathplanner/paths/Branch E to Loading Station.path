@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.963071108217592,
-        "y": 2.7015017361111107
+        "x": 4.963,
+        "y": 2.702
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.976822259774135,
-        "y": 1.9806730409177558
+        "x": 3.976747506059039,
+        "y": 1.981176292658576
       },
       "isLocked": false,
       "linkedName": "Branch E"
@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 2.5717671738834413,
-        "y": 1.1797095630787042
+        "y": 1.1797095630787044
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.8,
-    "maxAcceleration": 2.7,
+    "maxVelocity": 3.9,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -54,7 +54,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 143.52272134051793
+    "rotation": 143.523
   },
   "reversed": false,
   "folder": "Bottom Side",
