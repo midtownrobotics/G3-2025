@@ -50,7 +50,7 @@ public class Superstructure extends SubsystemBase {
     Distance elevatorPosition = elevator.getPosition();
     Distance elevatorGoalPosition = elevator.getCurrentGoal().getHeight();
     Angle coralOuttakePosition = coralOuttakePivot.getPosition();
-    Angle coralOuttakeGoalPosition = coralOuttakePivot.getCurrentPivotGoal().getAngle();
+    Angle coralOuttakeGoalPosition = coralOuttakePivot.getCurrentGoal().getAngle();
 
     if (elevatorGoalPosition.gt(Inches.of(1.5)) || elevatorPosition.gt(Inches.of(1.5))) {
       coralIntakeConstraints.setUpper(kMaxCoralIntakeAngleElevatorUp);

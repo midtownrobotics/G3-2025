@@ -22,23 +22,8 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -70,6 +55,18 @@ import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.led.LED;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.01;
@@ -418,6 +415,7 @@ public class DriveCommands {
         drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
   }
 
+  /** Aligns to the Pose2d of the game piece */
   public static Command alignToGamePiece(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
     AtomicReference<Pose2d> gamePiecePose = new AtomicReference<>();
 

@@ -1,0 +1,312 @@
+{
+    "hubs": [
+        {
+            "x": 0,
+            "y": 38,
+            "width": 1728,
+            "height": 1024,
+            "state": {
+                "sidebar": {
+                    "width": 347,
+                    "expanded": [
+                        "/RealOutputs/Vision/Camera",
+                        "/RealOutputs/Vision/Camera/limelight-nick",
+                        "/RealOutputs/Vision/Camera/limelight-woody",
+                        "/RealOutputs/Odometry",
+                        "/Vision/Camera/limelight-gray/LatestTargetObservation/tx",
+                        "/Vision/Camera/limelight-gray/LatestTargetObservation/ty",
+                        "/Vision/Camera/limelight-gray/PoseObservations/0",
+                        "/Vision/Camera/limelight-gray/PoseObservations/1",
+                        "/Vision/Camera/limelight-gray/TagIds",
+                        "/Vision",
+                        "/Vision/Camera/limelight-woody",
+                        "/Vision/Camera/limelight-nick",
+                        "/Vision/Camera/limelight-gray",
+                        "/Vision/Camera/limelight-gray/PoseObservations",
+                        "/Vision/Camera/limelight-gray/PoseObservations/1/pose",
+                        "/Vision/Camera/limelight-gray/PoseObservations/1/pose/rotation",
+                        "/Vision/Camera/limelight-gray/PoseObservations/1/pose/rotation/q",
+                        "/Drive",
+                        "/Drive/Gyro",
+                        "/Drive/Module0",
+                        "/Drive/Module2",
+                        "/RealOutputs",
+                        "/RealOutputs/DriveToPoint",
+                        "/RealOutputs/PathfindToReef",
+                        "/RealOutputs/RobotViz",
+                        "/RealOutputs/RobotViz/Cameras",
+                        "/RealOutputs/Vision",
+                        "/RealOutputs/Vision/Camera/limelight-gray",
+                        "/AdvantageKit/RealOutputs"
+                    ]
+                },
+                "tabs": {
+                    "selected": 3,
+                    "tabs": [
+                        {
+                            "type": 0,
+                            "title": "",
+                            "controller": null,
+                            "controllerUUID": "ly0lmj8chiwfkvkzuqg668npfw56uasb",
+                            "renderer": "#/",
+                            "controlsHeight": 0
+                        },
+                        {
+                            "type": 1,
+                            "title": "Line Graph",
+                            "controller": {
+                                "leftSources": [],
+                                "rightSources": [],
+                                "discreteSources": [
+                                    {
+                                        "type": "stripes",
+                                        "logKey": "/Drive/Gyro/Connected",
+                                        "logType": "Boolean",
+                                        "visible": true,
+                                        "options": {
+                                            "color": "#2b66a2"
+                                        }
+                                    },
+                                    {
+                                        "type": "stripes",
+                                        "logKey": "/Drive/Module0/TurnEncoderConnected",
+                                        "logType": "Boolean",
+                                        "visible": true,
+                                        "options": {
+                                            "color": "#e5b31b"
+                                        }
+                                    },
+                                    {
+                                        "type": "stripes",
+                                        "logKey": "/Drive/Module2/TurnEncoderConnected",
+                                        "logType": "Boolean",
+                                        "visible": true,
+                                        "options": {
+                                            "color": "#af2437"
+                                        }
+                                    }
+                                ],
+                                "leftLockedRange": null,
+                                "rightLockedRange": null,
+                                "leftUnitConversion": {
+                                    "type": null,
+                                    "factor": 1
+                                },
+                                "rightUnitConversion": {
+                                    "type": null,
+                                    "factor": 1
+                                },
+                                "leftFilter": 0,
+                                "rightFilter": 0
+                            },
+                            "controllerUUID": "ybk9p2pd1yj8nyrn87ausv4j9da6gnir",
+                            "renderer": null,
+                            "controlsHeight": 200
+                        },
+                        {
+                            "type": 2,
+                            "title": "Odometry",
+                            "controller": {
+                                "sources": [],
+                                "game": "2025 Field (Welded)",
+                                "bumpers": "auto",
+                                "origin": "auto",
+                                "orientation": 2,
+                                "size": 30
+                            },
+                            "controllerUUID": "0a3jg5dt9wic4ncpucqwtpvc7d822nj8",
+                            "renderer": null,
+                            "controlsHeight": 200
+                        },
+                        {
+                            "type": 3,
+                            "title": "3D Field",
+                            "controller": {
+                                "sources": [
+                                    {
+                                        "type": "robot",
+                                        "logKey": "/RealOutputs/Odometry/Robot",
+                                        "logType": "Pose2d",
+                                        "visible": true,
+                                        "options": {
+                                            "model": "G3-2025"
+                                        }
+                                    },
+                                    {
+                                        "type": "component",
+                                        "logKey": "/RealOutputs/RobotViz/ComponentPoses",
+                                        "logType": "Pose3d[]",
+                                        "visible": true,
+                                        "options": {}
+                                    },
+                                    {
+                                        "type": "ghost",
+                                        "logKey": "/RealOutputs/Vision/Camera/limelight-gray/RobotPosesAccepted",
+                                        "logType": "Pose3d[]",
+                                        "visible": true,
+                                        "options": {
+                                            "model": "G3-2025",
+                                            "color": "#00ff00"
+                                        }
+                                    },
+                                    {
+                                        "type": "vision",
+                                        "logKey": "/RealOutputs/Vision/Camera/limelight-gray/TagPoses",
+                                        "logType": "Pose3d[]",
+                                        "visible": true,
+                                        "options": {
+                                            "color": "#00ff00",
+                                            "size": "normal"
+                                        }
+                                    },
+                                    {
+                                        "type": "ghost",
+                                        "logKey": "/RealOutputs/Vision/Camera/limelight-nick/RobotPosesAccepted",
+                                        "logType": "Pose3d[]",
+                                        "visible": true,
+                                        "options": {
+                                            "model": "G3-2025",
+                                            "color": "#00ffff"
+                                        }
+                                    },
+                                    {
+                                        "type": "ghost",
+                                        "logKey": "/RealOutputs/Vision/Camera/limelight-woody/RobotPosesAccepted",
+                                        "logType": "Pose3d[]",
+                                        "visible": true,
+                                        "options": {
+                                            "model": "G3-2025",
+                                            "color": "#ff8c00"
+                                        }
+                                    },
+                                    {
+                                        "type": "vision",
+                                        "logKey": "/RealOutputs/Vision/Camera/limelight-woody/TagPoses",
+                                        "logType": "Pose3d[]",
+                                        "visible": true,
+                                        "options": {
+                                            "color": "#ff8c00",
+                                            "size": "normal"
+                                        }
+                                    },
+                                    {
+                                        "type": "trajectory",
+                                        "logKey": "/RealOutputs/Odometry/Trajectory",
+                                        "logType": "Pose2d[]",
+                                        "visible": true,
+                                        "options": {
+                                            "color": "#00ff00",
+                                            "size": "normal"
+                                        }
+                                    },
+                                    {
+                                        "type": "ghost",
+                                        "logKey": "/RealOutputs/Odometry/TrajectorySetpoint",
+                                        "logType": "Pose2d",
+                                        "visible": true,
+                                        "options": {
+                                            "model": "G3-2025",
+                                            "color": "#ff00ff"
+                                        }
+                                    },
+                                    {
+                                        "type": "ghost",
+                                        "logKey": "/RealOutputs/PathfindToReef/TargetPose",
+                                        "logType": "Pose2d",
+                                        "visible": true,
+                                        "options": {
+                                            "model": "G3-2025",
+                                            "color": "#ffff00"
+                                        }
+                                    }
+                                ],
+                                "game": "2025 Field (Welded)",
+                                "origin": "blue"
+                            },
+                            "controllerUUID": "aca1u97ttay5mjfm9c3oliv90e359ec4",
+                            "renderer": {
+                                "cameraIndex": -1,
+                                "orbitFov": 50,
+                                "cameraPosition": [
+                                    0.25153131660705424,
+                                    6.089187849667773,
+                                    4.470549027666172
+                                ],
+                                "cameraTarget": [
+                                    0.037516325030502014,
+                                    -1.0332904693486957,
+                                    -0.34434892781098636
+                                ]
+                            },
+                            "controlsHeight": 200
+                        },
+                        {
+                            "type": 7,
+                            "title": "Video",
+                            "controller": null,
+                            "controllerUUID": "rtx7jnq4muhxwpqxiixfwlj9220ha36f",
+                            "renderer": null,
+                            "controlsHeight": 85
+                        },
+                        {
+                            "type": 5,
+                            "title": "Console",
+                            "controller": "/RealOutputs/Console",
+                            "controllerUUID": "h8vei7l3vpmh6dwuqta6xvfgg88jnnia",
+                            "renderer": {
+                                "highlight": false
+                            },
+                            "controlsHeight": 0
+                        },
+                        {
+                            "type": 12,
+                            "title": "Metadata",
+                            "controller": null,
+                            "controllerUUID": "2fpscljo7w2jbd6tpqwd64ji2lfm6j0p",
+                            "renderer": null,
+                            "controlsHeight": 0
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "satellites": [
+        {
+            "x": 868,
+            "y": 550,
+            "width": 860,
+            "height": 512,
+            "state": {
+                "type": 7,
+                "visualizer": null
+            },
+            "uuid": "rtx7jnq4muhxwpqxiixfwlj9220ha36f"
+        },
+        {
+            "x": 864,
+            "y": 38,
+            "width": 864,
+            "height": 512,
+            "state": {
+                "type": 3,
+                "visualizer": {
+                    "cameraIndex": -1,
+                    "orbitFov": 50,
+                    "cameraPosition": [
+                        2.4909959763844576,
+                        2.886973604963969,
+                        -5.6419774328578685
+                    ],
+                    "cameraTarget": [
+                        2.4909959763844567,
+                        0.3356022298203289,
+                        -0.0753489779990157
+                    ]
+                }
+            },
+            "uuid": "aca1u97ttay5mjfm9c3oliv90e359ec4"
+        }
+    ],
+    "version": "4.1.4"
+}

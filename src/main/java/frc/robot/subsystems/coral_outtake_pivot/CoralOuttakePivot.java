@@ -1,11 +1,14 @@
 package frc.robot.subsystems.coral_outtake_pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIO;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotInputsAutoLogged;
@@ -17,11 +20,14 @@ import org.littletonrobotics.junction.Logger;
 public class CoralOuttakePivot extends SubsystemBase {
 
     private final OuttakePivotIO pivotIO;
-    private @Getter Goal currentPivotGoal = Goal.STOW;
+    private @Getter Goal currentGoal = Goal.STOW;
     private OuttakePivotInputsAutoLogged pivotInputs = new OuttakePivotInputsAutoLogged();
 
     public LinearConstraint<AngleUnit, Angle> coralOuttakeConstraint = new LinearConstraint<AngleUnit, Angle>(
             CoralOuttakePivotConstants.coralOuttakeMinAngle, CoralOuttakePivotConstants.coralOuttakeMaxAngle);
+
+  private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralOuttakePivot/desiredAngle", 0.0);
+
 
     public enum Goal {
         STOW(Degrees.zero()),
@@ -68,20 +74,40 @@ public class CoralOuttakePivot extends SubsystemBase {
         pivotIO.updateInputs(pivotInputs);
         Logger.processInputs(getName() + "/pivot", pivotInputs);
 
-        pivotIO.setPosition(getCurrentPivotGoal().getAngle());
+        Angle desiredAngle = currentGoal.getAngle();
 
-        Logger.recordOutput("CoralOuttake/currentPivotGoal", getCurrentPivotGoal());
-        Logger.recordOutput("CoralOuttake/desiredPosition", getCurrentPivotGoal().getAngle());
+        Angle constrainedAngle = coralOuttakeConstraint.getClampedValue(desiredAngle);
+
+        if (currentGoal == Goal.TUNING) {
+          constrainedAngle = Degrees.of(tuningDesiredAngle.get());
+        }
+
+        pivotIO.setPosition(constrainedAngle);
+
+        Logger.recordOutput("CoralOuttake/currentGoal", getCurrentGoal());
+        Logger.recordOutput("CoralOuttake/goalAngleDegrees", desiredAngle.in(Degrees));
+        Logger.recordOutput("CoralOuttake/atGoal", atGoal());
+
+        Logger.recordOutput("CoralOuttake/currentAngleDegrees", getPosition().in(Degrees));
+        Logger.recordOutput("CoralOuttake/velocityDegreesPerSecond", getVelocity().in(DegreesPerSecond));
+
+        Logger.recordOutput("CoralOuttake/constraintMaxDegrees", coralOuttakeConstraint.getUpper().in(Degrees));
+        Logger.recordOutput("CoralOuttake/constraintMinDegrees", coralOuttakeConstraint.getLower().in(Degrees));
+        Logger.recordOutput("CoralOuttake/constrainedGoalAngleDegrees", constrainedAngle.in(Degrees));
     }
 
     /** Sets the goal of the coral outtake. */
     public void setGoal(Goal goal) {
-        currentPivotGoal = goal;
+        currentGoal = goal;
     }
 
     /** Gets the position. */
     public Angle getPosition() {
         return pivotInputs.position;
+    }
+
+    public AngularVelocity getVelocity() {
+        return pivotInputs.velocity;
     }
 
     /** Sets the constraints of the coral intake pivot. */
@@ -93,7 +119,7 @@ public class CoralOuttakePivot extends SubsystemBase {
      * Returns true if the intake is within a small threshold distance to the goal.
      */
     public boolean atGoal() {
-        return atGoal(getCurrentPivotGoal());
+        return atGoal(getCurrentGoal());
     }
 
     /**
@@ -109,7 +135,7 @@ public class CoralOuttakePivot extends SubsystemBase {
      * specified goal.
      */
     public boolean atGoal(Goal goal, Angle angleTolerance) {
-        return getCurrentPivotGoal() == goal && getPosition().isNear(goal.getAngle(), angleTolerance);
+        return getCurrentGoal() == goal && getPosition().isNear(goal.getAngle(), angleTolerance);
     }
 
     /**

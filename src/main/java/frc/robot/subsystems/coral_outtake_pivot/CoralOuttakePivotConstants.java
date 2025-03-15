@@ -4,30 +4,31 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Value;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Dimensionless;
 import frc.lib.dashboard.LoggedTunableNumber;
 
 public class CoralOuttakePivotConstants {
     public static final Angle coralOuttakeMaxAngle = Degrees.of(141);
     public static final Angle coralOuttakeMinAngle = Degrees.of(-10);
 
+    public static final Dimensionless coralOuttakePivotGearRatio = Value.of(50.0);
+
     public static final Angle absoluteEncoderOffset = Radians.of(2.458);
 
     public final class PID {
-        public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralIntake/s", 0.2);
-        public static final LoggedTunableNumber v = new LoggedTunableNumber("CoralIntake/v", 0.6);
-        public static final LoggedTunableNumber g = new LoggedTunableNumber("CoralIntake/g", 0.45);
-        public static final LoggedTunableNumber p = new LoggedTunableNumber("CoralIntake/p", 6.5);
-        public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralIntake/i", 0.08);
-        public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralIntake/d", 0.1);
+        public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralOuttake/s", 0.0);
+        public static final LoggedTunableNumber v = new LoggedTunableNumber("CoralOuttake/v", 0.0);
+        public static final LoggedTunableNumber g = new LoggedTunableNumber("CoralOuttake/g", 0.0);
+        public static final LoggedTunableNumber p = new LoggedTunableNumber("CoralOuttake/p", 0.0);
+        public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralOuttake/i", 0.0);
+        public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralOuttake/d", 0.0);
 
         public static final AngularVelocity maxPivotV = DegreesPerSecond.of(0);
         public static final AngularAcceleration maxPivotA = DegreesPerSecondPerSecond.of(0);
     }
-
-    public static final LoggedTunableNumber pivotOffset = new LoggedTunableNumber(
-            "CoralIntake/pivotAbsoluteEncoderOffset", 0.03);
 }

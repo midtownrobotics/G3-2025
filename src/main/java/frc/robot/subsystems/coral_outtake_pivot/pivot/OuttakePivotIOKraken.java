@@ -1,7 +1,6 @@
 package frc.robot.subsystems.coral_outtake_pivot.pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
@@ -10,7 +9,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -24,7 +22,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.subsystems.coral_outtake_pivot.CoralOuttakePivotConstants;
-import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
@@ -50,9 +47,9 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
 
     encoder = new DutyCycleEncoder(encoderID);
 
-    // Angle position = getInitialAngle();
+    Angle position = getInitialAngle();
 
-    tryUntilOk(5, () -> motor.setPosition(Degrees.zero()));
+    tryUntilOk(5, () -> motor.setPosition(position));
 
     configureMotors();
 
@@ -81,7 +78,7 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
    * @param position Setpoint to set.
    */
   public void setPosition(Angle position) {
-    MotionMagicVoltage request = new MotionMagicVoltage(position);
+    MotionMagicVoltage request = new MotionMagicVoltage(position.times(CoralOuttakePivotConstants.coralOuttakePivotGearRatio));
     motor.setControl(request);
   }
 
@@ -137,7 +134,6 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
     krakenConfig.MotionMagic.withMotionMagicAcceleration(CoralOuttakePivotConstants.PID.maxPivotA);
 
     tryUntilOk(5, () -> motor.getConfigurator().apply(krakenConfig));
-    tryUntilOk(5, () -> motor.setControl(new Follower(motor.getDeviceID(), false)));
   }
 
   @Override
@@ -146,13 +142,11 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
   }
 
   private Angle getInitialAngle() {
-    double radians = (getZeroedAbsoluteEncoderPosition().in(Radians) + 2 * Math.PI + 0.2) % (2 * Math.PI) - 0.2;
-
-    return Radians.of(radians).times(ElevatorConstants.kGearing);
+    return getZeroedAbsoluteEncoderPosition().times(CoralOuttakePivotConstants.coralOuttakePivotGearRatio);
   }
 
   private Angle getZeroedAbsoluteEncoderPosition() {
-    return getAbsoluteEncoderPosition().minus(ElevatorConstants.absoluteEncoderOffset);
+    return getAbsoluteEncoderPosition().minus(CoralOuttakePivotConstants.absoluteEncoderOffset);
   }
 
   private Angle getAbsoluteEncoderPosition() {
