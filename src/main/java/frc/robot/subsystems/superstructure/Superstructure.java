@@ -59,7 +59,7 @@ public class Superstructure extends SubsystemBase {
         elevatorConstraints.restrictToValue(elevatorPosition);
       }
     }
-    
+
     if (elevatorPosition.lt(Inches.of(12))) {
       if (coralIntakePosition.lt(Degrees.of(135)) || coralIntakeGoalPosition.lt(Degrees.of(135))) {
         coralOuttakeConstraints.setUpper(Degrees.of(100));

@@ -1,13 +1,9 @@
 package frc.robot.subsystems.coral_outtake_roller;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
@@ -16,20 +12,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
-import frc.robot.sensors.Photoelectric;
-import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
-import frc.robot.subsystems.coral_outtake.pivot.OuttakePivotInputsAutoLogged;
-import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIO;
-import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralOuttakeRoller extends SubsystemBase {
 
-
-
-  public enum RollerGoal {
+  public enum Goal {
     STOW(Volts.zero()),
     SHOOT(Volts.of(7)),
     HANDOFF(Volts.of(10)),
@@ -40,26 +29,26 @@ public class CoralOuttakeRoller extends SubsystemBase {
 
     private @Getter Voltage volts;
 
-    private RollerGoal(Voltage voltage) {
+    private Goal(Voltage voltage) {
       this.volts = voltage;
     }
 
-    private RollerGoal() {
-    
+    private Goal() {
+
     }
   }
 
   public final Trigger currentSpikeTrigger;
 
-  private @Getter RollerGoal currentRollerGoal = RollerGoal.STOW;
+  private @Getter Goal currentRollerGoal = Goal.STOW;
 
   private RollerIO rollerIO;
-  
+
   private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
- 
 
   /**
    * Initializes Coral Outtake
+   *
    * @param rollerIO
    */
   public CoralOuttakeRoller(RollerIO rollerIO) {
@@ -84,10 +73,7 @@ public class CoralOuttakeRoller extends SubsystemBase {
     rollerIO.updateInputs(rollerInputs);
     Logger.processInputs(getName() + "/roller", rollerInputs);
 
-
     rollerIO.setVoltage(getCurrentRollerGoal().getVolts());
-
-
 
     Logger.recordOutput("CoralOuttake/currentRollerGoal", getCurrentRollerGoal());
 
@@ -98,11 +84,9 @@ public class CoralOuttakeRoller extends SubsystemBase {
   }
 
   /** Sets the goal of the coral outtake. */
-  public void setRollerGoal(RollerGoal goal) {
+  public void setGoal(Goal goal) {
     currentRollerGoal = goal;
   }
-
-
 
   /**
    * Returns the voltage of the roller motor
@@ -114,20 +98,12 @@ public class CoralOuttakeRoller extends SubsystemBase {
   /**
    * Returns a command that sets the goal of the coral outtake.
    */
-  public Command setGoalCommand(RollerGoal goal) {
-    return runOnce(() -> setRollerGoal(goal));
+  public Command setGoalCommand(Goal goal) {
+    return runOnce(() -> setGoal(goal));
   }
 
-
-
-
-  public Command setRollerGoalEndCommand(RollerGoal goal, RollerGoal endGoal){
-    return run(() -> setRollerGoal(goal)).finallyDo(() -> setRollerGoal(endGoal));
-  } 
-
-
-
-
-
-
+  /** Returns a command that sets the goal of the coral outtake and resets the goal when it ends */
+  public Command setGoalEndCommand(Goal goal, Goal endGoal) {
+    return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
+  }
 }
