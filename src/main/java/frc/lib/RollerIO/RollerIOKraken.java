@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -28,6 +29,11 @@ public class RollerIOKraken implements RollerIO {
 
   /** Constructor for rollerIO for kraken motors. */
   public RollerIOKraken(int motorID, CANBusStatusSignalRegistration bus) {
+    this(motorID, bus, false);
+  }
+
+  /** Constructor for rollerIO for kraken motors with an invert. */
+  public RollerIOKraken(int motorID, CANBusStatusSignalRegistration bus, boolean invert) {
     motor = new TalonFX(motorID);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 
@@ -37,6 +43,8 @@ public class RollerIOKraken implements RollerIO {
             .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT)
             .withSupplyCurrentLowerLimit(Constants.KRAKEN_CURRENT_LOWER_LIMIT)
             .withSupplyCurrentLowerTime(1);
+
+    krakenConfig.MotorOutput.withInverted(invert ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive);
 
     motor.getConfigurator().apply(krakenConfig);
 

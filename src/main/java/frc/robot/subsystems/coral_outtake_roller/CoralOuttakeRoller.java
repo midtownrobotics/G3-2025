@@ -1,10 +1,9 @@
-package frc.robot.subsystems.coral_outtake;
+package frc.robot.subsystems.coral_outtake_roller;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
@@ -13,52 +12,47 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
-import frc.robot.sensors.Photoelectric;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
-public class CoralOuttake extends SubsystemBase {
+public class CoralOuttakeRoller extends SubsystemBase {
 
   public enum Goal {
-    // TODO: Set correct voltages
-    IDLE(0),
-    CORAL_BACKWARDS(3),
-    REVERSE_SHOOT(5),
-    CORAL_TINY_ADJUST(-1),
-    SHOOT(-10),
-    HANDOFF(-7),
-    SLOWER_HANDOFF(-5.5),
+    STOW(Volts.zero()),
+    SHOOT(Volts.of(7)),
+    HANDOFF(Volts.of(10)),
+    INTAKE(Volts.zero()),
+    REVERSE_SHOOT(Volts.of(-7)),
     TUNING(),
     MANUAL();
 
-    private @Getter Voltage voltage;
+    private @Getter Voltage volts;
 
-    /** Goal has no meter height value associated */
-    private Goal() {
-      this.voltage = null;
+    private Goal(Voltage voltage) {
+      this.volts = voltage;
     }
 
-    Goal(double voltage) {
-      this.voltage = Volts.of(voltage);
+    private Goal() {
+
     }
   }
 
   public final Trigger currentSpikeTrigger;
 
-  private @Getter Goal currentGoal = Goal.IDLE;
-  private RollerIO rollerIO;
-  private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
-  private final Photoelectric handoffSensor;
+  private @Getter Goal currentRollerGoal = Goal.STOW;
 
+  private RollerIO rollerIO;
+
+  private RollerInputsAutoLogged rollerInputs = new RollerInputsAutoLogged();
 
   /**
    * Initializes Coral Outtake
+   *
    * @param rollerIO
    */
-  public CoralOuttake(RollerIO rollerIO, Photoelectric handoffSensor) {
+  public CoralOuttakeRoller(RollerIO rollerIO) {
     this.rollerIO = rollerIO;
-    this.handoffSensor = handoffSensor;
 
     currentSpikeTrigger = new Trigger(this::currentSpikeFiltered);
   }
@@ -79,29 +73,11 @@ public class CoralOuttake extends SubsystemBase {
     rollerIO.updateInputs(rollerInputs);
     Logger.processInputs(getName() + "/roller", rollerInputs);
 
-    // goal switch case
-    switch (getCurrentGoal()) {
-      case TUNING:
-      case MANUAL:
-        rollerIO.setVoltage(Units.Volts.zero());
-        break;
-      case IDLE:
-          rollerIO.setVoltage(Volts.zero());
-        break;
-      // case HANDOFF_PUSH_UP:
-      //   if (handoffSensor.isTriggered()) {
-      //     rollerIO.setVoltage(Volts.of(-4.2));
-      //   } else {
-      //     rollerIO.setVoltage(Volts.zero());
-      //   }
-      //   break;
-      default:
-        rollerIO.setVoltage(getCurrentGoal().getVoltage());
-        break;
-    }
+    rollerIO.setVoltage(getCurrentRollerGoal().getVolts());
 
-    Logger.recordOutput("CoralOuttake/currentState", getCurrentGoal());
-    Logger.recordOutput("CoralOuttake/desiredVoltage", getCurrentGoal().getVoltage());
+    Logger.recordOutput("CoralOuttake/currentRollerGoal", getCurrentRollerGoal());
+
+    Logger.recordOutput("CoralOuttake/desiredVoltage", getCurrentRollerGoal().getVolts());
     Logger.recordOutput("CoralOuttake/currentSpikeTrigger", currentSpikeTrigger);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
@@ -109,7 +85,7 @@ public class CoralOuttake extends SubsystemBase {
 
   /** Sets the goal of the coral outtake. */
   public void setGoal(Goal goal) {
-    currentGoal = goal;
+    currentRollerGoal = goal;
   }
 
   /**
@@ -126,9 +102,7 @@ public class CoralOuttake extends SubsystemBase {
     return runOnce(() -> setGoal(goal));
   }
 
-  /**
-   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
-   */
+  /** Returns a command that sets the goal of the coral outtake and resets the goal when it ends */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
   }
