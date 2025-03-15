@@ -63,6 +63,8 @@ public class RobotViz extends VirtualSubsystem {
         Logger.recordOutput("RobotViz/robotPose", pose);
         Logger.recordOutput("RobotViz/Cameras/ModuleTagLimelight", pose3d.transformBy(VisionConstants.kModuleTagRobotToCamera));
         Logger.recordOutput("RobotViz/Cameras/ElevatorTagLimelight", pose3d.transformBy(VisionConstants.kModuleTagRobotToCamera));
+        Logger.recordOutput("RobotViz/Cameras/StickTagLimelight", pose3d.transformBy(VisionConstants.kPoleTagRobotToCamera));
+        Logger.recordOutput("RobotViz/Cameras/IntakeClassifierLimelight", pose3d.transformBy(VisionConstants.kIntakeClassifierRobotToCamera));
         Logger.recordOutput("RobotViz/ComponentPoses", componentPoses);
     }
 }

@@ -332,22 +332,22 @@ public class RobotContainer {
         led.blinkCommand(Color.kGreen).withTimeout(1.0)
             .alongWith(controls.setRumbleCommand(1.0, Seconds.of(0.4))));
 
-    controls.gamePieceLock()
-        .whileTrue(DriveCommands.joystickDriveAtAngle(drive, controls::getDriveForward, controls::getDriveLeft, () -> {
-          NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-ankit");
-          double coralOffset = table.getEntry("tx").getDouble(0.0);
+    // controls.gamePieceLock()
+    //     .whileTrue(DriveCommands.joystickDriveAtAngle(drive, controls::getDriveForward, controls::getDriveLeft, () -> {
+    //       NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-ankit");
+    //       double coralOffset = table.getEntry("tx").getDouble(0.0);
 
-          if (Math.abs(coralOffset) != 0.0) {
-            coralOffset += 10;
-          }
+    //       if (Math.abs(coralOffset) != 0.0) {
+    //         coralOffset += 10;
+    //       }
 
-          Logger.recordOutput("AutoIntakeDebug/coralOffset", coralOffset);
-          Logger.recordOutput("AutoIntakeDebug/driveRot", drive.getRotation());
-          Logger.recordOutput("AutoIntakeDebug/desiredRot", drive.getRotation().getDegrees() + coralOffset);
-          // return coralCamera.getCoralOffset().tx().plus(drive.getRotation());
+    //       Logger.recordOutput("AutoIntakeDebug/coralOffset", coralOffset);
+    //       Logger.recordOutput("AutoIntakeDebug/driveRot", drive.getRotation());
+    //       Logger.recordOutput("AutoIntakeDebug/desiredRot", drive.getRotation().getDegrees() + coralOffset);
+    //       // return coralCamera.getCoralOffset().tx().plus(drive.getRotation());
 
-          return drive.getRotation().minus(Rotation2d.fromDegrees(coralOffset));
-        }));
+    //       return drive.getRotation().minus(Rotation2d.fromDegrees(coralOffset));
+    //     }));
 
     // controls.leftPositionLock().whileTrue(AutoBuilder.7pathfindToPose(new
     // Pose2d(5.27, 3.00, Rotation2d.fromDegrees(120)), new
@@ -443,6 +443,8 @@ public class RobotContainer {
 
           return closestFace;
         }, controls.alignToReefLeftBranch()));
+
+    controls.gamePieceLock().whileTrue(DriveCommands.alignToGamePiece(drive, controls::getDriveForward, controls::getDriveLeft));
 
     controls.sourceIntakeCoral().whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW));
