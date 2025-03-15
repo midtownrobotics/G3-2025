@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.8805,
-        "y": 5.22425
+        "x": 4.016,
+        "y": 5.35
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.365728587962962,
-        "y": 5.946269314236111
+        "x": 3.501228587962962,
+        "y": 6.072019314236111
       },
       "isLocked": false,
       "linkedName": "Branch K"
     },
     {
       "anchor": {
-        "x": 1.282684426229508,
+        "x": 1.283,
         "y": 7.207735655737704
       },
       "prevControl": {
-        "x": 2.087170404373479,
+        "x": 2.087485978143971,
         "y": 6.708655162579392
       },
       "nextControl": null,
@@ -60,7 +60,7 @@
   "folder": "Top Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.58873790181269
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

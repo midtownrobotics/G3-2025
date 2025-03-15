@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.978,
-        "y": 5.1754999999999995
+        "x": 5.115,
+        "y": 5.263
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4632285879629623,
-        "y": 5.897519314236111
+        "x": 4.600228587962962,
+        "y": 5.985019314236111
       },
       "isLocked": false,
       "linkedName": "Branch J"
@@ -60,7 +60,7 @@
   "folder": "Top Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -100.79455329300417
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": true
 }
