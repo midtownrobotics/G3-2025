@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOBag;
+import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
@@ -48,11 +49,12 @@ import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotIONeo;
 import frc.robot.subsystems.coral_intake.pivot.PivotIOReplay;
 import frc.robot.subsystems.coral_intake.pivot.PivotIOSim;
-import frc.robot.subsystems.coral_outtake.CoralOuttake;
-import frc.robot.subsystems.coral_outtake.pivot.OuttakePivotIO;
-import frc.robot.subsystems.coral_outtake.pivot.OuttakePivotIOKraken;
-import frc.robot.subsystems.coral_outtake.pivot.OuttakePivotIOReplay;
-import frc.robot.subsystems.coral_outtake.pivot.OuttakePivotIOSim;
+import frc.robot.subsystems.coral_outtake_pivot.CoralOuttakePivot;
+import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIO;
+import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOKraken;
+import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOReplay;
+import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOSim;
+import frc.robot.subsystems.coral_outtake_roller.CoralOuttakeRoller;
 import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.drivetrain.GyroIO;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon2;
@@ -75,6 +77,8 @@ import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -89,7 +93,9 @@ public class RobotContainer {
   @Getter
   private final CoralIntake coralIntake;
   @Getter
-  private final CoralOuttake coralOuttake;
+  private final CoralOuttakePivot coralOuttakePivot;
+  @Getter
+  private final CoralOuttakeRoller coralOuttakeRoller;
   @Getter
   private final Elevator elevator;
   @Getter
@@ -212,8 +218,9 @@ public class RobotContainer {
         coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
 
         // Coral Outtake
-        rollerIO = new RollerIOBag(Ports.CoralOuttake.roller);
-        outtakePivotIO = new OuttakePivotIOKraken(Ports.CoralOuttake.pivotMotor, Ports.CoralOuttake.pivotEncoder, elevatorCANBusHandler);
+        rollerIO = new RollerIOKraken(Ports.CoralOuttake.roller, elevatorCANBusHandler, true);
+        outtakePivotIO = new OuttakePivotIOKraken(Ports.CoralOuttake.pivotMotor, Ports.CoralOuttake.pivotEncoder,
+            elevatorCANBusHandler);
 
         // Drive
         gyroIO = new GyroIOPigeon2(driveCANBusHandler);
@@ -237,12 +244,12 @@ public class RobotContainer {
     }
 
     LockIO lockIO = new LockIOServo(Ports.Elevator.LockServo);
-
     elevator = new Elevator(winchIO, lockIO);
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
-    coralOuttake = new CoralOuttake(rollerIO, outtakePivotIO, handoffSensor);
+    coralOuttakePivot = new CoralOuttakePivot(outtakePivotIO);
+    coralOuttakeRoller = new CoralOuttakeRoller(rollerIO);
 
-    superstructure = new Superstructure(coralIntake, elevator, coralOuttake);
+    superstructure = new Superstructure(coralIntake, elevator, coralOuttakePivot);
 
     new RobotViz(drive::getPose, coralIntake::getPosition, elevator::getPosition);
 
@@ -263,7 +270,9 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
         elevator.setGoalAndWait(Elevator.Goal.AUTO_L4).withTimeout(3.0),
-        coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.STOW).withTimeout(0.5),
+        coralOuttakeRoller
+            .setRollerGoalEndCommand(CoralOuttakeRoller.RollerGoal.SHOOT, CoralOuttakeRoller.RollerGoal.STOW)
+            .withTimeout(0.5),
         elevator.setGoalCommand(Elevator.Goal.STOW)));
 
     NamedCommands.registerCommand("Handoff", autoHandoffCommand());
@@ -362,17 +371,18 @@ public class RobotContainer {
     controls.prepareScoreCoral().and(() -> coralMode == CoralMode.L1).whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.L1_Prepare, CoralIntake.Goal.STOW));
 
-    controls.prepareScoreCoral().and(() -> coralMode != CoralMode.L1).whileTrue(
-        elevator.setGoalEndCommand(() -> Elevator.Goal.fromCoralMode(coralMode), Elevator.Goal.STOW));
+    controls.prepareScoreCoral().and(() -> coralMode != CoralMode.L1).whileTrue(prepareScoreCoralCommand());
 
     controls.scoreGamePiece().and(() -> coralMode == CoralMode.L1).whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.L1, CoralIntake.Goal.STOW));
 
     controls.scoreGamePiece().and(() -> coralMode != CoralMode.L1).whileTrue(
-        coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.STOW));
+        coralOuttakeRoller.setRollerGoalEndCommand(CoralOuttakeRoller.RollerGoal.SHOOT,
+            CoralOuttakeRoller.RollerGoal.STOW));
 
     controls.reverseGamePiece()
-        .whileTrue(coralOuttake.setGoalEndCommand(CoralOuttake.Goal.REVERSE_SHOOT, CoralOuttake.Goal.STOW));
+        .whileTrue(coralOuttakeRoller.setRollerGoalEndCommand(CoralOuttakeRoller.RollerGoal.REVERSE_SHOOT,
+            CoralOuttakeRoller.RollerGoal.STOW));
 
     controls.prepareScoreCoralL1().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L1));
     controls.prepareScoreCoralL2().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L2));
@@ -453,19 +463,15 @@ public class RobotContainer {
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_VOMIT, CoralIntake.Goal.STOW));
 
     controls.climb()
-      .onTrue(
-        Commands.parallel(
-          elevator.setGoalCommand(Elevator.Goal.CLIMB),
-          coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB)
-        )
-      )
-      .onFalse(
-        Commands.sequence(
-          coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB_BOTTOM),
-          elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2),
-          elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)
-        )
-      );
+        .onTrue(
+            Commands.parallel(
+                elevator.setGoalCommand(Elevator.Goal.CLIMB),
+                coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB)))
+        .onFalse(
+            Commands.sequence(
+                coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB_BOTTOM),
+                elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2),
+                elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)));
 
     // CommandXboxController testController = new CommandXboxController(5);
 
@@ -479,7 +485,8 @@ public class RobotContainer {
   public void teleopInit() {
     elevator.setGoal(Elevator.Goal.STOW);
     coralIntake.setGoal(CoralIntake.Goal.STOW);
-    coralOuttake.setGoal(CoralOuttake.Goal.STOW);
+    coralOuttakePivot.setPivotGoal(CoralOuttakePivot.PivotGoal.STOW);
+    coralOuttakeRoller.setRollerGoal(CoralOuttakeRoller.RollerGoal.STOW);
   }
 
   /** Returns the autonomous command */
@@ -503,25 +510,25 @@ public class RobotContainer {
         Commands.parallel(
             elevator.setGoalAndWait(Elevator.Goal.STOW),
             coralIntake.setGoalAndWait(CoralIntake.Goal.STOW),
-            coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)).withTimeout(1),
+            coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.RollerGoal.HANDOFF)).withTimeout(1),
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
         Commands.waitUntil(coralIntake.handoffSensorTrigger),
         Commands.waitSeconds(0.1),
-        Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(2),
+        Commands.waitUntil(coralOuttakeRoller.currentSpikeTrigger).withTimeout(2),
         Commands.waitSeconds(0.2),
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP),
         elevator.setGoalCommand(Elevator.Goal.HANDOFF),
         Commands.waitSeconds(0.2),
         Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()),
         Commands.parallel(
-            coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
+            coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.RollerGoal.REVERSE_SHOOT),
             coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW)),
         Commands.waitSeconds(0.3),
-        coralOuttake.setGoalCommand(CoralOuttake.Goal.STOW)).finallyDo(() -> {
+        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.RollerGoal.STOW)).finallyDo(() -> {
           elevator.setGoal(Elevator.Goal.STOW);
           coralIntake.setGoal(CoralIntake.Goal.STOW);
-          coralOuttake.setGoal(CoralOuttake.Goal.STOW);
+          coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.RollerGoal.STOW);
         });
   }
 
@@ -530,48 +537,57 @@ public class RobotContainer {
         Commands.parallel(
             elevator.setGoalCommand(Elevator.Goal.STOW),
             coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
-            coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)).withTimeout(1),
+            coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.RollerGoal.HANDOFF)).withTimeout(1),
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
         Commands.waitUntil(coralIntake.handoffSensorTrigger),
         Commands.waitSeconds(0.1),
-        Commands.waitUntil(coralOuttake.currentSpikeTrigger).withTimeout(2),
+        Commands.waitUntil(coralOuttakeRoller.currentSpikeTrigger).withTimeout(2),
         Commands.waitSeconds(0.2),
         coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF_PUSH_CORAL_UP),
         elevator.setGoalCommand(Elevator.Goal.HANDOFF),
         Commands.waitSeconds(0.2),
         Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()),
         Commands.parallel(
-            coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
+            coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.RollerGoal.REVERSE_SHOOT),
             coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW)),
         Commands.waitSeconds(0.3),
-        coralOuttake.setGoalCommand(CoralOuttake.Goal.STOW)).finallyDo(() -> {
+        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.RollerGoal.STOW)).finallyDo(() -> {
           elevator.setGoal(Elevator.Goal.STOW);
           coralIntake.setGoal(CoralIntake.Goal.STOW);
-          coralOuttake.setGoal(CoralOuttake.Goal.STOW);
+          coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.RollerGoal.STOW);
         });
   }
+  
 
-  private Command handoffCommandTest() {
-    return Commands.sequence(
-        Commands.parallel(
-            elevator.setGoalAndWait(Elevator.Goal.STOW),
-            coralIntake.setGoalAndWait(CoralIntake.Goal.STOW).withTimeout(0.5),
-            coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)),
-        coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
 
-        elevator.setGoalCommand(Elevator.Goal.HANDOFF),
-        Commands.waitSeconds(0.2),
-        Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()),
-        Commands.parallel(
-            coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
-            coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
-            elevator.setGoalCommand(Elevator.Goal.STOW)),
-        Commands.waitSeconds(0.3),
-        coralOuttake.setGoalCommand(CoralOuttake.Goal.STOW)).finallyDo(() -> {
-          elevator.setGoal(Elevator.Goal.STOW);
-          coralIntake.setGoal(CoralIntake.Goal.STOW);
-          coralOuttake.setGoal(CoralOuttake.Goal.STOW);
-        });
+  public Command prepareScoreCoralCommand() {
+    return Commands.parallel(
+        elevator.setGoalEndCommand(Elevator.Goal.fromCoralMode(coralMode), Elevator.Goal.STOW),
+        coralOuttakePivot.setPivotGoalEndCommand(CoralOuttakePivot.PivotGoal.fromCoralMode(coralMode), CoralOuttakePivot.PivotGoal.STOW)
+    );
   }
+
+  // private Command handoffCommandTest() {
+  // return Commands.sequence(
+  // Commands.parallel(
+  // elevator.setGoalAndWait(Elevator.Goal.STOW),
+  // coralIntake.setGoalAndWait(CoralIntake.Goal.STOW).withTimeout(0.5),
+  // coralOuttake.setGoalCommand(CoralOuttake.Goal.HANDOFF)),
+  // coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
+
+  // elevator.setGoalCommand(Elevator.Goal.HANDOFF),
+  // Commands.waitSeconds(0.2),
+  // Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()),
+  // Commands.parallel(
+  // coralOuttake.setGoalCommand(CoralOuttake.Goal.CORAL_BACKWARDS),
+  // coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
+  // elevator.setGoalCommand(Elevator.Goal.STOW)),
+  // Commands.waitSeconds(0.3),
+  // coralOuttake.setGoalCommand(CoralOuttake.Goal.STOW)).finallyDo(() -> {
+  // elevator.setGoal(Elevator.Goal.STOW);
+  // coralIntake.setGoal(CoralIntake.Goal.STOW);
+  // coralOuttake.setGoal(CoralOuttake.Goal.STOW);
+  // });
+  // }
 }

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.coral_outtake.pivot;
+package frc.robot.subsystems.coral_outtake_pivot.pivot;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Radians;
@@ -24,7 +24,7 @@ public class OuttakePivotIOSim implements OuttakePivotIO {
   }
 
   @Override
-  public void updateInputs(PivotInputs inputs) {
+  public void updateInputs(OuttakePivotInputs inputs) {
     m_sim.setInputVoltage(voltage.in(Volts));
     m_sim.update(0.02);
 

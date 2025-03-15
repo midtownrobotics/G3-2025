@@ -1,4 +1,4 @@
-package frc.robot.subsystems.coral_outtake.pivot;
+package frc.robot.subsystems.coral_outtake_pivot.pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
@@ -23,7 +23,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.dashboard.LoggedTunableNumber;
-import frc.robot.subsystems.coral_outtake.CoralOuttakeConstants;
+import frc.robot.subsystems.coral_outtake_pivot.CoralOuttakePivotConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
@@ -86,7 +86,7 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
   }
 
   @Override
-  public void updateInputs(PivotInputs inputs) {
+  public void updateInputs(OuttakePivotInputs inputs) {
     inputs.absolutePosition = getAbsoluteEncoderPosition();
     inputs.position = motor.getPosition().getValue();
     inputs.velocity = motor.getVelocity().getValue();
@@ -106,12 +106,12 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
       hashCode(),
       this::configureMotors,
       // Score
-      CoralOuttakeConstants.PID.p,
-      CoralOuttakeConstants.PID.i,
-      CoralOuttakeConstants.PID.d,
-      CoralOuttakeConstants.PID.s,
-      CoralOuttakeConstants.PID.v,
-      CoralOuttakeConstants.PID.g
+      CoralOuttakePivotConstants.PID.p,
+      CoralOuttakePivotConstants.PID.i,
+      CoralOuttakePivotConstants.PID.d,
+      CoralOuttakePivotConstants.PID.s,
+      CoralOuttakePivotConstants.PID.v,
+      CoralOuttakePivotConstants.PID.g
     );
   }
 
@@ -120,13 +120,12 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
     // Scoring Slot
     krakenConfig.Slot0 =
         new Slot0Configs()
-            .withKP(ElevatorConstants.PID_SCORE.p.get())
-            .withKI(ElevatorConstants.PID_SCORE.i.get())
-            .withKD(ElevatorConstants.PID_SCORE.d.get())
-            .withKS(ElevatorConstants.PID_SCORE.s.get())
-            .withKG(ElevatorConstants.PID_SCORE.g.get())
-            .withKA(ElevatorConstants.PID_SCORE.a.get())
-            .withKV(ElevatorConstants.PID_SCORE.v.get())
+            .withKP(CoralOuttakePivotConstants.PID.p.get())
+            .withKI(CoralOuttakePivotConstants.PID.i.get())
+            .withKD(CoralOuttakePivotConstants.PID.d.get())
+            .withKS(CoralOuttakePivotConstants.PID.s.get())
+            .withKG(CoralOuttakePivotConstants.PID.g.get())
+            .withKV(CoralOuttakePivotConstants.PID.v.get())
             .withGravityType(GravityTypeValue.Elevator_Static);
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
@@ -134,8 +133,8 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
             .withSupplyCurrentLimitEnable(true);
     krakenConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     krakenConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    krakenConfig.MotionMagic.withMotionMagicCruiseVelocity(CoralOuttakeConstants.PID.maxPivotV);
-    krakenConfig.MotionMagic.withMotionMagicAcceleration(CoralOuttakeConstants.PID.maxPivotA);
+    krakenConfig.MotionMagic.withMotionMagicCruiseVelocity(CoralOuttakePivotConstants.PID.maxPivotV);
+    krakenConfig.MotionMagic.withMotionMagicAcceleration(CoralOuttakePivotConstants.PID.maxPivotA);
 
     tryUntilOk(5, () -> motor.getConfigurator().apply(krakenConfig));
     tryUntilOk(5, () -> motor.setControl(new Follower(motor.getDeviceID(), false)));

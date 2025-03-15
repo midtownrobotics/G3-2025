@@ -1,23 +1,18 @@
-package frc.robot.subsystems.coral_outtake;
+package frc.robot.subsystems.coral_outtake_pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Time;
 import frc.lib.dashboard.LoggedTunableNumber;
 
-public class CoralOuttakeConstants {
-    public static Angle headOnAngleError = Degrees.of(5);
-    public static final Time coralDetectionIdleDelay = Milliseconds.of(100);
-
-    public static final Angle coralIntakeMaxAngle = Degrees.of(141);
-    public static final Angle coralIntakeMinAngle = Degrees.of(-10);
+public class CoralOuttakePivotConstants {
+    public static final Angle coralOuttakeMaxAngle = Degrees.of(141);
+    public static final Angle coralOuttakeMinAngle = Degrees.of(-10);
 
     public static final Angle absoluteEncoderOffset = Radians.of(2.458);
 

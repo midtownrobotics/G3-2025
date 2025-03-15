@@ -1,4 +1,4 @@
-package frc.robot.subsystems.coral_outtake.pivot;
+package frc.robot.subsystems.coral_outtake_pivot.pivot;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
@@ -6,7 +6,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class OuttakePivotIOReplay implements OuttakePivotIO {
 
   @Override
-  public void updateInputs(PivotInputs inputs) {
+  public void updateInputs(OuttakePivotInputs inputs) {
     throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
   }
 
