@@ -9,12 +9,10 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -78,8 +76,8 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
    * @param position Setpoint to set.
    */
   public void setPosition(Angle position) {
-    MotionMagicVoltage request = new MotionMagicVoltage(position.times(CoralOuttakePivotConstants.coralOuttakePivotGearRatio));
-    motor.setControl(request);
+    // MotionMagicVoltage request = new MotionMagicVoltage(position.times(CoralOuttakePivotConstants.coralOuttakePivotGearRatio));
+    // motor.setControl(request);
   }
 
   @Override
@@ -138,7 +136,7 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
-    motor.setVoltage(voltage.in(Units.Volts));
+    // motor.setVoltage(voltage.in(Units.Volts));
   }
 
   private Angle getInitialAngle() {
