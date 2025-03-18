@@ -28,9 +28,8 @@ public class CoralOuttakePivot extends SubsystemBase {
 
   private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralOuttakePivot/desiredAngle", 0.0);
 
-
     public enum Goal {
-        STOW(Degrees.zero()),
+        STOW(Degrees.of(-40)),
         L1(Degrees.zero()),
         L2(Degrees.zero()),
         L3(Degrees.zero()),
@@ -69,19 +68,26 @@ public class CoralOuttakePivot extends SubsystemBase {
         this.pivotIO = pivotIO;
     }
 
+    private LoggedTunableNumber tuningPosition = new LoggedTunableNumber("CoralOuttake/tuningPosition", 40.0);
+
     @Override
     public void periodic() {
         pivotIO.updateInputs(pivotInputs);
         Logger.processInputs(getName() + "/pivot", pivotInputs);
 
-        Angle desiredAngle = currentGoal.getAngle();
+        // Angle desiredAngle = currentGoal.getAngle();
+
+        Angle desiredAngle = Degrees.of(tuningPosition.get());
 
         Angle constrainedAngle = coralOuttakeConstraint.getClampedValue(desiredAngle);
 
         if (currentGoal == Goal.TUNING) {
           constrainedAngle = Degrees.of(tuningDesiredAngle.get());
+        } else {
+            constrainedAngle = coralOuttakeConstraint.getClampedValue(currentGoal.getAngle());
         }
 
+        System.out.println(constrainedAngle);
         pivotIO.setPosition(constrainedAngle);
 
         Logger.recordOutput("CoralOuttake/currentGoal", getCurrentGoal());

@@ -19,8 +19,8 @@ public class Ports {
     }
 
     public static class CoralOuttake {
-        public static final int roller = 57;
-        public static final int pivotMotor = 58;
+        public static final int roller = 58;
+        public static final int pivotMotor = 57;
         public static final int pivotEncoder = 2;
     }
 }
