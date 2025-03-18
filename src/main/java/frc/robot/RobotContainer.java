@@ -425,7 +425,8 @@ public class RobotContainer {
     // () -> ReefFace.fromPOV(controls.getDriverPOV()),
     // controls.alignToReefLeftBranch()));
 
-    controls.alignToBranchReef().whileTrue(DriveCommands.alignToBranchReef(drive, led, this::getClosestReefFace, controls.alignToReefLeftBranch()));
+    controls.alignToBranchReef().whileTrue(
+        DriveCommands.alignToBranchReef(drive, led, this::getClosestReefFace, controls.alignToReefLeftBranch()));
 
     controls.alignToAlgaeReef().whileTrue(DriveCommands.alignToAlgaeReef(drive, led, this::getClosestReefFace));
 
@@ -436,19 +437,15 @@ public class RobotContainer {
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_VOMIT, CoralIntake.Goal.STOW));
 
     controls.climb()
-      .onTrue(
-        Commands.parallel(
-          elevator.setGoalCommand(Elevator.Goal.CLIMB),
-          coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB)
-        )
-      )
-      .onFalse(
-        Commands.sequence(
-          coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB_BOTTOM),
-          elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2),
-          elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)
-        )
-      );
+        .onTrue(
+            Commands.parallel(
+                elevator.setGoalCommand(Elevator.Goal.CLIMB),
+                coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB)))
+        .onFalse(
+            Commands.sequence(
+                coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB_BOTTOM),
+                elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2),
+                elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)));
 
     // CommandXboxController testController = new CommandXboxController(5);
 
