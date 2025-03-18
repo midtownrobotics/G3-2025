@@ -425,24 +425,9 @@ public class RobotContainer {
     // () -> ReefFace.fromPOV(controls.getDriverPOV()),
     // controls.alignToReefLeftBranch()));
 
-    controls.alignToReef().whileTrue(DriveCommands.alignToReefFace(drive, led,
-        () -> {
-          ReefFace closestFace = null;
-          Distance closestDistance = Meters.of(Double.MAX_VALUE);
-          Pose2d currentPose = drive.getPose();
+    controls.alignToBranchReef().whileTrue(DriveCommands.alignToBranchReef(drive, led, this::getClosestReefFace, controls.alignToReefLeftBranch()));
 
-          for (ReefFace face : ReefFace.values()) {
-            Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
-            Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
-            Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
-            if (distance.lt(closestDistance)) {
-              closestFace = face;
-              closestDistance = distance;
-            }
-          }
-
-          return closestFace;
-        }, controls.alignToReefLeftBranch()));
+    controls.alignToAlgaeReef().whileTrue(DriveCommands.alignToAlgaeReef(drive, led, this::getClosestReefFace));
 
     controls.sourceIntakeCoral().whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW));
@@ -571,5 +556,23 @@ public class RobotContainer {
           coralIntake.setGoal(CoralIntake.Goal.STOW);
           coralOuttake.setGoal(CoralOuttake.Goal.IDLE);
         });
+  }
+
+  private ReefFace getClosestReefFace() {
+    ReefFace closestFace = null;
+    Distance closestDistance = Meters.of(Double.MAX_VALUE);
+    Pose2d currentPose = drive.getPose();
+
+    for (ReefFace face : ReefFace.values()) {
+      Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+      Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+      Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
+      if (distance.lt(closestDistance)) {
+        closestFace = face;
+        closestDistance = distance;
+      }
+    }
+
+    return closestFace;
   }
 }
