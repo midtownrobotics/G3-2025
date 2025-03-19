@@ -206,6 +206,11 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
+  public Trigger dealgify() {
+    return operatorController.x();
+  }
+
+  @Override
   public Trigger scoreGamePiece() {
     return operatorController.rightTrigger();
   }
@@ -236,7 +241,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger panic() {
-    return DoublePressTracker.doublePress(operatorController.x()).and(getNotManualMode);
+    return operatorController.leftTrigger().and(DoublePressTracker.doublePress(operatorController.x()).and(getNotManualMode));
   }
 
   // Manual Controls

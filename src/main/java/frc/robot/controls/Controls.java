@@ -76,7 +76,8 @@ public interface Controls {
   public Trigger prepareScoreCoralL3();
   /** Moves elevator into position to score L4 */
   public Trigger prepareScoreCoralL4();
-
+  /** Moves the outtake to remove algae from the coral reef */
+  public Trigger dealgify();
 
   /** Sets the algae claw to barge mode */
   public Trigger algaeModeBarge();

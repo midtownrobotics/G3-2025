@@ -468,6 +468,11 @@ public class RobotContainer {
                 elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2),
                 elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)));
 
+    controls.dealgify()
+        .whileTrue(Commands.sequence(
+          
+        ));
+
     // CommandXboxController testController = new CommandXboxController(5);
 
     // testController.a().whileTrue(elevator.sysIdDynamic(Direction.kForward));
