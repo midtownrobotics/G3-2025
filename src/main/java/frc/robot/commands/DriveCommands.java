@@ -388,7 +388,7 @@ public class DriveCommands {
   }
 
   /** Creates a command that drives to a reef position based on POV */
-  public static Command alignToReefFace(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
+  public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
       BooleanSupplier leftBranchSupplier) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
@@ -412,10 +412,14 @@ public class DriveCommands {
       Logger.recordOutput("PathfindToReef/ReefFace", face);
       Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
       Logger.recordOutput("PathfindToReef/TargetPose", allianceAppliedTarget);
+      Logger.recordOutput("PathfindToReef/ReefFace", face);
+      Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
+      Logger.recordOutput("PathfindToReef/TargetPose", allianceAppliedTarget);
 
       return allianceAppliedTarget;
     };
 
+    return Commands.sequence(
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
         drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
@@ -476,5 +480,31 @@ public class DriveCommands {
 
           return targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle().plus(offset);
         }));
+        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+  }
+
+  /** Creates a command that drives to reef position, aligned to the center of the face. */
+  public static Command alignToAlgaeReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier) {
+    Supplier<Pose2d> branchPoseSupplier = () -> {
+      ReefFace face = reefFaceSupplier.get();
+
+      if (face == null) {
+        return null;
+      }
+
+      Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal()).get(FieldConstants.ReefLevel.L1)
+          .transformBy(kRobotReefAlignOffset);
+
+      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
+
+      Logger.recordOutput("PathfindToReef/ReefFace", face);
+      Logger.recordOutput("PathfindToReef/TargetPose", allianceAppliedTarget);
+
+      return allianceAppliedTarget;
+    };
+
+    return Commands.sequence(
+        new DriveToPoint(drive, branchPoseSupplier),
+        drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
   }
 }

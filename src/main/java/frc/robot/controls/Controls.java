@@ -147,8 +147,11 @@ public interface Controls {
   /** Button to align to the right-most branch of a reef face. */
   public Trigger alignToReefRightBranch();
 
-  /** Button to align to the reef */
-  public Trigger alignToReef();
+  /** Button to align to the branch on the reef */
+  public Trigger alignToBranchReef();
+
+  /** Button to align to the center on the reef */
+  public Trigger alignToAlgaeReef();
 
   /** Gets the POV value of the driver controller */
   public int getDriverPOV();
