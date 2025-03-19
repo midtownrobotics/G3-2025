@@ -30,15 +30,16 @@ public class CoralOuttakePivot extends SubsystemBase {
   private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralOuttakePivot/desiredAngle", 0.0);
 
     public enum Goal {
-        STOW(Degrees.of(-40)),
+        STOW(Degrees.of(0)),
         L1(Degrees.of(-40)),
         L2(Degrees.of(-40)),
         L3(Degrees.of(-40)),
-        L4(Degrees.of(-40)),
+        L4(Degrees.of(-30)),
         HANDOFF(Degrees.zero()),
         INTAKE(STOW.getAngle()),
         TUNING(),
         MANUAL();
+
 
         private @Getter Angle angle;
 

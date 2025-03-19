@@ -38,30 +38,28 @@ public class MatchXboxControls implements Controls {
   public double getDriveForward() {
     return -MathUtil.applyDeadband(driverController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
     // return (isDriverControlInDeadzone()
-    //     ? -Math.signum(driverController.getLeftY())
-    //         * Math.abs(Math.pow(driverController.getLeftY(), 2))
-    //     : 0);
+    // ? -Math.signum(driverController.getLeftY())
+    // * Math.abs(Math.pow(driverController.getLeftY(), 2))
+    // : 0);
   }
 
   @Override
   public double getDriveLeft() {
     return -MathUtil.applyDeadband(driverController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
     // return (isDriverControlInDeadzone()
-    //     ? -Math.signum(driverController.getLeftX())
-    //         * Math.abs(Math.pow(driverController.getLeftX(), 2))
-    //     : 0);
+    // ? -Math.signum(driverController.getLeftX())
+    // * Math.abs(Math.pow(driverController.getLeftX(), 2))
+    // : 0);
   }
 
   @Override
   public double getDriveRotation() {
     return -MathUtil.applyDeadband(driverController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
     // return isDriverControlInDeadzone()
-    //     ? -Math.signum(driverController.getRightX())
-    //         * Math.abs(Math.pow(driverController.getRightX(), 3))
-    //     : 0;
+    // ? -Math.signum(driverController.getRightX())
+    // * Math.abs(Math.pow(driverController.getRightX(), 3))
+    // : 0;
   }
-
-
 
   @Override
   public Trigger decreaseElevatorOffset() {
@@ -187,7 +185,6 @@ public class MatchXboxControls implements Controls {
     return operatorController.leftBumper().and(getNotManualMode);
   }
 
-
   @Override
   public Trigger prepareScoreCoralL1() {
     return new Trigger(operatorController.povRight());
@@ -202,6 +199,7 @@ public class MatchXboxControls implements Controls {
   public Trigger prepareScoreCoralL3() {
     return operatorController.povLeft();
   }
+
   @Override
   public Trigger prepareScoreCoralL4() {
     return operatorController.povUp();
@@ -220,17 +218,16 @@ public class MatchXboxControls implements Controls {
   @Override
   public Trigger algaeModeBarge() {
     return operatorController
-    .axisLessThan(XboxController.Axis.kLeftY.value, -0.3)
-    .and(getNotManualMode);
+        .axisLessThan(XboxController.Axis.kLeftY.value, -0.3)
+        .and(getNotManualMode);
   }
 
   @Override
   public Trigger algaeModeProcessor() {
     return operatorController
-    .axisGreaterThan(XboxController.Axis.kLeftY.value, 0.3)
-    .and(getNotManualMode);
+        .axisGreaterThan(XboxController.Axis.kLeftY.value, 0.3)
+        .and(getNotManualMode);
   }
-
 
   @Override
   public Trigger climb() {
@@ -301,12 +298,12 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger alignToReefLeftBranch() {
-      return driverController.leftBumper();
+    return driverController.leftBumper();
   }
 
   @Override
   public Trigger alignToReefRightBranch() {
-      return driverController.rightBumper();
+    return driverController.rightBumper();
   }
 
   @Override

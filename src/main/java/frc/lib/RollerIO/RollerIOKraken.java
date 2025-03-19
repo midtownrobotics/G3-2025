@@ -35,7 +35,7 @@ public class RollerIOKraken implements RollerIO {
 
   /** Constructor for rollerIO for kraken motors with an invert. */
   public RollerIOKraken(int motorID, CANBusStatusSignalRegistration bus, boolean invert) {
-    motor = new TalonFX(motorID);
+    motor = new TalonFX(motorID, bus.getCanBusId());
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 
     krakenConfig.CurrentLimits =

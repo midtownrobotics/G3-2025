@@ -21,7 +21,7 @@ public class CoralOuttakePivotConstants {
         public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralOuttake/s", 0.0);
         public static final LoggedTunableNumber v = new LoggedTunableNumber("CoralOuttake/v", 0.0);
         public static final LoggedTunableNumber g = new LoggedTunableNumber("CoralOuttake/g", 0.0);
-        public static final LoggedTunableNumber p = new LoggedTunableNumber("CoralOuttake/p", 0.14);
+        public static final LoggedTunableNumber p = new LoggedTunableNumber("CoralOuttake/p", 0.1);
         public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralOuttake/i", 0.0);
         public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralOuttake/d", 0.0);
 

@@ -101,9 +101,9 @@ public class RobotContainer {
   // @Getter private final CoralCamera coralCamera;
 
   @Getter
-  private CANBusStatusSignalRegistration elevatorCANBusHandler = new CANBusStatusSignalRegistration();
+  private CANBusStatusSignalRegistration elevatorCANBusHandler = new CANBusStatusSignalRegistration("Elevator");
   @Getter
-  private CANBusStatusSignalRegistration driveCANBusHandler = new CANBusStatusSignalRegistration();
+  private CANBusStatusSignalRegistration driveCANBusHandler = new CANBusStatusSignalRegistration("Drivetrain");
 
   private Trigger coralIntakeAtStowGoal;
   private Trigger elevatorAtStowGoal;
@@ -540,7 +540,7 @@ public class RobotContainer {
         elevator.setGoalCommand(Elevator.Goal.STOW)
       ),
       Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()),
-      Commands.waitSeconds(0.1),
+      coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF_REVERSE),
       coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW).finallyDo(() -> {
         elevator.setGoal(Elevator.Goal.STOW);
         coralIntake.setGoal(CoralIntake.Goal.STOW);

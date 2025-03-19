@@ -59,8 +59,8 @@ public class WinchIOKraken implements WinchIO {
                        int encoderID,
                        CANBusStatusSignalRegistration bus) {
 
-    leftMotor = new TalonFX(leftMotorID, "Drivetrain");
-    rightMotor = new TalonFX(rightMotorID, "Drivetrain");
+    leftMotor = new TalonFX(leftMotorID, bus.getCanBusId());
+    rightMotor = new TalonFX(rightMotorID, bus.getCanBusId());
 
     encoder = new DutyCycleEncoder(encoderID);
 

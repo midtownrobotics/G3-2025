@@ -52,7 +52,7 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
 
     this.bus = bus;
 
-    motor = new TalonFX(motorID, "Elevator");
+    motor = new TalonFX(motorID, bus.getCanBusId());
 
     encoder = new DutyCycleEncoder(encoderID);
 

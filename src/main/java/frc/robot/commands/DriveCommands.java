@@ -339,10 +339,14 @@ public class DriveCommands {
 
   private static final Set<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
 
-  // TODO - Modify this offset to position robot correctly in front of the reef
-  // branches
-  private static final Transform2d kRobotOffset = new Transform2d(new Translation2d(Inches.of(21), Inches.of(-3)),
-      Rotation2d.k180deg);
+  private static final Transform2d kRobotOffset = new Transform2d(
+    new Translation2d(
+      Inches.of(21), // F/B
+      Inches.of(-4) // L/R
+    ),
+    Rotation2d.k180deg
+  );
+
   private static final Transform2d pathPlannerOffset = new Transform2d(
       new Translation2d(Inches.of(33), Inches.of(-1.5)), Rotation2d.k180deg);
 
@@ -394,9 +398,11 @@ public class DriveCommands {
         return null;
       }
 
-      boolean flipBranchSide = kFlippedReefFaces.contains(face);
-      boolean leftSideToDriver = flipBranchSide ^ leftBranch;
-      int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
+      // boolean flipBranchSide = kFlippedReefFaces.contains(face);
+      // boolean leftSideToDriver = flipBranchSide ^ leftBranch;
+      // int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
+
+      int branchPoseIndex = face.ordinal() * 2 + (leftBranch ? 0 : 1);
 
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
           .transformBy(kRobotOffset);
