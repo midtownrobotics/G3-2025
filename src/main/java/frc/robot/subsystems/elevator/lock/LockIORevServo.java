@@ -5,9 +5,9 @@ import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Servo;
 
-public class LockIORevServo {
+public class LockIORevServo implements LockIO{
     private final Servo servo;
-    private static final Angle lockedPosition = Degrees.of(35), unlockedPosition = Degrees.of(75);
+    private static final Angle lockedPosition = Degrees.of(0), unlockedPosition = Degrees.of(108);
 
     /** Lock IO constructor for servo. */
     public LockIORevServo(int id) {
@@ -24,7 +24,7 @@ public class LockIORevServo {
           } else if (degrees > 270) {
             degrees = 270;
         }
-      
-        servo.setAngle((270-degrees)/270);
+
+        servo.set((270-degrees)/270);
     }
 }
