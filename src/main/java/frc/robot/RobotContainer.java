@@ -60,7 +60,7 @@ import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
 import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.lock.LockIO;
-import frc.robot.subsystems.elevator.lock.LockIOServo;
+import frc.robot.subsystems.elevator.lock.LockIORevServo;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.elevator.winch.WinchIOReplay;
@@ -236,7 +236,7 @@ public class RobotContainer {
         break;
     }
 
-    LockIO lockIO = new LockIOServo(Ports.Elevator.LockServo);
+    LockIO lockIO = new LockIORevServo(Ports.Elevator.LockServo);
     elevator = new Elevator(winchIO, lockIO);
     coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
     coralOuttakePivot = new CoralOuttakePivot(outtakePivotIO);
