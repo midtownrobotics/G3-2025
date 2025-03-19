@@ -14,7 +14,7 @@ public class CoralIntakeConstants {
     public static final Angle coralIntakeMaxAngle = Degrees.of(141);
     public static final Angle coralIntakeMinAngle = Degrees.of(-10);
 
-    public static final Angle absoluteEncoderOffset = Radians.of(2.458);
+    public static final Angle absoluteEncoderOffset = Radians.of(3.541);
 
     public final class PID {
         public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralIntake/s", 0.2);

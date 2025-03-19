@@ -104,7 +104,7 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
     bus.refreshSignals();
 
     inputs.absolutePosition = getAbsoluteEncoderPosition();
-    inputs.position = position.getValue();
+    inputs.position = getZeroedAbsoluteEncoderPosition();
     inputs.velocity = velocity.getValue();
     inputs.appliedVoltage = voltage.getValue();
     inputs.supplyCurrent = supplyCurrent.getValue();

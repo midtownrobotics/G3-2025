@@ -13,6 +13,7 @@ import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIO;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
+import frc.robot.utils.Constants;
 import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -30,12 +31,12 @@ public class CoralOuttakePivot extends SubsystemBase {
 
     public enum Goal {
         STOW(Degrees.of(-40)),
-        L1(Degrees.zero()),
-        L2(Degrees.zero()),
-        L3(Degrees.zero()),
-        L4(Degrees.zero()),
+        L1(Degrees.of(-40)),
+        L2(Degrees.of(-40)),
+        L3(Degrees.of(-40)),
+        L4(Degrees.of(-40)),
         HANDOFF(Degrees.zero()),
-        INTAKE(Degrees.zero()),
+        INTAKE(STOW.getAngle()),
         TUNING(),
         MANUAL();
 
@@ -75,23 +76,18 @@ public class CoralOuttakePivot extends SubsystemBase {
         pivotIO.updateInputs(pivotInputs);
         Logger.processInputs(getName() + "/pivot", pivotInputs);
 
-        // Angle desiredAngle = currentGoal.getAngle();
+        Angle constrainedAngle;
 
-        Angle desiredAngle = Degrees.of(tuningPosition.get());
-
-        Angle constrainedAngle = coralOuttakeConstraint.getClampedValue(desiredAngle);
-
-        if (currentGoal == Goal.TUNING) {
-          constrainedAngle = Degrees.of(tuningDesiredAngle.get());
+        if (Constants.tuningMode.get()) {
+          constrainedAngle = coralOuttakeConstraint.getClampedValue(Degrees.of(tuningDesiredAngle.get()));
         } else {
             constrainedAngle = coralOuttakeConstraint.getClampedValue(currentGoal.getAngle());
         }
 
-        System.out.println(constrainedAngle);
         pivotIO.setPosition(constrainedAngle);
 
         Logger.recordOutput("CoralOuttake/currentGoal", getCurrentGoal());
-        Logger.recordOutput("CoralOuttake/goalAngleDegrees", desiredAngle.in(Degrees));
+        Logger.recordOutput("CoralOuttake/goalAngleDegrees", currentGoal.getAngle().in(Degrees));
         Logger.recordOutput("CoralOuttake/atGoal", atGoal());
 
         Logger.recordOutput("CoralOuttake/currentAngleDegrees", getPosition().in(Degrees));
@@ -133,7 +129,7 @@ public class CoralOuttakePivot extends SubsystemBase {
      * specified goal.
      */
     public boolean atGoal(Goal goal) {
-        return atGoal(goal, Degrees.of(1.0));
+        return atGoal(goal, Degrees.of(2.5));
     }
 
     /**

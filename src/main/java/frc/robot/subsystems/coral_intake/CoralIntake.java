@@ -325,6 +325,7 @@ public class CoralIntake extends SubsystemBase {
     Logger.recordOutput("CoralIntake/AnglePID/pidVoltage", pidVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/ffVoltage", ffVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/desiredPivotVoltage", totalVoltage);
+    Logger.recordOutput("CoralIntake/AnglePID/desiredDegreesPerSecond", -setpoint.velocity);
 
     return totalVoltage;
   }

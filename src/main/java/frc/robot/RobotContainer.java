@@ -532,14 +532,14 @@ public class RobotContainer {
         coralIntake.setGoalAndWait(CoralIntake.Goal.STOW),
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF)
-      ).withTimeout(1),
+      ).withTimeout(5),
       coralIntake.setGoalCommand(CoralIntake.Goal.HANDOFF),
       Commands.waitUntil(coralIntake.handoffSensorTrigger),
       Commands.parallel(
-        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.REVERSE_SHOOT),
         coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
         elevator.setGoalCommand(Elevator.Goal.STOW)
       ),
+      Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()),
       Commands.waitSeconds(0.1),
       coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW).finallyDo(() -> {
         elevator.setGoal(Elevator.Goal.STOW);

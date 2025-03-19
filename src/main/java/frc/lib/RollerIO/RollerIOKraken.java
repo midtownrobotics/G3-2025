@@ -6,6 +6,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -39,10 +40,8 @@ public class RollerIOKraken implements RollerIO {
 
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
-            .withSupplyCurrentLimitEnable(true)
-            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT)
-            .withSupplyCurrentLowerLimit(Constants.KRAKEN_CURRENT_LOWER_LIMIT)
-            .withSupplyCurrentLowerTime(1);
+          .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT)
+          .withSupplyCurrentLimitEnable(true);
 
     krakenConfig.MotorOutput.withInverted(invert ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive);
 
@@ -79,7 +78,7 @@ public class RollerIOKraken implements RollerIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
-    VoltageOut request = new VoltageOut(voltage);
+    ControlRequest request = new VoltageOut(voltage);
     motor.setControl(request);
   }
 
