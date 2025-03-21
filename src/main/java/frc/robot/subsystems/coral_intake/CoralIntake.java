@@ -43,12 +43,12 @@ public class CoralIntake extends SubsystemBase {
       CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
   public enum Goal {
-    STOW(Degrees.of(136.5), Volts.of(0)),
+    STOW(Degrees.of(90), Volts.of(0)),
     GROUND_INTAKE(Degrees.of(-6.5), Volts.of(12)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
     STATION_VOMIT(Degrees.of(107), Volts.of(-5)),
     STATION_INTAKE(Degrees.of(107), Volts.of(10)),
-    HANDOFF(STOW.getAngle(), Volts.of(1.0), Volts.of(-5)),
+    HANDOFF(Degrees.of(141), Volts.of(1.0), Volts.of(-5)),
     HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), Volts.of(-5)),
     PRE_HANDOFF_ADJUST_CORAL(Degrees.of(90), Volts.of(12), Volts.of(5)),
     CLIMB(Degrees.of(88), Volts.of(0)),
@@ -57,6 +57,7 @@ public class CoralIntake extends SubsystemBase {
     L1_Prepare(L1.getAngle(), Volts.zero()),
     ALGAE_INTAKE(Degrees.of(45), Volts.of(-9.5)),
     HOLD_ALGAE(Degrees.of(55), Volts.of(-1)),
+    ALGAE_SHOOT(Degrees.of(55), Volts.of(10)),
     TUNING(Degrees.of(0), Volts.of(0)),
     MANUAL(Degrees.of(0), Volts.of(0));
 
@@ -210,11 +211,18 @@ public class CoralIntake extends SubsystemBase {
 
     Angle constrainedAngle = coralIntakeConstraint.getClampedValue(desiredAngle);
 
-    if (currentGoal == Goal.TUNING) {
-      constrainedAngle = Degrees.of(tuningDesiredAngle.get());
-    }
-
     switch (getCurrentGoal()) {
+      case HANDOFF:
+        if (getPosition().lt(Degrees.of(135))) {
+          desiredBeltVoltage = Volts.of(0);
+        } else {
+          desiredBeltVoltage = Volts.of(-5);
+        }
+
+        pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
+        beltIO.setVoltage(desiredBeltVoltage);
+        rollerIO.setVoltage(desiredRollerVoltage);
+        break;
       case L1:
         pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
         if (atGoal()) {
@@ -325,6 +333,7 @@ public class CoralIntake extends SubsystemBase {
     Logger.recordOutput("CoralIntake/AnglePID/pidVoltage", pidVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/ffVoltage", ffVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/desiredPivotVoltage", totalVoltage);
+    Logger.recordOutput("CoralIntake/AnglePID/desiredDegreesPerSecond", -setpoint.velocity);
 
     return totalVoltage;
   }

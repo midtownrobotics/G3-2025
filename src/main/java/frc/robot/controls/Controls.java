@@ -76,7 +76,8 @@ public interface Controls {
   public Trigger prepareScoreCoralL3();
   /** Moves elevator into position to score L4 */
   public Trigger prepareScoreCoralL4();
-
+  /** Moves the outtake to remove algae from the coral reef */
+  public Trigger dealgify();
 
   /** Sets the algae claw to barge mode */
   public Trigger algaeModeBarge();
@@ -146,8 +147,11 @@ public interface Controls {
   /** Button to align to the right-most branch of a reef face. */
   public Trigger alignToReefRightBranch();
 
-  /** Button to align to the reef */
-  public Trigger alignToReef();
+  /** Button to align to the branch on the reef */
+  public Trigger alignToBranchReef();
+
+  /** Button to align to the center on the reef */
+  public Trigger alignToAlgaeReef();
 
   /** Gets the POV value of the driver controller */
   public int getDriverPOV();
