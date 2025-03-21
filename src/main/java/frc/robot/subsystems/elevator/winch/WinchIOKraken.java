@@ -59,12 +59,10 @@ public class WinchIOKraken implements WinchIO {
                        int encoderID,
                        CANBusStatusSignalRegistration bus) {
 
-    leftMotor = new TalonFX(leftMotorID, "Drivetrain");
-    rightMotor = new TalonFX(rightMotorID, "Drivetrain");
+    leftMotor = new TalonFX(leftMotorID, bus.getCanBusId());
+    rightMotor = new TalonFX(rightMotorID, bus.getCanBusId());
 
     encoder = new DutyCycleEncoder(encoderID);
-
-    Angle position = getInitialAngle();
 
     tryUntilOk(5, () -> leftMotor.setPosition(Degrees.zero()));
     tryUntilOk(5, () -> rightMotor.setPosition(Degrees.zero()));

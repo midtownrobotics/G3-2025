@@ -40,10 +40,13 @@ public class Elevator extends SubsystemBase {
     STOW(Feet.zero()),
     HANDOFF(Inches.of(0.5)),
     L1(Inches.of(18)),
-    L2(Inches.of(20)),
-    L3(Inches.of(46.5)),
-    L4(Inches.of(60.5)),
-    CLIMB(Inches.of(12)),
+    L2(Inches.of(24)),
+    L3(Inches.of(40)),
+    AUTO_L4(Inches.of(63)),
+    L4(Inches.of(64.5)),
+    DEALGIFY_LOW(Inches.of(14)),
+    DEALGIFY_HIGH(Inches.of(30)),
+    CLIMB(Inches.of(16)),
     CLIMB_BOTTOM(Feet.zero(), false),
     CLIMB_BOTTOM_LOCK(CLIMB_BOTTOM.getHeight(), true),
     TUNING(Feet.zero()),
@@ -209,10 +212,26 @@ public class Elevator extends SubsystemBase {
   }
 
   /**
+   * Returns true if the elevator is within a small threshold distance to the goal.
+   * @param tolerance
+   * @return
+   */
+  public boolean atGoal(Distance tolerance) {
+    return atGoal(getCurrentGoal(), tolerance);
+  }
+
+  /**
    * Returns true if the elevator is within a small threshold distance to the specified goal.
    */
   public boolean atGoal(Goal goal) {
-    return getCurrentGoal() == goal && getPosition().isNear(goal.getHeight(), Inches.of(0.5));
+    return atGoal(goal, Inches.of(0.5));
+  }
+
+  /**
+   * Returns true if the elevator is within a small threshold distance to the specified goal.
+   */
+  public boolean atGoal(Goal goal, Distance tolerance) {
+    return getCurrentGoal() == goal && getPosition().isNear(goal.getHeight(), tolerance);
   }
 
   /**
@@ -227,6 +246,13 @@ public class Elevator extends SubsystemBase {
    */
   public Command setGoalCommand(Goal goal) {
     return runOnce(() -> setGoal(goal));
+  }
+
+  /**
+   * Returns a command that sets the supplied goal of the elevator and finishes immediately.
+   */
+  public Command setGoalCommand(Supplier<Goal> goal) {
+    return runOnce(() -> setGoal(goal.get()));
   }
 
   /**
@@ -248,5 +274,12 @@ public class Elevator extends SubsystemBase {
    */
   public Command setGoalAndWait(Goal goal) {
     return run(() -> setGoal(goal)).until(this::atGoal);
+  }
+
+  /**
+   * Returns a command that sets the goal of the elevator using a supplier and waits until the elevator is at the goal.
+   */
+  public Command setGoalAndWait(Supplier<Goal> goal) {
+    return run(() -> setGoal(goal.get())).until(this::atGoal);
   }
 }

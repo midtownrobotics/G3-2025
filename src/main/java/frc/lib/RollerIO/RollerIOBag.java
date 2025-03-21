@@ -17,9 +17,17 @@ public class RollerIOBag implements RollerIO {
      * Constructor for Bag Roller
      */
     public RollerIOBag(int motorID) {
+        this(motorID, false);
+    }
+
+    /**
+     * Constructor for Bag Roller
+     */
+    public RollerIOBag(int motorID, boolean invert) {
         motor = new SparkMax(motorID, MotorType.kBrushed);
 
         SparkMaxConfig rollerMotorConfig = new SparkMaxConfig();
+        rollerMotorConfig.inverted(invert);
         rollerMotorConfig.smartCurrentLimit((int) Constants.BAG_CURRENT_LIMIT.in(Units.Amps));
         motor.configure(rollerMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
