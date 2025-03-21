@@ -521,7 +521,7 @@ public class RobotContainer {
         Commands.sequence(
           Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
           coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
-          coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.SHOOT)
+          coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)
         )
       ))
       .onFalse(Commands.sequence(

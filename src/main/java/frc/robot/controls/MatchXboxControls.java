@@ -39,7 +39,7 @@ public class MatchXboxControls implements Controls {
     double deadzoneApplied = MathUtil.applyDeadband(driverController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
     return (isDriverControlInDeadzone()
     ? -Math.signum(deadzoneApplied)
-    * Math.abs(Math.pow(deadzoneApplied, 2))
+    * Math.abs(Math.pow(deadzoneApplied, 1))
     : 0);
   }
 
@@ -48,7 +48,7 @@ public class MatchXboxControls implements Controls {
     double deadzoneApplied = MathUtil.applyDeadband(driverController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
     return (isDriverControlInDeadzone()
     ? -Math.signum(deadzoneApplied)
-    * Math.abs(Math.pow(deadzoneApplied, 2))
+    * Math.abs(Math.pow(deadzoneApplied, 1))
     : 0);
   }
 
