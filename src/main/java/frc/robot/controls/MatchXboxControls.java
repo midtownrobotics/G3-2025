@@ -57,7 +57,7 @@ public class MatchXboxControls implements Controls {
     double deadzoneApplied = MathUtil.applyDeadband(driverController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
     return isDriverControlInDeadzone()
     ? -Math.signum(deadzoneApplied)
-    * Math.abs(Math.pow(deadzoneApplied, 3))
+    * Math.abs(Math.pow(deadzoneApplied, 2))
     : 0;
   }
 
