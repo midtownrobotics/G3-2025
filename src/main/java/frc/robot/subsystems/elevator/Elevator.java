@@ -27,7 +27,6 @@ import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import frc.robot.utils.UnitUtil;
 import java.util.function.Supplier;
-
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -86,7 +85,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * Converts a CoralMode to an Elevator dealgify Goal
-     * 
+     *
      * @param mode
      * @return
      */
@@ -229,7 +228,7 @@ public class Elevator extends SubsystemBase {
   /**
    * Returns true if the elevator is within a small threshold distance to the
    * goal.
-   * 
+   *
    * @param tolerance
    * @return
    */

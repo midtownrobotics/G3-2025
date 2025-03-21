@@ -293,7 +293,7 @@ public class RobotContainer {
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
 
-    auto = AutoBuilder.buildAuto("Bottom Two Coral");
+    auto = AutoBuilder.buildAuto("Bottom Three Coral");
 
     // coralCamera = new CoralCamera(new VisionIOLimelight("limelight",
     // drive::getPose));
