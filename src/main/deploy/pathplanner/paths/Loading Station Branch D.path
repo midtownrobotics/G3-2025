@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.9195000000000007,
-        "y": 2.8257499999999993
+        "x": 3.929873597819634,
+        "y": 2.809711268272574
       },
       "prevControl": {
-        "x": 3.4195,
-        "y": 1.9597245962155607
+        "x": 3.4298735978196335,
+        "y": 1.9436858644881352
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff and PrepareScoreLevel4",
+      "name": "Handoff",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {

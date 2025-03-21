@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.992000000000001,
-        "y": 2.767249999999999
+        "x": 4.974273716448092,
+        "y": 2.7674442843021767
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.492000000000001,
-        "y": 1.90122459621556
+        "x": 5.474273716448092,
+        "y": 1.9014188805177379
       },
       "isLocked": false,
       "linkedName": "Branch E"
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "PrepareLoadingStationIntake",
-      "waypointRelativePos": 0.5455353926512969,
+      "waypointRelativePos": 0.5,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

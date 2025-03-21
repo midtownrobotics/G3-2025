@@ -272,7 +272,7 @@ public class RobotContainer {
           .onTrue(handoffCommand());
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
-        elevator.setGoalAndWait(Elevator.Goal.AUTO_L4).withTimeout(3.0),
+        elevator.setGoalAndWait(Elevator.Goal.L4).withTimeout(3.0),
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.L4).withTimeout(1.0),
         coralOuttakeRoller
             .setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT, CoralOuttakeRoller.Goal.STOW)
