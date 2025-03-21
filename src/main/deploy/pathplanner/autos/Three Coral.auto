@@ -23,15 +23,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeFromLoadingStation"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Loading Station to Branch J"
+            "pathName": "Loading Station to Branch K"
           }
         },
         {
@@ -43,19 +37,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Branch J to Loading Station"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeFromLoadingStation"
+            "pathName": "Branch K to Loading Station"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station to Branch K"
+            "pathName": "Loading Station to Branch L"
           }
         },
         {

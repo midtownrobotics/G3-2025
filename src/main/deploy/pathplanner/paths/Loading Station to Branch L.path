@@ -3,37 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.452376663773147,
-        "y": 0.7055396412037033
+        "x": 1.282684426229508,
+        "y": 7.207735655737704
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0951642734596865,
-        "y": 1.4715840843226813
+        "x": 2.189773839143111,
+        "y": 6.578057490526307
       },
       "isLocked": false,
-      "linkedName": "Bottom Loading Station"
+      "linkedName": "Top Loading Station"
     },
     {
       "anchor": {
-        "x": 4.981466339398911,
-        "y": 2.7662455138103734
+        "x": 3.705,
+        "y": 5.14625
       },
       "prevControl": {
-        "x": 5.481466339398911,
-        "y": 1.900220110025935
+        "x": 3.563826891987626,
+        "y": 5.352575358533862
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch E"
+      "linkedName": "Branch L"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4124824026278862,
+      "rotationDegrees": -58.237903384819454
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff",
+      "name": "Handoff and PrepareScoreLevel4",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
@@ -67,13 +72,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": -59.381394591090576
   },
   "reversed": false,
-  "folder": "Bottom Side",
+  "folder": "Top Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 145.0
+    "rotation": 35.0
   },
   "useDefaultConstraints": true
 }

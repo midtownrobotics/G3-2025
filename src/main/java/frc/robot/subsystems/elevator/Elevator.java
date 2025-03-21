@@ -43,7 +43,6 @@ public class Elevator extends SubsystemBase {
     HANDOFF(Inches.of(0.5)),
     L2(Inches.of(24)),
     L3(Inches.of(40)),
-    AUTO_L4(Inches.of(63)),
     L4(Inches.of(64.5)),
     DEALGIFY_LOW(Inches.of(14)),
     DEALGIFY_HIGH(Inches.of(30)),

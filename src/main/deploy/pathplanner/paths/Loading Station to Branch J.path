@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.331851454590388,
-        "y": 6.750206358868974
+        "x": 1.9254720359160475,
+        "y": 6.441691212618726
       },
       "isLocked": false,
       "linkedName": "Top Loading Station"
     },
     {
       "anchor": {
-        "x": 5.06940285011574,
-        "y": 5.249969618055555
+        "x": 5.115,
+        "y": 5.263
       },
       "prevControl": {
-        "x": 4.6953200954905085,
-        "y": 5.813947120955344
+        "x": 5.614999999999999,
+        "y": 6.129025403784439
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff",
-      "waypointRelativePos": 0.29225954610951027,
+      "name": "Handoff and PrepareScoreLevel4",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -47,22 +47,11 @@
           "name": "Handoff"
         }
       }
-    },
-    {
-      "name": "PrepareLevel4",
-      "waypointRelativePos": 0.6422122658501443,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareLevel4"
-        }
-      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.8,
-    "maxAcceleration": 2.7,
+    "maxVelocity": 3.9,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -70,13 +59,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -120.42757070656636
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "Top Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 35.56059256324648
+    "rotation": 35.0
   },
   "useDefaultConstraints": true
 }
