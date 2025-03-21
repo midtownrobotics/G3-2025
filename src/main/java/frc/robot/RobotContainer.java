@@ -279,6 +279,8 @@ public class RobotContainer {
             .withTimeout(0.5),
         elevator.setGoalCommand(Elevator.Goal.STOW)));
 
+    NamedCommands.registerCommand("DisableCameras", aprilTagVision.enableDisableCamera(false, 0));
+
     NamedCommands.registerCommand("Handoff", handoffCommand());
     // NamedCommands.registerCommand("PrepareLevel4", Commands.none());
     NamedCommands.registerCommand("PrepareLevel4", elevator.setGoalCommand(Elevator.Goal.L4));

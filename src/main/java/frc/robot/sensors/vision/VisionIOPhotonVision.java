@@ -140,4 +140,16 @@ public class VisionIOPhotonVision implements VisionIO {
     public String getName() {
         return name;
     }
+
+    @Override
+    public boolean getEnabled() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'getEnabled'");
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'setEnabled'");
+    }
 }
