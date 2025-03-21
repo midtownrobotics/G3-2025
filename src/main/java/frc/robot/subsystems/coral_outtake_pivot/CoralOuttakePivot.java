@@ -30,16 +30,18 @@ public class CoralOuttakePivot extends SubsystemBase {
   private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralOuttakePivot/desiredAngle", 0.0);
 
     public enum Goal {
-        STOW(Degrees.of(0)),
+        STOW(Degrees.of(10)),
         L1(Degrees.of(-40)),
-        L2(Degrees.of(-40)),
-        L3(Degrees.of(-40)),
-        L4(Degrees.of(-30)),
+        L2(Degrees.of(-30)),
+        L3(Degrees.of(-30)),
+        L4(Degrees.of(-40)),
         HANDOFF(Degrees.zero()),
         INTAKE(STOW.getAngle()),
+        DEALGIFY(Degrees.of(-32)),
+        CLIMB(Degrees.of(-60)),
+
         TUNING(),
         MANUAL();
-
 
         private @Getter Angle angle;
 
@@ -148,6 +150,14 @@ public class CoralOuttakePivot extends SubsystemBase {
     public Command setGoalAndWait(Goal goal) {
         return run(() -> setGoal(goal)).until(this::atGoal);
     }
+
+public Command setGoalCommand(Goal goal) {
+    return run(() -> setGoal(goal));
+}
+
+public Command setGoalCommand(Supplier<Goal> goal) {
+    return run(() -> setGoal(goal.get()));
+}
 
 /**
    * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.

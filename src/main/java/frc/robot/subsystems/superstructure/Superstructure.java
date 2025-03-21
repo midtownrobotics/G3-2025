@@ -63,15 +63,15 @@ public class Superstructure extends SubsystemBase {
     if (elevatorPosition.lt(Inches.of(12))) {
       if (
         (
-          coralIntakePosition.gt(Degrees.of(90))
-          || coralIntakeGoalPosition.gt(Degrees.of(90))
+          coralIntakePosition.gt(Degrees.of(110))
+          || coralIntakeGoalPosition.gt(Degrees.of(110))
         )
         && !(coralIntakePosition.gt(Degrees.of(130)))
       ) {
         coralOuttakeConstraints.setUpper(Degrees.of(-30));
       }
 
-      if (coralIntakePosition.gt(Degrees.of(90)) && coralIntakeGoalPosition.lt(Degrees.of(90))) {
+      if (coralIntakePosition.gt(Degrees.of(110)) && coralIntakeGoalPosition.lt(Degrees.of(110))) {
         coralOuttakeConstraints.setUpper(Degrees.of(-31));
       }
 
@@ -79,7 +79,7 @@ public class Superstructure extends SubsystemBase {
         if (coralIntakePosition.gt(Degrees.of(130))) {
           coralIntakeConstraints.setLower(Degrees.of(139));
         } else{
-          coralIntakeConstraints.setUpper(Degrees.of(90));
+          coralIntakeConstraints.setUpper(Degrees.of(110));
         }
       }
     }

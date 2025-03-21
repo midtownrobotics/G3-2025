@@ -36,29 +36,29 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public double getDriveForward() {
-    return -MathUtil.applyDeadband(driverController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
-    // return (isDriverControlInDeadzone()
-    // ? -Math.signum(driverController.getLeftY())
-    // * Math.abs(Math.pow(driverController.getLeftY(), 2))
-    // : 0);
+    double deadzoneApplied = MathUtil.applyDeadband(driverController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
+    return (isDriverControlInDeadzone()
+    ? -Math.signum(deadzoneApplied)
+    * Math.abs(Math.pow(deadzoneApplied, 2))
+    : 0);
   }
 
   @Override
   public double getDriveLeft() {
-    return -MathUtil.applyDeadband(driverController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
-    // return (isDriverControlInDeadzone()
-    // ? -Math.signum(driverController.getLeftX())
-    // * Math.abs(Math.pow(driverController.getLeftX(), 2))
-    // : 0);
+    double deadzoneApplied = MathUtil.applyDeadband(driverController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
+    return (isDriverControlInDeadzone()
+    ? -Math.signum(deadzoneApplied)
+    * Math.abs(Math.pow(deadzoneApplied, 2))
+    : 0);
   }
 
   @Override
   public double getDriveRotation() {
-    return -MathUtil.applyDeadband(driverController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
-    // return isDriverControlInDeadzone()
-    // ? -Math.signum(driverController.getRightX())
-    // * Math.abs(Math.pow(driverController.getRightX(), 3))
-    // : 0;
+    double deadzoneApplied = MathUtil.applyDeadband(driverController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
+    return isDriverControlInDeadzone()
+    ? -Math.signum(deadzoneApplied)
+    * Math.abs(Math.pow(deadzoneApplied, 3))
+    : 0;
   }
 
   @Override

@@ -15,7 +15,7 @@ public class LockIORevServo implements LockIO{
         servo.setBoundsMicroseconds(2500, 0, 1500, 0, 500);
     }
 
-    /** Enable / disble lock. */
+    /** Enable / disable lock. */
     public void setLockEnabled(boolean value) {
         double degrees = value ? lockedPosition.in(Degrees) : unlockedPosition.in(Degrees);
 

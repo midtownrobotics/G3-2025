@@ -113,7 +113,8 @@ public class DriveCommands {
               ySupplier.getAsDouble());
 
           // Apply rotation deadband
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          // double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          double omega = omegaSupplier.getAsDouble();
 
           // Square rotation value for more precise control
           omega = Math.copySign(omega * omega, omega);
@@ -347,6 +348,14 @@ public class DriveCommands {
     Rotation2d.k180deg
   );
 
+  private static final Transform2d kRobotReefAlignOffset = new Transform2d(
+    new Translation2d(
+      Inches.of(21), // F/B
+      Inches.of(-4) // L/R
+    ),
+    Rotation2d.k180deg
+  );
+
   private static final Transform2d pathPlannerOffset = new Transform2d(
       new Translation2d(Inches.of(33), Inches.of(-1.5)), Rotation2d.k180deg);
 
@@ -420,7 +429,6 @@ public class DriveCommands {
     };
 
     return Commands.sequence(
-    return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
         drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
   }
@@ -480,7 +488,7 @@ public class DriveCommands {
 
           return targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle().plus(offset);
         }));
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+        // drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
   }
 
   /** Creates a command that drives to reef position, aligned to the center of the face. */
