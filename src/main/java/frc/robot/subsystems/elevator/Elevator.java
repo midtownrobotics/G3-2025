@@ -39,7 +39,6 @@ public class Elevator extends SubsystemBase {
   public enum Goal {
     STOW(Feet.zero()),
     HANDOFF(Inches.of(0.5)),
-    L1(Inches.of(18)),
     L2(Inches.of(24)),
     L3(Inches.of(40)),
     AUTO_L4(Inches.of(63)),
@@ -77,7 +76,6 @@ public class Elevator extends SubsystemBase {
      */
     public static Goal fromCoralMode(CoralMode mode) {
       return switch (mode) {
-        case L1 -> L1;
         case L2 -> L2;
         case L3 -> L3;
         case L4 -> L4;
