@@ -559,7 +559,7 @@ public class RobotContainer {
     var selected = m_autoChooser.getSelected();
 
     if (selected == null) {
-
+      return auto;
     }
 
     return selected;
