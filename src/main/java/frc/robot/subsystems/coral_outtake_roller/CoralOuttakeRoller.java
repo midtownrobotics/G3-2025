@@ -21,7 +21,7 @@ public class CoralOuttakeRoller extends SubsystemBase {
   public enum Goal {
     STOW(Volts.zero()),
     SHOOT(Volts.of(5.5)),
-    DEALGIFY(Volts.of(7)),
+    DEALGIFY(Volts.of(5.5)),
     HANDOFF(Volts.of(3)),
     HANDOFF_REVERSE(Volts.of(-2)),
     INTAKE(Volts.zero()),
