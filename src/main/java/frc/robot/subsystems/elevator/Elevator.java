@@ -211,6 +211,11 @@ public class Elevator extends SubsystemBase {
     return atGoal(getCurrentGoal());
   }
 
+  /**
+   * Returns true if the elevator is within a small threshold distance to the goal.
+   * @param tolerance
+   * @return
+   */
   public boolean atGoal(Distance tolerance) {
     return atGoal(getCurrentGoal(), tolerance);
   }
@@ -222,6 +227,9 @@ public class Elevator extends SubsystemBase {
     return atGoal(goal, Inches.of(0.5));
   }
 
+  /**
+   * Returns true if the elevator is within a small threshold distance to the specified goal.
+   */
   public boolean atGoal(Goal goal, Distance tolerance) {
     return getCurrentGoal() == goal && getPosition().isNear(goal.getHeight(), tolerance);
   }

@@ -27,7 +27,7 @@ public class CoralOuttakePivot extends SubsystemBase {
     public LinearConstraint<AngleUnit, Angle> coralOuttakeConstraint = new LinearConstraint<AngleUnit, Angle>(
             CoralOuttakePivotConstants.coralOuttakeMinAngle, CoralOuttakePivotConstants.coralOuttakeMaxAngle);
 
-  private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralOuttakePivot/desiredAngle", 0.0);
+    private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralOuttakePivot/desiredAngle", 0.0);
 
     public enum Goal {
         STOW(Degrees.of(10)),
@@ -82,7 +82,7 @@ public class CoralOuttakePivot extends SubsystemBase {
         Angle constrainedAngle;
 
         if (Constants.tuningMode.get()) {
-          constrainedAngle = coralOuttakeConstraint.getClampedValue(Degrees.of(tuningDesiredAngle.get()));
+            constrainedAngle = coralOuttakeConstraint.getClampedValue(Degrees.of(tuningDesiredAngle.get()));
         } else {
             constrainedAngle = coralOuttakeConstraint.getClampedValue(currentGoal.getAngle());
         }
@@ -151,25 +151,24 @@ public class CoralOuttakePivot extends SubsystemBase {
         return run(() -> setGoal(goal)).until(this::atGoal);
     }
 
-public Command setGoalCommand(Goal goal) {
-    return run(() -> setGoal(goal));
-}
-
-public Command setGoalCommand(Supplier<Goal> goal) {
-    return run(() -> setGoal(goal.get()));
-}
-
-/**
-   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
-   */
-  public Command setGoalEndCommand(Goal goal, Goal endGoal) {
-    return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
-  }
+    /** Sets the goal of the coral outtake pivot. */
+    public Command setGoalCommand(Goal goal) {
+        return run(() -> setGoal(goal));
+    }
 
     /**
-   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
-   */
-  public Command setGoalEndCommand(Supplier<Goal> goal, Goal endGoal) {
-    return run(() -> setGoal(goal.get())).finallyDo(() -> setGoal(endGoal));
-  }
+     * Returns a command that sets the goal of the elevator and sets the goal to the
+     * endGoal when the command ends.
+     */
+    public Command setGoalEndCommand(Goal goal, Goal endGoal) {
+        return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
+    }
+
+    /**
+     * Returns a command that sets the goal of the elevator and sets the goal to the
+     * endGoal when the command ends.
+     */
+    public Command setGoalEndCommand(Supplier<Goal> goal, Goal endGoal) {
+        return run(() -> setGoal(goal.get())).finallyDo(() -> setGoal(endGoal));
+    }
 }
