@@ -260,13 +260,13 @@ public class RobotContainer {
         .onTrue(handoffCommand());
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
-        elevator.setGoalAndWait(Elevator.Goal.AUTO_L4).withTimeout(3.0),
+        elevator.setGoalAndWait(Elevator.Goal.L4).withTimeout(3.0),
         coralOuttake.setGoalEndCommand(CoralOuttake.Goal.SHOOT, CoralOuttake.Goal.IDLE).withTimeout(0.5),
         elevator.setGoalCommand(Elevator.Goal.STOW)));
-
+    
     NamedCommands.registerCommand("Handoff", autoHandoffCommand());
     // NamedCommands.registerCommand("PrepareLevel4", Commands.none());
-    NamedCommands.registerCommand("PrepareLevel4", elevator.setGoalCommand(Elevator.Goal.AUTO_L4));
+    NamedCommands.registerCommand("PrepareLevel4", elevator.setGoalCommand(Elevator.Goal.L4));
     NamedCommands.registerCommand("PrepareLoadingStationIntake",
         coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE));
 

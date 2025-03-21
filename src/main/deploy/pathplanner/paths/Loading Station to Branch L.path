@@ -78,7 +78,7 @@
   "folder": "Top Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 35.56059256324648
+    "rotation": 35.0
   },
   "useDefaultConstraints": true
 }

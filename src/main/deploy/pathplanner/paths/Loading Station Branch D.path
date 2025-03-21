@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.451078771353484,
-        "y": 1.2063703641523318
+        "x": 2.0951642734596865,
+        "y": 1.4715840843226813
       },
       "isLocked": false,
       "linkedName": "Bottom Loading Station"
     },
     {
       "anchor": {
-        "x": 3.864,
-        "y": 2.789
+        "x": 3.9195000000000007,
+        "y": 2.8257499999999993
       },
       "prevControl": {
-        "x": 3.5916976572104704,
-        "y": 2.3173585072684983
+        "x": 3.4195,
+        "y": 1.9597245962155607
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Branch D"
     }
   ],
   "rotationTargets": [],
@@ -33,24 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff",
-      "waypointRelativePos": 0.42116579610951044,
+      "name": "Handoff and PrepareScoreLevel4",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "Handoff"
-        }
-      }
-    },
-    {
-      "name": "PrepareLevel4",
-      "waypointRelativePos": 0.647120407060519,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareLevel4"
         }
       }
     }
@@ -71,7 +60,7 @@
   "folder": "Bottom Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 143.52272134051793
+    "rotation": 145.0
   },
   "useDefaultConstraints": true
 }

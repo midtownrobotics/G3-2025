@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.331851454590388,
-        "y": 6.750206358868974
+        "x": 1.9254720359160475,
+        "y": 6.441691212618726
       },
       "isLocked": false,
       "linkedName": "Top Loading Station"
@@ -20,8 +20,8 @@
         "y": 5.263
       },
       "prevControl": {
-        "x": 4.740917245374769,
-        "y": 5.826977502899789
+        "x": 5.614999999999999,
+        "y": 6.129025403784439
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,24 +38,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff",
-      "waypointRelativePos": 0.29225954610951027,
+      "name": "Handoff and PrepareScoreLevel4",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "Handoff"
-        }
-      }
-    },
-    {
-      "name": "PrepareLevel4",
-      "waypointRelativePos": 0.6422122658501443,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareLevel4"
         }
       }
     }
@@ -76,7 +65,7 @@
   "folder": "Top Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 35.56059256324648
+    "rotation": 35.0
   },
   "useDefaultConstraints": true
 }
