@@ -1,6 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
@@ -14,6 +13,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -27,6 +27,7 @@ import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import frc.robot.utils.UnitUtil;
 import java.util.function.Supplier;
+
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -34,12 +35,12 @@ public class Elevator extends SubsystemBase {
 
   public Distance driverOffset = Inches.zero();
 
-  private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
+  private LinearConstraint<DistanceUnit, Distance> elevatorConstraint = new LinearConstraint<DistanceUnit, Distance>(
+      ElevatorConstants.elevatorMinHeight, ElevatorConstants.elevatorMaxHeight);
 
   public enum Goal {
     STOW(Feet.zero()),
     HANDOFF(Inches.of(0.5)),
-    L1(Inches.of(18)),
     L2(Inches.of(24)),
     L3(Inches.of(40)),
     AUTO_L4(Inches.of(63)),
@@ -77,11 +78,26 @@ public class Elevator extends SubsystemBase {
      */
     public static Goal fromCoralMode(CoralMode mode) {
       return switch (mode) {
-        case L1 -> L1;
         case L2 -> L2;
         case L3 -> L3;
         case L4 -> L4;
         default -> STOW;
+      };
+    }
+
+    /**
+     * Converts a CoralMode to an Elevator dealgify Goal
+     * 
+     * @param mode
+     * @return
+     */
+    public static Goal dealgifyFromCoralMode(CoralMode mode) {
+      return switch (mode) {
+        case L1 -> Goal.DEALGIFY_LOW;
+        case L2 -> Goal.DEALGIFY_LOW;
+        case L3 -> Goal.DEALGIFY_HIGH;
+        case L4 -> Goal.DEALGIFY_HIGH;
+        default -> Goal.DEALGIFY_HIGH;
       };
     }
   }
@@ -107,24 +123,23 @@ public class Elevator extends SubsystemBase {
     this.winch = winch;
     this.lock = lock;
 
-      SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
+    SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         winch::setVoltage,
         this::motorSysIdLog,
-        this
-    );
+        this);
 
     routine = new SysIdRoutine(new Config(Volts.of(1).per(Second), Volts.of(1), Seconds.of(5)), sysIdMech);
   }
 
   private void motorSysIdLog(SysIdRoutineLog log) {
     log.motor("leftMotor")
-      .voltage(winchInputs.left.appliedVoltage)
-      .linearPosition(winchInputs.left.position)
-      .linearVelocity(winchInputs.left.velocity);
+        .voltage(winchInputs.left.appliedVoltage)
+        .linearPosition(winchInputs.left.position)
+        .linearVelocity(winchInputs.left.velocity);
     log.motor("rightMotor")
-      .voltage(winchInputs.right.appliedVoltage)
-      .linearPosition(winchInputs.right.position)
-      .linearVelocity(winchInputs.right.velocity);
+        .voltage(winchInputs.right.appliedVoltage)
+        .linearPosition(winchInputs.right.position)
+        .linearVelocity(winchInputs.right.velocity);
   }
 
   @Override
@@ -205,14 +220,17 @@ public class Elevator extends SubsystemBase {
   }
 
   /**
-   * Returns true if the elevator is within a small threshold distance to the goal.
+   * Returns true if the elevator is within a small threshold distance to the
+   * goal.
    */
   public boolean atGoal() {
     return atGoal(getCurrentGoal());
   }
 
   /**
-   * Returns true if the elevator is within a small threshold distance to the goal.
+   * Returns true if the elevator is within a small threshold distance to the
+   * goal.
+   * 
    * @param tolerance
    * @return
    */
@@ -221,65 +239,81 @@ public class Elevator extends SubsystemBase {
   }
 
   /**
-   * Returns true if the elevator is within a small threshold distance to the specified goal.
+   * Returns true if the elevator is within a small threshold distance to the
+   * specified goal.
    */
   public boolean atGoal(Goal goal) {
     return atGoal(goal, Inches.of(0.5));
   }
 
   /**
-   * Returns true if the elevator is within a small threshold distance to the specified goal.
+   * Returns true if the elevator is within a small threshold distance to the
+   * specified goal.
    */
   public boolean atGoal(Goal goal, Distance tolerance) {
     return getCurrentGoal() == goal && getPosition().isNear(goal.getHeight(), tolerance);
   }
 
   /**
-   * Returns a trigger for if the elevator is within a small threshold distance to the goal.
+   * Returns a trigger for if the elevator is within a small threshold distance to
+   * the goal.
    */
   public Trigger atGoalTrigger(Goal goal) {
     return new Trigger(() -> atGoal(goal));
   }
 
   /**
-   * Returns a command that sets the goal of the elevator and finishes immediately.
+   * Returns a command that sets the goal of the elevator and finishes
+   * immediately.
    */
   public Command setGoalCommand(Goal goal) {
     return runOnce(() -> setGoal(goal));
   }
 
   /**
-   * Returns a command that sets the supplied goal of the elevator and finishes immediately.
+   * Returns a command that sets the supplied goal of the elevator and finishes
+   * immediately.
    */
   public Command setGoalCommand(Supplier<Goal> goal) {
     return runOnce(() -> setGoal(goal.get()));
   }
 
   /**
-   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
+   * Returns a command that sets the goal of the elevator and sets the goal to the
+   * endGoal when the command ends.
    */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
   }
 
   /**
-   * Returns a command that sets the goal of the elevator and sets the goal to the endGoal when the command ends.
+   * Returns a command that sets the goal of the elevator and sets the goal to the
+   * endGoal when the command ends.
    */
   public Command setGoalEndCommand(Supplier<Goal> goal, Goal endGoal) {
     return run(() -> setGoal(goal.get())).finallyDo(() -> setGoal(endGoal));
   }
 
   /**
-   * Returns a command that sets the goal of the elevator and waits until the elevator is at the goal.
+   * Returns a command that sets the goal of the elevator and waits until the
+   * elevator is at the goal.
    */
   public Command setGoalAndWait(Goal goal) {
     return run(() -> setGoal(goal)).until(this::atGoal);
   }
 
   /**
-   * Returns a command that sets the goal of the elevator using a supplier and waits until the elevator is at the goal.
+   * Returns a command that sets the goal of the elevator using a supplier and
+   * waits until the elevator is at the goal.
    */
   public Command setGoalAndWait(Supplier<Goal> goal) {
     return run(() -> setGoal(goal.get())).until(this::atGoal);
+  }
+
+  /**
+   * Converts a CoralMode to an Elevator dealgify Goal.
+   */
+  public Command setDealgifyGoalFromCoralMode(Supplier<CoralMode> mode) {
+    return Commands.run(() -> setGoal(Goal.dealgifyFromCoralMode(mode.get())), this);
   }
 }

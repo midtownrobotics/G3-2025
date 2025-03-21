@@ -507,31 +507,33 @@ public class RobotContainer {
                 elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2),
                 elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)));
 
-    controls.dealgify().and(() -> coralMode == CoralMode.L1 || coralMode == CoralMode.L2)
-        .onTrue(Commands.sequence(
-          elevator.setGoalCommand(Elevator.Goal.DEALGIFY_LOW),
-          Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
-          coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
-          coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.SHOOT)
-        ))
-        .onFalse(Commands.sequence(
-          coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
-          elevator.setGoalCommand(Elevator.Goal.STOW),
-          coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)
-        ));
+    // controls.dealgify()
+    //     .onTrue(Commands.sequence(
+    //       elevator.setGoalCommand(elevator.setDealgifyGoalFromCoralMode(() -> coralMode)),
+    //       Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
+    //       coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
+    //       coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.SHOOT)
+    //     ))
+    //     .onFalse(Commands.sequence(
+    //       coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
+    //       elevator.setGoalCommand(Elevator.Goal.STOW),
+    //       coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)
+    //     ));
 
-    controls.dealgify().and(() -> coralMode == CoralMode.L3 || coralMode == CoralMode.L4)
-        .onTrue(Commands.sequence(
-          elevator.setGoalCommand(Elevator.Goal.DEALGIFY_HIGH),
+    controls.dealgify()
+      .whileTrue(Commands.parallel(
+        elevator.setDealgifyGoalFromCoralMode(() -> coralMode),
+        Commands.sequence(
           Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
           coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
           coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.SHOOT)
-        ))
-        .onFalse(Commands.sequence(
-          coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
-          elevator.setGoalCommand(Elevator.Goal.STOW),
-          coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)
-        ));
+        )
+      ))
+      .onFalse(Commands.sequence(
+        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
+        elevator.setGoalCommand(Elevator.Goal.STOW),
+        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)
+      ));
 
     // CommandXboxController testController = new CommandXboxController(5);
 
