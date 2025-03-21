@@ -342,8 +342,8 @@ public class DriveCommands {
 
   private static final Transform2d kRobotOffset = new Transform2d(
     new Translation2d(
-      Inches.of(21), // F/B
-      Inches.of(-4) // L/R
+      Inches.of(20.5), // F/B
+      Inches.of(-1) // L/R
     ),
     Rotation2d.k180deg
   );
