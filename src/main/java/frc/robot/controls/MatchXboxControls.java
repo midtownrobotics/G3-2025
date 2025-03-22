@@ -27,7 +27,7 @@ public class MatchXboxControls implements Controls {
   }
 
   /** Determines if the driver joystick is in the controller deadzone. */
-  private boolean isDriverControlInDeadzone() {
+  public boolean isDriverControlInDeadzone() {
     return Controls.super.isDriverControlInDeadzone(
         driverController.getLeftX(), driverController.getLeftY(), driverController.getRightX());
   }

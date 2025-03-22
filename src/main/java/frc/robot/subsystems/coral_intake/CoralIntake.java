@@ -225,9 +225,11 @@ public class CoralIntake extends SubsystemBase {
         break;
       case L1:
         pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
+        beltIO.setVoltage(desiredBeltVoltage);
         if (atGoal()) {
           rollerIO.setVoltage(desiredRollerVoltage);
         }
+        break;
       default:
         pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
         beltIO.setVoltage(desiredBeltVoltage);
@@ -361,6 +363,14 @@ public class CoralIntake extends SubsystemBase {
     return getCurrentGoal() == goal && getPosition().isNear(goal.getAngle(), angleTolerance);
   }
 
+    /**
+   * Returns true if the intake is within a small threshold distance to the
+   * specified goal.
+   */
+  public boolean atGoal(Angle angleTolerance) {
+    return atGoal(getCurrentGoal(), angleTolerance);
+  }
+
   /**
    * Returns a trigger for if the intake is within a small threshold distance to
    * the goal.
@@ -396,5 +406,12 @@ public class CoralIntake extends SubsystemBase {
    */
   public Command setGoalAndWait(Goal goal) {
     return run(() -> setGoal(goal)).until(this::atGoal);
+  }
+
+  /**
+   * Returns a command that sets the goal of the intake and waits until it is at the goal.
+   */
+  public Command setGoalAndWait(Goal goal, Angle tolerance) {
+    return run(() -> setGoal(goal)).until(() -> atGoal(tolerance));
   }
 }

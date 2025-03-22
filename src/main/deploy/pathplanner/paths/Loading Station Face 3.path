@@ -8,64 +8,40 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0951642734596865,
-        "y": 1.4715840843226813
+        "x": 2.71870197756735,
+        "y": 2.214687383310934
       },
       "isLocked": false,
       "linkedName": "Bottom Loading Station"
     },
     {
       "anchor": {
-        "x": 4.981466339398911,
-        "y": 2.7662455138103734
+        "x": 5.503397435897435,
+        "y": 2.3530769230769226
       },
       "prevControl": {
-        "x": 6.231466339398911,
-        "y": 0.601182004349277
+        "x": 4.564230769230768,
+        "y": 0.6605128205128197
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch E"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
-  "pointTowardsZones": [
+  "rotationTargets": [
     {
-      "fieldPosition": {
-        "x": 4.95,
-        "y": 3.3
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.4825102880658457,
-      "maxWaypointRelativePos": 0.7644032921810637,
-      "name": "Point Towards Zone"
+      "waypointRelativePos": 0.47559966914805524,
+      "rotationDegrees": 72.62338316876476
     }
   ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Handoff",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Handoff"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "PrepareLevel4"
-              }
-            }
-          ]
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -77,7 +53,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.4,
     "rotation": 119.99999999999999
   },
   "reversed": false,

@@ -305,6 +305,14 @@ public class Elevator extends SubsystemBase {
   }
 
   /**
+   * Returns a command that sets the goal of the elevator and waits until the
+   * elevator is at the goal.
+   */
+  public Command setGoalAndWait(Goal goal, Distance tolerance) {
+    return run(() -> setGoal(goal)).until(() -> atGoal(tolerance));
+  }
+
+  /**
    * Returns a command that sets the goal of the elevator using a supplier and
    * waits until the elevator is at the goal.
    */
