@@ -8,37 +8,62 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.242839412913603,
-        "y": 6.486071834788603
+        "x": 2.5031123609755292,
+        "y": 6.909912519496479
       },
       "isLocked": false,
       "linkedName": "Top Loading Station"
     },
     {
       "anchor": {
-        "x": 3.7245000000000004,
-        "y": 5.10725
+        "x": 3.500250000004185,
+        "y": 5.83850000000379
       },
       "prevControl": {
-        "x": 3.5833268919876264,
-        "y": 5.313575358533861
+        "x": 3.0986612411355585,
+        "y": 6.534072134112777
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch L"
+      "linkedName": "Face 6"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4124824026278862,
-      "rotationDegrees": -58.237903384819454
+      "waypointRelativePos": 0.16235294117647095,
+      "rotationDegrees": 35.0
     }
   ],
-  "constraintZones": [],
-  "pointTowardsZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.9976798143851375,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 150.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.1,
+        "y": 4.6
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.5225058004640316,
+      "maxWaypointRelativePos": 0.9122969837587025,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
-      "name": "Handoff and PrepareScoreLevel4",
+      "name": "Handoff",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
@@ -71,8 +96,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -59.381394591090576
+    "velocity": 0.4,
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": "Top Side",

@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
@@ -32,7 +31,6 @@ import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.commands.DriveCommands;
-import frc.robot.controls.Controls;
 import frc.robot.controls.CoralMode;
 import frc.robot.controls.MatchXboxControls;
 import frc.robot.sensors.Photoelectric;
@@ -295,6 +293,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4));
     NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3));
+    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
@@ -484,8 +483,9 @@ public class RobotContainer {
 
               return closestFace;
             }))
-        .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -3, () -> 0, () -> 0).withTimeout(1),
-            Commands.none(), () -> controls.isDriverControlInDeadzone()));
+        // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, () -> 0, () -> 0).withTimeout(0.5),
+        //     Commands.none(), () -> !controls.isDriverControlInDeadzone()))
+        ;
 
     controls.gamePieceLock()
         .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getDriveForward, controls::getDriveLeft));
@@ -561,8 +561,8 @@ public class RobotContainer {
      * if (auto == null) {
      * return Commands.print("AHHHH");
      * }
-     * 
-     * return auto;
+     *
+      * return auto;
      */
     var selected = m_autoChooser.getSelected();
 

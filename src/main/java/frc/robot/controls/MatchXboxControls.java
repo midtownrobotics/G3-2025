@@ -26,6 +26,7 @@ public class MatchXboxControls implements Controls {
     operatorController = new IOProtectionXboxController(operatorPort);
   }
 
+  @AutoLogOutput
   /** Determines if the driver joystick is in the controller deadzone. */
   public boolean isDriverControlInDeadzone() {
     return Controls.super.isDriverControlInDeadzone(
@@ -303,7 +304,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger alignToAlgaeReef() {
-    return driverController.a();
+    return driverController.leftTrigger();
   }
 
   @Override

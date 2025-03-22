@@ -148,7 +148,7 @@ public class DriveCommands {
       drive.runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
           new ChassisSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), omegaSupplier.getAsDouble()),
           drive.getRotation()));
-    });
+    }, drive);
   }
 
   /**
@@ -535,13 +535,13 @@ public class DriveCommands {
         return null;
       }
 
-      Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2).get(FieldConstants.ReefLevel.L1)
+      Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
           .transformBy(kRobotAlgaeAlignOffset);
 
       Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
 
-      Logger.recordOutput("PathfindToReef/ReefFace", face);
-      Logger.recordOutput("PathfindToReef/TargetPose", allianceAppliedTarget);
+      Logger.recordOutput("PathfindToReefALGAE/ReefFace", face);
+      Logger.recordOutput("PathfindToReefALGAE/TargetPose", allianceAppliedTarget);
 
       return allianceAppliedTarget;
     };

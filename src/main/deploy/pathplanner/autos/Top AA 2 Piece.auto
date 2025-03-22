@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start to Branch I"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Branch I to Loading Station"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeFromLoadingStation"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Loading Station to 6th Face"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchK"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Branch K to Loading Station"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Top Side",
+  "choreoAuto": false
+}
