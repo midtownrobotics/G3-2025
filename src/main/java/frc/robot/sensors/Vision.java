@@ -107,7 +107,6 @@ public class Vision extends SubsystemBase {
       for (var observation : inputs[cameraIndex].poseObservations) {
         // Check whether to reject pose
         boolean rejectPose =
-        !io[cameraIndex].getEnabled() &&
             observation.tagCount() == 0 // Must have at least one tag
                 || (observation.tagCount() == 1
                     && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
@@ -115,9 +114,9 @@ public class Vision extends SubsystemBase {
                     > maxZError // Must have realistic Z coordinate
 
                 // Must be within the field boundaries
-                || observation.pose().getX() < 0.0
+                || observation.pose().getX() <= 0.0
                 || observation.pose().getX() > aprilTagLayout.getFieldLength()
-                || observation.pose().getY() < 0.0
+                || observation.pose().getY() <= 0.0
                 || observation.pose().getY() > aprilTagLayout.getFieldWidth();
 
         // Add pose to log

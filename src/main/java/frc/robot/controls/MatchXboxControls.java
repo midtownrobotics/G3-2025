@@ -322,6 +322,11 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
+  public Trigger zeroElevator() {
+      return driverController.a();
+  }
+
+  @Override
   public void setDriverRumble(double rumble) {
     driverController.setRumble(RumbleType.kBothRumble, rumble);
   }

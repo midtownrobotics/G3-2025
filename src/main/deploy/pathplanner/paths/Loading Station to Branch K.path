@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.189773839143111,
-        "y": 6.578057490526307
+        "x": 1.9254720359160475,
+        "y": 6.441691212618726
       },
       "isLocked": false,
       "linkedName": "Top Loading Station"
     },
     {
       "anchor": {
-        "x": 4.016,
-        "y": 5.35
+        "x": 3.9877499999999997,
+        "y": 5.26325
       },
       "prevControl": {
-        "x": 3.874826891987626,
-        "y": 5.5563253585338614
+        "x": 3.4877499999999992,
+        "y": 6.129275403784439
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,7 +38,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff and PrepareScoreLevel4",
+      "name": "Handoff",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {

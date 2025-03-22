@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 5.981466339398911,
-        "y": 1.0341947062414962
+        "y": 1.0341947062414967
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,18 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.8,
+        "y": 3.3
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.5401234567901229,
+      "maxWaypointRelativePos": 0.8261316872427945,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
       "name": "Handoff",

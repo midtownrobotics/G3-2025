@@ -38,7 +38,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff and PrepareScoreLevel4",
+      "name": "Handoff",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {

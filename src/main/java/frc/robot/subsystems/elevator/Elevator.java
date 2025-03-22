@@ -49,6 +49,7 @@ public class Elevator extends SubsystemBase {
     CLIMB_BOTTOM(Feet.zero(), false),
     CLIMB_BOTTOM_LOCK(CLIMB_BOTTOM.getHeight(), true),
     TUNING(Feet.zero()),
+    ZERO(Feet.zero()),
     MANUAL(Feet.zero());
 
     private @Getter Distance height;
@@ -159,6 +160,9 @@ public class Elevator extends SubsystemBase {
     lock.setLockEnabled(getCurrentGoal().lockEnabled);
 
     switch (getCurrentGoal()) {
+      case ZERO:
+        winch.setVoltage(Volts.of(-1));
+        break;
       case CLIMB_BOTTOM:
       case CLIMB_BOTTOM_LOCK:
         winch.setClimbPosition(constrainedHeight);
