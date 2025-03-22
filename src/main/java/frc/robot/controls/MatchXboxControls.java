@@ -242,7 +242,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger panic() {
-    return operatorController.leftTrigger().and(DoublePressTracker.doublePress(operatorController.x()).and(getNotManualMode));
+    return driverController.start();
   }
 
   // Manual Controls
