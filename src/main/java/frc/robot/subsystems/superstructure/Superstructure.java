@@ -70,11 +70,11 @@ public class Superstructure extends SubsystemBase {
         )
         && !(coralIntakePosition.gt(Degrees.of(130)))
       ) {
-        coralOuttakeConstraints.setUpper(Degrees.of(-30));
+        coralOuttakeConstraints.setUpper(Degrees.of(-35));
       }
 
       if (coralIntakePosition.gt(Degrees.of(110)) && coralIntakeGoalPosition.lt(Degrees.of(110))) {
-        coralOuttakeConstraints.setUpper(Degrees.of(-31));
+        coralOuttakeConstraints.setUpper(Degrees.of(-35));
       }
 
       if (coralOuttakePosition.gt(Degrees.of(-30).plus(Degrees.of(2)))) {
