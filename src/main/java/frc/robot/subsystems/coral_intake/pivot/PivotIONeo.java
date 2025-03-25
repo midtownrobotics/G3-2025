@@ -27,7 +27,7 @@ public class PivotIONeo implements PivotIO {
 
     pivotMotor = new SparkMax(pivotMotorID, MotorType.kBrushless);
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
-    pivotConfig.smartCurrentLimit(30);
+    pivotConfig.smartCurrentLimit(60);
     pivotConfig.idleMode(IdleMode.kBrake);
     pivotConfig.closedLoop.pidf(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get(), 0);
     pivotConfig.closedLoop.maxMotion.maxVelocity(0.5);

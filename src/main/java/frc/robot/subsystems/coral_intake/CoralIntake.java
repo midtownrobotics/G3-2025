@@ -32,6 +32,7 @@ import frc.robot.sensors.Photoelectric;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
+import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -43,21 +44,21 @@ public class CoralIntake extends SubsystemBase {
       CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
   public enum Goal {
-    STOW(Degrees.of(90), Volts.of(1), Volts.of(1)),
-    GROUND_INTAKE(Degrees.of(-6.5), Volts.of(12)),
+    STOW(Degrees.of(84), Volts.of(0.5), Volts.of(0.5)),
+    GROUND_INTAKE(Degrees.of(-12), Volts.of(12), Volts.of(1)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
-    STATION_VOMIT(Degrees.of(107), Volts.of(-5)),
-    STATION_INTAKE(Degrees.of(107), Volts.of(10), Volts.of(3)),
-    HANDOFF(Degrees.of(141), Volts.of(1.0), Volts.of(-5)),
+    STATION_VOMIT(Degrees.of(101), Volts.of(-5)),
+    STATION_INTAKE(STATION_VOMIT.getAngle(), Volts.of(10), Volts.of(3)),
+    HANDOFF(Degrees.of(135), Volts.of(1.0), Volts.of(-5)),
     HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), Volts.of(-5)),
-    PRE_HANDOFF_ADJUST_CORAL(Degrees.of(90), Volts.of(12), Volts.of(5)),
-    CLIMB(Degrees.of(88), Volts.of(0)),
-    CLIMB_BOTTOM(Degrees.of(110), Volts.of(0)),
-    L1(Degrees.of(80), Volts.of(-7)),
+    PRE_HANDOFF_ADJUST_CORAL(Degrees.of(84), Volts.of(12), Volts.of(5)),
+    CLIMB(Degrees.of(82), Volts.of(0)),
+    CLIMB_BOTTOM(Degrees.of(104), Volts.of(0)),
+    L1(Degrees.of(74), Volts.of(-7)),
     L1_Prepare(L1.getAngle(), Volts.zero()),
-    ALGAE_INTAKE(Degrees.of(45), Volts.of(-9.5)),
-    HOLD_ALGAE(Degrees.of(55), Volts.of(-1)),
-    ALGAE_SHOOT(Degrees.of(55), Volts.of(10)),
+    ALGAE_INTAKE(Degrees.of(39), Volts.of(-9.5)),
+    HOLD_ALGAE(Degrees.of(49), Volts.of(-1)),
+    ALGAE_SHOOT(Degrees.of(49), Volts.of(10)),
     TUNING(Degrees.of(0), Volts.of(0)),
     MANUAL(Degrees.of(0), Volts.of(0));
 
@@ -194,14 +195,15 @@ public class CoralIntake extends SubsystemBase {
     // currentGoal = Goal.CLIMB;
 
     Voltage desiredBeltVoltage = Volts.of(voltageRateLimiter.calculate(currentGoal.getBeltVoltage().in(Volts)));
-    // if (desiredBeltVoltage.equals(Volts.zero()) && pieceDetectedTrigger.getAsBoolean()) {
-    //   if (getPosition().lte(Degrees.of(135))) {
-    //     if (!centerSensor.isTriggered()) {
-    //       desiredBeltVoltage = Volts.of(4);
-    //     }
-    //   } else {
-    //       desiredBeltVoltage = Volts.of(-3);
-    //   }
+    // if (desiredBeltVoltage.equals(Volts.zero()) &&
+    // pieceDetectedTrigger.getAsBoolean()) {
+    // if (getPosition().lte(Degrees.of(135))) {
+    // if (!centerSensor.isTriggered()) {
+    // desiredBeltVoltage = Volts.of(4);
+    // }
+    // } else {
+    // desiredBeltVoltage = Volts.of(-3);
+    // }
     // }
 
     // currentGoal = Goal.TUNING;
@@ -211,9 +213,13 @@ public class CoralIntake extends SubsystemBase {
 
     Angle constrainedAngle = coralIntakeConstraint.getClampedValue(desiredAngle);
 
+    if (Constants.tuningMode.get()) {
+      constrainedAngle = Degrees.of(tuningDesiredAngle.get());
+    }
+
     switch (getCurrentGoal()) {
       case HANDOFF:
-        if (getPosition().lt(Degrees.of(135))) {
+        if (getPosition().lt(Degrees.of(129))) {
           desiredBeltVoltage = Volts.of(0);
         } else {
           desiredBeltVoltage = Volts.of(-5);
@@ -243,7 +249,6 @@ public class CoralIntake extends SubsystemBase {
 
     Logger.recordOutput("CoralIntake/currentAngleDegrees", getPosition().in(Degrees));
     Logger.recordOutput("CoralIntake/velocityDegreesPerSecond", getVelocity().in(DegreesPerSecond));
-
 
     Logger.recordOutput("CoralIntake/constraintMaxDegrees", coralIntakeConstraint.getUpper().in(Degrees));
     Logger.recordOutput("CoralIntake/constraintMinDegrees", coralIntakeConstraint.getLower().in(Degrees));
@@ -363,7 +368,7 @@ public class CoralIntake extends SubsystemBase {
     return getCurrentGoal() == goal && getPosition().isNear(goal.getAngle(), angleTolerance);
   }
 
-    /**
+  /**
    * Returns true if the intake is within a small threshold distance to the
    * specified goal.
    */
@@ -395,21 +400,24 @@ public class CoralIntake extends SubsystemBase {
   }
 
   /**
-   * Returns a command that sets the goal of the intake and then sets it to the endGoal when the command ends.
+   * Returns a command that sets the goal of the intake and then sets it to the
+   * endGoal when the command ends.
    */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
   }
 
   /**
-   * Returns a command that sets the goal of the intake and waits until it is at the goal.
+   * Returns a command that sets the goal of the intake and waits until it is at
+   * the goal.
    */
   public Command setGoalAndWait(Goal goal) {
     return run(() -> setGoal(goal)).until(this::atGoal);
   }
 
   /**
-   * Returns a command that sets the goal of the intake and waits until it is at the goal.
+   * Returns a command that sets the goal of the intake and waits until it is at
+   * the goal.
    */
   public Command setGoalAndWait(Goal goal, Angle tolerance) {
     return run(() -> setGoal(goal)).until(() -> atGoal(tolerance));

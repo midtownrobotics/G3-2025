@@ -11,8 +11,8 @@ import frc.lib.dashboard.LoggedTunableNumber;
 public class CoralIntakeConstants {
     public static final Time coralDetectionIdleDelay = Milliseconds.of(100);
 
-    public static final Angle coralIntakeMaxAngle = Degrees.of(141);
-    public static final Angle coralIntakeMinAngle = Degrees.of(-10);
+    public static final Angle coralIntakeMaxAngle = Degrees.of(135);
+    public static final Angle coralIntakeMinAngle = Degrees.of(-12);
 
     public static final Angle absoluteEncoderOffset = Radians.of(3.504);
 
