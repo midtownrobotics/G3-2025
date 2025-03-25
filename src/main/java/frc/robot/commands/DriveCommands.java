@@ -25,6 +25,7 @@ import static edu.wpi.first.units.Units.Radians;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -117,7 +118,7 @@ public class DriveCommands {
           double omega = omegaSupplier.getAsDouble();
 
           // Square rotation value for more precise control
-          omega = Math.copySign(omega * omega, omega);
+          omega = Math.copySign(omega * omega, omega); // TODO: THIS SQUARES DRIVER CONTROL
 
           double multiplier = speedMultiplier.getAsDouble();
 
@@ -465,61 +466,37 @@ public class DriveCommands {
         drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
   }
 
+  private static final double maxSpeedAutoIntake = 1;
+
+  public static Command alignToCoral(Drive drive, Supplier<Double> interpolationAmmount, Supplier<Double> driverDesiredX, Supplier<Double> driverDesiredY) {
+    AtomicReference<Pose2d> gamePiecePoseReference = new AtomicReference<>();
+
+    Supplier<Translation2d> getTranslation = () -> {
+      Translation2d poseError = getPiecePose(drive.getPose(), gamePiecePoseReference).getTranslation().minus(drive.getPose().getTranslation());
+      Angle poseDirection = Radians.of(Math.atan2(poseError.getY(), poseError.getX()));
+  
+      double driverDesiredMagnitude = Math.hypot(driverDesiredX.get(), driverDesiredY.get());
+      double magnitude = driverDesiredMagnitude * interpolationAmmount.get() + maxSpeedAutoIntake * (1 - interpolationAmmount.get());
+  
+      Angle driverDesiredDirection = Radians.of(Math.atan2(driverDesiredY.get(), driverDesiredX.get()));
+      Angle direction = driverDesiredDirection.times(interpolationAmmount.get()).plus(poseDirection.times(1 - interpolationAmmount.get()));
+  
+      double x = magnitude * Math.cos(direction.in(Radians));
+      double y = magnitude * Math.sin(direction.in(Radians));
+
+      return new Translation2d(x, y);
+    };
+
+    return joystickDriveAtAngle(drive, () -> getTranslation.get().getX(), () -> getTranslation.get().getY(), () -> getPieceRotationError(gamePiecePoseReference, drive.getPose()));
+  }
+
   /** Aligns to the Pose2d of the game piece */
   public static Command alignToGamePiece(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
     AtomicReference<Pose2d> gamePiecePose = new AtomicReference<>();
 
-    Function<Pose2d, Pose2d> gamePiecePoseSupplier = (robotPose) -> {
-      // "d = (h2-h1) / tan(a1+a2)"
-      Pose3d robotPose3d = new Pose3d(robotPose);
-
-      Pose3d cameraPose3d = robotPose3d.transformBy(VisionConstants.kIntakeClassifierRobotToCamera);
-
-      Distance cameraHeight = cameraPose3d.getTranslation().getMeasureZ();
-      Angle cameraAngle = cameraPose3d.getRotation().getMeasureY();
-
-      Distance targetHeight = Inches.of(2.5);
-
-      Angle targetY = Degrees.of(LimelightHelpers.getTY(VisionConstants.kIntakeClassifierCameraName));
-      Angle targetX = Degrees.of(LimelightHelpers.getTX(VisionConstants.kIntakeClassifierCameraName));
-
-      if (targetX.isEquivalent(Degrees.zero())) {
-        return gamePiecePose.get();
-      }
-
-      double tanVertical = Math.tan(cameraAngle.plus(targetY).in(Radians));
-      Distance distanceX = (targetHeight.minus(cameraHeight)).div(tanVertical);
-      Distance distanceDiag = Meters.of(Math.hypot(distanceX.in(Meters), cameraHeight.in(Meters)));
-
-      double tanHorizontal = Math.tan(targetX.in(Radians));
-
-      Distance distanceY = distanceDiag.times(tanHorizontal);
-
-      Transform2d cameraToTarget = new Transform2d(distanceX, distanceY, Rotation2d.kZero);
-
-      Pose2d targetPose = cameraPose3d.toPose2d().transformBy(cameraToTarget);
-
-      gamePiecePose.set(targetPose);
-
-      Logger.recordOutput("AlignToGamePiece/DistanceX", distanceX);
-      Logger.recordOutput("AlignToGamePiece/DistanceY", distanceY);
-      Logger.recordOutput("AlignToGamePiece/TargetPose", targetPose);
-
-      return gamePiecePose.get();
-    };
-
     return Commands.runOnce(() -> gamePiecePose.set(null))
-        .andThen(joystickDriveAtAngle(drive, xSupplier, ySupplier, () -> {
-          Rotation2d offset = Rotation2d.fromDegrees(7);
-          Pose2d robotPose = drive.getPose();
-          Pose2d targetPose = gamePiecePoseSupplier.apply(robotPose);
+        .andThen(joystickDriveAtAngle(drive, xSupplier, ySupplier, () -> getPieceRotationError(gamePiecePose, drive.getPose())));
 
-          if (targetPose == null) {
-            return robotPose.getRotation();
-          }
-
-          return targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle().plus(offset);
-        }));
     // drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
   }
 
@@ -549,5 +526,55 @@ public class DriveCommands {
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
         drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
+  }
+
+  private static Pose2d getPiecePose(Pose2d robotPose, AtomicReference<Pose2d> gamePiecePoseReference) {
+    // "d = (h2-h1) / tan(a1+a2)"
+    Pose3d robotPose3d = new Pose3d(robotPose);
+
+    Pose3d cameraPose3d = robotPose3d.transformBy(VisionConstants.kIntakeClassifierRobotToCamera);
+
+    Distance cameraHeight = cameraPose3d.getTranslation().getMeasureZ();
+    Angle cameraAngle = cameraPose3d.getRotation().getMeasureY();
+
+    Distance targetHeight = Inches.of(2.5);
+
+    Angle targetY = Degrees.of(LimelightHelpers.getTY(VisionConstants.kIntakeClassifierCameraName));
+    Angle targetX = Degrees.of(LimelightHelpers.getTX(VisionConstants.kIntakeClassifierCameraName));
+
+    if (targetX.isEquivalent(Degrees.zero())) {
+      return gamePiecePoseReference.get();
+    }
+
+    double tanVertical = Math.tan(cameraAngle.plus(targetY).in(Radians));
+    Distance distanceX = (targetHeight.minus(cameraHeight)).div(tanVertical);
+    Distance distanceDiag = Meters.of(Math.hypot(distanceX.in(Meters), cameraHeight.in(Meters)));
+
+    double tanHorizontal = Math.tan(targetX.in(Radians));
+
+    Distance distanceY = distanceDiag.times(tanHorizontal);
+
+    Transform2d cameraToTarget = new Transform2d(distanceX, distanceY, Rotation2d.kZero);
+
+    Pose2d targetPose = cameraPose3d.toPose2d().transformBy(cameraToTarget);
+
+    gamePiecePoseReference.set(targetPose);
+
+    Logger.recordOutput("AlignToGamePiece/DistanceX", distanceX);
+    Logger.recordOutput("AlignToGamePiece/DistanceY", distanceY);
+    Logger.recordOutput("AlignToGamePiece/TargetPose", targetPose);
+
+    return gamePiecePoseReference.get();
+  };
+
+  private static Rotation2d getPieceRotationError(AtomicReference<Pose2d> gamePiecePoseReference, Pose2d robotPose) {
+    Rotation2d offset = Rotation2d.fromDegrees(7);
+    Pose2d targetPose = getPiecePose(robotPose, gamePiecePoseReference);
+
+    if (targetPose == null) {
+      return robotPose.getRotation();
+    }
+
+    return targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle().plus(offset);
   }
 }
