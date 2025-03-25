@@ -36,6 +36,9 @@ public interface Controls {
   public Trigger rightPositionLock();
   /** Locks to true right position on reef for algae intake. */
   public Trigger reefAlgaePositionLock();
+  
+  /** catch all field element lock */
+  public Trigger fieldElementLock();
 
   // Operator Controls
 

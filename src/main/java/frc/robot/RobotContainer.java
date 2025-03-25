@@ -450,7 +450,7 @@ public class RobotContainer {
     // () -> ReefFace.fromPOV(controls.getDriverPOV()),
     // controls.alignToReefLeftBranch()));
 
-    controls.alignToBranchReef().whileTrue(DriveCommands.alignToBranchReef(drive, led,
+    /* controls.alignToBranchReef().whileTrue(DriveCommands.alignToBranchReef(drive, led,
         () -> {
           ReefFace closestFace = null;
           Distance closestDistance = Meters.of(Double.MAX_VALUE);
@@ -467,9 +467,29 @@ public class RobotContainer {
           }
 
           return closestFace;
-        }, controls.alignToReefLeftBranch()));
+        }, controls.alignToReefLeftBranch())); */
+    
+    
+    controls.fieldElementLock().whileTrue(DriveCommands.fieldElementLock(drive, coralIntake, elevator, led,
+        () -> {
+          ReefFace closestFace = null;
+          Distance closestDistance = Meters.of(Double.MAX_VALUE);
+          Pose2d currentPose = drive.getPose();
 
-    controls.alignToAlgaeReef()
+          for (ReefFace face : ReefFace.values()) {
+            Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+            Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+            Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
+            if (distance.lt(closestDistance)) {
+              closestFace = face;
+              closestDistance = distance;
+            }
+          }
+
+          return closestFace;
+        }, controls.alignToReefLeftBranch(), controls.alignToAlgaeReef()));
+
+    /* controls.alignToAlgaeReef()
         .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
             () -> {
               ReefFace closestFace = null;
@@ -490,7 +510,7 @@ public class RobotContainer {
             }))
         // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, () -> 0, () -> 0).withTimeout(0.5),
         //     Commands.none(), () -> !controls.isDriverControlInDeadzone()))
-        ;
+        ; */
 
     controls.gamePieceLock()
         .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getDriveForward, controls::getDriveLeft));

@@ -296,6 +296,13 @@ public class MatchXboxControls implements Controls {
   public Trigger algaeClawReverse() {
     return new Trigger(() -> false);
   }
+  
+  @Override
+  public Trigger fieldElementLock() {
+      return driverController.leftBumper()
+        .or(driverController.rightBumper())
+        .or(driverController.leftTrigger());
+  }
 
   @Override
   public Trigger alignToBranchReef() {
