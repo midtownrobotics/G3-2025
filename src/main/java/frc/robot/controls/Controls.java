@@ -24,6 +24,9 @@ public interface Controls {
   /** Gets the rotation axis. */
   public double getDriveRotation();
 
+  /** Gets the auto align trigger axis. */
+  public double getAutoAlignTrigger();
+
   /** Resets the drive heading. */
   public Trigger resetDriveHeading();
   /** Brakes the drivetrain. "X" Mode. */

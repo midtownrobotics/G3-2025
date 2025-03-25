@@ -468,18 +468,27 @@ public class DriveCommands {
 
   private static final double maxSpeedAutoIntake = 1;
 
-  public static Command alignToCoral(Drive drive, Supplier<Double> interpolationAmmount, Supplier<Double> driverDesiredX, Supplier<Double> driverDesiredY) {
+  /**
+   * Command to align to a game piece.
+   * @param drive The {@link Drive} subsystem.
+   * @param interpolationFactorSupplier A supplier for the ammount of inerpolation to use. Multipled directly by driverDesired.
+   * @param driverDesiredXSupplier A supplier for the driver desired X value (0.0-1.0).
+   * @param driverDesiredYSupplier A supplier for the driver desired Y value (0.0-1.0).
+   * @param coral Whether you are aligning to the coral or algae. {@code true} for coral. {@code false} for algae.
+   * @return A {@link Command} to align to the game piece.
+   */
+  public static Command alignToGamePiece(Drive drive, Supplier<Double> interpolationFactorSupplier, Supplier<Double> driverDesiredXSupplier, Supplier<Double> driverDesiredYSupplier, Supplier<Boolean> coral) {
     AtomicReference<Pose2d> gamePiecePoseReference = new AtomicReference<>();
 
     Supplier<Translation2d> getTranslation = () -> {
-      Translation2d poseError = getPiecePose(drive.getPose(), gamePiecePoseReference).getTranslation().minus(drive.getPose().getTranslation());
+      Translation2d poseError = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get()).getTranslation().minus(drive.getPose().getTranslation());
       Angle poseDirection = Radians.of(Math.atan2(poseError.getY(), poseError.getX()));
   
-      double driverDesiredMagnitude = Math.hypot(driverDesiredX.get(), driverDesiredY.get());
-      double magnitude = driverDesiredMagnitude * interpolationAmmount.get() + maxSpeedAutoIntake * (1 - interpolationAmmount.get());
+      double driverDesiredMagnitude = Math.hypot(driverDesiredXSupplier.get(), driverDesiredYSupplier.get());
+      double magnitude = driverDesiredMagnitude * interpolationFactorSupplier.get() + maxSpeedAutoIntake * (1 - interpolationFactorSupplier.get());
   
-      Angle driverDesiredDirection = Radians.of(Math.atan2(driverDesiredY.get(), driverDesiredX.get()));
-      Angle direction = driverDesiredDirection.times(interpolationAmmount.get()).plus(poseDirection.times(1 - interpolationAmmount.get()));
+      Angle driverDesiredDirection = Radians.of(Math.atan2(driverDesiredYSupplier.get(), driverDesiredXSupplier.get()));
+      Angle direction = driverDesiredDirection.times(interpolationFactorSupplier.get()).plus(poseDirection.times(1 - interpolationFactorSupplier.get()));
   
       double x = magnitude * Math.cos(direction.in(Radians));
       double y = magnitude * Math.sin(direction.in(Radians));
@@ -487,17 +496,7 @@ public class DriveCommands {
       return new Translation2d(x, y);
     };
 
-    return joystickDriveAtAngle(drive, () -> getTranslation.get().getX(), () -> getTranslation.get().getY(), () -> getPieceRotationError(gamePiecePoseReference, drive.getPose()));
-  }
-
-  /** Aligns to the Pose2d of the game piece */
-  public static Command alignToGamePiece(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
-    AtomicReference<Pose2d> gamePiecePose = new AtomicReference<>();
-
-    return Commands.runOnce(() -> gamePiecePose.set(null))
-        .andThen(joystickDriveAtAngle(drive, xSupplier, ySupplier, () -> getPieceRotationError(gamePiecePose, drive.getPose())));
-
-    // drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+    return joystickDriveAtAngle(drive, () -> getTranslation.get().getX(), () -> getTranslation.get().getY(), () -> getPieceRotationError(gamePiecePoseReference, drive.getPose(), coral.get()));
   }
 
   /**
@@ -528,7 +527,7 @@ public class DriveCommands {
         drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
   }
 
-  private static Pose2d getPiecePose(Pose2d robotPose, AtomicReference<Pose2d> gamePiecePoseReference) {
+  private static Pose2d getPiecePose(Pose2d robotPose, AtomicReference<Pose2d> gamePiecePoseReference, boolean coral) {
     // "d = (h2-h1) / tan(a1+a2)"
     Pose3d robotPose3d = new Pose3d(robotPose);
 
@@ -537,7 +536,7 @@ public class DriveCommands {
     Distance cameraHeight = cameraPose3d.getTranslation().getMeasureZ();
     Angle cameraAngle = cameraPose3d.getRotation().getMeasureY();
 
-    Distance targetHeight = Inches.of(2.5);
+    Distance targetHeight = coral ? Inches.of(2.5) : Inches.of(5);
 
     Angle targetY = Degrees.of(LimelightHelpers.getTY(VisionConstants.kIntakeClassifierCameraName));
     Angle targetX = Degrees.of(LimelightHelpers.getTX(VisionConstants.kIntakeClassifierCameraName));
@@ -567,9 +566,9 @@ public class DriveCommands {
     return gamePiecePoseReference.get();
   };
 
-  private static Rotation2d getPieceRotationError(AtomicReference<Pose2d> gamePiecePoseReference, Pose2d robotPose) {
+  private static Rotation2d getPieceRotationError(AtomicReference<Pose2d> gamePiecePoseReference, Pose2d robotPose, boolean coral) {
     Rotation2d offset = Rotation2d.fromDegrees(7);
-    Pose2d targetPose = getPiecePose(robotPose, gamePiecePoseReference);
+    Pose2d targetPose = getPiecePose(robotPose, gamePiecePoseReference, coral);
 
     if (targetPose == null) {
       return robotPose.getRotation();
