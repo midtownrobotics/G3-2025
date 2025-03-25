@@ -52,7 +52,9 @@ import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularVelocity;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearVelocity;
 import frc.robot.sensors.VisionConstants;
+import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.drivetrain.Drive;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.led.LED;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
@@ -62,6 +64,7 @@ import frc.robot.utils.FieldConstants.Processor;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -147,8 +150,7 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier
-      ) {
+      DoubleSupplier omegaSupplier) {
     return Commands.run(() -> {
       drive.runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
           new ChassisSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), omegaSupplier.getAsDouble()),
@@ -412,18 +414,35 @@ public class DriveCommands {
     }, Set.of(drive));
   }
 
-  public static Command fieldElementLock(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftInput) {
+  /**
+   * Creates command that will lock to different field elements based on current
+   * robot state and current location
+   */
+  public static Command fieldElementLock(Drive drive, CoralIntake intake, Elevator elevator, LED led,
+      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper, BooleanSupplier leftTrigger) {
     Translation2d driveTranslation2d = drive.getPose().getTranslation();
+    boolean intakeAlgaeShoot = intake.getCurrentGoal() == CoralIntake.Goal.ALGAE_SHOOT;
+    boolean elevatorClimb = elevator.getCurrentGoal() == Elevator.Goal.CLIMB;
 
-    Translation2d distanceToProcessor = driveTranslation2d.minus(Processor.centerFace.getTranslation());
-    Translation2d distanceToFarCage = driveTranslation2d.minus(Barge.farCage);
-    Translation2d distanceToMiddleCage = driveTranslation2d.minus(Barge.middleCage);
-    Translation2d distanceToCloseCage = driveTranslation2d.minus(Barge.closeCage);
+    if (intakeAlgaeShoot) {
+      return Commands.sequence(
+          new DriveToPoint(drive, () -> Processor.centerFace.transformBy(kRobotAlgaeAlignOffset)),
+          drive.stopCommand());
+    }
     
+    if (elevatorClimb) {
+      return Commands.sequence(
+        new DriveToPoint(drive, () -> 
+          new Pose2d(driveTranslation2d.nearest(Arrays.asList(new Translation2d[] {Barge.closeCage, Barge.middleCage, Barge.farCage})), Rotation2d.kZero))
+      );
+    }
+    
+    if (leftTrigger.getAsBoolean()) {
+      return alignToAlgaeReef(drive, led, reefFaceSupplier);
+    }
 
-    return new InstantCommand();
+    return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper);
   }
-
 
   /** Creates a command that drives to a reef position based on POV */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
