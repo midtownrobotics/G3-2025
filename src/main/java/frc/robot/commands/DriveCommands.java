@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.DriveToPoint;
 import frc.lib.LimelightHelpers;
@@ -55,8 +56,12 @@ import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.led.LED;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
+import frc.robot.utils.FieldConstants.Barge;
+import frc.robot.utils.FieldConstants.Processor;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -406,6 +411,19 @@ public class DriveCommands {
           drive.stopWithXCommand());
     }, Set.of(drive));
   }
+
+  public static Command fieldElementLock(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftInput) {
+    Translation2d driveTranslation2d = drive.getPose().getTranslation();
+
+    Translation2d distanceToProcessor = driveTranslation2d.minus(Processor.centerFace.getTranslation());
+    Translation2d distanceToFarCage = driveTranslation2d.minus(Barge.farCage);
+    Translation2d distanceToMiddleCage = driveTranslation2d.minus(Barge.middleCage);
+    Translation2d distanceToCloseCage = driveTranslation2d.minus(Barge.closeCage);
+    
+
+    return new InstantCommand();
+  }
+
 
   /** Creates a command that drives to a reef position based on POV */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
