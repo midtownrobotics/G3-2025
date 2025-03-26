@@ -31,7 +31,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station to Branch K"
+            "pathName": "Loading Station to 6th Face"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchK"
           }
         },
         {
@@ -44,24 +50,6 @@
           "type": "path",
           "data": {
             "pathName": "Branch K to Loading Station"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeFromLoadingStation"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Loading Station to Branch L"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoralLevel4"
           }
         }
       ]

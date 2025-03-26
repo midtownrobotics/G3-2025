@@ -28,7 +28,12 @@
       "linkedName": "Branch D"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4954507857733654,
+      "rotationDegrees": 39.14326327682056
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [

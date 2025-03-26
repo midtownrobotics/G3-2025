@@ -41,6 +41,7 @@ public class VisionIOLimelight implements VisionIO {
   private final DoubleSubscriber tySubscriber;
   private final DoubleArraySubscriber megatag1Subscriber;
   private final DoubleArraySubscriber megatag2Subscriber;
+  private boolean enabled = true;
 
   /**
    * Creates a new VisionIOLimelight.
@@ -167,4 +168,14 @@ public class VisionIOLimelight implements VisionIO {
   public String getName() {
       return name;
   }
+
+ @Override
+ public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+ };
+
+ @Override
+ public boolean getEnabled() {
+  return enabled;
+ };
 }

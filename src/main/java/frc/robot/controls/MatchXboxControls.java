@@ -26,8 +26,9 @@ public class MatchXboxControls implements Controls {
     operatorController = new IOProtectionXboxController(operatorPort);
   }
 
+  @AutoLogOutput
   /** Determines if the driver joystick is in the controller deadzone. */
-  private boolean isDriverControlInDeadzone() {
+  public boolean isDriverControlInDeadzone() {
     return Controls.super.isDriverControlInDeadzone(
         driverController.getLeftX(), driverController.getLeftY(), driverController.getRightX());
   }
@@ -39,7 +40,7 @@ public class MatchXboxControls implements Controls {
     double deadzoneApplied = MathUtil.applyDeadband(driverController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
     return (isDriverControlInDeadzone()
     ? -Math.signum(deadzoneApplied)
-    * Math.abs(Math.pow(deadzoneApplied, 2))
+    * Math.abs(Math.pow(deadzoneApplied, 1))
     : 0);
   }
 
@@ -48,7 +49,7 @@ public class MatchXboxControls implements Controls {
     double deadzoneApplied = MathUtil.applyDeadband(driverController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
     return (isDriverControlInDeadzone()
     ? -Math.signum(deadzoneApplied)
-    * Math.abs(Math.pow(deadzoneApplied, 2))
+    * Math.abs(Math.pow(deadzoneApplied, 1))
     : 0);
   }
 
@@ -57,7 +58,7 @@ public class MatchXboxControls implements Controls {
     double deadzoneApplied = MathUtil.applyDeadband(driverController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
     return isDriverControlInDeadzone()
     ? -Math.signum(deadzoneApplied)
-    * Math.abs(Math.pow(deadzoneApplied, 3))
+    * Math.abs(Math.pow(deadzoneApplied, 2))
     : 0;
   }
 
@@ -241,7 +242,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger panic() {
-    return operatorController.leftTrigger().and(DoublePressTracker.doublePress(operatorController.x()).and(getNotManualMode));
+    return driverController.start();
   }
 
   // Manual Controls
@@ -303,7 +304,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger alignToAlgaeReef() {
-    return driverController.a();
+    return driverController.leftTrigger();
   }
 
   @Override
@@ -319,6 +320,11 @@ public class MatchXboxControls implements Controls {
   @Override
   public int getDriverPOV() {
     return driverController.getHID().getPOV();
+  }
+
+  @Override
+  public Trigger zeroElevator() {
+      return driverController.a();
   }
 
   @Override

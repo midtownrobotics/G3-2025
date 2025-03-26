@@ -3,45 +3,63 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.399,
-        "y": 5.098
+        "x": 5.303999999999999,
+        "y": 5.06825
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.899,
-        "y": 5.964025403784438
+        "x": 5.803999999999999,
+        "y": 5.934275403784438
       },
       "isLocked": false,
       "linkedName": "Branch I"
     },
     {
       "anchor": {
-        "x": 1.282684426229508,
-        "y": 7.207735655737704
+        "x": 1.33575,
+        "y": 7.115749999999999
       },
       "prevControl": {
-        "x": 1.9254720359160473,
-        "y": 6.441691212618726
+        "x": 1.978537609686539,
+        "y": 6.3497055568810215
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Top Loading Station"
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5937254901960783,
+      "rotationDegrees": -59.99999999999999
+    },
+    {
+      "waypointRelativePos": 0.8556862745098065,
+      "rotationDegrees": 35.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.6691415313225011,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 100.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "PrepareLoadingStationIntake",
-      "waypointRelativePos": 0.35656682027650133,
+      "waypointRelativePos": 0.35174013921112995,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareLoadingStationIntake"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {

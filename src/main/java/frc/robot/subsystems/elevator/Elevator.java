@@ -27,7 +27,6 @@ import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.LoggerUtil;
 import frc.robot.utils.UnitUtil;
 import java.util.function.Supplier;
-
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -44,12 +43,13 @@ public class Elevator extends SubsystemBase {
     L2(Inches.of(24)),
     L3(Inches.of(40)),
     L4(Inches.of(64.5)),
-    DEALGIFY_LOW(Inches.of(14)),
-    DEALGIFY_HIGH(Inches.of(30)),
+    DEALGIFY_LOW(Inches.of(11.5)),
+    DEALGIFY_HIGH(Inches.of(27.5)),
     CLIMB(Inches.of(16)),
     CLIMB_BOTTOM(Feet.zero(), false),
     CLIMB_BOTTOM_LOCK(CLIMB_BOTTOM.getHeight(), true),
     TUNING(Feet.zero()),
+    ZERO(Feet.zero()),
     MANUAL(Feet.zero());
 
     private @Getter Distance height;
@@ -86,7 +86,7 @@ public class Elevator extends SubsystemBase {
 
     /**
      * Converts a CoralMode to an Elevator dealgify Goal
-     * 
+     *
      * @param mode
      * @return
      */
@@ -160,6 +160,9 @@ public class Elevator extends SubsystemBase {
     lock.setLockEnabled(getCurrentGoal().lockEnabled);
 
     switch (getCurrentGoal()) {
+      case ZERO:
+        winch.setVoltage(Volts.of(-1));
+        break;
       case CLIMB_BOTTOM:
       case CLIMB_BOTTOM_LOCK:
         winch.setClimbPosition(constrainedHeight);
@@ -229,7 +232,7 @@ public class Elevator extends SubsystemBase {
   /**
    * Returns true if the elevator is within a small threshold distance to the
    * goal.
-   * 
+   *
    * @param tolerance
    * @return
    */
@@ -299,6 +302,14 @@ public class Elevator extends SubsystemBase {
    */
   public Command setGoalAndWait(Goal goal) {
     return run(() -> setGoal(goal)).until(this::atGoal);
+  }
+
+  /**
+   * Returns a command that sets the goal of the elevator and waits until the
+   * elevator is at the goal.
+   */
+  public Command setGoalAndWait(Goal goal, Distance tolerance) {
+    return run(() -> setGoal(goal)).until(() -> atGoal(tolerance));
   }
 
   /**

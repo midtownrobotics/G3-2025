@@ -24,7 +24,7 @@ public class Superstructure extends SubsystemBase {
   private final CoralOuttakePivot coralOuttakePivot;
   private final Elevator elevator;
 
-  private static final Angle kMaxCoralIntakeAngleElevatorUp = Degrees.of(88);
+  private static final Angle kMaxCoralIntakeAngleElevatorUp = Degrees.of(82);
   private static final Angle kMaxCoralIntakeAngleElevatorUpThreshold = Degrees.of(5);
 
   /** Construct the robot supersctructure. */
@@ -52,9 +52,11 @@ public class Superstructure extends SubsystemBase {
     Angle coralOuttakePosition = coralOuttakePivot.getPosition();
     Angle coralOuttakeGoalPosition = coralOuttakePivot.getCurrentGoal().getAngle();
 
+    // Prevents coral intake from intercepting elevator
     if (elevatorGoalPosition.gt(Inches.of(1.5)) || elevatorPosition.gt(Inches.of(1.5))) {
       coralIntakeConstraints.setUpper(kMaxCoralIntakeAngleElevatorUp);
 
+      // Prevents elevator from intercepting intake
       if (coralIntakePosition.gt(kMaxCoralIntakeAngleElevatorUp.plus(kMaxCoralIntakeAngleElevatorUpThreshold))) {
         elevatorConstraints.restrictToValue(elevatorPosition);
       }
@@ -63,23 +65,23 @@ public class Superstructure extends SubsystemBase {
     if (elevatorPosition.lt(Inches.of(12))) {
       if (
         (
-          coralIntakePosition.gt(Degrees.of(110))
+          coralIntakePosition.gt(Degrees.of(104))
           || coralIntakeGoalPosition.gt(Degrees.of(110))
         )
-        && !(coralIntakePosition.gt(Degrees.of(130)))
+        && !(coralIntakePosition.gt(Degrees.of(124)))
       ) {
-        coralOuttakeConstraints.setUpper(Degrees.of(-30));
+        coralOuttakeConstraints.setUpper(Degrees.of(-35));
       }
 
-      if (coralIntakePosition.gt(Degrees.of(110)) && coralIntakeGoalPosition.lt(Degrees.of(110))) {
-        coralOuttakeConstraints.setUpper(Degrees.of(-31));
+      if (coralIntakePosition.gt(Degrees.of(104)) && coralIntakeGoalPosition.lt(Degrees.of(110))) {
+        coralOuttakeConstraints.setUpper(Degrees.of(-35));
       }
 
       if (coralOuttakePosition.gt(Degrees.of(-30).plus(Degrees.of(2)))) {
-        if (coralIntakePosition.gt(Degrees.of(130))) {
-          coralIntakeConstraints.setLower(Degrees.of(139));
-        } else{
-          coralIntakeConstraints.setUpper(Degrees.of(110));
+        if (coralIntakePosition.gt(Degrees.of(124))) {
+          coralIntakeConstraints.setLower(Degrees.of(133));
+        } else {
+          coralIntakeConstraints.setUpper(Degrees.of(104));
         }
       }
     }

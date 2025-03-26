@@ -151,6 +151,14 @@ public class CoralOuttakePivot extends SubsystemBase {
         return run(() -> setGoal(goal)).until(this::atGoal);
     }
 
+        /**
+     * Returns a command that sets the goal of the intake and waits until it is at
+     * the goal.
+     */
+    public Command setGoalAndWait(Goal goal, Angle tolerance) {
+        return run(() -> setGoal(goal)).until(() -> atGoal(goal, tolerance));
+    }
+
     /** Sets the goal of the coral outtake pivot. */
     public Command setGoalCommand(Goal goal) {
         return run(() -> setGoal(goal));

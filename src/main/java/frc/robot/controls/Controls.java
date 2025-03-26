@@ -168,6 +168,9 @@ public interface Controls {
   /** */
   public Trigger decreaseElevatorOffset();
 
+  /** zero elevator */
+  public Trigger zeroElevator();
+
   /** Returns a command that sets the rumble of both controllers */
   public default Command setRumbleCommand(double rumble) {
     return Commands.runOnce(() -> {

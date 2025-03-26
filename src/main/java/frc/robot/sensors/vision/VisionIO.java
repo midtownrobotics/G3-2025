@@ -18,11 +18,20 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 /**
- * VisionIO provides an interface for vision systems to update and provide vision data
- * for the robot, including pose and target observations. This is typically implemented
- * by specific vision hardware or libraries (e.g., Limelight, PhotonVision, etc.).
+ * VisionIO provides an interface for vision systems to update and provide
+ * vision data
+ * for the robot, including pose and target observations. This is typically
+ * implemented
+ * by specific vision hardware or libraries (e.g., Limelight, PhotonVision,
+ * etc.).
  */
 public interface VisionIO {
+
+  /** get enabled */
+  public boolean getEnabled();
+
+  /** set enabled */
+  public void setEnabled(boolean enabled);
 
   /**
    * Class to store inputs related to vision data, including connection status,
@@ -43,8 +52,7 @@ public interface VisionIO {
     /**
      * The latest target observation, including the horizontal and vertical offsets.
      */
-    public TargetObservation latestTargetObservation =
-        new TargetObservation(new Rotation2d(), new Rotation2d());
+    public TargetObservation latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
 
     /**
      * A list of pose observations for the robot based on the vision system's data.
@@ -66,12 +74,15 @@ public interface VisionIO {
    * Represents the angle to a simple target, not used for pose estimation.
    * This data contains the horizontal and vertical offsets to the target.
    */
-  public static record TargetObservation(Rotation2d tx, Rotation2d ty) {}
+  public static record TargetObservation(Rotation2d tx, Rotation2d ty) {
+  }
 
   /**
    * Represents a robot pose sample used for pose estimation. This includes
-   * the timestamp of the observation, the robot's 3D pose, the ambiguity of the observation,
-   * the number of tags detected, the average tag distance, and the type of the observation.
+   * the timestamp of the observation, the robot's 3D pose, the ambiguity of the
+   * observation,
+   * the number of tags detected, the average tag distance, and the type of the
+   * observation.
    */
   public static record PoseObservation(
       double timestamp,
@@ -79,7 +90,8 @@ public interface VisionIO {
       double ambiguity,
       int tagCount,
       double averageTagDistance,
-      PoseObservationType type) {}
+      PoseObservationType type) {
+  }
 
   /**
    * Enum to represent different types of pose observations.
@@ -96,10 +108,13 @@ public interface VisionIO {
   public String getName();
 
   /**
-   * Updates the provided inputs object with the latest vision data from the vision system.
-   * This method typically gets called to refresh the latest target and pose information.
+   * Updates the provided inputs object with the latest vision data from the
+   * vision system.
+   * This method typically gets called to refresh the latest target and pose
+   * information.
    *
-   * @param inputs The VisionIOInputs object to update with the latest vision data.
+   * @param inputs The VisionIOInputs object to update with the latest vision
+   *               data.
    */
   public void updateInputs(VisionIOInputs inputs);
 

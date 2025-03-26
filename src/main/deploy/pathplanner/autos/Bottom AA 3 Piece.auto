@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start to Branch I"
+            "pathName": "Start to Branch F"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Branch I to Loading Station"
+            "pathName": "Branch F to Loading Station"
           }
         },
         {
@@ -31,7 +31,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station to Branch K"
+            "pathName": "Loading Station Face 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchE"
           }
         },
         {
@@ -43,7 +49,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Branch K to Loading Station"
+            "pathName": "Branch E to Loading Station"
           }
         },
         {
@@ -55,7 +61,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station to Branch L"
+            "pathName": "Loading Station Face 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchD"
           }
         },
         {
@@ -68,6 +80,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Top Side",
+  "folder": "Bottom Side",
   "choreoAuto": false
 }
