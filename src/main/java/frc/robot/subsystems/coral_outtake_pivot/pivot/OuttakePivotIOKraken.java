@@ -10,6 +10,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -41,7 +42,7 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
   @Getter private StatusSignal<Angle> position;
   @Getter private StatusSignal<AngularVelocity> velocity;
 
-  private PIDController pivotPID;
+  // private PIDController pivotPID;
 
   private final CANBusStatusSignalRegistration bus;
 
@@ -56,9 +57,7 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
 
     encoder = new DutyCycleEncoder(encoderID);
 
-    pivotPID = new PIDController(CoralOuttakePivotConstants.PID.p.get(),
-                                 CoralOuttakePivotConstants.PID.i.get(),
-                                 CoralOuttakePivotConstants.PID.d.get());
+    motor.setPosition(getZeroedAbsoluteEncoderPosition());
 
     Angle initialPosition = getInitialAngle();
 
@@ -95,8 +94,10 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
    * @param position Setpoint to set.
    */
   public void setPosition(Angle position) {
-    pivotPID.setSetpoint(position.in(Degrees));
-    setVoltage(Volts.of(pivotPID.calculate(getZeroedAbsoluteEncoderPosition().in(Degrees))));
+    MotionMagicVoltage request = new MotionMagicVoltage(position).withSlot(0);
+    motor.setControl(request);
+    // pivotPID.setSetpoint(position.in(Degrees));
+    // setVoltage(Volts.of(pivotPID.calculate(getZeroedAbsoluteEncoderPosition().in(Degrees))));
   }
 
   @Override
@@ -152,10 +153,6 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
     krakenConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     krakenConfig.MotionMagic.withMotionMagicCruiseVelocity(CoralOuttakePivotConstants.PID.maxPivotV);
     krakenConfig.MotionMagic.withMotionMagicAcceleration(CoralOuttakePivotConstants.PID.maxPivotA);
-
-    pivotPID = new PIDController(CoralOuttakePivotConstants.PID.p.get(),
-                                 CoralOuttakePivotConstants.PID.i.get(),
-                                 CoralOuttakePivotConstants.PID.d.get());
 
     tryUntilOk(5, () -> motor.getConfigurator().apply(krakenConfig));
   }
