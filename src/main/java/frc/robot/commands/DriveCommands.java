@@ -370,8 +370,18 @@ public class DriveCommands {
 
   // TODO idk man just ask someone
   private static final Transform2d kRobotL1Offset = new Transform2d(
-    new Translation2d(),
-    Rotation2d.kCW_90deg
+    new Translation2d(
+      Inches.of(20), // F/B
+      Inches.of(-1.614)),
+    Rotation2d.k180deg
+  );
+
+  private static final Transform2d kStationOffset = new Transform2d(
+    new Translation2d(
+      Inches.of(20),
+      Inches.of(-1.614)
+    ),
+    Rotation2d.k180deg
   );
 
   private static final Transform2d kRobotAlgaeAlignOffset = new Transform2d(
@@ -439,48 +449,50 @@ public class DriveCommands {
   public static Command fieldElementLock(Drive drive, CoralIntake intake, CoralOuttakeRoller roller,
       CoralOuttakePivot pivot, Elevator elevator, LED led,
       Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper) {
-    Translation2d driveTranslation2d = drive.getPose().getTranslation();
-    boolean elevatorClimb = elevator.getCurrentGoal() == Elevator.Goal.CLIMB;
+    Supplier<Command> commandSupplier = () -> {
+      Translation2d driveTranslation2d = drive.getPose().getTranslation();
+      boolean elevatorClimb = elevator.getCurrentGoal() == Elevator.Goal.CLIMB;
 
-    if (INTAKE_PROCESSOR_GOALS.contains(intake.getCurrentGoal())
-        && isNear(driveTranslation2d, Processor.centerFace.getTranslation())) {
-      return Commands.sequence(
-          new DriveToPoint(drive, () -> Processor.centerFace.transformBy(kRobotAlgaeAlignOffset)),
-          // TODO Processor offset probably not same as algae???
-          drive.stopCommand());
-    }
-
-    if (elevatorClimb) {
-      return Commands.sequence(
-          new DriveToPoint(drive,
-              () -> new Pose2d(
-                  driveTranslation2d
-                      .nearest(Arrays.asList(new Translation2d[] { Barge.closeCage, Barge.middleCage, Barge.farCage })),
-                  Rotation2d.kZero)));
-    }
-
-    // TODO AGAIN Station offset probably not same as algae!!!
-    if (intake.getCurrentGoal() == CoralIntake.Goal.STATION_INTAKE) {
-      if (isNear(driveTranslation2d, CoralStation.leftCenterFace.getTranslation())) {
+      if (INTAKE_PROCESSOR_GOALS.contains(intake.getCurrentGoal())
+          && isNear(driveTranslation2d, Processor.centerFace.getTranslation())) {
         return Commands.sequence(
-            new DriveToPoint(drive, () -> CoralStation.leftCenterFace.transformBy(kRobotAlgaeAlignOffset)),
-            drive.stopCommand());
-      } else if (isNear(driveTranslation2d, CoralStation.rightCenterFace.getTranslation())) {
-        return Commands.sequence(
-            new DriveToPoint(drive, () -> CoralStation.rightCenterFace.transformBy(kRobotAlgaeAlignOffset)),
+            new DriveToPoint(drive, () -> Processor.centerFace.transformBy(kRobotAlgaeAlignOffset)),
+            // TODO Processor offset probably not same as algae???
             drive.stopCommand());
       }
-    }
 
-    if (INTAKE_L1_GOALS.contains(intake.getCurrentGoal())) {
-      return alignToL1Reef(drive, led, reefFaceSupplier);
-    }
+      if (elevatorClimb) {
+        return Commands.sequence(
+            new DriveToPoint(drive,
+                () -> new Pose2d(
+                    driveTranslation2d
+                        .nearest(Arrays.asList(new Translation2d[] { Barge.closeCage, Barge.middleCage, Barge.farCage })),
+                    Rotation2d.kZero)));
+      }
+      // TODO AGAIN Station offset probably not same as algae!!!
+      if (intake.getCurrentGoal() == CoralIntake.Goal.STATION_INTAKE) {
+        if (isNear(driveTranslation2d, CoralStation.leftCenterFace.getTranslation())) {
+          return Commands.sequence(
+              new DriveToPoint(drive, () -> CoralStation.leftCenterFace.rotateAround(CoralStation.leftCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
+              drive.stopCommand());
+        } else if (isNear(driveTranslation2d, CoralStation.rightCenterFace.getTranslation())) {
+          return Commands.sequence(
+              new DriveToPoint(drive, () -> CoralStation.rightCenterFace.rotateAround(CoralStation.rightCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
+              drive.stopCommand());
+        }
+      }
 
-    if (pivot.getCurrentGoal() == CoralOuttakePivot.Goal.DEALGIFY) {
-      return alignToAlgaeReef(drive, led, reefFaceSupplier);
-    }
+      if (INTAKE_L1_GOALS.contains(intake.getCurrentGoal())) {
+        return alignToL1Reef(drive, led, reefFaceSupplier);
+      }
 
-    return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper);
+      if (pivot.getCurrentGoal() == CoralOuttakePivot.Goal.DEALGIFY) {
+        return alignToAlgaeReef(drive, led, reefFaceSupplier);
+      }
+
+      return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper);
+    };
+    return Commands.defer(commandSupplier, Set.of());
   }
 
   /** Creates a command that drives to a reef position based on POV */
@@ -639,9 +651,12 @@ public class DriveCommands {
         return null;
       }
 
+
       // TODO Might have to be 90 CCW?
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
-          .transformBy(kRobotL1Offset).rotateBy(Rotation2d.kCW_90deg);
+          .transformBy(kRobotL1Offset);
+
+      target = target.rotateAround(target.getTranslation(), Rotation2d.kCCW_90deg);
 
       Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
 
