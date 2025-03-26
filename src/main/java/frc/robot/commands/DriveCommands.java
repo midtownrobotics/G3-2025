@@ -488,14 +488,16 @@ public class DriveCommands {
     AtomicReference<Pose2d> gamePiecePoseReference = new AtomicReference<>();
 
     Supplier<Translation2d> getTranslation = () -> {
-      Translation2d poseError = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get()).getTranslation()
-          .minus(drive.getPose().getTranslation());
       Translation2d driverDesired = new Translation2d(
-          (driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)),
-          (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
+        (driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)),
+        (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
 
-      if (poseError == null)
+      Pose2d piecePose = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get());
+
+      if (piecePose == null)
         return driverDesired;
+
+      Translation2d poseError = piecePose.getTranslation().minus(drive.getPose().getTranslation());
 
       poseError = new Translation2d(
           MathUtil.clamp(poseError.getNorm(), 0, kMaxLinearVelocity.get().in(MetersPerSecond)), poseError.getAngle());
