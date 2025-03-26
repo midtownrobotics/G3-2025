@@ -19,7 +19,9 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -53,6 +55,7 @@ import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearVelocity;
 import frc.robot.sensors.VisionConstants;
 import frc.robot.subsystems.drivetrain.Drive;
+import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.led.LED;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
@@ -88,9 +91,6 @@ public class DriveCommands {
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
     Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
-    // Square magnitude for more precise control
-    linearMagnitude = linearMagnitude * linearMagnitude;
-
     // Return new linear velocity
     return new Pose2d(new Translation2d(), linearDirection)
         .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
@@ -118,7 +118,7 @@ public class DriveCommands {
           double omega = omegaSupplier.getAsDouble();
 
           // Square rotation value for more precise control
-          omega = Math.copySign(omega * omega, omega); // TODO: THIS SQUARES DRIVER CONTROL
+          omega = Math.copySign(omega * omega, omega);
 
           double multiplier = speedMultiplier.getAsDouble();
 
@@ -481,19 +481,20 @@ public class DriveCommands {
     AtomicReference<Pose2d> gamePiecePoseReference = new AtomicReference<>();
 
     Supplier<Translation2d> getTranslation = () -> {
-      Translation2d poseError = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get()).getTranslation().minus(drive.getPose().getTranslation());
-      Angle poseDirection = Radians.of(Math.atan2(poseError.getY(), poseError.getX()));
-  
-      double driverDesiredMagnitude = Math.hypot(driverDesiredXSupplier.get(), driverDesiredYSupplier.get());
-      double magnitude = driverDesiredMagnitude * interpolationFactorSupplier.get() + maxSpeedAutoIntake * (1 - interpolationFactorSupplier.get());
-  
-      Angle driverDesiredDirection = Radians.of(Math.atan2(driverDesiredYSupplier.get(), driverDesiredXSupplier.get()));
-      Angle direction = driverDesiredDirection.times(interpolationFactorSupplier.get()).plus(poseDirection.times(1 - interpolationFactorSupplier.get()));
-  
-      double x = magnitude * Math.cos(direction.in(Radians));
-      double y = magnitude * Math.sin(direction.in(Radians));
+      Translation2d poseError = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get()).getTranslation().minus(drive.getPose().getTranslation());  
+      Translation2d driverDesired = new Translation2d((driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)), (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
 
-      return new Translation2d(x, y);
+      if (poseError == null) return driverDesired;
+
+      Angle poseDirection = poseError.getAngle().getMeasure();
+      Angle driverDesiredDirection = driverDesired.getAngle().getMeasure();
+
+      if (driverDesiredDirection.isNear(poseDirection, Degrees.of(20))) {
+        Translation2d driverMagnitudeButPoseErrorDirectionVector = new Translation2d(driverDesired.getNorm(), poseError.getAngle());
+        return driverMagnitudeButPoseErrorDirectionVector.interpolate(poseError, interpolationFactorSupplier.get());
+      } else {
+        return driverDesired.interpolate(poseError, interpolationFactorSupplier.get());
+      }
     };
 
     return joystickDriveAtAngle(drive, () -> getTranslation.get().getX(), () -> getTranslation.get().getY(), () -> getPieceRotationError(gamePiecePoseReference, drive.getPose(), coral.get()));

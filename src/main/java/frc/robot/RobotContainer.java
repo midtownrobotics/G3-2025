@@ -493,7 +493,7 @@ public class RobotContainer {
         ;
 
     controls.gamePieceLock()
-        .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getAutoAlignTrigger, controls::getDriveForward, controls::getDriveLeft, () -> coralIntake.getCurrentGoal() == CoralIntake.Goal.ALGAE_INTAKE));
+        .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getAutoAlignTrigger, controls::getDriveForward, controls::getDriveLeft, () -> coralIntake.getCurrentGoal() != CoralIntake.Goal.ALGAE_INTAKE));
 
     controls.sourceIntakeCoral().whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW));
