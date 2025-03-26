@@ -13,16 +13,20 @@
 
 package frc.robot.sensors.vision;
 
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
+import frc.lib.LimelightHelpers;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -178,4 +182,12 @@ public class VisionIOLimelight implements VisionIO {
  public boolean getEnabled() {
   return enabled;
  };
+
+ @Override
+ public PoseObservation trigPoseEstimation(String limeLightName) {
+  Distance distanceToTarget = Units.Meters.of(LimelightHelpers.getTargetPose3d_CameraSpace(limeLightName).getTranslation().getNorm());
+  return new PoseObservation(Timer.getFPGATimestamp(),
+                             new Pose3d(distanceToTarget, y, z, rot),
+                             0, 0, 0, null);
+ }
 }

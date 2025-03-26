@@ -13,6 +13,7 @@
 
 package frc.robot.sensors.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
@@ -122,4 +123,9 @@ public interface VisionIO {
    * Set the pipeline. Only for limelights.
    */
   public void setPipeline(long pipelineID);
+
+  /**
+   * Returns the pose estimation in single tag mode based on trig
+   */
+  public PoseObservation trigPoseEstimation();
 }
