@@ -138,6 +138,10 @@ public class DriveCommands {
         drive);
   }
 
+  /**
+   * Robot relative drive command using two joysticks (controlling linear and
+   * angular velocities).
+   */
   public static Command robotRelativeDrive(
       Drive drive,
       DoubleSupplier xSupplier,

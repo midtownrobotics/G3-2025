@@ -196,6 +196,7 @@ public class Vision extends SubsystemBase {
         Matrix<N3, N1> visionMeasurementStdDevs);
   }
 
+  /** Command to enable or disable a specific camera */
   public Command enableDisableCamera(boolean enabled, int cameraIndex) {
     return run(() -> io[cameraIndex].setEnabled(enabled));
   };
