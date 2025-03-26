@@ -43,7 +43,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.DriveToPoint;
 import frc.lib.LimelightHelpers;
@@ -59,14 +58,12 @@ import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.led.LED;
 import frc.robot.utils.FieldConstants;
-import frc.robot.utils.ReefFace;
 import frc.robot.utils.FieldConstants.Barge;
 import frc.robot.utils.FieldConstants.CoralStation;
 import frc.robot.utils.FieldConstants.Processor;
-
+import frc.robot.utils.ReefFace;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -149,6 +146,7 @@ public class DriveCommands {
         drive);
   }
 
+  /** robot relative drive */
   public static Command robotRelativeDrive(
       Drive drive,
       DoubleSupplier xSupplier,
@@ -369,7 +367,7 @@ public class DriveCommands {
           Inches.of(-1.614) // L/R
       ),
       Rotation2d.k180deg);
-  
+
   // TODO idk man just ask someone
   private static final Transform2d kRobotL1Offset = new Transform2d(
     new Translation2d(),
@@ -425,7 +423,7 @@ public class DriveCommands {
 
   private static final List<CoralIntake.Goal> INTAKE_PROCESSOR_GOALS = Arrays.asList(new CoralIntake.Goal[] {
       CoralIntake.Goal.ALGAE_INTAKE, CoralIntake.Goal.ALGAE_SHOOT, CoralIntake.Goal.HOLD_ALGAE });
-  
+
   private static final List<CoralIntake.Goal> INTAKE_L1_GOALS = Arrays.asList(new CoralIntake.Goal[] {
     CoralIntake.Goal.L1, CoralIntake.Goal.L1_Prepare
   });
@@ -473,7 +471,7 @@ public class DriveCommands {
             drive.stopCommand());
       }
     }
-    
+
     if (INTAKE_L1_GOALS.contains(intake.getCurrentGoal())) {
       return alignToL1Reef(drive, led, reefFaceSupplier);
     }
@@ -628,7 +626,7 @@ public class DriveCommands {
         new DriveToPoint(drive, branchPoseSupplier),
         drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
   }
-  
+
   /**
    * Creates a command that drives to reef position, aligned to the center of the
    * face.
