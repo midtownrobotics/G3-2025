@@ -19,7 +19,6 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -27,7 +26,6 @@ import static edu.wpi.first.units.Units.Radians;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -55,7 +53,6 @@ import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearVelocity;
 import frc.robot.sensors.VisionConstants;
 import frc.robot.subsystems.drivetrain.Drive;
-import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.led.LED;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
@@ -68,7 +65,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -469,7 +465,7 @@ public class DriveCommands {
 
   /**
    * Command to align to a game piece.
-   * 
+   *
    * @param drive                       The {@link Drive} subsystem.
    * @param interpolationFactorSupplier A supplier for the ammount of inerpolation
    *                                    to use. Multipled directly by
@@ -485,6 +481,7 @@ public class DriveCommands {
    */
   public static Command alignToGamePiece(Drive drive, Supplier<Double> interpolationFactorSupplier,
       Supplier<Double> driverDesiredXSupplier, Supplier<Double> driverDesiredYSupplier, Supplier<Boolean> coral) {
+    Logger.recordOutput("GRAYCORAL/interpsjefac", interpolationFactorSupplier.get());
     AtomicReference<Pose2d> gamePiecePoseReference = new AtomicReference<>();
 
     Supplier<Translation2d> getTranslation = () -> {
@@ -492,12 +489,15 @@ public class DriveCommands {
         (driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)),
         (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
 
-      Pose2d piecePose = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get());
+      // Pose2d piecePose = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get());
+      Pose2d piecePose = new Pose2d(2, 2, new Rotation2d());
+      Logger.recordOutput("GRAYCORAL/piecePose", piecePose);
 
       if (piecePose == null)
         return driverDesired;
 
       Translation2d poseError = piecePose.getTranslation().minus(drive.getPose().getTranslation());
+      Logger.recordOutput("GRAYCORAL/poseError", poseError);
 
       poseError = new Translation2d(
           MathUtil.clamp(poseError.getNorm(), 0, kMaxLinearVelocity.get().in(MetersPerSecond)), poseError.getAngle());
@@ -510,6 +510,8 @@ public class DriveCommands {
 
       return driverDesired.interpolate(poseError, interpolationFactorSupplier.get());
     };
+
+    Logger.recordOutput("GRAYCORAL/FINALS_TRANSLATION", getTranslation.get());
 
     return joystickDriveAtAngle(drive, () -> getTranslation.get().getX(), () -> getTranslation.get().getY(),
         () -> getPieceRotationError(gamePiecePoseReference, drive.getPose(), coral.get()));
