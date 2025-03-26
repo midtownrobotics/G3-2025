@@ -143,8 +143,7 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier
-      ) {
+      DoubleSupplier omegaSupplier) {
     return Commands.run(() -> {
       drive.runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
           new ChassisSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), omegaSupplier.getAsDouble()),
@@ -470,34 +469,48 @@ public class DriveCommands {
 
   /**
    * Command to align to a game piece.
-   * @param drive The {@link Drive} subsystem.
-   * @param interpolationFactorSupplier A supplier for the ammount of inerpolation to use. Multipled directly by driverDesired.
-   * @param driverDesiredXSupplier A supplier for the driver desired X value (0.0-1.0).
-   * @param driverDesiredYSupplier A supplier for the driver desired Y value (0.0-1.0).
-   * @param coral Whether you are aligning to the coral or algae. {@code true} for coral. {@code false} for algae.
+   * 
+   * @param drive                       The {@link Drive} subsystem.
+   * @param interpolationFactorSupplier A supplier for the ammount of inerpolation
+   *                                    to use. Multipled directly by
+   *                                    driverDesired.
+   * @param driverDesiredXSupplier      A supplier for the driver desired X value
+   *                                    (0.0-1.0).
+   * @param driverDesiredYSupplier      A supplier for the driver desired Y value
+   *                                    (0.0-1.0).
+   * @param coral                       Whether you are aligning to the coral or
+   *                                    algae. {@code true} for coral.
+   *                                    {@code false} for algae.
    * @return A {@link Command} to align to the game piece.
    */
-  public static Command alignToGamePiece(Drive drive, Supplier<Double> interpolationFactorSupplier, Supplier<Double> driverDesiredXSupplier, Supplier<Double> driverDesiredYSupplier, Supplier<Boolean> coral) {
+  public static Command alignToGamePiece(Drive drive, Supplier<Double> interpolationFactorSupplier,
+      Supplier<Double> driverDesiredXSupplier, Supplier<Double> driverDesiredYSupplier, Supplier<Boolean> coral) {
     AtomicReference<Pose2d> gamePiecePoseReference = new AtomicReference<>();
 
     Supplier<Translation2d> getTranslation = () -> {
-      Translation2d poseError = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get()).getTranslation().minus(drive.getPose().getTranslation());  
-      Translation2d driverDesired = new Translation2d((driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)), (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
+      Translation2d poseError = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get()).getTranslation()
+          .minus(drive.getPose().getTranslation());
+      Translation2d driverDesired = new Translation2d(
+          (driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)),
+          (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
 
-      if (poseError == null) return driverDesired;
+      if (poseError == null)
+        return driverDesired;
 
-      Angle poseDirection = poseError.getAngle().getMeasure();
-      Angle driverDesiredDirection = driverDesired.getAngle().getMeasure();
+      poseError = new Translation2d(
+          MathUtil.clamp(poseError.getNorm(), 0, kMaxLinearVelocity.get().in(MetersPerSecond)), poseError.getAngle());
 
-      if (driverDesiredDirection.isNear(poseDirection, Degrees.of(20))) {
-        Translation2d driverMagnitudeButPoseErrorDirectionVector = new Translation2d(driverDesired.getNorm(), poseError.getAngle());
+      if (Math.abs(poseError.getAngle().minus(driverDesired.getAngle()).getDegrees()) < 20) {
+        Translation2d driverMagnitudeButPoseErrorDirectionVector = new Translation2d(driverDesired.getNorm(),
+            poseError.getAngle());
         return driverMagnitudeButPoseErrorDirectionVector.interpolate(poseError, interpolationFactorSupplier.get());
-      } else {
-        return driverDesired.interpolate(poseError, interpolationFactorSupplier.get());
       }
+
+      return driverDesired.interpolate(poseError, interpolationFactorSupplier.get());
     };
 
-    return joystickDriveAtAngle(drive, () -> getTranslation.get().getX(), () -> getTranslation.get().getY(), () -> getPieceRotationError(gamePiecePoseReference, drive.getPose(), coral.get()));
+    return joystickDriveAtAngle(drive, () -> getTranslation.get().getX(), () -> getTranslation.get().getY(),
+        () -> getPieceRotationError(gamePiecePoseReference, drive.getPose(), coral.get()));
   }
 
   /**
@@ -567,7 +580,8 @@ public class DriveCommands {
     return gamePiecePoseReference.get();
   };
 
-  private static Rotation2d getPieceRotationError(AtomicReference<Pose2d> gamePiecePoseReference, Pose2d robotPose, boolean coral) {
+  private static Rotation2d getPieceRotationError(AtomicReference<Pose2d> gamePiecePoseReference, Pose2d robotPose,
+      boolean coral) {
     Rotation2d offset = Rotation2d.fromDegrees(7);
     Pose2d targetPose = getPiecePose(robotPose, gamePiecePoseReference, coral);
 
