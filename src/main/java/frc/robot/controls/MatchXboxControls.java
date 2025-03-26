@@ -300,8 +300,7 @@ public class MatchXboxControls implements Controls {
   @Override
   public Trigger fieldElementLock() {
       return driverController.leftBumper()
-        .or(driverController.rightBumper())
-        .or(driverController.leftTrigger());
+        .or(driverController.rightBumper());
   }
 
   @Override

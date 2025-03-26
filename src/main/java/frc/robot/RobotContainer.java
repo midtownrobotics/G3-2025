@@ -470,7 +470,7 @@ public class RobotContainer {
         }, controls.alignToReefLeftBranch())); */
     
     
-    controls.fieldElementLock().whileTrue(DriveCommands.fieldElementLock(drive, coralIntake, elevator, led,
+    controls.fieldElementLock().whileTrue(DriveCommands.fieldElementLock(drive, coralIntake, coralOuttakeRoller, coralOuttakePivot, elevator, led,
         () -> {
           ReefFace closestFace = null;
           Distance closestDistance = Meters.of(Double.MAX_VALUE);
@@ -487,7 +487,7 @@ public class RobotContainer {
           }
 
           return closestFace;
-        }, controls.alignToReefLeftBranch(), controls.alignToAlgaeReef()));
+        }, controls.alignToReefLeftBranch()));
 
     /* controls.alignToAlgaeReef()
         .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
