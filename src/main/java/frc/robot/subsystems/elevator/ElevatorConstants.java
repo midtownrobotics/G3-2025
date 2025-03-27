@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.units.measure.Angle;
@@ -9,12 +10,12 @@ import frc.lib.dashboard.LoggedTunableNumber;
 
 public class ElevatorConstants {
     // TODO: Find out max and min heights
-    public static final Distance elevatorMaxHeight = Feet.of(5.5);
+    public static final Distance elevatorMaxHeight = Inches.of(69.5);
     public static final Distance elevatorMinHeight = Feet.of(0);
 
     public static final double kGearing = 14;
 
-    public static final Angle absoluteEncoderOffset = Radians.of(3.699);
+    public static final Angle absoluteEncoderOffset = Radians.of(4.022);
 
   public final class PID_SCORE {
     public static final LoggedTunableNumber s = new LoggedTunableNumber("Elevator/PID_SCORE/s", 0.12);
