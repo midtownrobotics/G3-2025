@@ -15,7 +15,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -134,8 +133,8 @@ public class WinchIOKraken implements WinchIO {
    * @param slot PID slot to set to.
    */
   public void setPosition(Distance position, int slot) {
-    MotionMagicVoltage leftRequest = new MotionMagicVoltage(meterToRotation(position)).withSlot(slot);
-    leftMotor.setControl(leftRequest);
+    // MotionMagicVoltage leftRequest = new MotionMagicVoltage(meterToRotation(position)).withSlot(slot);
+    // leftMotor.setControl(leftRequest);
   }
 
   @Override
