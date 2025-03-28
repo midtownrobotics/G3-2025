@@ -127,5 +127,5 @@ public interface VisionIO {
   /**
    * Returns the pose estimation in single tag mode based on trig
    */
-  public PoseObservation trigPoseEstimation(String limelightName);
+  public PoseObservation trigPoseEstimation();
 }

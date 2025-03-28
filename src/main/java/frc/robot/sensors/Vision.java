@@ -41,7 +41,7 @@ public class Vision extends SubsystemBase {
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
-  @Getter @Setter EstimationMode currentEstimationMode;
+  @Getter @Setter private EstimationMode currentEstimationMode;
 
   public enum EstimationMode {
     GLOBAL,
@@ -184,7 +184,7 @@ public class Vision extends SubsystemBase {
 
     if (currentEstimationMode == EstimationMode.SINGLE_TAG) {
       for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
-        if (io[cameraIndex].getName() == VisionConstants.kPoleTagCameraName) {
+        if (io[cameraIndex].getName().equals(VisionConstants.kPoleTagCameraName)) {
           PoseObservation observation = io[cameraIndex].trigPoseEstimation(kPoleTagCameraName);
           consumer.accept(observation.pose().toPose2d(),
                           observation.timestamp(),

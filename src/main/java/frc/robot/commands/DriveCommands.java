@@ -453,7 +453,6 @@ public class DriveCommands {
 
   /** Creates a command that drives to a branch */
   public static Command alignToBranchReef(Drive drive, LED led, int branchPoseIndex, Vision vision) {
-    vision.setCurrentEstimationMode(EstimationMode.SINGLE_TAG);
     Supplier<Pose2d> branchPoseSupplier = () -> {
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
           .transformBy(kRobotBranchAlignOffset);
@@ -469,9 +468,9 @@ public class DriveCommands {
     };
 
     return Commands.sequence(
+        Commands.runOnce(() -> vision.setCurrentEstimationMode(EstimationMode.SINGLE_TAG)),
         new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()),
-        Commands.run(() -> vision.setCurrentEstimationMode(EstimationMode.GLOBAL)));
+        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy())).finallyDo(() -> vision.setCurrentEstimationMode(EstimationMode.GLOBAL));
   }
 
   /** Aligns to the Pose2d of the game piece */
