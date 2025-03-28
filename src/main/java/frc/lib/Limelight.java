@@ -14,10 +14,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
 import frc.robot.sensors.VisionObservation;
-import lombok.Getter;
-
 import java.util.HashSet;
-import java.util.Optional;
 
 /**
  * The Limelight class interacts with the Limelight Vision processing system to retrieve and process
@@ -686,7 +683,7 @@ public class Limelight {
 
   /**
    * Calculates one
-   * 
+   *
    * @return one
    */
   public int getOne() {

@@ -13,10 +13,8 @@
 
 package frc.robot.sensors.vision;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -36,7 +34,6 @@ import frc.lib.LimelightHelpers;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -165,9 +162,9 @@ public class VisionIOLimelight implements VisionIO {
         rawLLArray[1],
         rawLLArray[2],
         new Rotation3d(
-            Units.degreesToRadians(rawLLArray[3]),
-            Units.degreesToRadians(rawLLArray[4]),
-            Units.degreesToRadians(rawLLArray[5])));
+            Units.Degrees.of((rawLLArray[3])).in(Units.Radians),
+            Units.Degrees.of((rawLLArray[4])).in(Units.Radians),
+            Units.Degrees.of((rawLLArray[5])).in(Units.Radians)));
   }
 
   @Override
@@ -200,18 +197,18 @@ public class VisionIOLimelight implements VisionIO {
  Angle phi = Units.Degrees.of(LimelightHelpers.getTY(limeLightName));
  Angle theta = Units.Degrees.of(LimelightHelpers.getTX(limeLightName));
 
- Transform3d robotToTarget = new Transform3d(Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.cos(phi.in(Units.Radians)) * Math.sin(theta.in(Units.Radians))), 
-                                             Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.cos(theta.in(Units.Radians)) * Math.cos(theta.in(Units.Radians))), 
-                                             Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.sin(phi.in(Units.Radians))), 
+ Transform3d robotToTarget = new Transform3d(Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.cos(phi.in(Units.Radians)) * Math.sin(theta.in(Units.Radians))),
+                                             Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.cos(theta.in(Units.Radians)) * Math.cos(theta.in(Units.Radians))),
+                                             Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.sin(phi.in(Units.Radians))),
                                              new Rotation3d(limelight.getTargetPoseInRobotSpace().getRotation()));
 
- 
+
 
  return new PoseObservation(Timer.getFPGATimestamp(),
                             tagPose.transformBy(robotToTarget.inverse()),
-                            limelight.getZero(), 
-                            limelight.getOne(), 
-                            distanceToTarget.in(Units.Meters), 
+                            limelight.getZero(),
+                            limelight.getOne(),
+                            distanceToTarget.in(Units.Meters),
                             PoseObservationType.SINGLE_TAG);
  }
 }
