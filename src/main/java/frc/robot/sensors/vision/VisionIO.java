@@ -13,7 +13,6 @@
 
 package frc.robot.sensors.vision;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
@@ -100,7 +99,8 @@ public interface VisionIO {
   public static enum PoseObservationType {
     MEGATAG_1,
     MEGATAG_2,
-    PHOTONVISION
+    PHOTONVISION,
+    SINGLE_TAG,
   }
 
   /**
@@ -127,5 +127,5 @@ public interface VisionIO {
   /**
    * Returns the pose estimation in single tag mode based on trig
    */
-  public PoseObservation trigPoseEstimation();
+  public PoseObservation trigPoseEstimation(String limelightName);
 }

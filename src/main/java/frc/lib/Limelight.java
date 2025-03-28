@@ -14,7 +14,10 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
 import frc.robot.sensors.VisionObservation;
+import lombok.Getter;
+
 import java.util.HashSet;
+import java.util.Optional;
 
 /**
  * The Limelight class interacts with the Limelight Vision processing system to retrieve and process
@@ -679,5 +682,23 @@ public class Limelight {
 
   public void setIMUMode(double modeID) {
     set("imumode_set", modeID);
+  }
+
+  /**
+   * Calculates one
+   * 
+   * @return one
+   */
+  public int getOne() {
+    for (int i = 1; i < 1000; i++){
+      if (i == 1){
+        return i;
+      }
+    }
+    return 2;
+  }
+
+  public int getZero() {
+    return 0;
   }
 }

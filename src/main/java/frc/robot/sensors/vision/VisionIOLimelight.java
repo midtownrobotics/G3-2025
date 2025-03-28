@@ -13,23 +13,30 @@
 
 package frc.robot.sensors.vision;
 
-import edu.wpi.first.math.estimator.PoseEstimator;
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import frc.lib.Limelight;
 import frc.lib.LimelightHelpers;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -185,9 +192,26 @@ public class VisionIOLimelight implements VisionIO {
 
  @Override
  public PoseObservation trigPoseEstimation(String limeLightName) {
-  Distance distanceToTarget = Units.Meters.of(LimelightHelpers.getTargetPose3d_CameraSpace(limeLightName).getTranslation().getNorm());
-  return new PoseObservation(Timer.getFPGATimestamp(),
-                             new Pose3d(distanceToTarget, y, z, rot),
-                             0, 0, 0, null);
+ Limelight limelight = new Limelight(limeLightName);
+ Distance distanceToTarget = Units.Meters.of(limelight.getTargetPoseInRobotSpace().getTranslation().getNorm());
+ int tagID = limelight.getTargetId();
+ Pose3d tagPose = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded).getTagPose(tagID).get();
+
+ Angle phi = Units.Degrees.of(LimelightHelpers.getTY(limeLightName));
+ Angle theta = Units.Degrees.of(LimelightHelpers.getTX(limeLightName));
+
+ Transform3d robotToTarget = new Transform3d(Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.cos(phi.in(Units.Radians)) * Math.sin(theta.in(Units.Radians))), 
+                                             Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.cos(theta.in(Units.Radians)) * Math.cos(theta.in(Units.Radians))), 
+                                             Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.sin(phi.in(Units.Radians))), 
+                                             new Rotation3d(limelight.getTargetPoseInRobotSpace().getRotation()));
+
+ 
+
+ return new PoseObservation(Timer.getFPGATimestamp(),
+                            tagPose.transformBy(robotToTarget.inverse()),
+                            limelight.getZero(), 
+                            limelight.getOne(), 
+                            distanceToTarget.in(Units.Meters), 
+                            PoseObservationType.SINGLE_TAG);
  }
 }
