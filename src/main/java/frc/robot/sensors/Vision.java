@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.vision.VisionIO;
+import frc.robot.sensors.vision.VisionIO.PoseObservation;
 import frc.robot.sensors.vision.VisionIO.PoseObservationType;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import java.util.LinkedList;
@@ -184,7 +185,10 @@ public class Vision extends SubsystemBase {
     if (currentEstimationMode == EstimationMode.SINGLE_TAG) {
       for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
         if (io[cameraIndex].getName() == VisionConstants.kPoleTagCameraName) {
-
+          PoseObservation observation = io[cameraIndex].trigPoseEstimation(kPoleTagCameraName);
+          consumer.accept(observation.pose().toPose2d(),
+                          observation.timestamp(),
+                          VecBuilder.fill(0,0,0));
         }
       }
     }

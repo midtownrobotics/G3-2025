@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.DriveToPoint;
 import frc.lib.LimelightHelpers;
@@ -50,7 +51,9 @@ import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularVelocity;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearVelocity;
+import frc.robot.sensors.Vision;
 import frc.robot.sensors.VisionConstants;
+import frc.robot.sensors.Vision.EstimationMode;
 import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.led.LED;
 import frc.robot.utils.FieldConstants;
@@ -449,7 +452,8 @@ public class DriveCommands {
   }
 
   /** Creates a command that drives to a branch */
-  public static Command alignToBranchReef(Drive drive, LED led, int branchPoseIndex) {
+  public static Command alignToBranchReef(Drive drive, LED led, int branchPoseIndex, Vision vision) {
+    vision.setCurrentEstimationMode(EstimationMode.SINGLE_TAG);
     Supplier<Pose2d> branchPoseSupplier = () -> {
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
           .transformBy(kRobotBranchAlignOffset);
@@ -466,7 +470,8 @@ public class DriveCommands {
 
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()),
+        Commands.run(() -> vision.setCurrentEstimationMode(EstimationMode.GLOBAL)));
   }
 
   /** Aligns to the Pose2d of the game piece */
