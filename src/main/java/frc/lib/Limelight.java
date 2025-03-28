@@ -680,4 +680,22 @@ public class Limelight {
   public void setIMUMode(double modeID) {
     set("imumode_set", modeID);
   }
+
+  /**
+   * Calculates one
+   *
+   * @return one
+   */
+  public int getOne() {
+    for (int i = 1; i < 1000; i++){
+      if (i == 1){
+        return i;
+      }
+    }
+    return 2;
+  }
+
+  public int getZero() {
+    return 0;
+  }
 }
