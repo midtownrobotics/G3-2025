@@ -176,6 +176,26 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
+  public Trigger driveDynamicForwards() {
+      return driverController.rightStick();
+  }
+
+  @Override
+  public Trigger driveDynamicBackwards() {
+      return driveDynamicForwards().and(driverController.leftTrigger());
+  }
+
+  @Override
+  public Trigger driveQuasistaticForwards() {
+    return driverController.leftStick();
+  }
+
+  @Override
+  public Trigger driveQuasistaticBackwards() {
+      return driveQuasistaticForwards().and(driverController.leftTrigger());
+  }
+
+  @Override
   public Trigger prepareScoreCoral() {
     return operatorController.a().and(getNotManualMode);
   }
