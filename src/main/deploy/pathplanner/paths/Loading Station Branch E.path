@@ -28,20 +28,28 @@
       "linkedName": "Branch E"
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
-  "pointTowardsZones": [
+  "rotationTargets": [
     {
-      "fieldPosition": {
-        "x": 4.95,
-        "y": 3.3
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.4825102880658457,
-      "maxWaypointRelativePos": 0.7644032921810637,
-      "name": "Point Towards Zone"
+      "waypointRelativePos": 0.534016775396085,
+      "rotationDegrees": 82.65501540430128
     }
   ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.8669331810394036,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 0.9,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Handoff",
@@ -56,14 +64,19 @@
               "data": {
                 "name": "Handoff"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "PrepareLevel4"
-              }
             }
           ]
+        }
+      }
+    },
+    {
+      "name": "PrepareLevel4",
+      "waypointRelativePos": 0.6453455168475142,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLevel4"
         }
       }
     }

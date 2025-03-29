@@ -631,7 +631,7 @@ public class RobotContainer {
           elevator.setGoal(Elevator.Goal.STOW);
           coralIntake.setGoal(CoralIntake.Goal.STOW);
           coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.STOW);
-        }));
+        })).andThen(elevator.setGoalCommand(Elevator.Goal.L2));
   }
 
   /** Returns a command that sets the elevator and coral outtake pivot goals */
