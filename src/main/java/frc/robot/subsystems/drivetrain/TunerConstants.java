@@ -30,9 +30,9 @@ public class TunerConstants {
         .withKP(2.9).withKI(0).withKD(0)
         .withKS(0).withKV(0);
 
-    private static final Slot0Configs altDriveGains = new Slot0Configs()
-        .withKP(2.8).withKI(0).withKD(0)
-        .withKS(0).withKV(0.724);
+    // private static final Slot0Configs altDriveGains = new Slot0Configs()
+    //     .withKP(2.8).withKI(0).withKD(0)
+    //     .withKS(0).withKV(0.724);
 
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors
@@ -179,7 +179,7 @@ public class TunerConstants {
     private static final boolean kBackLeftEncoderInverted = false;
 
     private static final Distance kBackLeftXPos = Inches.of(-11.875);
-    private static final Distance kBackLeftYPos = Inches.of(12.25);
+    private static final Distance kBackLeftYPos = Inches.of(12.375);
 
     // Back Right
     private static final int kBackRightDriveMotorId = 40;
@@ -216,7 +216,7 @@ public class TunerConstants {
             kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId, kBackRightEncoderOffset,
             kBackRightXPos, kBackRightYPos, kInvertRightSide, kBackRightSteerMotorInverted, kBackRightEncoderInverted
         )
-        // .withDriveMotorGains(altDriveGains)\[]
+        // .withDriveMotorGains(altDriveGains)
         .withSteerMotorGearRatio(kAltSteerGearRatio)
         .withSteerMotorGains(altSteerGains);
 
