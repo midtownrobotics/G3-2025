@@ -570,7 +570,7 @@ public class RobotContainer {
 
     // barge
     controls.algae().and(() -> (coralMode == CoralMode.L4))
-        .whileTrue(Commands.parallel(
+        .whileTrue(Commands.sequence(
             elevator.setGoalAndWait(Elevator.Goal.BARGE),
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)))
         .onFalse(Commands.parallel(
@@ -621,17 +621,18 @@ public class RobotContainer {
         Commands.parallel(
             elevator.setGoalAndWait(Elevator.Goal.STOW),
             coralIntake.setGoalAndWait(CoralIntake.Goal.HANDOFF, Degrees.of(2.5)),
-            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF, Degrees.of(7)),
-            coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF)),
+            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF, Degrees.of(12))),
+        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF),
         Commands.waitUntil(coralIntake.handoffSensorTrigger).withTimeout(2),
         Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(2),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF_REVERSE),
         Commands.waitSeconds(0.1),
-        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW).finallyDo(() -> {
+        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)).finallyDo(() -> {
           elevator.setGoal(Elevator.Goal.STOW);
           coralIntake.setGoal(CoralIntake.Goal.STOW);
           coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.STOW);
-        })).andThen(elevator.setGoalCommand(Elevator.Goal.L2));
+          coralOuttakeRoller.setGoal(CoralOuttakeRoller.Goal.STOW);
+        });
   }
 
   /** Returns a command that sets the elevator and coral outtake pivot goals */
