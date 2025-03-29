@@ -51,13 +51,11 @@ public class PivotIONeo implements PivotIO {
     inputs.temperature = Units.Celsius.of(pivotMotor.getMotorTemperature());
 
     Logger.recordOutput("CoralIntake/ZeroedAbsoluteEncoder", getZeroedAbsoluteEncoderPosition());
-
-
   }
 
   @Override
   public void setVoltage(Voltage voltage) {
-    pivotMotor.setVoltage(voltage);
+    // pivotMotor.setVoltage(voltage);
   }
 
   /**

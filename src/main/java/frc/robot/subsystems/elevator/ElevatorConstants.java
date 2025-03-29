@@ -9,13 +9,16 @@ import edu.wpi.first.units.measure.Distance;
 import frc.lib.dashboard.LoggedTunableNumber;
 
 public class ElevatorConstants {
-    // TODO: Find out max and min heights
-    public static final Distance elevatorMaxHeight = Inches.of(69.5);
-    public static final Distance elevatorMinHeight = Feet.of(0);
+  // TODO: Find out max and min heights
+  public static final Distance elevatorMaxHeight = Inches.of(69.5);
+  public static final Distance elevatorMinHeight = Feet.of(0);
 
-    public static final double kGearing = 14;
+  public static final double kGearing = 14;
 
-    public static final Angle absoluteEncoderOffset = Radians.of(4.022);
+  public static final Angle absoluteEncoderOffset = Radians.of(4.022);
+
+  public static final LoggedTunableNumber maxA = new LoggedTunableNumber("Elevator/maxA", 10);
+  public static final LoggedTunableNumber maxV = new LoggedTunableNumber("Elevator/maxV", 10);
 
   public final class PID_SCORE {
     public static final LoggedTunableNumber s = new LoggedTunableNumber("Elevator/PID_SCORE/s", 0.12);

@@ -24,8 +24,8 @@ import frc.robot.subsystems.elevator.lock.LockIO;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
+import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
-import frc.robot.utils.UnitUtil;
 import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -153,9 +153,11 @@ public class Elevator extends SubsystemBase {
       constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight()).plus(driverOffset);
     }
 
-    Distance desiredTuningHeight = Feet.of(tuningDesiredHeight.get());
+    Distance desiredTuningHeight = Inches.of(tuningDesiredHeight.get());
 
-    desiredTuningHeight = UnitUtil.clamp(desiredTuningHeight, Feet.of(0), Feet.of(5.3));
+    if (Constants.tuningMode.get()) {
+      constrainedHeight = ((elevatorConstraint.getClampedValue(desiredTuningHeight)));
+    }
 
     lock.setLockEnabled(getCurrentGoal().lockEnabled);
 
@@ -168,7 +170,6 @@ public class Elevator extends SubsystemBase {
         winch.setClimbPosition(constrainedHeight);
         break;
       case TUNING:
-        winch.setClimbPosition(desiredTuningHeight);
         break;
       case MANUAL:
       default:
