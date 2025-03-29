@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
-import frc.robot.utils.Constants;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -182,7 +181,10 @@ public class WinchIOKraken implements WinchIO {
       ElevatorConstants.PID_CLIMB.s,
       ElevatorConstants.PID_CLIMB.v,
       ElevatorConstants.PID_CLIMB.g,
-      ElevatorConstants.PID_CLIMB.a
+      ElevatorConstants.PID_CLIMB.a,
+      // MAX
+      ElevatorConstants.maxA,
+      ElevatorConstants.maxV
     );
   }
 
@@ -242,12 +244,14 @@ public class WinchIOKraken implements WinchIO {
             .withGravityType(GravityTypeValue.Elevator_Static);
     krakenConfig.CurrentLimits =
         new CurrentLimitsConfigs()
-            .withSupplyCurrentLimit(Constants.KRAKEN_CURRENT_LIMIT)
-            .withSupplyCurrentLimitEnable(true);
+            .withSupplyCurrentLimit(90)
+            .withSupplyCurrentLimitEnable(true)
+            .withStatorCurrentLimit(60)
+            .withStatorCurrentLimitEnable(true);
     krakenConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     krakenConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    krakenConfig.MotionMagic.withMotionMagicCruiseVelocity(meterToRotation(Feet.of(10)).per(Second));
-    krakenConfig.MotionMagic.withMotionMagicAcceleration(meterToRotation(Feet.of(10)).per(Second).per(Second));
+    krakenConfig.MotionMagic.withMotionMagicCruiseVelocity(meterToRotation(Feet.of(ElevatorConstants.maxV.get())).per(Second));
+    krakenConfig.MotionMagic.withMotionMagicAcceleration(meterToRotation(Feet.of(ElevatorConstants.maxA.get())).per(Second).per(Second));
 
     tryUntilOk(5, () -> leftMotor.getConfigurator().apply(krakenConfig));
     tryUntilOk(5, () -> rightMotor.getConfigurator().apply(krakenConfig));

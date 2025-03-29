@@ -29,7 +29,6 @@ import frc.lib.AllianceFlipUtil;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
-import frc.lib.RollerIO.RollerIONeo550;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.commands.DriveCommands;
@@ -209,8 +208,8 @@ public class RobotContainer {
             driveCANBusHandler);
 
         // Coral Intake
-        beltIO = new RollerIONeo550(Ports.CoralIntake.belt, IdleMode.kBrake);
-        // beltIO = new RollerIOSim();
+        // beltIO = new RollerIONeo550(Ports.CoralIntake.belt, IdleMode.kBrake);
+        beltIO = new RollerIOSim(); // TODO: CHANGE CHANGE CHANGE CHANGE CHANGE
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
         coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
 
@@ -539,7 +538,10 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
-                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY))))
+                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY),
+                Commands.waitSeconds(0.1),
+                Commands.waitUntil(coralOuttakeRoller.currentSpikeTrigger),
+                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD))))
         .onFalse(Commands.sequence(
             coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW),
