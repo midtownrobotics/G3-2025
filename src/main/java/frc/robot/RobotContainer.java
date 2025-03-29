@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOKraken;
@@ -52,12 +53,12 @@ import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOReplay;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOSim;
 import frc.robot.subsystems.coral_outtake_roller.CoralOuttakeRoller;
 import frc.robot.subsystems.drivetrain.Drive;
+import frc.robot.subsystems.drivetrain.GoldenTunerConstants;
 import frc.robot.subsystems.drivetrain.GyroIO;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon2;
 import frc.robot.subsystems.drivetrain.ModuleIO;
 import frc.robot.subsystems.drivetrain.ModuleIOSim;
 import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
-import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.lock.LockIO;
 import frc.robot.subsystems.elevator.lock.LockIORevServo;
@@ -161,10 +162,10 @@ public class RobotContainer {
 
         // Drive
         gyroIO = new GyroIOPigeon2(driveCANBusHandler);
-        flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
-        frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
-        blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);
-        brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
+        flModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.FrontLeft, driveCANBusHandler);
+        frModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.FrontRight, driveCANBusHandler);
+        blModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.BackLeft, driveCANBusHandler);
+        brModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.BackRight, driveCANBusHandler);
 
         drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
@@ -186,10 +187,10 @@ public class RobotContainer {
 
         // Drive
         gyroIO = new GyroIOPigeon2(driveCANBusHandler);
-        flModuleIO = new ModuleIOSim(TunerConstants.FrontLeft);
-        frModuleIO = new ModuleIOSim(TunerConstants.FrontRight);
-        blModuleIO = new ModuleIOSim(TunerConstants.BackLeft);
-        brModuleIO = new ModuleIOSim(TunerConstants.BackRight);
+        flModuleIO = new ModuleIOSim(GoldenTunerConstants.FrontLeft);
+        frModuleIO = new ModuleIOSim(GoldenTunerConstants.FrontRight);
+        blModuleIO = new ModuleIOSim(GoldenTunerConstants.BackLeft);
+        brModuleIO = new ModuleIOSim(GoldenTunerConstants.BackRight);
 
         drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
@@ -220,10 +221,10 @@ public class RobotContainer {
 
         // Drive
         gyroIO = new GyroIOPigeon2(driveCANBusHandler);
-        flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
-        frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
-        blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);
-        brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
+        flModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.FrontLeft, driveCANBusHandler);
+        frModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.FrontRight, driveCANBusHandler);
+        blModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.BackLeft, driveCANBusHandler);
+        brModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.BackRight, driveCANBusHandler);
 
         drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
@@ -345,6 +346,15 @@ public class RobotContainer {
     // coralIntake.setDefaultCommand(new InstantCommand(() -> {
     // coralIntake.setGoal(CoralIntake.Goal.STOW);
     // }));
+
+    controls.driveDynamicForwards()
+      .whileTrue(drive.sysIdDynamic(Direction.kForward));
+    controls.driveDynamicBackwards()
+      .whileTrue(drive.sysIdDynamic(Direction.kReverse));
+    controls.driveQuasistaticForwards()
+      .whileTrue(drive.sysIdQuasistatic(Direction.kForward));
+    controls.driveQuasistaticBackwards()
+      .whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
 
     controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
@@ -470,29 +480,28 @@ public class RobotContainer {
           return closestFace;
         }, controls.alignToReefLeftBranch()));
 
-    controls.alignToAlgaeReef()
-        .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
-            () -> {
-              ReefFace closestFace = null;
-              Distance closestDistance = Meters.of(Double.MAX_VALUE);
-              Pose2d currentPose = drive.getPose();
+    // controls.alignToAlgaeReef()
+    //     .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
+    //         () -> {
+    //           ReefFace closestFace = null;
+    //           Distance closestDistance = Meters.of(Double.MAX_VALUE);
+    //           Pose2d currentPose = drive.getPose();
 
-              for (ReefFace face : ReefFace.values()) {
-                Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
-                Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
-                Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
-                if (distance.lt(closestDistance)) {
-                  closestFace = face;
-                  closestDistance = distance;
-                }
-              }
+    //           for (ReefFace face : ReefFace.values()) {
+    //             Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+    //             Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+    //             Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
+    //             if (distance.lt(closestDistance)) {
+    //               closestFace = face;
+    //               closestDistance = distance;
+    //             }
+    //           }
 
-              return closestFace;
-            }))
-    // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, ()
-    // -> 0, () -> 0).withTimeout(0.5),
-    // Commands.none(), () -> !controls.isDriverControlInDeadzone()))
-    ;
+    //           return closestFace;
+    //         }))
+    //     // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, () -> 0, () -> 0).withTimeout(0.5),
+    //     //     Commands.none(), () -> !controls.isDriverControlInDeadzone()))
+    //     ;
 
     controls.gamePieceLock()
         .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getDriveForward, controls::getDriveLeft));

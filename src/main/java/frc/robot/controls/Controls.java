@@ -37,6 +37,16 @@ public interface Controls {
   /** Locks to true right position on reef for algae intake. */
   public Trigger reefAlgaePositionLock();
 
+
+  /** drive sysid quasistatic forwards */
+  public Trigger driveQuasistaticForwards();
+  /** drive sysid quasistatic backwards */
+  public Trigger driveQuasistaticBackwards();
+  /** drive sysid dynamic forwards */
+  public Trigger driveDynamicForwards();
+  /** drive sysid dynamic backwards */
+  public Trigger driveDynamicBackwards();
+
   // Operator Controls
 
   /** Intake a coral from the ground. */
