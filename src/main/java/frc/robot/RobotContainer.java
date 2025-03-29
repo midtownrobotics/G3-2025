@@ -539,7 +539,10 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
-                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY))))
+                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY),
+                Commands.waitSeconds(0.1),
+                Commands.waitUntil(coralOuttakeRoller.currentSpikeTrigger),
+                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD))))
         .onFalse(Commands.sequence(
             coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW),
