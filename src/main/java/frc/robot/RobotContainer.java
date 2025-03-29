@@ -489,9 +489,10 @@ public class RobotContainer {
 
               return closestFace;
             }))
-        // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, () -> 0, () -> 0).withTimeout(0.5),
-        //     Commands.none(), () -> !controls.isDriverControlInDeadzone()))
-        ;
+    // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, ()
+    // -> 0, () -> 0).withTimeout(0.5),
+    // Commands.none(), () -> !controls.isDriverControlInDeadzone()))
+    ;
 
     controls.gamePieceLock()
         .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getDriveForward, controls::getDriveLeft));
@@ -532,7 +533,8 @@ public class RobotContainer {
     // coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)
     // ));
 
-    controls.dealgify()
+    // dealgify
+    controls.algae().and(() -> (coralMode == CoralMode.L2 || coralMode == CoralMode.L3))
         .whileTrue(Commands.parallel(
             elevator.setDealgifyGoalFromCoralMode(() -> coralMode),
             Commands.sequence(
@@ -543,9 +545,31 @@ public class RobotContainer {
                 Commands.waitUntil(coralOuttakeRoller.currentSpikeTrigger),
                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD))))
         .onFalse(Commands.sequence(
-            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
+            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY_STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW),
-            coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)));
+            coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD)));
+
+    // processor
+    controls.algae().and(() -> (coralMode == CoralMode.L1))
+        .whileTrue(Commands.parallel(
+            elevator.setGoalAndWait(Elevator.Goal.PROCESSOR),
+            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.PROCESSOR_SCORE)))
+        .onFalse(Commands.parallel(
+            elevator.setGoalCommand(Elevator.Goal.STOW),
+            coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW)));
+
+    // barge
+    controls.algae().and(() -> (coralMode == CoralMode.L4))
+        .whileTrue(Commands.parallel(
+            elevator.setGoalAndWait(Elevator.Goal.BARGE),
+            coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)))
+        .onFalse(Commands.parallel(
+            elevator.setGoalCommand(Elevator.Goal.STOW),
+            coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW)));
+
+    controls.algae().and(controls.scoreGamePiece()).whileTrue(
+        coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.REVERSE_SHOOT,
+            CoralOuttakeRoller.Goal.STOW));
 
     // CommandXboxController testController = new CommandXboxController(5);
 
@@ -571,7 +595,7 @@ public class RobotContainer {
      * return Commands.print("AHHHH");
      * }
      *
-      * return auto;
+     * return auto;
      */
     var selected = m_autoChooser.getSelected();
 

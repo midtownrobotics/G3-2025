@@ -207,9 +207,11 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
-  public Trigger dealgify() {
+  public Trigger algae() {
     return operatorController.x();
   }
+
+
 
   @Override
   public Trigger scoreGamePiece() {
