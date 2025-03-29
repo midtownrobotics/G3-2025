@@ -374,15 +374,17 @@ public class Drive extends SubsystemBase {
   }
 
   private void resetOdometryPathPlanner(Pose2d pose) {
-    if (getPose().getTranslation().getDistance(pose.getTranslation()) > 0.3) {
-      setPose(pose);
-      return;
-    }
+    // if (getPose().getTranslation().getDistance(pose.getTranslation()) > 0.3) {
+    //   setPose(pose);
+    //   return;
+    // }
 
-    if (!getPose().getRotation().getMeasure().isNear(pose.getRotation().getMeasure(), Degrees.of(30))) {
-      setPose(pose);
-      return;
-    }
+    // if (!getPose().getRotation().getMeasure().isNear(pose.getRotation().getMeasure(), Degrees.of(30))) {
+    //   setPose(pose);
+    //   return;
+    // }
+
+    setPose(pose);
   }
 
   /**

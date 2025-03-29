@@ -55,7 +55,7 @@ public class PivotIONeo implements PivotIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
-    // pivotMotor.setVoltage(voltage);
+    pivotMotor.setVoltage(voltage);
   }
 
   /**
