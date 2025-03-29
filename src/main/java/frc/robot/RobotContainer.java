@@ -30,6 +30,7 @@ import frc.lib.AllianceFlipUtil;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
+import frc.lib.RollerIO.RollerIONeo550;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.commands.DriveCommands;
@@ -209,8 +210,8 @@ public class RobotContainer {
             driveCANBusHandler);
 
         // Coral Intake
-        // beltIO = new RollerIONeo550(Ports.CoralIntake.belt, IdleMode.kBrake);
-        beltIO = new RollerIOSim(); // TODO: CHANGE CHANGE CHANGE CHANGE CHANGE
+        beltIO = new RollerIONeo550(Ports.CoralIntake.belt, IdleMode.kBrake);
+        // beltIO = new RollerIOSim(); // TODO: CHANGE CHANGE CHANGE CHANGE CHANGE
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
         coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
 

@@ -162,7 +162,7 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
 
   @Override
   public void setVoltage(Voltage voltage) {
-    // motor.setVoltage(voltage.in(Volts));
+    motor.setVoltage(voltage.in(Volts));
   }
 
   private Angle getInitialAngle() {
