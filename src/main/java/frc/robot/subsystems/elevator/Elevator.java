@@ -2,7 +2,6 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -180,15 +179,15 @@ public class Elevator extends SubsystemBase {
     }
 
     Logger.recordOutput("Elevator/currentGoal", getCurrentGoal());
-    Logger.recordOutput("Elevator/goalHeightInches", currentGoal.getHeight().in(Inches));
+    Logger.recordOutput("Elevator/goalHeight", currentGoal.getHeight());
     Logger.recordOutput("Elevator/atGoal", atGoal());
 
-    Logger.recordOutput("Elevator/currentHeightInches", getPosition().in(Inches));
-    Logger.recordOutput("Elevator/currentVelocityInchesPerSecond", getVelocity().in(InchesPerSecond));
+    Logger.recordOutput("Elevator/currentHeight", getPosition());
+    Logger.recordOutput("Elevator/currentVelocity", getVelocity());
 
-    Logger.recordOutput("Elevator/constrainedMaxHeightInches", elevatorConstraint.getUpper().in(Inches));
-    Logger.recordOutput("Elevator/constrainedMinHeightInches", elevatorConstraint.getLower().in(Inches));
-    Logger.recordOutput("Elevator/constrainedGoalHeightInches", constrainedHeight.in(Inches));
+    Logger.recordOutput("Elevator/constrainedMaxHeight", elevatorConstraint.getUpper());
+    Logger.recordOutput("Elevator/constrainedMinHeight", elevatorConstraint.getLower());
+    Logger.recordOutput("Elevator/constrainedGoalHeight", constrainedHeight);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }

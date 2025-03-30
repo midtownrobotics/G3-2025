@@ -1,7 +1,6 @@
 package frc.robot.subsystems.coral_outtake_pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
@@ -92,15 +91,15 @@ public class CoralOuttakePivot extends SubsystemBase {
         pivotIO.setPosition(constrainedAngle);
 
         Logger.recordOutput("CoralOuttake/currentGoal", getCurrentGoal());
-        Logger.recordOutput("CoralOuttake/goalAngleDegrees", currentGoal.getAngle().in(Degrees));
+        Logger.recordOutput("CoralOuttake/goalAngle", currentGoal.getAngle());
         Logger.recordOutput("CoralOuttake/atGoal", atGoal());
 
-        Logger.recordOutput("CoralOuttake/currentAngleDegrees", getPosition().in(Degrees));
-        Logger.recordOutput("CoralOuttake/velocityDegreesPerSecond", getVelocity().in(DegreesPerSecond));
+        Logger.recordOutput("CoralOuttake/currentAngle", getPosition());
+        Logger.recordOutput("CoralOuttake/currentVelocity", getVelocity());
 
-        Logger.recordOutput("CoralOuttake/constraintMaxDegrees", coralOuttakeConstraint.getUpper().in(Degrees));
-        Logger.recordOutput("CoralOuttake/constraintMinDegrees", coralOuttakeConstraint.getLower().in(Degrees));
-        Logger.recordOutput("CoralOuttake/constrainedGoalAngleDegrees", constrainedAngle.in(Degrees));
+        Logger.recordOutput("CoralOuttake/constraintMax", coralOuttakeConstraint.getUpper());
+        Logger.recordOutput("CoralOuttake/constraintMin", coralOuttakeConstraint.getLower());
+        Logger.recordOutput("CoralOuttake/constrainedGoalAngle", constrainedAngle);
     }
 
     /** Sets the goal of the coral outtake. */

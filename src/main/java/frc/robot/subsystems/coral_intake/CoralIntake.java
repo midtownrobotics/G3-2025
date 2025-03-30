@@ -1,7 +1,6 @@
 package frc.robot.subsystems.coral_intake;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -12,7 +11,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -244,15 +242,15 @@ public class CoralIntake extends SubsystemBase {
     }
 
     Logger.recordOutput("CoralIntake/currentGoal", getCurrentGoal());
-    Logger.recordOutput("CoralIntake/goalAngleDegrees", desiredAngle.in(Degrees));
+    Logger.recordOutput("CoralIntake/goalAngle", desiredAngle);
     Logger.recordOutput("CoralIntake/atGoal", atGoal());
 
-    Logger.recordOutput("CoralIntake/currentAngleDegrees", getPosition().in(Degrees));
-    Logger.recordOutput("CoralIntake/velocityDegreesPerSecond", getVelocity().in(DegreesPerSecond));
+    Logger.recordOutput("CoralIntake/currentAngle", getPosition());
+    Logger.recordOutput("CoralIntake/currentVelocity", getVelocity());
 
-    Logger.recordOutput("CoralIntake/constraintMaxDegrees", coralIntakeConstraint.getUpper().in(Degrees));
-    Logger.recordOutput("CoralIntake/constraintMinDegrees", coralIntakeConstraint.getLower().in(Degrees));
-    Logger.recordOutput("CoralIntake/constrainedGoalAngleDegrees", constrainedAngle.in(Degrees));
+    Logger.recordOutput("CoralIntake/constraintMax", coralIntakeConstraint.getUpper());
+    Logger.recordOutput("CoralIntake/constraintMin", coralIntakeConstraint.getLower());
+    Logger.recordOutput("CoralIntake/constrainedGoalAngle", constrainedAngle);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
@@ -323,8 +321,8 @@ public class CoralIntake extends SubsystemBase {
     return pivotInputs.absolutePosition;
   }
 
-  private AngularVelocity getVelocity() {
-    return pivotInputs.velocity.unaryMinus();
+  public AngularVelocity getVelocity() {
+    return pivotInputs.velocity;
   }
 
   private Voltage calculateVoltageForPosition(Angle desired) {
@@ -335,12 +333,13 @@ public class CoralIntake extends SubsystemBase {
 
     Voltage totalVoltage = pidVoltage.plus(ffVoltage);
 
-    Logger.recordOutput("CoralIntake/AnglePID/GoalPosition", desired.in(Degrees));
-    Logger.recordOutput("CoralIntake/AnglePID/SetpointPosition", Units.radiansToDegrees(setpoint.position));
+    Logger.recordOutput("CoralIntake/AnglePID/goalPosition", desired);
+    Logger.recordOutput("CoralIntake/AnglePID/setpointPosition", setpoint.position);
+    Logger.recordOutput("CoralIntake/AnglePID/setpointVelocity", setpoint.velocity);
+
     Logger.recordOutput("CoralIntake/AnglePID/pidVoltage", pidVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/ffVoltage", ffVoltage);
     Logger.recordOutput("CoralIntake/AnglePID/desiredPivotVoltage", totalVoltage);
-    Logger.recordOutput("CoralIntake/AnglePID/desiredDegreesPerSecond", -setpoint.velocity);
 
     return totalVoltage;
   }
