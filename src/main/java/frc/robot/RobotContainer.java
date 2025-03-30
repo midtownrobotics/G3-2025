@@ -292,9 +292,9 @@ public class RobotContainer {
             .until(coralIntake.pieceDetectedTrigger.debounce(0.5))
             .withTimeout(2.5));
 
-    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4));
-    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3));
-    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10));
+    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4, aprilTagVision));
+    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3, aprilTagVision));
+    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10, aprilTagVision));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
@@ -467,7 +467,7 @@ public class RobotContainer {
           }
 
           return closestFace;
-        }, controls.alignToReefLeftBranch()));
+        }, controls.alignToReefLeftBranch(), aprilTagVision));
 
     controls.alignToAlgaeReef()
         .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
@@ -488,9 +488,10 @@ public class RobotContainer {
 
               return closestFace;
             }))
-        // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, () -> 0, () -> 0).withTimeout(0.5),
-        //     Commands.none(), () -> !controls.isDriverControlInDeadzone()))
-        ;
+    // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, ()
+    // -> 0, () -> 0).withTimeout(0.5),
+    // Commands.none(), () -> !controls.isDriverControlInDeadzone()))
+    ;
 
     controls.gamePieceLock()
         .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getDriveForward, controls::getDriveLeft));
@@ -567,7 +568,7 @@ public class RobotContainer {
      * return Commands.print("AHHHH");
      * }
      *
-      * return auto;
+     * return auto;
      */
     var selected = m_autoChooser.getSelected();
 

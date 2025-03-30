@@ -99,7 +99,8 @@ public interface VisionIO {
   public static enum PoseObservationType {
     MEGATAG_1,
     MEGATAG_2,
-    PHOTONVISION
+    PHOTONVISION,
+    SINGLE_TAG,
   }
 
   /**
@@ -122,4 +123,9 @@ public interface VisionIO {
    * Set the pipeline. Only for limelights.
    */
   public void setPipeline(long pipelineID);
+
+  /**
+   * Returns the pose estimation in single tag mode based on trig
+   */
+  public PoseObservation trigPoseEstimation();
 }

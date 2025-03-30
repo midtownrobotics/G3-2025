@@ -152,4 +152,10 @@ public class VisionIOPhotonVision implements VisionIO {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'setEnabled'");
     }
+
+    @Override
+    public PoseObservation trigPoseEstimation() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'trigPoseEstimation'");
+    }
 }

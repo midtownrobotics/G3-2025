@@ -13,16 +13,26 @@
 
 package frc.robot.sensors.vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
+import frc.lib.Limelight;
+import frc.lib.LimelightHelpers;
+import frc.robot.sensors.VisionConstants;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,8 +56,9 @@ public class VisionIOLimelight implements VisionIO {
   /**
    * Creates a new VisionIOLimelight.
    *
-   * @param name The configured name of the Limelight.
-   * @param rotationSupplier Supplier for the current estimated rotation, used for MegaTag 2.
+   * @param name             The configured name of the Limelight.
+   * @param rotationSupplier Supplier for the current estimated rotation, used for
+   *                         MegaTag 2.
    */
   public VisionIOLimelight(String name, Supplier<Rotation2d> rotationSupplier) {
     this.name = name;
@@ -58,24 +69,22 @@ public class VisionIOLimelight implements VisionIO {
     txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
     tySubscriber = table.getDoubleTopic("ty").subscribe(0.0);
     megatag1Subscriber = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    megatag2Subscriber =
-        table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
+    megatag2Subscriber = table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    // Update connection status based on whether an update has been seen in the last 250ms
-    inputs.connected =
-        ((RobotController.getFPGATime() - latencySubscriber.getLastChange()) / 1000) < 250;
+    // Update connection status based on whether an update has been seen in the last
+    // 250ms
+    inputs.connected = ((RobotController.getFPGATime() - latencySubscriber.getLastChange()) / 1000) < 250;
 
     // Update target observation
-    inputs.latestTargetObservation =
-        new TargetObservation(
-            Rotation2d.fromDegrees(txSubscriber.get()), Rotation2d.fromDegrees(tySubscriber.get()));
+    inputs.latestTargetObservation = new TargetObservation(
+        Rotation2d.fromDegrees(txSubscriber.get()), Rotation2d.fromDegrees(tySubscriber.get()));
 
     // Update orientation for MegaTag 2
     orientationPublisher.accept(
-        new double[] {rotationSupplier.get().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0});
+        new double[] { rotationSupplier.get().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0 });
     NetworkTableInstance.getDefault()
         .flush(); // Increases network traffic but recommended by Limelight
 
@@ -83,7 +92,8 @@ public class VisionIOLimelight implements VisionIO {
     Set<Integer> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
     for (var rawSample : megatag1Subscriber.readQueue()) {
-      if (rawSample.value.length == 0) continue;
+      if (rawSample.value.length == 0)
+        continue;
       for (int i = 11; i < rawSample.value.length; i += 7) {
         tagIds.add((int) rawSample.value[i]);
       }
@@ -95,7 +105,8 @@ public class VisionIOLimelight implements VisionIO {
               // 3D pose estimate
               parsePose(rawSample.value),
 
-              // Ambiguity, using only the first tag because ambiguity isn't applicable for multitag
+              // Ambiguity, using only the first tag because ambiguity isn't applicable for
+              // multitag
               rawSample.value.length >= 18 ? rawSample.value[17] : 0.0,
 
               // Tag count
@@ -108,7 +119,8 @@ public class VisionIOLimelight implements VisionIO {
               PoseObservationType.MEGATAG_1));
     }
     for (var rawSample : megatag2Subscriber.readQueue()) {
-      if (rawSample.value.length == 0) continue;
+      if (rawSample.value.length == 0)
+        continue;
       for (int i = 11; i < rawSample.value.length; i += 7) {
         tagIds.add((int) rawSample.value[i]);
       }
@@ -154,28 +166,62 @@ public class VisionIOLimelight implements VisionIO {
         rawLLArray[1],
         rawLLArray[2],
         new Rotation3d(
-            Units.degreesToRadians(rawLLArray[3]),
-            Units.degreesToRadians(rawLLArray[4]),
-            Units.degreesToRadians(rawLLArray[5])));
+            Units.Degrees.of((rawLLArray[3])).in(Units.Radians),
+            Units.Degrees.of((rawLLArray[4])).in(Units.Radians),
+            Units.Degrees.of((rawLLArray[5])).in(Units.Radians)));
   }
 
   @Override
   public void setPipeline(long pipelineID) {
-      DriverStation.reportError("setPipeline not implemented", false);
+    DriverStation.reportError("setPipeline not implemented", false);
   }
 
   @Override
   public String getName() {
-      return name;
+    return name;
   }
 
- @Override
- public void setEnabled(boolean enabled) {
+  @Override
+  public void setEnabled(boolean enabled) {
     this.enabled = enabled;
- };
+  };
 
- @Override
- public boolean getEnabled() {
-  return enabled;
- };
+  @Override
+  public boolean getEnabled() {
+    return enabled;
+  };
+
+  @Override
+  public PoseObservation trigPoseEstimation() {
+    Distance distanceToTarget = Units.Meters
+        .of(LimelightHelpers.getTargetPose3d_CameraSpace(name).getTranslation().getNorm());
+    int tagID = (int) LimelightHelpers.getFiducialID(name);
+    Pose3d tagPose = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded).getTagPose(tagID).get();
+
+    Angle phi = Units.Degrees.of(LimelightHelpers.getTY(name));
+    Angle theta = Units.Degrees.of(LimelightHelpers.getTX(name));
+
+    double tagHeightCameraRelative = tagPose.getZ() - VisionConstants.kPoleTagRobotToCamera.getZ();
+    double floorDistanceToTag = Math.sqrt(distanceToTarget.in(Units.Meters) * distanceToTarget.in(Units.Meters)
+        + tagHeightCameraRelative * tagHeightCameraRelative);
+
+    Transform3d robotToTarget = new Transform3d(
+        Units.Meters.of(
+            floorDistanceToTag
+                * (Math.cos(theta.in(Units.Radians) - VisionConstants.kPoleTagRobotToCamera.getRotation().getX()))
+                - VisionConstants.kPoleTagRobotToCamera.getX()),
+        Units.Meters.of(
+            floorDistanceToTag
+                * (Math.sin(theta.in(Units.Radians) - VisionConstants.kPoleTagRobotToCamera.getRotation().getX()))
+                - VisionConstants.kPoleTagRobotToCamera.getY()),
+        Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.sin(phi.in(Units.Radians))),
+        LimelightHelpers.getTargetPose3d_CameraSpace(name).getRotation());
+
+    return new PoseObservation(Timer.getFPGATimestamp(),
+        tagPose.transformBy(robotToTarget.inverse()),
+        0,
+        0,
+        distanceToTarget.in(Units.Meters),
+        PoseObservationType.SINGLE_TAG);
+  }
 }

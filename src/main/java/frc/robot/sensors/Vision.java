@@ -27,10 +27,13 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.vision.VisionIO;
+import frc.robot.sensors.vision.VisionIO.PoseObservation;
 import frc.robot.sensors.vision.VisionIO.PoseObservationType;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import java.util.LinkedList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -38,6 +41,12 @@ public class Vision extends SubsystemBase {
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+  @Getter @Setter private EstimationMode currentEstimationMode;
+
+  public enum EstimationMode {
+    GLOBAL,
+    SINGLE_TAG
+  }
 
   /**
    * Creates a new Vision subsystem.
@@ -117,7 +126,8 @@ public class Vision extends SubsystemBase {
                 || observation.pose().getX() <= 0.0
                 || observation.pose().getX() > aprilTagLayout.getFieldLength()
                 || observation.pose().getY() <= 0.0
-                || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+                || observation.pose().getY() > aprilTagLayout.getFieldWidth()
+                || currentEstimationMode == EstimationMode.SINGLE_TAG;
 
         // Add pose to log
         robotPoses.add(observation.pose());
@@ -170,6 +180,18 @@ public class Vision extends SubsystemBase {
       allRobotPoses.addAll(robotPoses);
       allRobotPosesAccepted.addAll(robotPosesAccepted);
       allRobotPosesRejected.addAll(robotPosesRejected);
+    }
+
+    if (currentEstimationMode == EstimationMode.SINGLE_TAG) {
+      for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
+        if (io[cameraIndex].getName().equals(VisionConstants.kPoleTagCameraName)) {
+          PoseObservation observation = io[cameraIndex].trigPoseEstimation();
+          allRobotPosesAccepted.add(observation.pose());
+          consumer.accept(observation.pose().toPose2d(),
+                          observation.timestamp(),
+                          VecBuilder.fill(0,0,0));
+        }
+      }
     }
 
     // Log summary data
