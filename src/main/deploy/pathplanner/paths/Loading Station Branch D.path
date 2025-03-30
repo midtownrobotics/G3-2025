@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.452376663773147,
-        "y": 0.7055396412037033
+        "x": 1.5477607783564804,
+        "y": 0.7666833043981478
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0951642734596865,
-        "y": 1.4715840843226813
+        "x": 2.1905483880430197,
+        "y": 1.5327277475171257
       },
       "isLocked": false,
       "linkedName": "Bottom Loading Station"
@@ -64,7 +64,7 @@
     },
     {
       "name": "PrepareLevel4",
-      "waypointRelativePos": 0.7070245573957674,
+      "waypointRelativePos": 0.8029651476945248,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

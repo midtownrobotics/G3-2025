@@ -63,6 +63,11 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
+  public double getAutoAlignTrigger() {
+    return driverController.getRightTriggerAxis();
+  }
+
+  @Override
   public Trigger decreaseElevatorOffset() {
     return driverController.povDown();
   }
@@ -264,7 +269,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger panic() {
-    return driverController.start();
+    return driverController.start().or(operatorController.start());
   }
 
   // Manual Controls

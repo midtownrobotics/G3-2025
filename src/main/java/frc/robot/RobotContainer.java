@@ -280,6 +280,7 @@ public class RobotContainer {
         coralOuttakeRoller
             .setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT, CoralOuttakeRoller.Goal.STOW)
             .withTimeout(0.5),
+        coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
         elevator.setGoalCommand(Elevator.Goal.STOW)));
 
     NamedCommands.registerCommand("DisableCameras", aprilTagVision.enableDisableCamera(false, 0));
@@ -288,7 +289,7 @@ public class RobotContainer {
     // NamedCommands.registerCommand("PrepareLevel4", Commands.none());
     NamedCommands.registerCommand("PrepareLevel4", elevator.setGoalCommand(Elevator.Goal.L4));
     NamedCommands.registerCommand("PrepareLoadingStationIntake",
-        coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE));
+        coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE).alongWith(coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.L2)));
 
     NamedCommands.registerCommand("IntakeFromLoadingStation",
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
@@ -504,11 +505,8 @@ public class RobotContainer {
     //     //     Commands.none(), () -> !controls.isDriverControlInDeadzone()))
     //     ;
 
-    controls.gamePieceLock()
-        .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getDriveForward, controls::getDriveLeft));
-
-    controls.sourceIntakeCoral().whileTrue(
-        coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW));
+    // controls.gamePieceLock()
+    //     .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getAutoAlignTrigger, controls::getDriveForward, controls::getDriveLeft, () -> coralIntake.getCurrentGoal() != CoralIntake.Goal.ALGAE_INTAKE));
 
     controls.sourceIntakeCoral().whileTrue(
         coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE))
@@ -555,7 +553,7 @@ public class RobotContainer {
                 Commands.waitUntil(coralOuttakeRoller.currentSpikeTrigger),
                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD))))
         .onFalse(Commands.sequence(
-            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY_STOW),
+            coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.DEALGIFY_STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW),
             coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD)));
 
@@ -642,7 +640,8 @@ public class RobotContainer {
         Commands.sequence(
             Commands.waitUntil(() -> elevator.getPosition().gt(Inches.of(5)) && elevator.atGoal(Inches.of(10))),
             coralOuttakePivot.setGoalEndCommand(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode),
-                CoralOuttakePivot.Goal.STOW)));
+                CoralOuttakePivot.Goal.STOW)))
+        .finallyDo(() -> coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.STOW));
   }
 
   /**  */

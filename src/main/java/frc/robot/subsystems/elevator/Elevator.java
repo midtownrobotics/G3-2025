@@ -247,7 +247,7 @@ public class Elevator extends SubsystemBase {
    * specified goal.
    */
   public boolean atGoal(Goal goal) {
-    return atGoal(goal, Inches.of(0.5));
+    return atGoal(goal, Inches.of(0.99));
   }
 
   /**

@@ -162,7 +162,7 @@ public class CoralOuttakePivot extends SubsystemBase {
 
     /** Sets the goal of the coral outtake pivot. */
     public Command setGoalCommand(Goal goal) {
-        return run(() -> setGoal(goal));
+        return runOnce(() -> setGoal(goal));
     }
 
     /**

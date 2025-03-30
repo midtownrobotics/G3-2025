@@ -81,7 +81,7 @@ public class Superstructure extends SubsystemBase {
         if (coralIntakePosition.gt(Degrees.of(124))) {
           coralIntakeConstraints.setLower(Degrees.of(133));
         } else {
-          coralIntakeConstraints.setUpper(Degrees.of(104));
+          coralIntakeConstraints.setUpper(Degrees.of(110));
         }
       }
     }
