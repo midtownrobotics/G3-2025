@@ -49,6 +49,8 @@ public interface Controls {
   public Trigger driveDynamicForwards();
   /** drive sysid dynamic backwards */
   public Trigger driveDynamicBackwards();
+  /** catch all field element lock */
+  public Trigger fieldElementLock();
 
   // Operator Controls
 

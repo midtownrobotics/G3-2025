@@ -325,6 +325,12 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
+  public Trigger fieldElementLock() {
+      return driverController.leftBumper()
+        .or(driverController.rightBumper());
+  }
+
+  @Override
   public Trigger alignToBranchReef() {
     return alignToReefLeftBranch().or(alignToReefRightBranch());
   }

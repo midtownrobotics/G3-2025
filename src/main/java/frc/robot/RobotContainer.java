@@ -463,7 +463,27 @@ public class RobotContainer {
     // () -> ReefFace.fromPOV(controls.getDriverPOV()),
     // controls.alignToReefLeftBranch()));
 
-    controls.alignToBranchReef().whileTrue(DriveCommands.alignToBranchReef(drive, led,
+    /* controls.alignToBranchReef().whileTrue(DriveCommands.alignToBranchReef(drive, led,
+        () -> {
+          ReefFace closestFace = null;
+          Distance closestDistance = Meters.of(Double.MAX_VALUE);
+          Pose2d currentPose = drive.getPose();
+
+          for (ReefFace face : ReefFace.values()) {
+            Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+            Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+            Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
+            if (distance.lt(closestDistance)) {
+              closestFace = face;
+              closestDistance = distance;
+            }
+          }
+
+          return closestFace;
+        }, controls.alignToReefLeftBranch())); */
+
+
+    controls.fieldElementLock().whileTrue(DriveCommands.fieldElementLock(drive, coralIntake, coralOuttakeRoller, coralOuttakePivot, elevator, led,
         () -> {
           ReefFace closestFace = null;
           Distance closestDistance = Meters.of(Double.MAX_VALUE);
