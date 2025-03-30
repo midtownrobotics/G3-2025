@@ -549,10 +549,10 @@ public class RobotContainer {
                 Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY),
-                Commands.waitSeconds(0.1),
+                Commands.waitSeconds(0.2),
                 Commands.waitUntil(coralOuttakeRoller.currentSpikeTrigger),
                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD))))
-        .onFalse(Commands.sequence(
+        .onFalse(Commands.parallel(
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.DEALGIFY_STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW),
             coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD)));
@@ -576,7 +576,7 @@ public class RobotContainer {
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW)));
 
     controls.algae().and(controls.scoreGamePiece()).whileTrue(
-        coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.REVERSE_SHOOT,
+        coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT,
             CoralOuttakeRoller.Goal.STOW));
 
     // CommandXboxController testController = new CommandXboxController(5);
