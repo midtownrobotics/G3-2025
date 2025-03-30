@@ -42,14 +42,14 @@ public class CoralIntake extends SubsystemBase {
       CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
   public enum Goal {
-    STOW(Degrees.of(84), Volts.of(0.5), Volts.of(2.8)),
-    GROUND_INTAKE(Degrees.of(-12), Volts.of(12), Volts.of(2.8)),
+    STOW(Degrees.of(84), Volts.of(0.5), Volts.of(1)),
+    GROUND_INTAKE(Degrees.of(-12), Volts.of(12), Volts.of(1)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
     STATION_VOMIT(Degrees.of(105.5), Volts.of(-5)),
-    STATION_INTAKE(STATION_VOMIT.getAngle(), Volts.of(10), Volts.of(4)),
-    HANDOFF(Degrees.of(135), Volts.of(1.0), Volts.of(-5)),
-    HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), Volts.of(-5)),
-    PRE_HANDOFF_ADJUST_CORAL(Degrees.of(100), Volts.of(12), Volts.of(5)),
+    STATION_INTAKE(STATION_VOMIT.getAngle(), Volts.of(10), Volts.of(3)),
+    HANDOFF(Degrees.of(135), Volts.of(1.0), Volts.of(-3.5)),
+    HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), Volts.of(-2.5)),
+    PRE_HANDOFF_ADJUST_CORAL(Degrees.of(100), Volts.of(12), Volts.of(4)),
     CLIMB(Degrees.of(82), Volts.of(0)),
     CLIMB_BOTTOM(Degrees.of(104), Volts.of(0)),
     L1(Degrees.of(74), Volts.of(-7)),
@@ -220,7 +220,7 @@ public class CoralIntake extends SubsystemBase {
         if (getPosition().lt(Degrees.of(129))) {
           desiredBeltVoltage = Volts.of(0);
         } else {
-          desiredBeltVoltage = Volts.of(-5);
+          desiredBeltVoltage = Goal.HANDOFF.getBeltVoltage();
         }
 
         pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
