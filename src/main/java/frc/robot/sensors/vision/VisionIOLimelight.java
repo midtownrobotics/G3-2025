@@ -193,7 +193,8 @@ public class VisionIOLimelight implements VisionIO {
 
   @Override
   public PoseObservation trigPoseEstimation() {
-    Distance distanceToTarget = Units.Meters.of(LimelightHelpers.getTargetPose3d_CameraSpace(name).getTranslation().getNorm());
+    Distance distanceToTarget = Units.Meters
+        .of(LimelightHelpers.getTargetPose3d_CameraSpace(name).getTranslation().getNorm());
     int tagID = (int) LimelightHelpers.getFiducialID(name);
     Pose3d tagPose = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded).getTagPose(tagID).get();
 
@@ -201,20 +202,25 @@ public class VisionIOLimelight implements VisionIO {
     Angle theta = Units.Degrees.of(LimelightHelpers.getTX(name));
 
     double tagHeightCameraRelative = tagPose.getZ() - VisionConstants.kPoleTagRobotToCamera.getZ();
-    double floorDistanceToTag = Math.sqrt(distanceToTarget.in(Units.Meters)*distanceToTarget.in(Units.Meters) + tagHeightCameraRelative*tagHeightCameraRelative);
+    double floorDistanceToTag = Math.sqrt(distanceToTarget.in(Units.Meters) * distanceToTarget.in(Units.Meters)
+        + tagHeightCameraRelative * tagHeightCameraRelative);
 
     Transform3d robotToTarget = new Transform3d(
         Units.Meters.of(
-            floorDistanceToTag * Math.cos(theta.in(Units.Radians) - VisionConstants.kPoleTagRobotToCamera.getRotation().getX())),
+            floorDistanceToTag
+                * (Math.cos(theta.in(Units.Radians) - VisionConstants.kPoleTagRobotToCamera.getRotation().getX()))
+                - VisionConstants.kPoleTagRobotToCamera.getX()),
         Units.Meters.of(
-            floorDistanceToTag * Math.sin(theta.in(Units.Radians) - VisionConstants.kPoleTagRobotToCamera.getRotation().getX())),
+            floorDistanceToTag
+                * (Math.sin(theta.in(Units.Radians) - VisionConstants.kPoleTagRobotToCamera.getRotation().getX()))
+                - VisionConstants.kPoleTagRobotToCamera.getY()),
         Units.Meters.of(distanceToTarget.in(Units.Meters) * Math.sin(phi.in(Units.Radians))),
-        new Rotation3d(limelight.getTargetPoseInRobotSpace().getRotation()));
+        LimelightHelpers.getTargetPose3d_CameraSpace(name).getRotation());
 
     return new PoseObservation(Timer.getFPGATimestamp(),
         tagPose.transformBy(robotToTarget.inverse()),
-        limelight.getZero(),
-        limelight.getOne(),
+        0,
+        0,
         distanceToTarget.in(Units.Meters),
         PoseObservationType.SINGLE_TAG);
   }

@@ -467,7 +467,7 @@ public class RobotContainer {
           }
 
           return closestFace;
-        }, controls.alignToReefLeftBranch()));
+        }, controls.alignToReefLeftBranch(), aprilTagVision));
 
     controls.alignToAlgaeReef()
         .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
@@ -488,9 +488,10 @@ public class RobotContainer {
 
               return closestFace;
             }))
-        // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, () -> 0, () -> 0).withTimeout(0.5),
-        //     Commands.none(), () -> !controls.isDriverControlInDeadzone()))
-        ;
+    // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, ()
+    // -> 0, () -> 0).withTimeout(0.5),
+    // Commands.none(), () -> !controls.isDriverControlInDeadzone()))
+    ;
 
     controls.gamePieceLock()
         .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getDriveForward, controls::getDriveLeft));
@@ -567,7 +568,7 @@ public class RobotContainer {
      * return Commands.print("AHHHH");
      * }
      *
-      * return auto;
+     * return auto;
      */
     var selected = m_autoChooser.getSelected();
 

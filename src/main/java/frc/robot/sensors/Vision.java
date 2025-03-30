@@ -185,7 +185,8 @@ public class Vision extends SubsystemBase {
     if (currentEstimationMode == EstimationMode.SINGLE_TAG) {
       for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
         if (io[cameraIndex].getName().equals(VisionConstants.kPoleTagCameraName)) {
-          PoseObservation observation = io[cameraIndex].trigPoseEstimation(kPoleTagCameraName);
+          PoseObservation observation = io[cameraIndex].trigPoseEstimation();
+          allRobotPosesAccepted.add(observation.pose());
           consumer.accept(observation.pose().toPose2d(),
                           observation.timestamp(),
                           VecBuilder.fill(0,0,0));

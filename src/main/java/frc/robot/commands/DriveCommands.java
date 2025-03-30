@@ -416,7 +416,7 @@ public class DriveCommands {
 
   /** Creates a command that drives to a reef position based on POV */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
-      BooleanSupplier leftBranchSupplier) {
+      BooleanSupplier leftBranchSupplier, Vision vision) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
       boolean leftBranch = leftBranchSupplier.getAsBoolean();
@@ -447,8 +447,9 @@ public class DriveCommands {
     };
 
     return Commands.sequence(
+        new RunCommand(() -> {vision.setCurrentEstimationMode(EstimationMode.SINGLE_TAG);}),
         new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy())).finallyDo(() -> {vision.setCurrentEstimationMode(EstimationMode.GLOBAL);});
   }
 
   /** Creates a command that drives to a branch */

@@ -154,7 +154,7 @@ public class VisionIOPhotonVision implements VisionIO {
     }
 
     @Override
-    public PoseObservation trigPoseEstimation(String limelightName) {
+    public PoseObservation trigPoseEstimation() {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'trigPoseEstimation'");
     }
