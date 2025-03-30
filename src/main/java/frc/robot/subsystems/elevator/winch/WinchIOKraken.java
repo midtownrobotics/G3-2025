@@ -130,7 +130,7 @@ public class WinchIOKraken implements WinchIO {
   /**
    * Sets the setpoint of the kraken winch.
    * @param position Setpoint to set.n
-   * 
+   *
    * @param slot PID slot to set to.
    */
   public void setPosition(Distance position, int slot) {

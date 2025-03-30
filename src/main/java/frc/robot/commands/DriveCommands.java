@@ -470,7 +470,7 @@ public class DriveCommands {
                 () -> new Pose2d(
                     driveTranslation2d
                         .nearest(Arrays.asList(new Translation2d[] { Barge.closeCage, Barge.middleCage, Barge.farCage })),
-                    Rotation2d.kZero)));
+                    Rotation2d.k180deg)));
       }
       // TODO AGAIN Station offset probably not same as algae!!!
       if (intake.getCurrentGoal() == CoralIntake.Goal.STATION_INTAKE) {
