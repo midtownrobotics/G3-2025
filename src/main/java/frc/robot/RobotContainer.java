@@ -525,8 +525,8 @@ public class RobotContainer {
     //     //     Commands.none(), () -> !controls.isDriverControlInDeadzone()))
     //     ;
 
-    // controls.gamePieceLock()
-    //     .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getAutoAlignTrigger, controls::getDriveForward, controls::getDriveLeft, () -> coralIntake.getCurrentGoal() != CoralIntake.Goal.ALGAE_INTAKE));
+    controls.gamePieceLock()
+        .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getAutoAlignTrigger, controls::getDriveForward, controls::getDriveLeft, () -> coralIntake.getCurrentGoal() != CoralIntake.Goal.ALGAE_INTAKE));
 
     controls.sourceIntakeCoral().whileTrue(
         coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE))
