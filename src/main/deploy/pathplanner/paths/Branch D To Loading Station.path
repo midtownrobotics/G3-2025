@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.929873597819634,
+        "y": 2.809711268272574
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.24675,
+        "y": 2.0554999999999994
+      },
+      "isLocked": false,
+      "linkedName": "Branch D"
+    },
+    {
+      "anchor": {
+        "x": 1.5477607783564804,
+        "y": 0.7666833043981478
+      },
+      "prevControl": {
+        "x": 2.2815,
+        "y": 1.5094999999999994
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Bottom Loading Station"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "PrepareLoadingStationIntake",
+      "waypointRelativePos": 0.43446808510638235,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.9,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 145.0
+  },
+  "reversed": false,
+  "folder": "Bottom Side",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 59.99999999999999
+  },
+  "useDefaultConstraints": true
+}

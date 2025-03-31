@@ -78,7 +78,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.01;
-  private static final double ANGLE_KP = 4.5;
+  private static final double ANGLE_KP = 1.1;
   private static final double ANGLE_KD = 0.5;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
   private static final double ANGLE_MAX_ACCELERATION = 20.0;
@@ -549,7 +549,7 @@ public class DriveCommands {
     };
 
     return Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier),
+        new DriveToPoint(drive, branchPoseSupplier, Degrees.of(1), Inches.of(1)),
         drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
   }
 
@@ -599,10 +599,10 @@ public class DriveCommands {
       if (Math.abs(poseError.getAngle().minus(driverDesired.getAngle()).getDegrees()) < 20) {
         Translation2d driverMagnitudeButPoseErrorDirectionVector = new Translation2d(driverDesired.getNorm(),
             poseError.getAngle());
-        return driverMagnitudeButPoseErrorDirectionVector.interpolate(poseError, interpolationFactorSupplier.get());
+        return driverMagnitudeButPoseErrorDirectionVector.interpolate(poseError, interpolationFactorSupplier.get() * interpolationFactorSupplier.get());
       }
 
-      return driverDesired.interpolate(poseError, interpolationFactorSupplier.get());
+      return driverDesired.interpolate(poseError, interpolationFactorSupplier.get() * interpolationFactorSupplier.get());
     };
 
     Logger.recordOutput("GRAYCORAL/FINALS_TRANSLATION", getTranslation.get());
@@ -679,9 +679,11 @@ public class DriveCommands {
     Pose3d cameraPose3d = robotPose3d.transformBy(VisionConstants.kIntakeClassifierRobotToCamera);
 
     Distance cameraHeight = cameraPose3d.getTranslation().getMeasureZ();
-    Angle cameraAngle = cameraPose3d.getRotation().getMeasureY();
+    Angle cameraAngle = VisionConstants.kIntakeClassifierRobotToCamera.getRotation().getMeasureY().times(-1);
+    Angle cameraXAngle = Degrees.of(90).minus(VisionConstants.kIntakeClassifierRobotToCamera.getRotation().getMeasureZ());
+    // cameraXAngle = Degrees.zero();
 
-    Distance targetHeight = coral ? Inches.of(2.25) : Inches.of(5);
+    Distance targetHeight = Inches.of(2.25);
 
     Angle targetY = Degrees.of(LimelightHelpers.getTY(VisionConstants.kIntakeClassifierCameraName));
     Angle targetX = Degrees.of(LimelightHelpers.getTX(VisionConstants.kIntakeClassifierCameraName));
@@ -690,30 +692,39 @@ public class DriveCommands {
       return gamePiecePoseReference.get();
     }
 
-    double tanVertical = Math.tan(cameraAngle.plus(targetY).in(Radians));
-    Distance distanceX = (targetHeight.minus(cameraHeight)).div(tanVertical);
+    double tanVertical = Math.tan(cameraAngle.plus(targetY).times(-1).in(Radians));
+    Distance distanceX = (cameraHeight.minus(targetHeight)).div(tanVertical);
     Distance distanceDiag = Meters.of(Math.hypot(distanceX.in(Meters), cameraHeight.in(Meters)));
 
-    double tanHorizontal = Math.tan(targetX.in(Radians));
+    double tanHorizontal = Math.tan(cameraXAngle.plus(targetX).in(Radians));
 
-    Distance distanceY = distanceDiag.times(tanHorizontal);
+    Distance distanceY = distanceDiag.times(-tanHorizontal);
+    // distanceX = distanceX.times(-1);
 
-    Transform2d cameraToTarget = new Transform2d(distanceX, distanceY, Rotation2d.kZero);
+    Transform2d cameraToTarget = new Transform2d(distanceX.times(0.891), distanceY, Rotation2d.kZero);
 
     Pose2d targetPose = cameraPose3d.toPose2d().transformBy(cameraToTarget);
+
+    if (gamePiecePoseReference.get() != null) {
+      targetPose = targetPose.interpolate(gamePiecePoseReference.get(), 0.5);
+    }
 
     gamePiecePoseReference.set(targetPose);
 
     Logger.recordOutput("AlignToGamePiece/DistanceX", distanceX);
     Logger.recordOutput("AlignToGamePiece/DistanceY", distanceY);
     Logger.recordOutput("AlignToGamePiece/TargetPose", targetPose);
+    Logger.recordOutput("AlignToGamePiece/CameraPose", cameraPose3d);
+    Logger.recordOutput("AlignToGamePiece/CameraAngle", cameraAngle.in(Degrees));
+    Logger.recordOutput("AlignToGamePiece/CameraXAngle", cameraXAngle.in(Degrees));
+
 
     return gamePiecePoseReference.get();
   };
 
   private static Rotation2d getPieceRotationError(AtomicReference<Pose2d> gamePiecePoseReference, Pose2d robotPose,
       boolean coral) {
-    Rotation2d offset = Rotation2d.fromDegrees(0);
+    Rotation2d offset = Rotation2d.fromDegrees(-77);
     Pose2d targetPose = getPiecePose(robotPose, gamePiecePoseReference, coral);
 
     if (targetPose == null) {

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -213,6 +214,7 @@ public class RobotContainer {
         // beltIO = new RollerIOSim(); // TODO: CHANGE CHANGE CHANGE CHANGE CHANGE
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
         coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
+        // coralIntakeRollerIO = new RollerIOSim();
 
         // Coral Outtake
         rollerIO = new RollerIOKraken(Ports.CoralOuttake.roller, elevatorCANBusHandler, true);
@@ -295,10 +297,10 @@ public class RobotContainer {
             .until(coralIntake.pieceDetectedTrigger.debounce(0.5))
             .withTimeout(2.5));
 
-    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3));
-    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4));
-    NamedCommands.registerCommand("AlignToBranchF", DriveCommands.alignToBranchReef(drive, led, 5));
-    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10));
+    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3).withTimeout(1.5));
+    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4).withTimeout(1.5));
+    NamedCommands.registerCommand("AlignToBranchF", DriveCommands.alignToBranchReef(drive, led, 5).withTimeout(1.5));
+    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.5));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
@@ -650,7 +652,7 @@ public class RobotContainer {
           coralIntake.setGoal(CoralIntake.Goal.STOW);
           coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.STOW);
           coralOuttakeRoller.setGoal(CoralOuttakeRoller.Goal.STOW);
-        });
+        }).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
   }
 
   /** Returns a command that sets the elevator and coral outtake pivot goals */

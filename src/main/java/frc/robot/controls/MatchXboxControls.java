@@ -64,7 +64,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public double getAutoAlignTrigger() {
-    return driverController.getRightTriggerAxis();
+    return driverController.getLeftTriggerAxis();
   }
 
   @Override

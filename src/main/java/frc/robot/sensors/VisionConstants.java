@@ -50,7 +50,7 @@ public class VisionConstants {
 
     public static final Transform3d kIntakeClassifierRobotToCamera = new Transform3d(
         new Translation3d(Inches.of(-8.358), Inches.of(-6.340), Inches.of(33.542)),
-        new Rotation3d(Degrees.zero(), Degrees.of(-27), Degrees.of(80))
+        new Rotation3d(Degrees.zero(), Degrees.of(27), Degrees.of(80))
     );
 
   // Basic filtering thresholds
