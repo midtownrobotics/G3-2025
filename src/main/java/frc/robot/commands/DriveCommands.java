@@ -577,12 +577,14 @@ public class DriveCommands {
     AtomicReference<Pose2d> gamePiecePoseReference = new AtomicReference<>();
 
     Supplier<Translation2d> getTranslation = () -> {
+      // 2d Vector of Driver Desired in Field Space (MPS)
       Translation2d driverDesired = new Translation2d(
         (driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)),
         (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
 
-      // Pose2d piecePose = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get());
-      Pose2d piecePose = new Pose2d(2, 2, new Rotation2d());
+      // 2d Pose of Piece in FieldSpace
+      Pose2d piecePose = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get());
+      // Pose2d piecePose = new Pose2d(2, 2, new Rotation2d());
       Logger.recordOutput("GRAYCORAL/piecePose", piecePose);
 
       if (piecePose == null)
@@ -669,6 +671,7 @@ public class DriveCommands {
         drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
   }
 
+  /** Returns the piece pose in Field Space (Cached if necessary) */
   private static Pose2d getPiecePose(Pose2d robotPose, AtomicReference<Pose2d> gamePiecePoseReference, boolean coral) {
     // "d = (h2-h1) / tan(a1+a2)"
     Pose3d robotPose3d = new Pose3d(robotPose);
@@ -678,7 +681,7 @@ public class DriveCommands {
     Distance cameraHeight = cameraPose3d.getTranslation().getMeasureZ();
     Angle cameraAngle = cameraPose3d.getRotation().getMeasureY();
 
-    Distance targetHeight = coral ? Inches.of(2.5) : Inches.of(5);
+    Distance targetHeight = coral ? Inches.of(2.25) : Inches.of(5);
 
     Angle targetY = Degrees.of(LimelightHelpers.getTY(VisionConstants.kIntakeClassifierCameraName));
     Angle targetX = Degrees.of(LimelightHelpers.getTX(VisionConstants.kIntakeClassifierCameraName));
@@ -710,7 +713,7 @@ public class DriveCommands {
 
   private static Rotation2d getPieceRotationError(AtomicReference<Pose2d> gamePiecePoseReference, Pose2d robotPose,
       boolean coral) {
-    Rotation2d offset = Rotation2d.fromDegrees(7);
+    Rotation2d offset = Rotation2d.fromDegrees(0);
     Pose2d targetPose = getPiecePose(robotPose, gamePiecePoseReference, coral);
 
     if (targetPose == null) {

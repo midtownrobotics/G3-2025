@@ -16,24 +16,19 @@
     },
     {
       "anchor": {
-        "x": 3.929873597819634,
-        "y": 2.809711268272574
+        "x": 3.783572542385077,
+        "y": 2.5095963489758297
       },
       "prevControl": {
-        "x": 3.4298735978196335,
-        "y": 1.9436858644881352
+        "x": 3.2835725423850763,
+        "y": 1.643570945191391
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch D"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.4954507857733654,
-      "rotationDegrees": 39.14326327682057
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -64,7 +59,7 @@
     },
     {
       "name": "PrepareLevel4",
-      "waypointRelativePos": 0.7070245573957674,
+      "waypointRelativePos": 0.9021653564014801,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
