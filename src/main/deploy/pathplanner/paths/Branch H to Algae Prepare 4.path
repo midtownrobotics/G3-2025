@@ -3,47 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.127,
-        "y": 6.128
+        "x": 5.821200061469312,
+        "y": 4.144129616738715
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.604607375141255,
-        "y": 6.012915507071557
+        "x": 6.58766124450867,
+        "y": 3.9324241692624398
       },
       "isLocked": false,
-      "linkedName": "Start Top"
+      "linkedName": "Branch H"
     },
     {
       "anchor": {
-        "x": 5.458778799551505,
-        "y": 5.386678023161711
+        "x": 6.309563730186478,
+        "y": 3.968557802205193
       },
       "prevControl": {
-        "x": 6.576219122263871,
-        "y": 6.246692590688028
+        "x": 5.364020980453774,
+        "y": 4.245842170957256
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Face 4 Algae Prepare"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "PrepareLevel4",
-      "waypointRelativePos": 0.8941415172082642,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareLevel4"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.9,
     "maxAcceleration": 4.0,
@@ -54,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Center Side AA",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

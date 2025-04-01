@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -73,6 +74,8 @@ import frc.robot.utils.Constants;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
+
+import java.util.HashSet;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -114,6 +117,9 @@ public class RobotContainer {
 
   @AutoLogOutput
   public CoralMode coralMode = CoralMode.L4;
+
+  private boolean isHandoffInterruptible = true;
+  private Trigger waitForHandoffTrigger = new Trigger(() -> isHandoffInterruptible);
 
   /** RobotContainer initialization */
   public RobotContainer() {
@@ -259,15 +265,6 @@ public class RobotContainer {
     coralIntakeAtStowGoal = coralIntake.atGoalTrigger(CoralIntake.Goal.STOW, Degrees.of(1.5));
     elevatorAtStowGoal = new Trigger(elevator.atGoalTrigger(Elevator.Goal.STOW));
 
-    // Automatic handoff sequence trigger in teleop
-    // RobotModeTriggers.teleop()
-    // .and(coralIntakeAtStowGoal)
-    // .and(elevatorAtStowGoal)
-    // .and(coralIntake.centerSensorTrigger)
-    // .and(() -> coralMode != CoralMode.L1)
-    // .debounce(0.25)
-    // .onTrue(handoffCommand());
-
     RobotModeTriggers.teleop()
         .and(() -> coralIntake.getCurrentGoal() == CoralIntake.Goal.STOW)
         .and(() -> elevator.getCurrentGoal() == Elevator.Goal.STOW)
@@ -288,21 +285,85 @@ public class RobotContainer {
     NamedCommands.registerCommand("DisableCameras", aprilTagVision.enableDisableCamera(false, 0));
 
     NamedCommands.registerCommand("Handoff", handoffCommand());
-    NamedCommands.registerCommand("PrepareLevel4", prepareScoreCoral(CoralMode.L4));
+    NamedCommands.registerCommand("WaitForHandoff", Commands.waitUntil(waitForHandoffTrigger));
+    // NamedCommands.registerCommand("PrepareLevel4", prepareScoreCoral(CoralMode.L4));
+    NamedCommands.registerCommand("PrepareLevel4", Commands.sequence(
+        Commands.waitUntil(waitForHandoffTrigger),
+        prepareScoreCoral(CoralMode.L4).asProxy())
+    );
     NamedCommands.registerCommand("PrepareLoadingStationIntake",
         coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE)
             .alongWith(coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.L2)));
+
+    NamedCommands.registerCommand("IntakeFromGround", coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE));
 
     NamedCommands.registerCommand("IntakeFromLoadingStation",
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
             .until(coralIntake.pieceDetectedTrigger.debounce(0.15))
             .withTimeout(1));
 
+    NamedCommands.registerCommand("PrepareIntakeAlgaeLow", Commands.sequence(
+        elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_LOW, Inches.of(2.5)),
+        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY, Degrees.of(4)),
+        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)
+    ));
+
+    NamedCommands.registerCommand("IntakeAlgaeLow", Commands.sequence(
+      elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_LOW),
+      coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
+      coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY),
+      Commands.waitSeconds(0.3),
+      Commands.waitUntil(coralOuttakeRoller.currentSpikeTrigger).withTimeout(2.5),
+      coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD)
+    ));
+
+    NamedCommands.registerCommand("AlgaeStow", Commands.parallel(
+      coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.DEALGIFY_STOW),
+      elevator.setGoalCommand(Elevator.Goal.STOW),
+      coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD)
+    ));
+
+    NamedCommands.registerCommand("PrepareBargeShoot", Commands.sequence(
+      elevator.setGoalAndWait(Elevator.Goal.BARGE),
+      coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)
+    ));
+
+    NamedCommands.registerCommand("BargeShoot", Commands.sequence(
+      elevator.setGoalAndWait(Elevator.Goal.BARGE),
+      coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.BARGE),
+      coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
+      Commands.waitSeconds(1)
+    ));
+
+    NamedCommands.registerCommand("Stow", Commands.runOnce(() -> {
+      teleopInit();
+    }));
+
+
+    // barge
+    // controls.algae().and(() -> (coralMode == CoralMode.L4))
+    //     .whileTrue(Commands.sequence(
+    //         elevator.setGoalAndWait(Elevator.Goal.BARGE),
+    //         coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)))
+    //     .onFalse(Commands.parallel(
+    //         elevator.setGoalCommand(Elevator.Goal.STOW),
+    //         coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW)));
+
+    // controls.algae().and(controls.scoreGamePiece()).whileTrue(
+    //     coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT,
+    //         CoralOuttakeRoller.Goal.STOW));
+
+    NamedCommands.registerCommand("AlignToBranchB", DriveCommands.alignToBranchReef(drive, led, 1).withTimeout(1.2));
     NamedCommands.registerCommand("AlignToBranchC", DriveCommands.alignToBranchReef(drive, led, 2).withTimeout(1.2));
     NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3).withTimeout(1.2));
     NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4).withTimeout(1.2));
     NamedCommands.registerCommand("AlignToBranchF", DriveCommands.alignToBranchReef(drive, led, 5).withTimeout(1.2));
+    NamedCommands.registerCommand("AlignToBranchH", DriveCommands.alignToBranchReef(drive, led, 7).withTimeout(1.2));
+    NamedCommands.registerCommand("AlignToBranchI", DriveCommands.alignToBranchReef(drive, led, 8).withTimeout(1.2));
     NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.2));
+
+    NamedCommands.registerCommand("AlignToAlgae4", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.GH));
+    NamedCommands.registerCommand("AlignToAlgae5", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.IJ));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
@@ -315,9 +376,11 @@ public class RobotContainer {
 
   private Command prepareScoreCoral(CoralMode mode) {
     return Commands.sequence(
-        elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode), Inches.of(3)).withTimeout(1.5),
-        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode), Degrees.of(2)).withTimeout(0.3));
-  }
+        elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode), Inches.of(4)),
+        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode), Degrees.of(4)),
+        elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode)).withTimeout(1),
+        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode)).withTimeout(1));
+    }
 
   private double mapInput(double input, double inputMin, double inputMax, double outputMin, double outputMax) {
     return (input - inputMin) * (outputMax - outputMin) / (inputMax - inputMin) + outputMin;
@@ -411,7 +474,7 @@ public class RobotContainer {
     controls.prepareScoreCoral().and(() -> coralMode == CoralMode.L1).whileTrue(
         coralIntake.setGoalEndCommand(CoralIntake.Goal.L1_Prepare, CoralIntake.Goal.STOW));
 
-    controls.prepareScoreCoral().and(() -> coralMode != CoralMode.L1)
+    controls.prepareScoreCoral().and(waitForHandoffTrigger).and(() -> coralMode != CoralMode.L1)
         .whileTrue(prepareScoreCoralCommand());
 
     controls.scoreGamePiece().and(() -> coralMode == CoralMode.L1).whileTrue(
@@ -456,7 +519,7 @@ public class RobotContainer {
     controls.groundIntakeAlgae().onTrue(coralIntake.setGoalCommand(CoralIntake.Goal.ALGAE_INTAKE))
         .onFalse(coralIntake.setGoalCommand(CoralIntake.Goal.HOLD_ALGAE));
 
-    controls.outtakeShoot().and(controls.prepareScoreCoral().negate())
+    controls.scoreGamePiece().and(controls.prepareScoreCoral().negate())
         .and(() -> coralIntake.getCurrentGoal() == CoralIntake.Goal.ALGAE_SHOOT)
         .onTrue(coralIntake.setGoalCommand(CoralIntake.Goal.ALGAE_SHOOT))
         .onFalse(coralIntake.setGoalCommand(CoralIntake.Goal.STOW));
@@ -655,6 +718,7 @@ public class RobotContainer {
   private Command handoffCommand() {
     return Commands.sequence(
         Commands.parallel(
+            Commands.runOnce(() -> {isHandoffInterruptible = false;}),
             elevator.setGoalAndWait(Elevator.Goal.STOW),
             coralIntake.setGoalAndWait(CoralIntake.Goal.HANDOFF, Degrees.of(2.5)),
             coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF, Degrees.of(12))),
@@ -668,7 +732,8 @@ public class RobotContainer {
           coralIntake.setGoal(CoralIntake.Goal.STOW);
           coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.STOW);
           coralOuttakeRoller.setGoal(CoralOuttakeRoller.Goal.STOW);
-        }).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+          isHandoffInterruptible = true;
+        });
   }
 
   /** Returns a command that sets the elevator and coral outtake pivot goals */

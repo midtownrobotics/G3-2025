@@ -35,7 +35,7 @@
     {
       "name": "PrepareLevel4",
       "waypointRelativePos": 0.8565957446808539,
-      "endWaypointRelativePos": null,
+      "endWaypointRelativePos": 0.8639584443727534,
       "command": {
         "type": "named",
         "data": {
