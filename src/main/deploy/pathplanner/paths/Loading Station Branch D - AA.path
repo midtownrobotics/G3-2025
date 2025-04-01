@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1905483880430197,
-        "y": 1.532727747517126
+        "x": 2.1200086934591367,
+        "y": 1.7008696660980247
       },
       "isLocked": false,
       "linkedName": "Bottom Loading Station"
     },
     {
       "anchor": {
-        "x": 3.783572542385077,
-        "y": 2.5095963489758297
+        "x": 3.6855,
+        "y": 2.5625
       },
       "prevControl": {
-        "x": 3.2835725423850763,
-        "y": 1.643570945191391
+        "x": 3.0517499999999997,
+        "y": 1.7825
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,21 +29,7 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.83,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 1.4,
-        "maxAcceleration": 2.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -78,11 +64,11 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.4,
     "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "Bottom Side",
+  "folder": "Bottom Side AA",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 145.0

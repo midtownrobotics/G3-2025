@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start to Branch F - AA"
+            "pathName": "Start Branch E - AA"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AlignToBranchF"
+            "name": "AlignToBranchE"
           }
         },
         {
@@ -25,7 +25,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Branch F to Loading Station"
+            "pathName": "Branch E to Loading Station"
           }
         },
         {
@@ -67,13 +67,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station Branch E - AA"
+            "pathName": "Loading Station Branch C - AA"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AlignToBranchE"
+            "name": "AlignToBranchC"
           }
         },
         {

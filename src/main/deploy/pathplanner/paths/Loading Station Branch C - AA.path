@@ -8,32 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1905483880430197,
-        "y": 1.532727747517126
+        "x": 2.0465940321334304,
+        "y": 1.6789503972565467
       },
       "isLocked": false,
       "linkedName": "Bottom Loading Station"
     },
     {
       "anchor": {
-        "x": 5.144559417845411,
-        "y": 2.4879009129685428
+        "x": 3.50025,
+        "y": 2.6892499999999995
       },
       "prevControl": {
-        "x": 5.894559417845411,
-        "y": 1.1888628072918848
+        "x": 3.2175,
+        "y": 2.0457499999999995
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.3396698573850234,
-      "rotationDegrees": 70.30161515031095
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
@@ -42,22 +37,15 @@
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "sequential",
+        "type": "named",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Handoff"
-              }
-            }
-          ]
+          "name": "Handoff"
         }
       }
     },
     {
       "name": "PrepareLevel4",
-      "waypointRelativePos": 0.9524999649349198,
+      "waypointRelativePos": 0.9021653564014801,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -77,7 +65,7 @@
   },
   "goalEndState": {
     "velocity": 0.4,
-    "rotation": 119.99999999999999
+    "rotation": 59.99999999999999
   },
   "reversed": false,
   "folder": "Bottom Side AA",

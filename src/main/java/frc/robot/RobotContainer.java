@@ -21,9 +21,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -276,39 +276,46 @@ public class RobotContainer {
         .onTrue(handoffCommand());
 
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
-        elevator.setGoalAndWait(Elevator.Goal.L4).withTimeout(3.0),
-        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.L4).withTimeout(1.0),
+        prepareScoreCoral(CoralMode.L4),
         coralOuttakeRoller
             .setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT, CoralOuttakeRoller.Goal.STOW)
             .withTimeout(0.5),
-        coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
-        elevator.setGoalCommand(Elevator.Goal.STOW)));
+        Commands.parallel(
+            coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
+            elevator.setGoalCommand(Elevator.Goal.STOW))));
 
     NamedCommands.registerCommand("DisableCameras", aprilTagVision.enableDisableCamera(false, 0));
 
     NamedCommands.registerCommand("Handoff", handoffCommand());
-    // NamedCommands.registerCommand("PrepareLevel4", Commands.none());
-    NamedCommands.registerCommand("PrepareLevel4", elevator.setGoalCommand(Elevator.Goal.L4));
+    NamedCommands.registerCommand("PrepareLevel4", prepareScoreCoral(CoralMode.L4));
     NamedCommands.registerCommand("PrepareLoadingStationIntake",
-        coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE).alongWith(coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.L2)));
+        coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE)
+            .alongWith(coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.L2)));
 
     NamedCommands.registerCommand("IntakeFromLoadingStation",
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
-            .until(coralIntake.pieceDetectedTrigger.debounce(0.5))
-            .withTimeout(2.5));
+            .until(coralIntake.pieceDetectedTrigger.debounce(0.15))
+            .withTimeout(1));
 
-    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3).withTimeout(1.5));
-    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4).withTimeout(1.5));
-    NamedCommands.registerCommand("AlignToBranchF", DriveCommands.alignToBranchReef(drive, led, 5).withTimeout(1.5));
-    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.5));
+    NamedCommands.registerCommand("AlignToBranchC", DriveCommands.alignToBranchReef(drive, led, 2).withTimeout(1.2));
+    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3).withTimeout(1.2));
+    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4).withTimeout(1.2));
+    NamedCommands.registerCommand("AlignToBranchF", DriveCommands.alignToBranchReef(drive, led, 5).withTimeout(1.2));
+    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.2));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
 
-    auto = AutoBuilder.buildAuto("Bottom Three Coral");
+    auto = AutoBuilder.buildAuto("Bottom AA 3 Piece v2");
 
     // coralCamera = new CoralCamera(new VisionIOLimelight("limelight",
     // drive::getPose));
+  }
+
+  private Command prepareScoreCoral(CoralMode mode) {
+    return Commands.sequence(
+        elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode), Inches.of(3)).withTimeout(1.5),
+        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode), Degrees.of(2)).withTimeout(0.3));
   }
 
   private double mapInput(double input, double inputMin, double inputMax, double outputMin, double outputMax) {
@@ -352,13 +359,13 @@ public class RobotContainer {
     // }));
 
     controls.driveDynamicForwards()
-      .whileTrue(drive.sysIdDynamic(Direction.kForward));
+        .whileTrue(drive.sysIdDynamic(Direction.kForward));
     controls.driveDynamicBackwards()
-      .whileTrue(drive.sysIdDynamic(Direction.kReverse));
+        .whileTrue(drive.sysIdDynamic(Direction.kReverse));
     controls.driveQuasistaticForwards()
-      .whileTrue(drive.sysIdQuasistatic(Direction.kForward));
+        .whileTrue(drive.sysIdQuasistatic(Direction.kForward));
     controls.driveQuasistaticBackwards()
-      .whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
+        .whileTrue(drive.sysIdQuasistatic(Direction.kReverse));
 
     controls.resetDriveHeading().onTrue(drive.resetDriveHeadingCommand());
 
@@ -465,70 +472,78 @@ public class RobotContainer {
     // () -> ReefFace.fromPOV(controls.getDriverPOV()),
     // controls.alignToReefLeftBranch()));
 
-    /* controls.alignToBranchReef().whileTrue(DriveCommands.alignToBranchReef(drive, led,
-        () -> {
-          ReefFace closestFace = null;
-          Distance closestDistance = Meters.of(Double.MAX_VALUE);
-          Pose2d currentPose = drive.getPose();
+    /*
+     * controls.alignToBranchReef().whileTrue(DriveCommands.alignToBranchReef(drive,
+     * led,
+     * () -> {
+     * ReefFace closestFace = null;
+     * Distance closestDistance = Meters.of(Double.MAX_VALUE);
+     * Pose2d currentPose = drive.getPose();
+     *
+     * for (ReefFace face : ReefFace.values()) {
+     * Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+     * Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+     * Distance distance =
+     * Meters.of(reefFacePose.getTranslation().getDistance(currentPose.
+     * getTranslation()));
+     * if (distance.lt(closestDistance)) {
+     * closestFace = face;
+     * closestDistance = distance;
+     * }
+     * }
+     *
+     * return closestFace;
+     * }, controls.alignToReefLeftBranch()));
+     */
 
-          for (ReefFace face : ReefFace.values()) {
-            Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
-            Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
-            Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
-            if (distance.lt(closestDistance)) {
-              closestFace = face;
-              closestDistance = distance;
-            }
-          }
+    controls.fieldElementLock().whileTrue(
+        DriveCommands.fieldElementLock(drive, coralIntake, coralOuttakeRoller, coralOuttakePivot, elevator, led,
+            () -> {
+              ReefFace closestFace = null;
+              Distance closestDistance = Meters.of(Double.MAX_VALUE);
+              Pose2d currentPose = drive.getPose();
 
-          return closestFace;
-        }, controls.alignToReefLeftBranch())); */
+              for (ReefFace face : ReefFace.values()) {
+                Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+                Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+                Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
+                if (distance.lt(closestDistance)) {
+                  closestFace = face;
+                  closestDistance = distance;
+                }
+              }
 
-
-    controls.fieldElementLock().whileTrue(DriveCommands.fieldElementLock(drive, coralIntake, coralOuttakeRoller, coralOuttakePivot, elevator, led,
-        () -> {
-          ReefFace closestFace = null;
-          Distance closestDistance = Meters.of(Double.MAX_VALUE);
-          Pose2d currentPose = drive.getPose();
-
-          for (ReefFace face : ReefFace.values()) {
-            Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
-            Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
-            Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
-            if (distance.lt(closestDistance)) {
-              closestFace = face;
-              closestDistance = distance;
-            }
-          }
-
-          return closestFace;
-        }, controls.alignToReefLeftBranch()));
+              return closestFace;
+            }, controls.alignToReefLeftBranch()));
 
     // controls.alignToAlgaeReef()
-    //     .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
-    //         () -> {
-    //           ReefFace closestFace = null;
-    //           Distance closestDistance = Meters.of(Double.MAX_VALUE);
-    //           Pose2d currentPose = drive.getPose();
+    // .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
+    // () -> {
+    // ReefFace closestFace = null;
+    // Distance closestDistance = Meters.of(Double.MAX_VALUE);
+    // Pose2d currentPose = drive.getPose();
 
-    //           for (ReefFace face : ReefFace.values()) {
-    //             Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
-    //             Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
-    //             Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
-    //             if (distance.lt(closestDistance)) {
-    //               closestFace = face;
-    //               closestDistance = distance;
-    //             }
-    //           }
+    // for (ReefFace face : ReefFace.values()) {
+    // Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+    // Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+    // Distance distance =
+    // Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
+    // if (distance.lt(closestDistance)) {
+    // closestFace = face;
+    // closestDistance = distance;
+    // }
+    // }
 
-    //           return closestFace;
-    //         }))
-    //     // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1, () -> 0, () -> 0).withTimeout(0.5),
-    //     //     Commands.none(), () -> !controls.isDriverControlInDeadzone()))
-    //     ;
+    // return closestFace;
+    // }))
+    // // .onFalse(Commands.either(DriveCommands.robotRelativeDrive(drive, () -> -1,
+    // () -> 0, () -> 0).withTimeout(0.5),
+    // // Commands.none(), () -> !controls.isDriverControlInDeadzone()))
+    // ;
 
     controls.gamePieceLock()
-        .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getAutoAlignTrigger, controls::getDriveForward, controls::getDriveLeft, () -> coralIntake.getCurrentGoal() != CoralIntake.Goal.ALGAE_INTAKE));
+        .whileTrue(DriveCommands.alignToGamePiece(drive, controls::getAutoAlignTrigger, controls::getDriveForward,
+            controls::getDriveLeft, () -> coralIntake.getCurrentGoal() != CoralIntake.Goal.ALGAE_INTAKE));
 
     controls.sourceIntakeCoral().whileTrue(
         coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE))
@@ -643,7 +658,7 @@ public class RobotContainer {
             coralIntake.setGoalAndWait(CoralIntake.Goal.HANDOFF, Degrees.of(2.5)),
             coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF, Degrees.of(12))),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF),
-        Commands.waitUntil(coralIntake.handoffSensorTrigger).withTimeout(2),
+        Commands.waitUntil(coralIntake.handoffSensorTrigger).withTimeout(0.5), // TODO change back to 2
         Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(2),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF_REVERSE),
         Commands.waitSeconds(0.1),
