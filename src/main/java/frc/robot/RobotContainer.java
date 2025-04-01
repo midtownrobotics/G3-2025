@@ -64,7 +64,6 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.lock.LockIO;
 import frc.robot.subsystems.elevator.lock.LockIORevServo;
 import frc.robot.subsystems.elevator.winch.WinchIO;
-import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.elevator.winch.WinchIOReplay;
 import frc.robot.subsystems.elevator.winch.WinchIOSim;
 import frc.robot.subsystems.led.LED;
@@ -204,15 +203,17 @@ public class RobotContainer {
         break;
       default:
         // Elevator
-        winchIO = new WinchIOKraken(Ports.Elevator.LeftWinchMotor,
-            Ports.Elevator.RightWinchMotor,
-            Ports.Elevator.WinchEncoder,
-            driveCANBusHandler);
+        winchIO = new WinchIOSim();
+        // winchIO = new WinchIOKraken(Ports.Elevator.LeftWinchMotor,
+        //     Ports.Elevator.RightWinchMotor,
+        //     Ports.Elevator.WinchEncoder,
+        //     driveCANBusHandler);
 
         // Coral Intake
         beltIO = new RollerIONeo(Ports.CoralIntake.belt, IdleMode.kBrake);
         // beltIO = new RollerIOSim(); // TODO: CHANGE CHANGE CHANGE CHANGE CHANGE
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
+        // pivotIO = new PivotIOSim();
         coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
         // coralIntakeRollerIO = new RollerIOSim();
 
@@ -658,7 +659,7 @@ public class RobotContainer {
             coralIntake.setGoalAndWait(CoralIntake.Goal.HANDOFF, Degrees.of(2.5)),
             coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF, Degrees.of(12))),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF),
-        Commands.waitUntil(coralIntake.handoffSensorTrigger).withTimeout(0.5), // TODO change back to 2
+        Commands.waitUntil(coralIntake.handoffSensorTrigger).withTimeout(2), // TODO change back to 2
         Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(2),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF_REVERSE),
         Commands.waitSeconds(0.1),
