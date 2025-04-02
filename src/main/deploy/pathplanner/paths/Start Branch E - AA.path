@@ -34,8 +34,8 @@
   "eventMarkers": [
     {
       "name": "PrepareLevel4",
-      "waypointRelativePos": 0.8565957446808539,
-      "endWaypointRelativePos": 0.8639584443727534,
+      "waypointRelativePos": 0.6018664445244959,
+      "endWaypointRelativePos": 1.0,
       "command": {
         "type": "named",
         "data": {
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.9,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

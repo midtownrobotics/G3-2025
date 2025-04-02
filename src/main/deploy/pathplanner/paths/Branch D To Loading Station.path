@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.24675,
+        "x": 3.2467499999999996,
         "y": 2.0554999999999994
       },
       "isLocked": false,
@@ -50,12 +50,17 @@
       "name": "PrepareLoadingStationIntake",
       "waypointRelativePos": 0.43446808510638235,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLoadingStationIntake"
+        }
+      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.9,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

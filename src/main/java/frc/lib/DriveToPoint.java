@@ -46,7 +46,7 @@ public class DriveToPoint extends Command {
   private LTLinearProfiledPIDController m_driveController =
       new LTLinearProfiledPIDController(
           "DriveToPoint/DriveController",
-          3.2,
+          3.5,
           0.0,
           0.01,
           kMaxLinearVelocity,
@@ -56,7 +56,7 @@ public class DriveToPoint extends Command {
   private LTAngularProfiledPIDController m_headingController =
       new LTAngularProfiledPIDController("DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
 
-  private double m_ffMinRadius = 0.25, m_ffMaxRadius = 1.2;
+  private double m_ffMinRadius = 0.1, m_ffMaxRadius = 1.2;
 
   public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose, Angle angularThreshold, Distance linearThreshold) {
     m_drive = drive;

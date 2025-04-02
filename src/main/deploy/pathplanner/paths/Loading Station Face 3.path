@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 2.814086092150683,
-        "y": 2.275831046505379
+        "y": 2.2758310465053793
       },
       "isLocked": false,
       "linkedName": "Bottom Loading Station"
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.9,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

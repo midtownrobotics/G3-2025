@@ -73,6 +73,7 @@ import frc.robot.utils.Constants;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
+import java.util.Set;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -286,7 +287,7 @@ public class RobotContainer {
     // NamedCommands.registerCommand("PrepareLevel4", prepareScoreCoral(CoralMode.L4));
     NamedCommands.registerCommand("PrepareLevel4", Commands.sequence(
         Commands.waitUntil(waitForHandoffTrigger),
-        prepareScoreCoral(CoralMode.L4).asProxy())
+        Commands.defer(() -> prepareScoreCoral(CoralMode.L4), Set.of()))
     );
     NamedCommands.registerCommand("PrepareLoadingStationIntake",
         coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE)
@@ -350,14 +351,14 @@ public class RobotContainer {
     //     coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT,
     //         CoralOuttakeRoller.Goal.STOW));
 
-    NamedCommands.registerCommand("AlignToBranchB", DriveCommands.alignToBranchReef(drive, led, 1).withTimeout(1.2));
-    NamedCommands.registerCommand("AlignToBranchC", DriveCommands.alignToBranchReef(drive, led, 2).withTimeout(1.2));
-    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3).withTimeout(1.2));
-    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4).withTimeout(1.2));
-    NamedCommands.registerCommand("AlignToBranchF", DriveCommands.alignToBranchReef(drive, led, 5).withTimeout(1.2));
-    NamedCommands.registerCommand("AlignToBranchH", DriveCommands.alignToBranchReef(drive, led, 7).withTimeout(1.2));
-    NamedCommands.registerCommand("AlignToBranchI", DriveCommands.alignToBranchReef(drive, led, 8).withTimeout(1.2));
-    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.2));
+    NamedCommands.registerCommand("AlignToBranchB", DriveCommands.alignToBranchReef(drive, led, 1).withTimeout(1.8));
+    NamedCommands.registerCommand("AlignToBranchC", DriveCommands.alignToBranchReef(drive, led, 2).withTimeout(1.8));
+    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3).withTimeout(1.8));
+    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4).withTimeout(1.8));
+    NamedCommands.registerCommand("AlignToBranchF", DriveCommands.alignToBranchReef(drive, led, 5).withTimeout(1.8));
+    NamedCommands.registerCommand("AlignToBranchH", DriveCommands.alignToBranchReef(drive, led, 7).withTimeout(1.8));
+    NamedCommands.registerCommand("AlignToBranchI", DriveCommands.alignToBranchReef(drive, led, 8).withTimeout(1.8));
+    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.8));
 
     NamedCommands.registerCommand("AlignToAlgae4", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.GH));
     NamedCommands.registerCommand("AlignToAlgae5", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.IJ));

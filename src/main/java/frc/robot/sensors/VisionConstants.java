@@ -54,13 +54,13 @@ public class VisionConstants {
     );
 
   // Basic filtering thresholds
-  public static double maxAmbiguity = 0.2;
-  public static double maxZError = 0.3;
+  public static double maxAmbiguity = 0.15;
+  public static double maxZError = 0.2;
 
   // Standard deviation baselines, for 1 meter distance and 1 tag
   // (Adjusted automatically based on distance and # of tags)
-  public static double linearStdDevBaseline = 0.09; // Meters
-  public static double angularStdDevBaseline = 0.3; // Radians
+  public static double linearStdDevBaseline = 0.18; // Meters
+  public static double angularStdDevBaseline = 0.5; // Radians
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)

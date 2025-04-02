@@ -45,8 +45,8 @@
     },
     {
       "name": "PrepareLevel4",
-      "waypointRelativePos": 0.9021653564014801,
-      "endWaypointRelativePos": null,
+      "waypointRelativePos": 0.8011865093659944,
+      "endWaypointRelativePos": 1.0,
       "command": {
         "type": "named",
         "data": {
@@ -56,15 +56,15 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.9,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.4,
+    "velocity": 0.0,
     "rotation": 59.99999999999999
   },
   "reversed": false,
