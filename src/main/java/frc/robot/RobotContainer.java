@@ -21,9 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -65,6 +63,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.lock.LockIO;
 import frc.robot.subsystems.elevator.lock.LockIORevServo;
 import frc.robot.subsystems.elevator.winch.WinchIO;
+import frc.robot.subsystems.elevator.winch.WinchIOKraken;
 import frc.robot.subsystems.elevator.winch.WinchIOReplay;
 import frc.robot.subsystems.elevator.winch.WinchIOSim;
 import frc.robot.subsystems.led.LED;
@@ -74,8 +73,6 @@ import frc.robot.utils.Constants;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
-
-import java.util.HashSet;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -209,11 +206,11 @@ public class RobotContainer {
         break;
       default:
         // Elevator
-        winchIO = new WinchIOSim();
-        // winchIO = new WinchIOKraken(Ports.Elevator.LeftWinchMotor,
-        //     Ports.Elevator.RightWinchMotor,
-        //     Ports.Elevator.WinchEncoder,
-        //     driveCANBusHandler);
+        // winchIO = new WinchIOSim();
+        winchIO = new WinchIOKraken(Ports.Elevator.LeftWinchMotor,
+            Ports.Elevator.RightWinchMotor,
+            Ports.Elevator.WinchEncoder,
+            driveCANBusHandler);
 
         // Coral Intake
         beltIO = new RollerIONeo(Ports.CoralIntake.belt, IdleMode.kBrake);
