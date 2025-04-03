@@ -150,7 +150,9 @@ public class Elevator extends SubsystemBase {
 
     Distance constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight());
 
-    if (getCurrentGoal() == Goal.L4 || getCurrentGoal() == Goal.L3 || getCurrentGoal() == Goal.L2) {
+    if (getCurrentGoal() == Goal.L4 || getCurrentGoal() == Goal.L3 || getCurrentGoal() == Goal.L2
+        || getCurrentGoal() == Goal.DEALGIFY_HIGH || getCurrentGoal() == Goal.DEALGIFY_LOW
+        || getCurrentGoal() == Goal.BARGE || getCurrentGoal() == Goal.PROCESSOR) {
       constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight()).plus(driverOffset);
     }
 

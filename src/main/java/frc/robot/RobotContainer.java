@@ -215,7 +215,7 @@ public class RobotContainer {
 
         // Coral Intake
         beltIO = new RollerIONeo(Ports.CoralIntake.belt, IdleMode.kBrake);
-        // beltIO = new RollerIOSim(); // TODO: CHANGE CHANGE CHANGE CHANGE CHANGE
+        // beltIO = new RollerIOSim();
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
         // pivotIO = new PivotIOSim();
         coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);

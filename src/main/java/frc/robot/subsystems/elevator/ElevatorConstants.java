@@ -15,7 +15,7 @@ public class ElevatorConstants {
 
   public static final double kGearing = 14;
 
-  public static final Angle absoluteEncoderOffset = Radians.of(4.022);
+  public static final Angle absoluteEncoderOffset = Radians.of(0.466);
 
   public static final LoggedTunableNumber maxA = new LoggedTunableNumber("Elevator/maxA", 58);
   public static final LoggedTunableNumber maxV = new LoggedTunableNumber("Elevator/maxV", 11);
