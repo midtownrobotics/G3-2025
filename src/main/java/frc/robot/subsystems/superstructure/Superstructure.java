@@ -65,15 +65,15 @@ public class Superstructure extends SubsystemBase {
     if (elevatorPosition.lt(Inches.of(12))) {
       if (
         (
-          coralIntakePosition.gt(Degrees.of(104))
-          || coralIntakeGoalPosition.gt(Degrees.of(104))
+          coralIntakePosition.gt(Degrees.of(94))
+          || coralIntakeGoalPosition.gt(Degrees.of(94))
         )
         && !(coralIntakePosition.gt(Degrees.of(124)))
       ) {
         coralOuttakeConstraints.setUpper(Degrees.of(-35));
       }
 
-      if (coralIntakePosition.gt(Degrees.of(104)) && coralIntakeGoalPosition.lt(Degrees.of(104))) {
+      if (coralIntakePosition.gt(Degrees.of(94)) && coralIntakeGoalPosition.lt(Degrees.of(94))) {
         coralOuttakeConstraints.setUpper(Degrees.of(-35));
       }
 
