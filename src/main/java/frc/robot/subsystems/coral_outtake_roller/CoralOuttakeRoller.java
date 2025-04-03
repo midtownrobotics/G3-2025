@@ -22,7 +22,7 @@ public class CoralOuttakeRoller extends SubsystemBase {
     STOW(Volts.zero()),
     SHOOT(Volts.of(8)),
     DEALGIFY(Volts.of(5.5)),
-    HANDOFF(Volts.of(4)),
+    HANDOFF(Volts.of(6)),
     HANDOFF_REVERSE(Volts.of(-2)),
     INTAKE(Volts.zero()),
     REVERSE_SHOOT(Volts.of(-7)),
