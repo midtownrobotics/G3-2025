@@ -576,7 +576,7 @@ public class RobotContainer {
               }
 
               return closestFace;
-            }, controls.alignToReefLeftBranch(), coralIntake.pieceDetectedTrigger.or(waitForHandoffTrigger)));
+            }, controls.alignToReefLeftBranch(), coralIntake.pieceDetectedTrigger.or(waitForHandoffTrigger.negate())));
 
     // controls.alignToAlgaeReef()
     // .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
