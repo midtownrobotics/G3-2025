@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Servo;
 public class LockIOServo implements LockIO {
     private final Servo servo;
     private static final Angle lockedPosition = Degrees.of(35), unlockedPosition = Degrees.of(75);
+    private boolean enabled;
 
     /** Lock IO constructor for servo. */
     public LockIOServo(int id) {
@@ -17,7 +18,14 @@ public class LockIOServo implements LockIO {
 
     /** Enable / disble lock. */
     public void setLockEnabled(boolean value) {
+        enabled = value;
         servo.setAngle(value ? lockedPosition.in(Degrees) : unlockedPosition.in(Degrees));
+    }
+
+    @Override
+    public void updateInputs(LockInputs inputs) {
+        inputs.enabled = enabled;
+        inputs.lastCommandedPosition = Degrees.of(servo.getAngle());
     }
 
 }

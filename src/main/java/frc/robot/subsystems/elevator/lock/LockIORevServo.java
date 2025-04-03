@@ -9,6 +9,8 @@ public class LockIORevServo implements LockIO{
     private final Servo servo;
     private static final Angle lockedPosition = Degrees.of(0), unlockedPosition = Degrees.of(108);
 
+    private boolean enabled;
+
     /** Lock IO constructor for servo. */
     public LockIORevServo(int id) {
         servo = new Servo(id);
@@ -17,6 +19,8 @@ public class LockIORevServo implements LockIO{
 
     /** Enable / disable lock. */
     public void setLockEnabled(boolean value) {
+        enabled = value;
+
         double degrees = value ? lockedPosition.in(Degrees) : unlockedPosition.in(Degrees);
 
         if (degrees < 0) {
@@ -26,5 +30,11 @@ public class LockIORevServo implements LockIO{
         }
 
         servo.set((270-degrees)/270);
+    }
+
+    @Override
+    public void updateInputs(LockInputs inputs) {
+        inputs.enabled = enabled;
+        inputs.lastCommandedPosition = Degrees.of(servo.getAngle());
     }
 }

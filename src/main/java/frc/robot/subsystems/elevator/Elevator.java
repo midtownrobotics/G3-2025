@@ -107,6 +107,7 @@ public class Elevator extends SubsystemBase {
   private @Getter Goal currentGoal = Goal.STOW;
 
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
+  // private LockInputsAutoLogged lockInputs = new LockInputsAutoLogged();
   private @Getter WinchIO winch;
   private @Getter LockIO lock;
 
@@ -146,7 +147,9 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
     winch.updateInputs(winchInputs);
+    // lock.updateInputs(lockInputs);
     Logger.processInputs("Elevator", winchInputs);
+    // Logger.processInputs("Lock", lockInputs);
 
     Distance constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight());
 
@@ -190,6 +193,7 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput("Elevator/constrainedMaxHeight", elevatorConstraint.getUpper());
     Logger.recordOutput("Elevator/constrainedMinHeight", elevatorConstraint.getLower());
     Logger.recordOutput("Elevator/constrainedGoalHeight", constrainedHeight);
+    Logger.recordOutput("Elevator/driverOffset", driverOffset);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
