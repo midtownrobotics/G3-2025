@@ -368,6 +368,14 @@ public class DriveCommands {
       ),
       Rotation2d.k180deg);
 
+  private static final Transform2d kRobotBeforeHandoffBranchAlignOffset = new Transform2d(
+    new Translation2d(
+        Inches.of(25), // F/B
+        Inches.of(-1.614) // L/R
+    ),
+    Rotation2d.k180deg);
+  
+
   // TODO idk man just ask someone
   private static final Transform2d kRobotL1Offset = new Transform2d(
     new Translation2d(
@@ -448,7 +456,7 @@ public class DriveCommands {
    */
   public static Command fieldElementLock(Drive drive, CoralIntake intake, CoralOuttakeRoller roller,
       CoralOuttakePivot pivot, Elevator elevator, LED led,
-      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper) {
+      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper, BooleanSupplier waitingstate) {
     Supplier<Command> commandSupplier = () -> {
       Translation2d driveTranslation2d = drive.getPose().getTranslation();
       boolean elevatorClimb = elevator.getCurrentGoal() == Elevator.Goal.CLIMB;
@@ -490,14 +498,14 @@ public class DriveCommands {
         return alignToAlgaeReef(drive, led, reefFaceSupplier);
       }
 
-      return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper);
+      return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper, waitingstate);
     };
     return Commands.defer(commandSupplier, Set.of());
   }
 
   /** Creates a command that drives to a reef position based on POV */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
-      BooleanSupplier leftBranchSupplier) {
+      BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
       boolean leftBranch = leftBranchSupplier.getAsBoolean();
@@ -512,8 +520,10 @@ public class DriveCommands {
 
       int branchPoseIndex = face.ordinal() * 2 + (leftBranch ? 0 : 1);
 
+      Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotBeforeHandoffBranchAlignOffset : kRobotBranchAlignOffset;
+
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
-          .transformBy(kRobotBranchAlignOffset);
+          .transformBy(robotTransform2d);
 
       Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
 
