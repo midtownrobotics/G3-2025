@@ -373,7 +373,7 @@ public class DriveCommands {
     new Translation2d(
       Inches.of(20), // F/B
       Inches.of(-1.614)),
-    Rotation2d.k180deg
+    Rotation2d.kCCW_90deg
   );
 
   private static final Transform2d kStationOffset = new Transform2d(
@@ -386,7 +386,7 @@ public class DriveCommands {
 
   private static final Transform2d kRobotAlgaeAlignOffset = new Transform2d(
       new Translation2d(
-          Inches.of(20), // F/B
+          Inches.of(19.5), // F/B
           Inches.of(-1.614 - 6.5) // L/R
       ),
       Rotation2d.k180deg);
@@ -643,7 +643,7 @@ public class DriveCommands {
    * Creates a command that drives to reef position, aligned to the center of the
    * face.
    */
-  
+
   public static Command alignToL1Reef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
@@ -656,8 +656,6 @@ public class DriveCommands {
       // TODO Might have to be 90 CCW?
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
           .transformBy(kRobotL1Offset);
-
-      target = target.rotateAround(target.getTranslation(), Rotation2d.kCCW_90deg);
 
       Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
 
