@@ -217,7 +217,7 @@ public class RobotContainer {
             driveCANBusHandler);
 
         // Coral Intake
-        beltIO = new RollerIOKraken(Ports.CoralIntake.belt, rioCANBusHandler);
+        beltIO = new RollerIOKraken(Ports.CoralIntake.belt, rioCANBusHandler, true);
         // beltIO = new RollerIOSim();
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
         // pivotIO = new PivotIOSim();
@@ -379,8 +379,8 @@ public class RobotContainer {
     return Commands.sequence(
         elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode), Inches.of(4)),
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode), Degrees.of(4)),
-        elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode)).withTimeout(1),
-        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode)).withTimeout(1));
+        elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode)).withTimeout(0.4),
+        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode)).withTimeout(0.4));
     }
 
   private double mapInput(double input, double inputMin, double inputMax, double outputMin, double outputMax) {
