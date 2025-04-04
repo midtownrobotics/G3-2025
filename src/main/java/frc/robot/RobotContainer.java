@@ -32,6 +32,7 @@ import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
+import frc.robot.Ports.CoralOuttake;
 import frc.robot.commands.DriveCommands;
 import frc.robot.controls.CoralMode;
 import frc.robot.controls.MatchXboxControls;
@@ -677,6 +678,16 @@ public class RobotContainer {
     controls.algae().and(controls.scoreGamePiece()).whileTrue(
         coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT,
             CoralOuttakeRoller.Goal.STOW));
+
+     controls.algaeForceVomit().whileTrue(
+        Commands.sequence(
+          coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
+          coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY_STOW),
+          elevator.setGoalAndWait(Elevator.Goal.STOW),
+          coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.ALGAE_FORCE_VOMIT)
+      )).onFalse(Commands.parallel(
+        coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
+        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)));
 
     // CommandXboxController testController = new CommandXboxController(5);
 

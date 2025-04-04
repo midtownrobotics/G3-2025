@@ -111,7 +111,7 @@ public class MatchXboxControls implements Controls {
 
   /** Vomit trigger. */
   private Trigger vomit() {
-    return operatorController.leftTrigger().and(getNotManualMode);
+    return operatorController.leftTrigger().and(getNotManualMode).and(algaeForceVomit().negate());
   }
 
   /** Ground coral trigger. */
@@ -357,7 +357,12 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger zeroElevator() {
-      return driverController.a();
+    return driverController.a();
+  }
+
+  @Override
+  public Trigger algaeForceVomit() {
+    return operatorController.leftTrigger().and(operatorController.x());
   }
 
   @Override

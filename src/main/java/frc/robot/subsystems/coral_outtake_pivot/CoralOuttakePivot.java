@@ -38,6 +38,7 @@ public class CoralOuttakePivot extends SubsystemBase {
         INTAKE(STOW.getAngle()),
         DEALGIFY(Degrees.of(-42)),
         DEALGIFY_STOW(Degrees.of(-42)),
+        ALGAE_FORCE_VOMIT(Degrees.of(-42)), // TODO: find an acutally good angle for this
         CLIMB(Degrees.of(-60)),
         PROCESSOR_SCORE(Degrees.of(-42)),
         BARGE(Degrees.zero()),

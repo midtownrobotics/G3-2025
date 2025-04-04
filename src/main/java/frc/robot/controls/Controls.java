@@ -171,6 +171,9 @@ public interface Controls {
   /** Gets the POV value of the driver controller */
   public int getDriverPOV();
 
+  /** Removes algae from the claw */
+  public Trigger algaeForceVomit();
+
   /** Sets the rumble of the driver controller */
   public void setDriverRumble(double rumble);
 
