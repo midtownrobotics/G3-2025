@@ -3,50 +3,40 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.33575,
-        "y": 7.115749999999999
+        "x": 5.812578577340942,
+        "y": 3.9660914949264026
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9785376096865395,
-        "y": 6.3497055568810215
+        "x": 6.88934812289237,
+        "y": 4.091599984008239
       },
       "isLocked": false,
-      "linkedName": "Top Loading Station"
+      "linkedName": "Face 4 Algae Intake"
     },
     {
       "anchor": {
-        "x": 5.115,
-        "y": 5.263
+        "x": 7.304374796542863,
+        "y": 4.966281218351872
       },
       "prevControl": {
-        "x": 5.614999999999999,
-        "y": 6.129025403784439
+        "x": 6.119805958428071,
+        "y": 4.710845293132096
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch J"
+      "linkedName": "Barge Right Prepare"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.6917271860328639,
-      "rotationDegrees": -120.45471540298064
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff",
-      "waypointRelativePos": 0.0,
+      "name": "AlgaeStow",
+      "waypointRelativePos": 0.3775363047653654,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Handoff"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -59,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Center Side AA",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 35.0
+    "velocity": 0.0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

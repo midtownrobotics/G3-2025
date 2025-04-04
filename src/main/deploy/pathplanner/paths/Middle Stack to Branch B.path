@@ -3,50 +3,46 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.33575,
-        "y": 7.115749999999999
+        "x": 1.0566897944400184,
+        "y": 4.0078531064485245
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9785376096865395,
-        "y": 6.3497055568810215
+        "x": 2.162536918290953,
+        "y": 4.040705181726349
       },
       "isLocked": false,
-      "linkedName": "Top Loading Station"
+      "linkedName": "Middle Coral Stack"
     },
     {
       "anchor": {
-        "x": 5.115,
-        "y": 5.263
+        "x": 2.8283044843547844,
+        "y": 3.8956468865757388
       },
       "prevControl": {
-        "x": 5.614999999999999,
-        "y": 6.129025403784439
+        "x": 1.7635999701657679,
+        "y": 3.9154135219769146
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch J"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.6917271860328639,
-      "rotationDegrees": -120.45471540298064
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Handoff",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Handoff"
-        }
-      }
+      "command": null
+    },
+    {
+      "name": "PrepareLevel4",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -58,14 +54,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -119.99999999999999
+    "velocity": 0.3,
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Bottom Side Coral Stacks",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": 29.999999999999996
   },
   "useDefaultConstraints": true
 }

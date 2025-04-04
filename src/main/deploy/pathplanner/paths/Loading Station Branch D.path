@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.452376663773147,
-        "y": 0.7055396412037033
+        "x": 1.5477607783564804,
+        "y": 0.7666833043981478
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0951642734596865,
-        "y": 1.4715840843226813
+        "x": 2.1905483880430197,
+        "y": 1.532727747517126
       },
       "isLocked": false,
       "linkedName": "Bottom Loading Station"
@@ -28,13 +28,22 @@
       "linkedName": "Branch D"
     }
   ],
-  "rotationTargets": [
+  "rotationTargets": [],
+  "constraintZones": [
     {
-      "waypointRelativePos": 0.4954507857733654,
-      "rotationDegrees": 39.14326327682056
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.83,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.4,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
     }
   ],
-  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -47,11 +56,22 @@
           "name": "Handoff"
         }
       }
+    },
+    {
+      "name": "PrepareLevel4",
+      "waypointRelativePos": 0.7070245573957674,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLevel4"
+        }
+      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.9,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

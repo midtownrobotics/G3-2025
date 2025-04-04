@@ -1,11 +1,13 @@
 package frc.lib;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -36,13 +38,15 @@ public class DriveToPoint extends Command {
   public static final AngularVelocity kMaxAngularVelocity = DegreesPerSecond.of(720.0);
   public static final AngularAcceleration kMaxAngularAcceleration = DegreesPerSecondPerSecond.of(720.0);
 
+  private final Angle angularThreshold;
+  private final Distance linearThreshold;
   private final Drive m_drive;
   private final Supplier<Pose2d> m_targetPose;
 
   private LTLinearProfiledPIDController m_driveController =
       new LTLinearProfiledPIDController(
           "DriveToPoint/DriveController",
-          3.2,
+          3.5,
           0.0,
           0.01,
           kMaxLinearVelocity,
@@ -52,19 +56,25 @@ public class DriveToPoint extends Command {
   private LTAngularProfiledPIDController m_headingController =
       new LTAngularProfiledPIDController("DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
 
-  private double m_ffMinRadius = 0.25, m_ffMaxRadius = 1.2;
+  private double m_ffMinRadius = 0.1, m_ffMaxRadius = 1.2;
 
-  public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose) {
+  public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose, Angle angularThreshold, Distance linearThreshold) {
     m_drive = drive;
     m_targetPose = targetPose;
+    this.angularThreshold = angularThreshold;
+    this.linearThreshold = linearThreshold;
     addRequirements(m_drive);
 
-    m_driveController.getController().setTolerance(Units.inchesToMeters(0.2), Units.inchesToMeters(0.5));
+    m_driveController.getController().setTolerance(linearThreshold.in(Meters), Units.inchesToMeters(0.5));
 
     m_headingController.getController().enableContinuousInput(-Math.PI, Math.PI);
-    m_headingController.getController().setTolerance(Units.degreesToRadians(0.3));
+    m_headingController.getController().setTolerance(angularThreshold.in(Radians));
 
     Logger.recordOutput("DriveToPoint/TargetPose", m_targetPose.get());
+  }
+
+  public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose) {
+    this(drive, targetPose, Degrees.of(0.3), Inches.of(0.2));
   }
 
   @Override

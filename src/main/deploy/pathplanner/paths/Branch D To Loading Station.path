@@ -3,50 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.303999999999999,
-        "y": 5.06825
+        "x": 3.929873597819634,
+        "y": 2.809711268272574
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.803999999999999,
-        "y": 5.934275403784438
+        "x": 3.2467499999999996,
+        "y": 2.0554999999999994
       },
       "isLocked": false,
-      "linkedName": "Branch I"
+      "linkedName": "Branch D"
     },
     {
       "anchor": {
-        "x": 1.33575,
-        "y": 7.115749999999999
+        "x": 1.5477607783564804,
+        "y": 0.7666833043981478
       },
       "prevControl": {
-        "x": 1.978537609686539,
-        "y": 6.3497055568810215
+        "x": 2.2815,
+        "y": 1.5094999999999994
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Top Loading Station"
+      "linkedName": "Bottom Loading Station"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5937254901960783,
-      "rotationDegrees": -59.99999999999999
-    },
-    {
-      "waypointRelativePos": 0.8556862745098065,
-      "rotationDegrees": 35.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.6691415313225011,
+      "minWaypointRelativePos": 0.8,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 4.0,
-        "maxAngularVelocity": 100.0,
+        "maxVelocity": 1.45,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
         "unlimited": false
@@ -57,9 +48,14 @@
   "eventMarkers": [
     {
       "name": "PrepareLoadingStationIntake",
-      "waypointRelativePos": 0.35174013921112995,
+      "waypointRelativePos": 0.43446808510638235,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLoadingStationIntake"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -72,13 +68,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": 145.0
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Bottom Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

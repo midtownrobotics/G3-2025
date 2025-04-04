@@ -7,37 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start to Branch F - AA"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignToBranchF"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoralLevel4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Branch F to Loading Station"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeFromLoadingStation"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Loading Station Branch E - AA"
+            "pathName": "Start Branch E - AA"
           }
         },
         {
@@ -73,7 +43,61 @@
         {
           "type": "named",
           "data": {
+            "name": "WaitForHandoff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "AlignToBranchD"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Branch D To Loading Station"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeFromLoadingStation"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Loading Station Branch C - AA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitForHandoff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchC"
           }
         },
         {

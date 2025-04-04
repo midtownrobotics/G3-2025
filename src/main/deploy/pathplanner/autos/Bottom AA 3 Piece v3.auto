@@ -7,37 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start to Branch F - AA"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignToBranchF"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoralLevel4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Branch F to Loading Station"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeFromLoadingStation"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Loading Station Branch E - AA"
+            "pathName": "Start Branch E - AA"
           }
         },
         {
@@ -67,13 +37,49 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station Branch D - AA"
+            "pathName": "Loading Station Branch C - AA"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AlignToBranchD"
+            "name": "AlignToBranchC"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitForHandoff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Branch C to Middle Stack"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle Stack to Branch B"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchB"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitForHandoff"
           }
         },
         {

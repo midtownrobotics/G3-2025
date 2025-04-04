@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -113,6 +114,7 @@ public class Vision extends SubsystemBase {
                 || Math.abs(observation.pose().getZ())
                     > maxZError // Must have realistic Z coordinate
 
+                || observation.averageTagDistance() > Units.feetToMeters(10)
                 // Must be within the field boundaries
                 || observation.pose().getX() <= 0.0
                 || observation.pose().getX() > aprilTagLayout.getFieldLength()
@@ -134,7 +136,7 @@ public class Vision extends SubsystemBase {
 
         // Calculate standard deviations
         double stdDevFactor =
-            Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
+            Math.pow(observation.averageTagDistance(), 3.0) / observation.tagCount();
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
         if (observation.type() == PoseObservationType.MEGATAG_2) {

@@ -66,14 +66,14 @@ public class Superstructure extends SubsystemBase {
       if (
         (
           coralIntakePosition.gt(Degrees.of(104))
-          || coralIntakeGoalPosition.gt(Degrees.of(110))
+          || coralIntakeGoalPosition.gt(Degrees.of(104))
         )
         && !(coralIntakePosition.gt(Degrees.of(124)))
       ) {
         coralOuttakeConstraints.setUpper(Degrees.of(-35));
       }
 
-      if (coralIntakePosition.gt(Degrees.of(104)) && coralIntakeGoalPosition.lt(Degrees.of(110))) {
+      if (coralIntakePosition.gt(Degrees.of(104)) && coralIntakeGoalPosition.lt(Degrees.of(104))) {
         coralOuttakeConstraints.setUpper(Degrees.of(-35));
       }
 
@@ -81,7 +81,7 @@ public class Superstructure extends SubsystemBase {
         if (coralIntakePosition.gt(Degrees.of(124))) {
           coralIntakeConstraints.setLower(Degrees.of(133));
         } else {
-          coralIntakeConstraints.setUpper(Degrees.of(104));
+          coralIntakeConstraints.setUpper(Degrees.of(110));
         }
       }
     }

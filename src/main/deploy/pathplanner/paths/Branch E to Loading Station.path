@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.974273716448092,
-        "y": 2.7674442843021767
+        "x": 4.981466339398911,
+        "y": 2.7662455138103734
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.474273716448092,
-        "y": 1.9014188805177379
+        "x": 3.994942622950818,
+        "y": 1.8885512295081959
       },
       "isLocked": false,
       "linkedName": "Branch E"
     },
     {
       "anchor": {
-        "x": 1.452376663773147,
-        "y": 0.7055396412037033
+        "x": 1.5477607783564804,
+        "y": 0.7666833043981478
       },
       "prevControl": {
-        "x": 2.0951642734596865,
-        "y": 1.4715840843226813
+        "x": 1.8135000000000003,
+        "y": 1.0219999999999994
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,12 +29,26 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.7,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.45,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "PrepareLoadingStationIntake",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.39824612752161365,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -45,8 +59,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.9,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

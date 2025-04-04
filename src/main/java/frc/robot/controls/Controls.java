@@ -24,6 +24,9 @@ public interface Controls {
   /** Gets the rotation axis. */
   public double getDriveRotation();
 
+  /** Gets the auto align trigger axis. */
+  public double getAutoAlignTrigger();
+
   /** Resets the drive heading. */
   public Trigger resetDriveHeading();
   /** Brakes the drivetrain. "X" Mode. */
@@ -36,6 +39,18 @@ public interface Controls {
   public Trigger rightPositionLock();
   /** Locks to true right position on reef for algae intake. */
   public Trigger reefAlgaePositionLock();
+
+
+  /** drive sysid quasistatic forwards */
+  public Trigger driveQuasistaticForwards();
+  /** drive sysid quasistatic backwards */
+  public Trigger driveQuasistaticBackwards();
+  /** drive sysid dynamic forwards */
+  public Trigger driveDynamicForwards();
+  /** drive sysid dynamic backwards */
+  public Trigger driveDynamicBackwards();
+  /** catch all field element lock */
+  public Trigger fieldElementLock();
 
   // Operator Controls
 
@@ -76,8 +91,8 @@ public interface Controls {
   public Trigger prepareScoreCoralL3();
   /** Moves elevator into position to score L4 */
   public Trigger prepareScoreCoralL4();
-  /** Moves the outtake to remove algae from the coral reef */
-  public Trigger dealgify();
+  /** Scores or removes algae based on coral mode*/
+  public Trigger algae();
 
   /** Sets the algae claw to barge mode */
   public Trigger algaeModeBarge();

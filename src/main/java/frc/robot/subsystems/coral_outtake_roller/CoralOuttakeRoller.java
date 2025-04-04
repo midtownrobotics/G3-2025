@@ -20,12 +20,14 @@ public class CoralOuttakeRoller extends SubsystemBase {
 
   public enum Goal {
     STOW(Volts.zero()),
-    SHOOT(Volts.of(5.5)),
+    SHOOT(Volts.of(8)),
     DEALGIFY(Volts.of(5.5)),
-    HANDOFF(Volts.of(3)),
+    HANDOFF(Volts.of(4)),
     HANDOFF_REVERSE(Volts.of(-2)),
     INTAKE(Volts.zero()),
     REVERSE_SHOOT(Volts.of(-7)),
+    ALGAE_HOLD(Volts.of(2.5)),
+    ALGAE_SHOOT(Volts.of(-12)),
     TUNING(),
     MANUAL();
 
@@ -62,7 +64,7 @@ public class CoralOuttakeRoller extends SubsystemBase {
   private LinearFilter currentSpikeFilter = LinearFilter.movingAverage(3);
 
   private boolean currentSpikeFiltered() {
-    return currentSpikeFilter.calculate(rollerInputs.supplyCurrent.in(Amps)) > 10;
+    return currentSpikeFilter.calculate(rollerInputs.supplyCurrent.in(Amps)) > 18;
   }
 
   public AngularVelocity getRollerSpeed() {

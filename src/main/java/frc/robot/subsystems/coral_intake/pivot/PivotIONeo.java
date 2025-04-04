@@ -29,9 +29,6 @@ public class PivotIONeo implements PivotIO {
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
     pivotConfig.smartCurrentLimit(60);
     pivotConfig.idleMode(IdleMode.kBrake);
-    pivotConfig.closedLoop.pidf(CoralIntakeConstants.PID.p.get(), CoralIntakeConstants.PID.i.get(), CoralIntakeConstants.PID.d.get(), 0);
-    pivotConfig.closedLoop.maxMotion.maxVelocity(0.5);
-    pivotConfig.closedLoop.maxMotion.maxAcceleration(0.5);
     pivotConfig.inverted(true);
     pivotConfig.encoder.positionConversionFactor(1.0 / 50);
     pivotConfig.encoder.velocityConversionFactor(1.0 / 50 / 60);
@@ -51,8 +48,6 @@ public class PivotIONeo implements PivotIO {
     inputs.temperature = Units.Celsius.of(pivotMotor.getMotorTemperature());
 
     Logger.recordOutput("CoralIntake/ZeroedAbsoluteEncoder", getZeroedAbsoluteEncoderPosition());
-
-
   }
 
   @Override

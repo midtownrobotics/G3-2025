@@ -3,52 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.33575,
-        "y": 7.115749999999999
+        "x": 7.304374796542863,
+        "y": 4.966281218351872
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9785376096865395,
-        "y": 6.3497055568810215
+        "x": 7.707588935154107,
+        "y": 4.813892780713409
       },
       "isLocked": false,
-      "linkedName": "Top Loading Station"
+      "linkedName": "Barge Right Prepare"
     },
     {
       "anchor": {
-        "x": 5.115,
-        "y": 5.263
+        "x": 5.346668435555916,
+        "y": 5.459255187423142
       },
       "prevControl": {
-        "x": 5.614999999999999,
-        "y": 6.129025403784439
+        "x": 5.088812045629989,
+        "y": 5.4781588177426555
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch J"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.6917271860328639,
-      "rotationDegrees": -120.45471540298064
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Handoff",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Handoff"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 2.5,
@@ -62,10 +45,10 @@
     "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Center Side AA",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

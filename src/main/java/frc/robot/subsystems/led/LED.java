@@ -12,10 +12,11 @@ import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Ports;
 
 public class LED extends SubsystemBase {
     private static final LEDPattern kDefaultPattern = LEDPattern.gradient(GradientType.kContinuous, Color.kFirstRed, Color.kDarkRed).breathe(Seconds.of(8)).scrollAtRelativeSpeed(Percent.per(Second).of(50));
-    private AddressableLED led = new AddressableLED(2);
+    private AddressableLED led = new AddressableLED(Ports.LED);
     private AddressableLEDBuffer buffer = new AddressableLEDBuffer(31);
 
     /** Creates a new LED subsystem */

@@ -3,50 +3,40 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.33575,
-        "y": 7.115749999999999
+        "x": 7.129505046096649,
+        "y": 4.147
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9785376096865395,
-        "y": 6.3497055568810215
+        "x": 7.541414784270144,
+        "y": 4.14486424479477
       },
       "isLocked": false,
-      "linkedName": "Top Loading Station"
+      "linkedName": "Start Center"
     },
     {
       "anchor": {
-        "x": 5.115,
-        "y": 5.263
+        "x": 6.196265424020947,
+        "y": 4.147
       },
       "prevControl": {
-        "x": 5.614999999999999,
-        "y": 6.129025403784439
+        "x": 5.863100509028621,
+        "y": 4.147263997673701
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch J"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.6917271860328639,
-      "rotationDegrees": -120.45471540298064
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff",
-      "waypointRelativePos": 0.0,
+      "name": "PrepareLevel4",
+      "waypointRelativePos": 0.9537884785091352,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Handoff"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -59,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Center Side AA",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 35.0
+    "velocity": 0.0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

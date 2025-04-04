@@ -20,6 +20,7 @@ import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -51,12 +52,20 @@ import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularVelocity;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearVelocity;
 import frc.robot.sensors.VisionConstants;
+import frc.robot.subsystems.coral_intake.CoralIntake;
+import frc.robot.subsystems.coral_outtake_pivot.CoralOuttakePivot;
+import frc.robot.subsystems.coral_outtake_roller.CoralOuttakeRoller;
 import frc.robot.subsystems.drivetrain.Drive;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.led.LED;
 import frc.robot.utils.FieldConstants;
+import frc.robot.utils.FieldConstants.Barge;
+import frc.robot.utils.FieldConstants.CoralStation;
+import frc.robot.utils.FieldConstants.Processor;
 import frc.robot.utils.ReefFace;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,13 +73,12 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.01;
-  private static final double ANGLE_KP = 4.5;
+  private static final double ANGLE_KP = 1.1;
   private static final double ANGLE_KD = 0.5;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
   private static final double ANGLE_MAX_ACCELERATION = 20.0;
@@ -86,9 +94,6 @@ public class DriveCommands {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
     Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
-
-    // Square magnitude for more precise control
-    linearMagnitude = linearMagnitude * linearMagnitude;
 
     // Return new linear velocity
     return new Pose2d(new Translation2d(), linearDirection)
@@ -146,8 +151,7 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier
-      ) {
+      DoubleSupplier omegaSupplier) {
     return Commands.run(() -> {
       drive.runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
           new ChassisSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), omegaSupplier.getAsDouble()),
@@ -364,6 +368,22 @@ public class DriveCommands {
       ),
       Rotation2d.k180deg);
 
+  // TODO idk man just ask someone
+  private static final Transform2d kRobotL1Offset = new Transform2d(
+    new Translation2d(
+      Inches.of(20), // F/B
+      Inches.of(-1.614)),
+    Rotation2d.k180deg
+  );
+
+  private static final Transform2d kStationOffset = new Transform2d(
+    new Translation2d(
+      Inches.of(20),
+      Inches.of(-1.614)
+    ),
+    Rotation2d.k180deg
+  );
+
   private static final Transform2d kRobotAlgaeAlignOffset = new Transform2d(
       new Translation2d(
           Inches.of(20), // F/B
@@ -409,6 +429,70 @@ public class DriveCommands {
           new DriveToPoint(drive, () -> allianceAppliedTarget),
           drive.stopWithXCommand());
     }, Set.of(drive));
+  }
+
+  private static final List<CoralIntake.Goal> INTAKE_PROCESSOR_GOALS = Arrays.asList(new CoralIntake.Goal[] {
+      CoralIntake.Goal.ALGAE_INTAKE, CoralIntake.Goal.ALGAE_SHOOT, CoralIntake.Goal.HOLD_ALGAE });
+
+  private static final List<CoralIntake.Goal> INTAKE_L1_GOALS = Arrays.asList(new CoralIntake.Goal[] {
+    CoralIntake.Goal.L1, CoralIntake.Goal.L1_Prepare
+  });
+
+  private static final boolean isNear(Translation2d current, Translation2d target) {
+    return current.getDistance(target) < 3;
+  }
+
+  /**
+   * Creates command that will lock to different field elements based on current
+   * robot state and current location
+   */
+  public static Command fieldElementLock(Drive drive, CoralIntake intake, CoralOuttakeRoller roller,
+      CoralOuttakePivot pivot, Elevator elevator, LED led,
+      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper) {
+    Supplier<Command> commandSupplier = () -> {
+      Translation2d driveTranslation2d = drive.getPose().getTranslation();
+      boolean elevatorClimb = elevator.getCurrentGoal() == Elevator.Goal.CLIMB;
+
+      if (INTAKE_PROCESSOR_GOALS.contains(intake.getCurrentGoal())
+          && isNear(driveTranslation2d, Processor.centerFace.getTranslation())) {
+        return Commands.sequence(
+            new DriveToPoint(drive, () -> Processor.centerFace.transformBy(kRobotAlgaeAlignOffset)),
+            // TODO Processor offset probably not same as algae???
+            drive.stopCommand());
+      }
+
+      if (elevatorClimb) {
+        return Commands.sequence(
+            new DriveToPoint(drive,
+                () -> new Pose2d(
+                    driveTranslation2d
+                        .nearest(Arrays.asList(new Translation2d[] { Barge.closeCage, Barge.middleCage, Barge.farCage })),
+                    Rotation2d.k180deg)));
+      }
+      // TODO AGAIN Station offset probably not same as algae!!!
+      if (intake.getCurrentGoal() == CoralIntake.Goal.STATION_INTAKE) {
+        if (isNear(driveTranslation2d, CoralStation.leftCenterFace.getTranslation())) {
+          return Commands.sequence(
+              new DriveToPoint(drive, () -> CoralStation.leftCenterFace.rotateAround(CoralStation.leftCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
+              drive.stopCommand());
+        } else if (isNear(driveTranslation2d, CoralStation.rightCenterFace.getTranslation())) {
+          return Commands.sequence(
+              new DriveToPoint(drive, () -> CoralStation.rightCenterFace.rotateAround(CoralStation.rightCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
+              drive.stopCommand());
+        }
+      }
+
+      if (INTAKE_L1_GOALS.contains(intake.getCurrentGoal())) {
+        return alignToL1Reef(drive, led, reefFaceSupplier);
+      }
+
+      if (pivot.getCurrentGoal() == CoralOuttakePivot.Goal.DEALGIFY) {
+        return alignToAlgaeReef(drive, led, reefFaceSupplier);
+      }
+
+      return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper);
+    };
+    return Commands.defer(commandSupplier, Set.of());
   }
 
   /** Creates a command that drives to a reef position based on POV */
@@ -465,66 +549,66 @@ public class DriveCommands {
     };
 
     return Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier),
+        new DriveToPoint(drive, branchPoseSupplier, Degrees.of(1), Inches.of(1)),
         drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
   }
 
-  /** Aligns to the Pose2d of the game piece */
-  public static Command alignToGamePiece(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
-    AtomicReference<Pose2d> gamePiecePose = new AtomicReference<>();
+  private static final double maxSpeedAutoIntake = 1;
 
-    Function<Pose2d, Pose2d> gamePiecePoseSupplier = (robotPose) -> {
-      // "d = (h2-h1) / tan(a1+a2)"
-      Pose3d robotPose3d = new Pose3d(robotPose);
+  /**
+   * Command to align to a game piece.
+   *
+   * @param drive                       The {@link Drive} subsystem.
+   * @param interpolationFactorSupplier A supplier for the ammount of inerpolation
+   *                                    to use. Multipled directly by
+   *                                    driverDesired.
+   * @param driverDesiredXSupplier      A supplier for the driver desired X value
+   *                                    (0.0-1.0).
+   * @param driverDesiredYSupplier      A supplier for the driver desired Y value
+   *                                    (0.0-1.0).
+   * @param coral                       Whether you are aligning to the coral or
+   *                                    algae. {@code true} for coral.
+   *                                    {@code false} for algae.
+   * @return A {@link Command} to align to the game piece.
+   */
+  public static Command alignToGamePiece(Drive drive, Supplier<Double> interpolationFactorSupplier,
+      Supplier<Double> driverDesiredXSupplier, Supplier<Double> driverDesiredYSupplier, Supplier<Boolean> coral) {
+    Logger.recordOutput("GRAYCORAL/interpsjefac", interpolationFactorSupplier.get());
+    AtomicReference<Pose2d> gamePiecePoseReference = new AtomicReference<>();
 
-      Pose3d cameraPose3d = robotPose3d.transformBy(VisionConstants.kIntakeClassifierRobotToCamera);
+    Supplier<Translation2d> getTranslation = () -> {
+      // 2d Vector of Driver Desired in Field Space (MPS)
+      Translation2d driverDesired = new Translation2d(
+        (driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)),
+        (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
 
-      Distance cameraHeight = cameraPose3d.getTranslation().getMeasureZ();
-      Angle cameraAngle = cameraPose3d.getRotation().getMeasureY();
+      // 2d Pose of Piece in FieldSpace
+      Pose2d piecePose = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get());
+      // Pose2d piecePose = new Pose2d(2, 2, new Rotation2d());
+      Logger.recordOutput("GRAYCORAL/piecePose", piecePose);
 
-      Distance targetHeight = Inches.of(2.5);
+      if (piecePose == null)
+        return driverDesired;
 
-      Angle targetY = Degrees.of(LimelightHelpers.getTY(VisionConstants.kIntakeClassifierCameraName));
-      Angle targetX = Degrees.of(LimelightHelpers.getTX(VisionConstants.kIntakeClassifierCameraName));
+      Translation2d poseError = piecePose.getTranslation().minus(drive.getPose().getTranslation());
+      Logger.recordOutput("GRAYCORAL/poseError", poseError);
 
-      if (targetX.isEquivalent(Degrees.zero())) {
-        return gamePiecePose.get();
+      poseError = new Translation2d(
+          MathUtil.clamp(poseError.getNorm(), 0, kMaxLinearVelocity.get().in(MetersPerSecond)), poseError.getAngle());
+
+      if (Math.abs(poseError.getAngle().minus(driverDesired.getAngle()).getDegrees()) < 20) {
+        Translation2d driverMagnitudeButPoseErrorDirectionVector = new Translation2d(driverDesired.getNorm(),
+            poseError.getAngle());
+        return driverMagnitudeButPoseErrorDirectionVector.interpolate(poseError, interpolationFactorSupplier.get() * interpolationFactorSupplier.get());
       }
 
-      double tanVertical = Math.tan(cameraAngle.plus(targetY).in(Radians));
-      Distance distanceX = (targetHeight.minus(cameraHeight)).div(tanVertical);
-      Distance distanceDiag = Meters.of(Math.hypot(distanceX.in(Meters), cameraHeight.in(Meters)));
-
-      double tanHorizontal = Math.tan(targetX.in(Radians));
-
-      Distance distanceY = distanceDiag.times(tanHorizontal);
-
-      Transform2d cameraToTarget = new Transform2d(distanceX, distanceY, Rotation2d.kZero);
-
-      Pose2d targetPose = cameraPose3d.toPose2d().transformBy(cameraToTarget);
-
-      gamePiecePose.set(targetPose);
-
-      Logger.recordOutput("AlignToGamePiece/DistanceX", distanceX);
-      Logger.recordOutput("AlignToGamePiece/DistanceY", distanceY);
-      Logger.recordOutput("AlignToGamePiece/TargetPose", targetPose);
-
-      return gamePiecePose.get();
+      return driverDesired.interpolate(poseError, interpolationFactorSupplier.get() * interpolationFactorSupplier.get());
     };
 
-    return Commands.runOnce(() -> gamePiecePose.set(null))
-        .andThen(joystickDriveAtAngle(drive, xSupplier, ySupplier, () -> {
-          Rotation2d offset = Rotation2d.fromDegrees(7);
-          Pose2d robotPose = drive.getPose();
-          Pose2d targetPose = gamePiecePoseSupplier.apply(robotPose);
+    Logger.recordOutput("GRAYCORAL/FINALS_TRANSLATION", getTranslation.get());
 
-          if (targetPose == null) {
-            return robotPose.getRotation();
-          }
-
-          return targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle().plus(offset);
-        }));
-    // drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+    return joystickDriveAtAngle(drive, () -> getTranslation.get().getX(), () -> getTranslation.get().getY(),
+        () -> getPieceRotationError(gamePiecePoseReference, drive.getPose(), coral.get()));
   }
 
   /**
@@ -553,5 +637,100 @@ public class DriveCommands {
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
         drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
+  }
+
+  /**
+   * Creates a command that drives to reef position, aligned to the center of the
+   * face.
+   */
+  public static Command alignToL1Reef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier) {
+    Supplier<Pose2d> branchPoseSupplier = () -> {
+      ReefFace face = reefFaceSupplier.get();
+
+      if (face == null) {
+        return null;
+      }
+
+
+      // TODO Might have to be 90 CCW?
+      Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
+          .transformBy(kRobotL1Offset);
+
+      target = target.rotateAround(target.getTranslation(), Rotation2d.kCCW_90deg);
+
+      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
+
+      Logger.recordOutput("PathfindToReefALGAE/ReefFace", face);
+      Logger.recordOutput("PathfindToReefALGAE/TargetPose", allianceAppliedTarget);
+
+      return allianceAppliedTarget;
+    };
+
+    return Commands.sequence(
+        new DriveToPoint(drive, branchPoseSupplier),
+        drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
+  }
+
+  /** Returns the piece pose in Field Space (Cached if necessary) */
+  private static Pose2d getPiecePose(Pose2d robotPose, AtomicReference<Pose2d> gamePiecePoseReference, boolean coral) {
+    // "d = (h2-h1) / tan(a1+a2)"
+    Pose3d robotPose3d = new Pose3d(robotPose);
+
+    Pose3d cameraPose3d = robotPose3d.transformBy(VisionConstants.kIntakeClassifierRobotToCamera);
+
+    Distance cameraHeight = cameraPose3d.getTranslation().getMeasureZ();
+    Angle cameraAngle = VisionConstants.kIntakeClassifierRobotToCamera.getRotation().getMeasureY().times(-1);
+    Angle cameraXAngle = Degrees.of(90).minus(VisionConstants.kIntakeClassifierRobotToCamera.getRotation().getMeasureZ());
+    // cameraXAngle = Degrees.zero();
+
+    Distance targetHeight = Inches.of(2.25);
+
+    Angle targetY = Degrees.of(LimelightHelpers.getTY(VisionConstants.kIntakeClassifierCameraName));
+    Angle targetX = Degrees.of(LimelightHelpers.getTX(VisionConstants.kIntakeClassifierCameraName));
+
+    if (targetX.isEquivalent(Degrees.zero())) {
+      return gamePiecePoseReference.get();
+    }
+
+    double tanVertical = Math.tan(cameraAngle.plus(targetY).times(-1).in(Radians));
+    Distance distanceX = (cameraHeight.minus(targetHeight)).div(tanVertical);
+    Distance distanceDiag = Meters.of(Math.hypot(distanceX.in(Meters), cameraHeight.in(Meters)));
+
+    double tanHorizontal = Math.tan(cameraXAngle.plus(targetX).in(Radians));
+
+    Distance distanceY = distanceDiag.times(-tanHorizontal);
+    // distanceX = distanceX.times(-1);
+
+    Transform2d cameraToTarget = new Transform2d(distanceX.times(0.891), distanceY, Rotation2d.kZero);
+
+    Pose2d targetPose = cameraPose3d.toPose2d().transformBy(cameraToTarget);
+
+    if (gamePiecePoseReference.get() != null) {
+      targetPose = targetPose.interpolate(gamePiecePoseReference.get(), 0.5);
+    }
+
+    gamePiecePoseReference.set(targetPose);
+
+    Logger.recordOutput("AlignToGamePiece/DistanceX", distanceX);
+    Logger.recordOutput("AlignToGamePiece/DistanceY", distanceY);
+    Logger.recordOutput("AlignToGamePiece/TargetPose", targetPose);
+    Logger.recordOutput("AlignToGamePiece/CameraPose", cameraPose3d);
+    Logger.recordOutput("AlignToGamePiece/CameraAngle", cameraAngle.in(Degrees));
+    Logger.recordOutput("AlignToGamePiece/CameraXAngle", cameraXAngle.in(Degrees));
+
+
+    return gamePiecePoseReference.get();
+  };
+
+  private static Rotation2d getPieceRotationError(AtomicReference<Pose2d> gamePiecePoseReference, Pose2d robotPose,
+      boolean coral) {
+    Rotation2d offset = Rotation2d.fromDegrees(-77);
+    Pose2d targetPose = getPiecePose(robotPose, gamePiecePoseReference, coral);
+
+    if (targetPose == null) {
+      return robotPose.getRotation();
+    }
+
+    return targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle().plus(offset);
   }
 }

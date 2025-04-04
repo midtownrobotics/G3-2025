@@ -3,42 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.33575,
-        "y": 7.115749999999999
+        "x": 1.5477607783564804,
+        "y": 0.7666833043981478
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.242839412913603,
-        "y": 6.486071834788603
+        "x": 2.1905483880430197,
+        "y": 1.532727747517126
       },
       "isLocked": false,
-      "linkedName": "Top Loading Station"
+      "linkedName": "Bottom Loading Station"
     },
     {
       "anchor": {
-        "x": 3.7245000000000004,
-        "y": 5.10725
+        "x": 5.144559417845411,
+        "y": 2.4879009129685428
       },
       "prevControl": {
-        "x": 3.5833268919876264,
-        "y": 5.313575358533861
+        "x": 5.894559417845411,
+        "y": 1.1888628072918848
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch L"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4124824026278862,
-      "rotationDegrees": -58.237903384819454
+      "waypointRelativePos": 0.3396698573850234,
+      "rotationDegrees": 70.30161515031095
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Handoff and PrepareScoreLevel4",
+      "name": "Handoff",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
@@ -50,14 +50,19 @@
               "data": {
                 "name": "Handoff"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "PrepareLevel4"
-              }
             }
           ]
+        }
+      }
+    },
+    {
+      "name": "PrepareLevel4",
+      "waypointRelativePos": 0.9524999649349198,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLevel4"
         }
       }
     }
@@ -71,14 +76,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -59.381394591090576
+    "velocity": 0.4,
+    "rotation": 119.99999999999999
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Bottom Side AA",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": 145.0
   },
   "useDefaultConstraints": true
 }

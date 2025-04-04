@@ -34,13 +34,13 @@ public class VisionConstants {
   public static final String kIntakeClassifierCameraName = "limelight-ankit";
 
       public static final Transform3d kModuleTagRobotToCamera = new Transform3d(
-        new Translation3d(Inches.of(8.431), Inches.of(12.458), Inches.of(8.053)),
-        new Rotation3d(Degrees.zero(), Degrees.of(-15), Degrees.of(15))
+        new Translation3d(Inches.of(9.551), Inches.of(11.970), Inches.of(7.981)),
+        new Rotation3d(Degrees.zero(), Degrees.of(-15), Degrees.of(35))
     );
 
       public static final Transform3d kElevatorTagRobotToCamera = new Transform3d(
-        new Translation3d(Inches.of(-2.998), Inches.of(-12.74), Inches.of(10.918)),
-        new Rotation3d(Degrees.zero(), Degrees.of(-10), Degrees.of(-20))
+        new Translation3d(Inches.of(-3.223), Inches.of(-13.027), Inches.of(11.009)),
+        new Rotation3d(Degrees.zero(), Degrees.of(-15), Degrees.of(-40))
     );
 
     public static final Transform3d kPoleTagRobotToCamera = new Transform3d(
@@ -49,18 +49,18 @@ public class VisionConstants {
     );
 
     public static final Transform3d kIntakeClassifierRobotToCamera = new Transform3d(
-        new Translation3d(Inches.of(-8.451), Inches.of(-6.377), Inches.of(37.864)),
-        new Rotation3d(Degrees.zero(), Degrees.of(-37), Degrees.of(87.5))
+        new Translation3d(Inches.of(-8.358), Inches.of(-6.340), Inches.of(33.542)),
+        new Rotation3d(Degrees.zero(), Degrees.of(27), Degrees.of(80))
     );
 
   // Basic filtering thresholds
-  public static double maxAmbiguity = 0.2;
-  public static double maxZError = 0.3;
+  public static double maxAmbiguity = 0.15;
+  public static double maxZError = 0.2;
 
   // Standard deviation baselines, for 1 meter distance and 1 tag
   // (Adjusted automatically based on distance and # of tags)
-  public static double linearStdDevBaseline = 0.09; // Meters
-  public static double angularStdDevBaseline = 0.3; // Radians
+  public static double linearStdDevBaseline = 0.18; // Meters
+  public static double angularStdDevBaseline = 0.5; // Radians
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)

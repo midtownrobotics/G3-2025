@@ -44,7 +44,7 @@ public class PhoenixOdometryThread extends Thread {
   private final List<Queue<Double>> timestampQueues = new ArrayList<>();
 
   private static boolean isCANFD =
-      new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD();
+      new CANBus(GoldenTunerConstants.DrivetrainConstants.CANBusName).isNetworkFD();
   private static PhoenixOdometryThread instance = null;
 
 

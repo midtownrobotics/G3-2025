@@ -2,7 +2,6 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -24,8 +23,8 @@ import frc.robot.subsystems.elevator.lock.LockIO;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
+import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
-import frc.robot.utils.UnitUtil;
 import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -42,9 +41,11 @@ public class Elevator extends SubsystemBase {
     HANDOFF(Inches.of(0.5)),
     L2(Inches.of(24)),
     L3(Inches.of(40)),
-    L4(Inches.of(64.5)),
-    DEALGIFY_LOW(Inches.of(11.5)),
-    DEALGIFY_HIGH(Inches.of(27.5)),
+    L4(Inches.of(65.25)),
+    PROCESSOR(Inches.zero()),
+    DEALGIFY_LOW(Inches.of(13.5)),
+    DEALGIFY_HIGH(Inches.of(30)),
+    BARGE(Inches.of(68)),
     CLIMB(Inches.of(16)),
     CLIMB_BOTTOM(Feet.zero(), false),
     CLIMB_BOTTOM_LOCK(CLIMB_BOTTOM.getHeight(), true),
@@ -153,9 +154,11 @@ public class Elevator extends SubsystemBase {
       constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight()).plus(driverOffset);
     }
 
-    Distance desiredTuningHeight = Feet.of(tuningDesiredHeight.get());
+    Distance desiredTuningHeight = Inches.of(tuningDesiredHeight.get());
 
-    desiredTuningHeight = UnitUtil.clamp(desiredTuningHeight, Feet.of(0), Feet.of(5.3));
+    if (Constants.tuningMode.get()) {
+      constrainedHeight = ((elevatorConstraint.getClampedValue(desiredTuningHeight)));
+    }
 
     lock.setLockEnabled(getCurrentGoal().lockEnabled);
 
@@ -168,7 +171,6 @@ public class Elevator extends SubsystemBase {
         winch.setClimbPosition(constrainedHeight);
         break;
       case TUNING:
-        winch.setClimbPosition(desiredTuningHeight);
         break;
       case MANUAL:
       default:
@@ -177,15 +179,15 @@ public class Elevator extends SubsystemBase {
     }
 
     Logger.recordOutput("Elevator/currentGoal", getCurrentGoal());
-    Logger.recordOutput("Elevator/goalHeightInches", currentGoal.getHeight().in(Inches));
+    Logger.recordOutput("Elevator/goalHeight", currentGoal.getHeight());
     Logger.recordOutput("Elevator/atGoal", atGoal());
 
-    Logger.recordOutput("Elevator/currentHeightInches", getPosition().in(Inches));
-    Logger.recordOutput("Elevator/currentVelocityInchesPerSecond", getVelocity().in(InchesPerSecond));
+    Logger.recordOutput("Elevator/currentHeight", getPosition());
+    Logger.recordOutput("Elevator/currentVelocity", getVelocity());
 
-    Logger.recordOutput("Elevator/constrainedMaxHeightInches", elevatorConstraint.getUpper().in(Inches));
-    Logger.recordOutput("Elevator/constrainedMinHeightInches", elevatorConstraint.getLower().in(Inches));
-    Logger.recordOutput("Elevator/constrainedGoalHeightInches", constrainedHeight.in(Inches));
+    Logger.recordOutput("Elevator/constrainedMaxHeight", elevatorConstraint.getUpper());
+    Logger.recordOutput("Elevator/constrainedMinHeight", elevatorConstraint.getLower());
+    Logger.recordOutput("Elevator/constrainedGoalHeight", constrainedHeight);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
@@ -245,7 +247,7 @@ public class Elevator extends SubsystemBase {
    * specified goal.
    */
   public boolean atGoal(Goal goal) {
-    return atGoal(goal, Inches.of(0.5));
+    return atGoal(goal, Inches.of(0.99));
   }
 
   /**

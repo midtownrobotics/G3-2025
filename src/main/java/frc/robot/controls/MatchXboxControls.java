@@ -63,6 +63,11 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
+  public double getAutoAlignTrigger() {
+    return driverController.getLeftTriggerAxis();
+  }
+
+  @Override
   public Trigger decreaseElevatorOffset() {
     return driverController.povDown();
   }
@@ -176,6 +181,26 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
+  public Trigger driveDynamicForwards() {
+      return driverController.rightStick();
+  }
+
+  @Override
+  public Trigger driveDynamicBackwards() {
+      return driveDynamicForwards().and(driverController.leftTrigger());
+  }
+
+  @Override
+  public Trigger driveQuasistaticForwards() {
+    return driverController.leftStick();
+  }
+
+  @Override
+  public Trigger driveQuasistaticBackwards() {
+      return driveQuasistaticForwards().and(driverController.leftTrigger());
+  }
+
+  @Override
   public Trigger prepareScoreCoral() {
     return operatorController.a().and(getNotManualMode);
   }
@@ -207,9 +232,11 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
-  public Trigger dealgify() {
+  public Trigger algae() {
     return operatorController.x();
   }
+
+
 
   @Override
   public Trigger scoreGamePiece() {
@@ -242,7 +269,7 @@ public class MatchXboxControls implements Controls {
 
   @Override
   public Trigger panic() {
-    return driverController.start();
+    return driverController.start().or(operatorController.start());
   }
 
   // Manual Controls
@@ -295,6 +322,12 @@ public class MatchXboxControls implements Controls {
   @Override
   public Trigger algaeClawReverse() {
     return new Trigger(() -> false);
+  }
+
+  @Override
+  public Trigger fieldElementLock() {
+      return driverController.leftBumper()
+        .or(driverController.rightBumper());
   }
 
   @Override
