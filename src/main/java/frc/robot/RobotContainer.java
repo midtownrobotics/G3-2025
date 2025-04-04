@@ -277,7 +277,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
         prepareScoreCoral(CoralMode.L4),
         coralOuttakeRoller
-            .setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT, CoralOuttakeRoller.Goal.STOW)
+            .setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT_L4, CoralOuttakeRoller.Goal.STOW)
             .withTimeout(0.5),
         Commands.parallel(
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
@@ -482,7 +482,7 @@ public class RobotContainer {
         coralIntake.setGoalEndCommand(CoralIntake.Goal.L1, CoralIntake.Goal.STOW));
 
     controls.scoreGamePiece().and(() -> coralMode != CoralMode.L1).whileTrue(
-        coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT,
+        coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
             CoralOuttakeRoller.Goal.STOW));
 
     controls.reverseGamePiece()
