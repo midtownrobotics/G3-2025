@@ -223,7 +223,7 @@ public class CoralIntake extends SubsystemBase {
         }
 
         if (getPosition().isNear(desiredAngle, Degrees.of(2))) {
-          pivotIO.setVoltage(Volts.of(-0.15));
+          pivotIO.setVoltage(Volts.of(-0.05));
         } else {
           pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
         }
@@ -240,7 +240,7 @@ public class CoralIntake extends SubsystemBase {
         }
         break;
       case GROUND_INTAKE:
-        if (getPosition().isNear(desiredAngle, Degrees.of(2)) || getPosition().lt(desiredAngle)) {
+        if (getPosition().isNear(desiredAngle, Degrees.of(3)) || getPosition().lt(desiredAngle)) {
           pivotIO.setVoltage(Volts.zero());
         } else {
           pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
