@@ -443,7 +443,7 @@ public class DriveCommands {
       CoralIntake.Goal.ALGAE_INTAKE, CoralIntake.Goal.ALGAE_SHOOT, CoralIntake.Goal.HOLD_ALGAE });
 
   private static final List<CoralIntake.Goal> INTAKE_L1_GOALS = Arrays.asList(new CoralIntake.Goal[] {
-    CoralIntake.Goal.L1, CoralIntake.Goal.L1_Prepare
+    CoralIntake.Goal.L1, CoralIntake.Goal.L1_PREPARE
   });
 
   private static final boolean isNear(Translation2d current, Translation2d target) {
@@ -463,6 +463,7 @@ public class DriveCommands {
 
       if (INTAKE_PROCESSOR_GOALS.contains(intake.getCurrentGoal())
           && isNear(driveTranslation2d, Processor.centerFace.getTranslation())) {
+        Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToProcessor");
         return Commands.sequence(
             new DriveToPoint(drive, () -> Processor.centerFace.transformBy(kRobotAlgaeAlignOffset)),
             // TODO Processor offset probably not same as algae???
@@ -470,6 +471,7 @@ public class DriveCommands {
       }
 
       if (elevatorClimb) {
+        Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToCage");
         return Commands.sequence(
             new DriveToPoint(drive,
                 () -> new Pose2d(
@@ -480,10 +482,12 @@ public class DriveCommands {
       // TODO AGAIN Station offset probably not same as algae!!!
       if (intake.getCurrentGoal() == CoralIntake.Goal.STATION_INTAKE) {
         if (isNear(driveTranslation2d, CoralStation.leftCenterFace.getTranslation())) {
+          Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToCoralStationLeft");
           return Commands.sequence(
               new DriveToPoint(drive, () -> CoralStation.leftCenterFace.rotateAround(CoralStation.leftCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
               drive.stopCommand());
         } else if (isNear(driveTranslation2d, CoralStation.rightCenterFace.getTranslation())) {
+          Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToCoralStationRight");
           return Commands.sequence(
               new DriveToPoint(drive, () -> CoralStation.rightCenterFace.rotateAround(CoralStation.rightCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
               drive.stopCommand());
@@ -491,13 +495,16 @@ public class DriveCommands {
       }
 
       if (INTAKE_L1_GOALS.contains(intake.getCurrentGoal())) {
+        Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToL1Reef");
         return alignToL1Reef(drive, led, reefFaceSupplier);
       }
 
       if (pivot.getCurrentGoal() == CoralOuttakePivot.Goal.DEALGIFY) {
+        Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToAlgaeReef");
         return alignToAlgaeReef(drive, led, reefFaceSupplier);
       }
 
+      Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToBranchReef");
       return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper, waitingstate);
     };
     return Commands.defer(commandSupplier, Set.of());
