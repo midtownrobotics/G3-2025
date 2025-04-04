@@ -482,7 +482,7 @@ public class RobotContainer {
         coralIntake.setGoalEndCommand(CoralIntake.Goal.L1, CoralIntake.Goal.STOW));
 
     controls.scoreGamePiece().and(() -> coralMode != CoralMode.L1).whileTrue(
-        coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
+        coralOuttakeRoller.setGoalEndCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
             CoralOuttakeRoller.Goal.STOW));
 
     controls.reverseGamePiece()

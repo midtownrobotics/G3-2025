@@ -3,6 +3,8 @@ package frc.robot.subsystems.coral_outtake_roller;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -123,5 +125,10 @@ public class CoralOuttakeRoller extends SubsystemBase {
   /** Returns a command that sets the goal of the coral outtake and resets the goal when it ends */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
+  }
+
+  /** Returns a command that sets the supplier goal of the coral outtake and resets the goal when it ends */
+  public Command setGoalEndCommand(Supplier<Goal> goal, Goal endGoal) {
+    return run(() -> setGoal(goal.get())).finallyDo(() -> setGoal(endGoal));
   }
 }
