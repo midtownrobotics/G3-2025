@@ -216,8 +216,8 @@ public class CoralIntake extends SubsystemBase {
 
     switch (getCurrentGoal()) {
       case HANDOFF:
-        if (getPosition().lt(Degrees.of(129))) {
-          desiredBeltVoltage = Volts.of(0);
+        if (getPosition().lt(Degrees.of(131))) {
+          desiredBeltVoltage = Goal.PRE_HANDOFF_ADJUST_CORAL.getBeltVoltage();
         } else {
           desiredBeltVoltage = Goal.HANDOFF.getBeltVoltage();
         }
