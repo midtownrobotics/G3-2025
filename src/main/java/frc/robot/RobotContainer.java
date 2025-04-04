@@ -572,7 +572,7 @@ public class RobotContainer {
               }
 
               return closestFace;
-            }, controls.alignToReefLeftBranch(), () -> elevator.getPosition().lt(Inches.of(5))));
+            }, controls.alignToReefLeftBranch(), () -> elevator.getPosition().lt(Inches.of(5)), () -> coralMode));
 
     // controls.alignToAlgaeReef()
     // .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
@@ -771,7 +771,7 @@ public class RobotContainer {
             coralIntake.setGoalCommand(CoralIntake.Goal.PRE_HANDOFF_ADJUST_CORAL),
             Commands.waitUntil(coralIntake.atGoalTrigger.and(coralIntake.centerSensorTrigger)).withTimeout(3.0),
             coralIntake.setGoalCommand(CoralIntake.Goal.STOW)),
-        coralIntake.setGoalCommand(coralMode == CoralMode.L1 ? CoralIntake.Goal.L1_PREPARE : CoralIntake.Goal.STOW),
+        coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
         coralIntake.handoffSensorTrigger);
   }
 
