@@ -108,6 +108,9 @@ public class RobotContainer {
   private CANBusStatusSignalRegistration elevatorCANBusHandler = new CANBusStatusSignalRegistration("Elevator");
   @Getter
   private CANBusStatusSignalRegistration driveCANBusHandler = new CANBusStatusSignalRegistration("Drivetrain");
+  @Getter
+  private CANBusStatusSignalRegistration rioCANBusHandler = new CANBusStatusSignalRegistration("rio");
+
 
   private Trigger coralIntakeAtStowGoal;
   private Trigger elevatorAtStowGoal;
@@ -219,7 +222,7 @@ public class RobotContainer {
         // beltIO = new RollerIOSim();
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
         // pivotIO = new PivotIOSim();
-        coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
+        coralIntakeRollerIO = new RollerIOKraken(Ports.CoralIntake.coralIntakeRoller, rioCANBusHandler);
         // coralIntakeRollerIO = new RollerIOSim();
 
         // Coral Outtake
@@ -471,7 +474,7 @@ public class RobotContainer {
     // CoralIntake.Goal.STOW));
 
     controls.prepareScoreCoral().and(() -> coralMode == CoralMode.L1).whileTrue(
-        coralIntake.setGoalEndCommand(CoralIntake.Goal.L1_Prepare, CoralIntake.Goal.STOW));
+        coralIntake.setGoalEndCommand(CoralIntake.Goal.L1_PREPARE, CoralIntake.Goal.STOW));
 
     controls.prepareScoreCoral().and(waitForHandoffTrigger).and(() -> coralMode != CoralMode.L1)
         .whileTrue(prepareScoreCoralCommand());
@@ -763,7 +766,7 @@ public class RobotContainer {
             coralIntake.setGoalCommand(CoralIntake.Goal.PRE_HANDOFF_ADJUST_CORAL),
             Commands.waitUntil(coralIntake.atGoalTrigger.and(coralIntake.centerSensorTrigger)).withTimeout(3.0),
             coralIntake.setGoalCommand(CoralIntake.Goal.STOW)),
-        coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
+        coralIntake.setGoalCommand(coralMode == CoralMode.L1 ? CoralIntake.Goal.L1_PREPARE : CoralIntake.Goal.STOW),
         coralIntake.handoffSensorTrigger);
   }
 

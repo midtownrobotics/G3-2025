@@ -53,7 +53,7 @@ public class CoralIntake extends SubsystemBase {
     CLIMB(Degrees.of(82), Volts.of(0)),
     CLIMB_BOTTOM(Degrees.of(104), Volts.of(0)),
     L1(Degrees.of(74), Volts.of(-7)),
-    L1_Prepare(L1.getAngle(), Volts.zero()),
+    L1_PREPARE(STOW.getAngle(), Volts.zero()),
     ALGAE_INTAKE(Degrees.of(39), Volts.of(-9.5)),
     HOLD_ALGAE(Degrees.of(49), Volts.of(-1)),
     ALGAE_SHOOT(Degrees.of(49), Volts.of(10)),
