@@ -642,7 +642,7 @@ public class RobotContainer {
     // ));
 
     // dealgify
-    controls.algae().and(() -> (coralMode == CoralMode.L2 || coralMode == CoralMode.L3))
+    controls.algae().and(() -> (coralMode == CoralMode.L2 || coralMode == CoralMode.L3)).and(controls.algaeForceVomit().negate())
         .whileTrue(Commands.parallel(
             elevator.setDealgifyGoalFromCoralMode(() -> coralMode),
             Commands.sequence(
@@ -658,7 +658,7 @@ public class RobotContainer {
             coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD)));
 
     // processor
-    controls.algae().and(() -> (coralMode == CoralMode.L1))
+    controls.algae().and(() -> (coralMode == CoralMode.L1)).and(controls.algaeForceVomit().negate())
         .whileTrue(Commands.parallel(
             elevator.setGoalAndWait(Elevator.Goal.PROCESSOR),
             coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.PROCESSOR_SCORE)))
@@ -667,7 +667,7 @@ public class RobotContainer {
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW)));
 
     // barge
-    controls.algae().and(() -> (coralMode == CoralMode.L4))
+    controls.algae().and(() -> (coralMode == CoralMode.L4)).and(controls.algaeForceVomit().negate())
         .whileTrue(Commands.sequence(
             elevator.setGoalAndWait(Elevator.Goal.BARGE),
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)))
@@ -675,7 +675,7 @@ public class RobotContainer {
             elevator.setGoalCommand(Elevator.Goal.STOW),
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW)));
 
-    controls.algae().and(controls.scoreGamePiece()).whileTrue(
+    controls.algae().and(controls.scoreGamePiece()).and(controls.algaeForceVomit().negate()).whileTrue(
         coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT,
             CoralOuttakeRoller.Goal.STOW));
 
