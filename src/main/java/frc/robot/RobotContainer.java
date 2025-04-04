@@ -217,11 +217,11 @@ public class RobotContainer {
             driveCANBusHandler);
 
         // Coral Intake
-        beltIO = new RollerIONeo(Ports.CoralIntake.belt, IdleMode.kBrake);
+        beltIO = new RollerIOKraken(Ports.CoralIntake.belt, rioCANBusHandler);
         // beltIO = new RollerIOSim();
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
         // pivotIO = new PivotIOSim();
-        coralIntakeRollerIO = new RollerIOKraken(Ports.CoralIntake.coralIntakeRoller, rioCANBusHandler);
+        coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
         // coralIntakeRollerIO = new RollerIOSim();
 
         // Coral Outtake
