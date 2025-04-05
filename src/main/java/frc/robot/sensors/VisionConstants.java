@@ -28,8 +28,8 @@ public class VisionConstants {
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // Camera names, must match names configured on coprocessor
-  public static final String kModuleTagCameraName = "limelight-nick";
-  public static final String kElevatorTagCameraName = "limelight-woody";
+  public static final String kModuleTagCameraName = "limelight-rohan";
+  public static final String kElevatorTagCameraName = "limelight-nick";
   public static final String kPoleTagCameraName = "limelight-gray";
   public static final String kIntakeClassifierCameraName = "limelight-ankit";
 
@@ -66,8 +66,9 @@ public class VisionConstants {
   // (Adjust to trust some cameras more than others)
   public static double[] cameraStdDevFactors =
       new double[] {
-        1.0, // Camera 0
-        1.0 // Camera 1
+        1.0, // gray
+        2.5, // rohan
+        1.0 // nick
       };
 
   // Multipliers to apply for MegaTag 2 observations

@@ -25,11 +25,14 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.vision.VisionIO;
 import frc.robot.sensors.vision.VisionIO.PoseObservationType;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
+import frc.robot.utils.LoggerUtil;
+
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -73,6 +76,8 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double timestamp = Timer.getFPGATimestamp();
+
     for (int i = 0; i < io.length; i++) {
       io[i].updateInputs(inputs[i]);
       Logger.processInputs("Vision/Camera/" + io[i].getName(), inputs[i]);
@@ -188,6 +193,8 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   @FunctionalInterface
