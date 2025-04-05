@@ -42,7 +42,7 @@ public class CoralIntake extends SubsystemBase {
       CoralIntakeConstants.coralIntakeMinAngle, CoralIntakeConstants.coralIntakeMaxAngle);
 
   public enum Goal {
-    STOW(Degrees.of(84), Volts.of(0.75), Volts.of(1.5)),
+    STOW(Degrees.of(84), Volts.of(0.75), Volts.of(6)),
     GROUND_INTAKE(Degrees.of(-14), Volts.of(12), Volts.of(1)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
     STATION_VOMIT(Degrees.of(105.5), Volts.of(-5)),
