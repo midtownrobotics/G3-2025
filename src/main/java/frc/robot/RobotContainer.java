@@ -302,7 +302,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("IntakeFromLoadingStation",
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
             .until(coralIntake.pieceDetectedTrigger.debounce(0.15))
-            .withTimeout(1));
+            .withTimeout(7));
 
     NamedCommands.registerCommand("PrepareIntakeAlgaeLow", Commands.sequence(
         elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_LOW, Inches.of(2.5)),
