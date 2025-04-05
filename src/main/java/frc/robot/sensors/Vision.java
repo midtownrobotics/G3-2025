@@ -32,7 +32,6 @@ import frc.robot.sensors.vision.VisionIO;
 import frc.robot.sensors.vision.VisionIO.PoseObservationType;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.utils.LoggerUtil;
-
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
