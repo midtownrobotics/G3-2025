@@ -51,6 +51,7 @@ public class Elevator extends SubsystemBase {
     CLIMB_BOTTOM_LOCK(CLIMB_BOTTOM.getHeight(), true),
     TUNING(Feet.zero()),
     ZERO(Feet.zero()),
+    DEFEND(HANDOFF.getHeight()),
     MANUAL(Feet.zero());
 
     private @Getter Distance height;

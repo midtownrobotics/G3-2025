@@ -102,6 +102,6 @@ public class GyroIOPigeon2 implements GyroIO {
    * sets the gyro heading to zero
    */
   public void resetHeading() {
-    pigeon.setYaw(Radians.of(0));
+    pigeon.setYaw(Radians.zero());
   }
 }

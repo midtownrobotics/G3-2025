@@ -33,6 +33,7 @@ public class CoralOuttakeRoller extends SubsystemBase {
     REVERSE_SHOOT(Volts.of(-7)),
     ALGAE_HOLD(Volts.of(2.5)),
     ALGAE_SHOOT(Volts.of(-12)),
+    DEFEND(Volts.zero()),
     TUNING(),
     MANUAL();
 

@@ -11,7 +11,7 @@ import frc.lib.dashboard.LoggedTunableNumber;
 public class ElevatorConstants {
   // TODO: Find out max and min heights
   public static final Distance elevatorMaxHeight = Inches.of(69.5);
-  public static final Distance elevatorMinHeight = Feet.of(0);
+  public static final Distance elevatorMinHeight = Feet.zero();
 
   public static final double kGearing = 14;
 

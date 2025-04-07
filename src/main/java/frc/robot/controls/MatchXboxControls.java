@@ -103,7 +103,7 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
-  public Trigger reefAlgaePositionLock() {
+  public Trigger defenseToggle() {
     return driverController.y();
   }
 

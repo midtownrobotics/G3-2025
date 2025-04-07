@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.Servo;
 
 public class LockIORevServo implements LockIO{
     private final Servo servo;
-    private static final Angle lockedPosition = Degrees.of(0), unlockedPosition = Degrees.of(108);
+    private static final Angle lockedPosition = Degrees.zero(), unlockedPosition = Degrees.of(108);
 
     private boolean enabled;
 

@@ -41,6 +41,7 @@ public class CoralOuttakePivot extends SubsystemBase {
         CLIMB(Degrees.of(-60)),
         PROCESSOR_SCORE(Degrees.of(-42)),
         BARGE(Degrees.zero()),
+        DEFEND(HANDOFF.getAngle()),
         TUNING(),
         MANUAL();
 

@@ -37,9 +37,9 @@ public interface Controls {
   public Trigger leftPositionLock();
   /** Locks to right position on the reef. */
   public Trigger rightPositionLock();
-  /** Locks to true right position on reef for algae intake. */
-  public Trigger reefAlgaePositionLock();
 
+  /** Toggles whether the robot should be in defense mode or not. */
+  public Trigger defenseToggle();
 
   /** drive sysid quasistatic forwards */
   public Trigger driveQuasistaticForwards();

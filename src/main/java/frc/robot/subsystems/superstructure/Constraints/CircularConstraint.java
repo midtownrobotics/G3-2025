@@ -18,7 +18,7 @@ public class CircularConstraint {
      */
     public CircularConstraint() {
         intervals = new RealNumberSet<>();
-        intervals.add(new Interval<>(Degrees.of(0), Degrees.of(360)));
+        intervals.add(new Interval<>(Degrees.zero(), Degrees.of(360)));
     }
 
     /**
@@ -32,7 +32,7 @@ public class CircularConstraint {
         if (end.gt(start)) {
             intersectedSet.add(new Interval<>(start, end));
         } else {
-            intersectedSet.add(new Interval<>(Degrees.of(0), end));
+            intersectedSet.add(new Interval<>(Degrees.zero(), end));
             intersectedSet.add(new Interval<>(start, Degrees.of(360)));
         }
 
@@ -52,7 +52,7 @@ public class CircularConstraint {
         if (end.gte(start)) {
             differenceSet.add(new Interval<>(start, end));
         } else {
-            differenceSet.add(new Interval<>(Degrees.of(0), end));
+            differenceSet.add(new Interval<>(Degrees.zero(), end));
             differenceSet.add(new Interval<>(start, Degrees.of(360)));
         }
 
@@ -94,13 +94,13 @@ public class CircularConstraint {
         Angle end = interval.getEnd();
 
         if (interval.contains(Degrees.of(360))) {
-            Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.of(0));
+            Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.zero());
             if (wrapAround != null) {
                 end = wrapAround.getEnd().plus(Degrees.of(360));
             }
         }
 
-        if (interval.contains(Degrees.of(0))) {
+        if (interval.contains(Degrees.zero())) {
             Interval<AngleUnit, Angle> wrapAround = intervals.getIntervalOfValue(Degrees.of(360));
             if (wrapAround != null) {
                 start = wrapAround.getStart().minus(Degrees.of(360));
@@ -122,7 +122,7 @@ public class CircularConstraint {
 
         if (interval == null) {
             /** Set complement gives intervals of illegal values rather than legal ones */
-            RealNumberSet<AngleUnit, Angle> inverted = intervals.complement(Degrees.of(0), Degrees.of(360));
+            RealNumberSet<AngleUnit, Angle> inverted = intervals.complement(Degrees.zero(), Degrees.of(360));
             Interval<AngleUnit, Angle> invertedInterval = unwrapInterval(inverted.getIntervalOfValue(current));
 
             if (invertedInterval.getStart().isEquivalent(Degrees.of(-360)) && invertedInterval.getEnd().isEquivalent(Degrees.of(720))) {
