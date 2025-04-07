@@ -12,9 +12,16 @@ import static frc.robot.sensors.VisionConstants.kElevatorTagCameraName;
 import static frc.robot.sensors.VisionConstants.kModuleTagCameraName;
 import static frc.robot.sensors.VisionConstants.kPoleTagCameraName;
 
+import java.util.Set;
+import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -23,7 +30,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -74,16 +80,13 @@ import frc.robot.utils.Constants;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
-import java.util.Set;
-import java.util.function.DoubleSupplier;
 import lombok.Getter;
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
 
   private final MatchXboxControls controls;
 
+  @SuppressWarnings("unused")
   private Superstructure superstructure;
 
   SendableChooser<Command> m_autoChooser;
@@ -112,9 +115,6 @@ public class RobotContainer {
   @Getter
   private CANBusStatusSignalRegistration rioCANBusHandler = new CANBusStatusSignalRegistration("rio");
 
-  private Trigger coralIntakeAtStowGoal;
-  private Trigger elevatorAtStowGoal;
-
   private Command auto = null;
 
   @AutoLogOutput
@@ -124,7 +124,6 @@ public class RobotContainer {
   private Trigger waitForHandoffTrigger = new Trigger(() -> isHandoffInterruptible);
 
   private boolean defenseMode = false;
-  private Trigger defenseModeTrigger = new Trigger(() -> defenseMode);
 
   /** RobotContainer initialization */
   public RobotContainer() {
@@ -266,9 +265,6 @@ public class RobotContainer {
 
     controls = new MatchXboxControls(0, 1);
     configureBindings();
-
-    coralIntakeAtStowGoal = coralIntake.atGoalTrigger(CoralIntake.Goal.STOW, Degrees.of(1.5));
-    elevatorAtStowGoal = new Trigger(elevator.atGoalTrigger(Elevator.Goal.STOW));
 
     RobotModeTriggers.teleop()
         .and(() -> coralIntake.getCurrentGoal() == CoralIntake.Goal.STOW)
@@ -775,24 +771,6 @@ public class RobotContainer {
             coralIntake.setGoalCommand(CoralIntake.Goal.STOW)),
         coralIntake.setGoalCommand(coralMode == CoralMode.L1 ? CoralIntake.Goal.L1_PREPARE : CoralIntake.Goal.STOW),
         coralIntake.handoffSensorTrigger);
-  }
-
-  private ReefFace getClosestReefFace() {
-    ReefFace closestFace = null;
-    Distance closestDistance = Meters.of(Double.MAX_VALUE);
-    Pose2d currentPose = drive.getPose();
-
-    for (ReefFace face : ReefFace.values()) {
-      Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
-      Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
-      Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
-      if (distance.lt(closestDistance)) {
-        closestFace = face;
-        closestDistance = distance;
-      }
-    }
-
-    return closestFace;
   }
 
   private Command setDefenseGoals() {

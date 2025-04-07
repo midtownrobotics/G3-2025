@@ -1,12 +1,8 @@
 package frc.robot.subsystems.coral_outtake_pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
 import frc.lib.dashboard.LoggedTunableNumber;
 
 public class CoralOuttakePivotConstants {
