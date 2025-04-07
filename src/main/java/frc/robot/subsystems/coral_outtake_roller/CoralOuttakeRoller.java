@@ -46,6 +46,7 @@ public class CoralOuttakeRoller extends SubsystemBase {
 
     }
 
+    /** Gets the current {@link Goal} from {@link CoralMode} */
     public static Goal fromCoralMode(CoralMode mode) {
       return switch (mode) {
         case L2 -> SHOOT_L2;
