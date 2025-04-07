@@ -368,12 +368,20 @@ public class DriveCommands {
       ),
       Rotation2d.k180deg);
 
+  private static final Transform2d kRobotBeforeHandoffBranchAlignOffset = new Transform2d(
+    new Translation2d(
+        Inches.of(25), // F/B
+        Inches.of(-1.614) // L/R
+    ),
+    Rotation2d.k180deg);
+
+
   // TODO idk man just ask someone
   private static final Transform2d kRobotL1Offset = new Transform2d(
     new Translation2d(
       Inches.of(20), // F/B
       Inches.of(-1.614)),
-    Rotation2d.k180deg
+    Rotation2d.kCCW_90deg
   );
 
   private static final Transform2d kStationOffset = new Transform2d(
@@ -386,7 +394,7 @@ public class DriveCommands {
 
   private static final Transform2d kRobotAlgaeAlignOffset = new Transform2d(
       new Translation2d(
-          Inches.of(20), // F/B
+          Inches.of(19.5), // F/B
           Inches.of(-1.614 - 6.5) // L/R
       ),
       Rotation2d.k180deg);
@@ -435,7 +443,7 @@ public class DriveCommands {
       CoralIntake.Goal.ALGAE_INTAKE, CoralIntake.Goal.ALGAE_SHOOT, CoralIntake.Goal.HOLD_ALGAE });
 
   private static final List<CoralIntake.Goal> INTAKE_L1_GOALS = Arrays.asList(new CoralIntake.Goal[] {
-    CoralIntake.Goal.L1, CoralIntake.Goal.L1_Prepare
+    CoralIntake.Goal.L1, CoralIntake.Goal.L1_PREPARE
   });
 
   private static final boolean isNear(Translation2d current, Translation2d target) {
@@ -448,13 +456,14 @@ public class DriveCommands {
    */
   public static Command fieldElementLock(Drive drive, CoralIntake intake, CoralOuttakeRoller roller,
       CoralOuttakePivot pivot, Elevator elevator, LED led,
-      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper) {
+      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper, BooleanSupplier waitingstate) {
     Supplier<Command> commandSupplier = () -> {
       Translation2d driveTranslation2d = drive.getPose().getTranslation();
       boolean elevatorClimb = elevator.getCurrentGoal() == Elevator.Goal.CLIMB;
 
       if (INTAKE_PROCESSOR_GOALS.contains(intake.getCurrentGoal())
           && isNear(driveTranslation2d, Processor.centerFace.getTranslation())) {
+        Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToProcessor");
         return Commands.sequence(
             new DriveToPoint(drive, () -> Processor.centerFace.transformBy(kRobotAlgaeAlignOffset)),
             // TODO Processor offset probably not same as algae???
@@ -462,6 +471,7 @@ public class DriveCommands {
       }
 
       if (elevatorClimb) {
+        Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToCage");
         return Commands.sequence(
             new DriveToPoint(drive,
                 () -> new Pose2d(
@@ -472,10 +482,12 @@ public class DriveCommands {
       // TODO AGAIN Station offset probably not same as algae!!!
       if (intake.getCurrentGoal() == CoralIntake.Goal.STATION_INTAKE) {
         if (isNear(driveTranslation2d, CoralStation.leftCenterFace.getTranslation())) {
+          Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToCoralStationLeft");
           return Commands.sequence(
               new DriveToPoint(drive, () -> CoralStation.leftCenterFace.rotateAround(CoralStation.leftCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
               drive.stopCommand());
         } else if (isNear(driveTranslation2d, CoralStation.rightCenterFace.getTranslation())) {
+          Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToCoralStationRight");
           return Commands.sequence(
               new DriveToPoint(drive, () -> CoralStation.rightCenterFace.rotateAround(CoralStation.rightCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
               drive.stopCommand());
@@ -483,21 +495,24 @@ public class DriveCommands {
       }
 
       if (INTAKE_L1_GOALS.contains(intake.getCurrentGoal())) {
+        Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToL1Reef");
         return alignToL1Reef(drive, led, reefFaceSupplier);
       }
 
       if (pivot.getCurrentGoal() == CoralOuttakePivot.Goal.DEALGIFY) {
+        Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToAlgaeReef");
         return alignToAlgaeReef(drive, led, reefFaceSupplier);
       }
 
-      return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper);
+      Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToBranchReef");
+      return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper, waitingstate);
     };
     return Commands.defer(commandSupplier, Set.of());
   }
 
   /** Creates a command that drives to a reef position based on POV */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
-      BooleanSupplier leftBranchSupplier) {
+      BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
       boolean leftBranch = leftBranchSupplier.getAsBoolean();
@@ -512,8 +527,10 @@ public class DriveCommands {
 
       int branchPoseIndex = face.ordinal() * 2 + (leftBranch ? 0 : 1);
 
+      Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotBeforeHandoffBranchAlignOffset : kRobotBranchAlignOffset;
+
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
-          .transformBy(kRobotBranchAlignOffset);
+          .transformBy(robotTransform2d);
 
       Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
 
@@ -643,6 +660,7 @@ public class DriveCommands {
    * Creates a command that drives to reef position, aligned to the center of the
    * face.
    */
+
   public static Command alignToL1Reef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
@@ -655,8 +673,6 @@ public class DriveCommands {
       // TODO Might have to be 90 CCW?
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
           .transformBy(kRobotL1Offset);
-
-      target = target.rotateAround(target.getTranslation(), Rotation2d.kCCW_90deg);
 
       Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
 

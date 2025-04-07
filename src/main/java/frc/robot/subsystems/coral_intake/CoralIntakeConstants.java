@@ -12,9 +12,9 @@ public class CoralIntakeConstants {
     public static final Time coralDetectionIdleDelay = Milliseconds.of(100);
 
     public static final Angle coralIntakeMaxAngle = Degrees.of(135);
-    public static final Angle coralIntakeMinAngle = Degrees.of(-12);
+    public static final Angle coralIntakeMinAngle = Degrees.of(-14);
 
-    public static final Angle absoluteEncoderOffset = Radians.of(5.753);
+    public static final Angle absoluteEncoderOffset = Radians.of(0.558);
 
     public final class PID {
         public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralIntake/s", 0.18);
@@ -26,6 +26,5 @@ public class CoralIntakeConstants {
 
         public static final LoggedTunableNumber maxPivotV = new LoggedTunableNumber("CoralIntake/maxV", 12);
         public static final LoggedTunableNumber maxPivotA = new LoggedTunableNumber("CoralIntake/maxA", 33);
-
     }
 }

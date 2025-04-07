@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -44,6 +45,8 @@ public class RollerIOKraken implements RollerIO {
           .withSupplyCurrentLimitEnable(true);
 
     krakenConfig.MotorOutput.withInverted(invert ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive);
+
+    krakenConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
     motor.getConfigurator().apply(krakenConfig);
 

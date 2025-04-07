@@ -107,6 +107,9 @@ public class RobotContainer {
   private CANBusStatusSignalRegistration elevatorCANBusHandler = new CANBusStatusSignalRegistration("Elevator");
   @Getter
   private CANBusStatusSignalRegistration driveCANBusHandler = new CANBusStatusSignalRegistration("Drivetrain");
+  @Getter
+  private CANBusStatusSignalRegistration rioCANBusHandler = new CANBusStatusSignalRegistration("rio");
+
 
   private Trigger coralIntakeAtStowGoal;
   private Trigger elevatorAtStowGoal;
@@ -177,6 +180,7 @@ public class RobotContainer {
         break;
       case SIM:
 
+
         // Elevator
         winchIO = new WinchIOSim();
 
@@ -214,8 +218,8 @@ public class RobotContainer {
             driveCANBusHandler);
 
         // Coral Intake
-        beltIO = new RollerIONeo(Ports.CoralIntake.belt, IdleMode.kBrake);
-        // beltIO = new RollerIOSim(); // TODO: CHANGE CHANGE CHANGE CHANGE CHANGE
+        beltIO = new RollerIOKraken(Ports.CoralIntake.belt, rioCANBusHandler, true);
+        // beltIO = new RollerIOSim();
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
         // pivotIO = new PivotIOSim();
         coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
@@ -274,7 +278,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
         prepareScoreCoral(CoralMode.L4),
         coralOuttakeRoller
-            .setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT, CoralOuttakeRoller.Goal.STOW)
+            .setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT_L4, CoralOuttakeRoller.Goal.STOW)
             .withTimeout(0.5),
         Commands.parallel(
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
@@ -351,14 +355,14 @@ public class RobotContainer {
     //     coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT,
     //         CoralOuttakeRoller.Goal.STOW));
 
-    NamedCommands.registerCommand("AlignToBranchB", DriveCommands.alignToBranchReef(drive, led, 1).withTimeout(1.8));
-    NamedCommands.registerCommand("AlignToBranchC", DriveCommands.alignToBranchReef(drive, led, 2).withTimeout(1.8));
-    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3).withTimeout(1.8));
-    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4).withTimeout(1.8));
-    NamedCommands.registerCommand("AlignToBranchF", DriveCommands.alignToBranchReef(drive, led, 5).withTimeout(1.8));
-    NamedCommands.registerCommand("AlignToBranchH", DriveCommands.alignToBranchReef(drive, led, 7).withTimeout(1.8));
-    NamedCommands.registerCommand("AlignToBranchI", DriveCommands.alignToBranchReef(drive, led, 8).withTimeout(1.8));
-    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.8));
+    NamedCommands.registerCommand("AlignToBranchB", DriveCommands.alignToBranchReef(drive, led, 1).withTimeout(1.6));
+    NamedCommands.registerCommand("AlignToBranchC", DriveCommands.alignToBranchReef(drive, led, 2).withTimeout(1.6));
+    NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3).withTimeout(1.6));
+    NamedCommands.registerCommand("AlignToBranchE", DriveCommands.alignToBranchReef(drive, led, 4).withTimeout(1.6));
+    NamedCommands.registerCommand("AlignToBranchF", DriveCommands.alignToBranchReef(drive, led, 5).withTimeout(1.6));
+    NamedCommands.registerCommand("AlignToBranchH", DriveCommands.alignToBranchReef(drive, led, 7).withTimeout(1.6));
+    NamedCommands.registerCommand("AlignToBranchI", DriveCommands.alignToBranchReef(drive, led, 8).withTimeout(1.6));
+    NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.6));
 
     NamedCommands.registerCommand("AlignToAlgae4", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.GH));
     NamedCommands.registerCommand("AlignToAlgae5", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.IJ));
@@ -376,8 +380,8 @@ public class RobotContainer {
     return Commands.sequence(
         elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode), Inches.of(4)),
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode), Degrees.of(4)),
-        elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode)).withTimeout(1),
-        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode)).withTimeout(1));
+        elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode)).withTimeout(0.4),
+        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode)).withTimeout(0.4));
     }
 
   private double mapInput(double input, double inputMin, double inputMax, double outputMin, double outputMax) {
@@ -470,7 +474,7 @@ public class RobotContainer {
     // CoralIntake.Goal.STOW));
 
     controls.prepareScoreCoral().and(() -> coralMode == CoralMode.L1).whileTrue(
-        coralIntake.setGoalEndCommand(CoralIntake.Goal.L1_Prepare, CoralIntake.Goal.STOW));
+        coralIntake.setGoalEndCommand(CoralIntake.Goal.L1_PREPARE, CoralIntake.Goal.STOW));
 
     controls.prepareScoreCoral().and(waitForHandoffTrigger).and(() -> coralMode != CoralMode.L1)
         .whileTrue(prepareScoreCoralCommand());
@@ -479,7 +483,7 @@ public class RobotContainer {
         coralIntake.setGoalEndCommand(CoralIntake.Goal.L1, CoralIntake.Goal.STOW));
 
     controls.scoreGamePiece().and(() -> coralMode != CoralMode.L1).whileTrue(
-        coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT,
+        coralOuttakeRoller.setGoalEndCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
             CoralOuttakeRoller.Goal.STOW));
 
     controls.reverseGamePiece()
@@ -576,7 +580,7 @@ public class RobotContainer {
               }
 
               return closestFace;
-            }, controls.alignToReefLeftBranch()));
+            }, controls.alignToReefLeftBranch(), () -> elevator.getPosition().lt(Inches.of(5))));
 
     // controls.alignToAlgaeReef()
     // .whileTrue(DriveCommands.alignToAlgaeReef(drive, led,
@@ -718,8 +722,8 @@ public class RobotContainer {
         Commands.parallel(
             Commands.runOnce(() -> {isHandoffInterruptible = false;}),
             elevator.setGoalAndWait(Elevator.Goal.STOW),
-            coralIntake.setGoalAndWait(CoralIntake.Goal.HANDOFF, Degrees.of(2.5)),
-            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF, Degrees.of(12))),
+            coralIntake.setGoalAndWait(CoralIntake.Goal.HANDOFF, Degrees.of(3.5)),
+            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF, Degrees.of(20))),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF),
         Commands.waitUntil(coralIntake.handoffSensorTrigger).withTimeout(2), // TODO change back to 2
         Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(2),
@@ -752,7 +756,7 @@ public class RobotContainer {
             coralIntake.setGoalCommand(CoralIntake.Goal.PRE_HANDOFF_ADJUST_CORAL),
             Commands.waitUntil(coralIntake.atGoalTrigger.and(coralIntake.centerSensorTrigger)).withTimeout(3.0),
             coralIntake.setGoalCommand(CoralIntake.Goal.STOW)),
-        coralIntake.setGoalCommand(CoralIntake.Goal.STOW),
+        coralIntake.setGoalCommand(coralMode == CoralMode.L1 ? CoralIntake.Goal.L1_PREPARE : CoralIntake.Goal.STOW),
         coralIntake.handoffSensorTrigger);
   }
 

@@ -43,17 +43,16 @@ public class CoralIntake extends SubsystemBase {
 
   public enum Goal {
     STOW(Degrees.of(84), Volts.of(0.75), Volts.of(1)),
-    GROUND_INTAKE(Degrees.of(-12), Volts.of(12), Volts.of(1)),
+    GROUND_INTAKE(Degrees.of(-14), Volts.of(12), Volts.of(1)),
     GROUND_VOMIT(GROUND_INTAKE.getAngle(), Volts.of(-5)),
     STATION_VOMIT(Degrees.of(105.5), Volts.of(-5)),
     STATION_INTAKE(STATION_VOMIT.getAngle(), Volts.of(10), Volts.of(3)),
-    HANDOFF(Degrees.of(135), Volts.of(1.0), Volts.of(-4.5)),
-    HANDOFF_PUSH_CORAL_UP(HANDOFF.getAngle(), Volts.of(-1.0), Volts.of(-2.5)),
-    PRE_HANDOFF_ADJUST_CORAL(Degrees.of(100), Volts.of(12), Volts.of(4)),
+    HANDOFF(Degrees.of(135), Volts.of(1.0), Volts.of(-3.5)),
+    PRE_HANDOFF_ADJUST_CORAL(Degrees.of(100), Volts.of(12), Volts.of(3.5)),
     CLIMB(Degrees.of(82), Volts.of(0)),
     CLIMB_BOTTOM(Degrees.of(104), Volts.of(0)),
     L1(Degrees.of(74), Volts.of(-7)),
-    L1_Prepare(L1.getAngle(), Volts.zero()),
+    L1_PREPARE(STOW.getAngle(), Volts.zero()),
     ALGAE_INTAKE(Degrees.of(39), Volts.of(-9.5)),
     HOLD_ALGAE(Degrees.of(49), Volts.of(-1)),
     ALGAE_SHOOT(Degrees.of(49), Volts.of(10)),
@@ -217,13 +216,19 @@ public class CoralIntake extends SubsystemBase {
 
     switch (getCurrentGoal()) {
       case HANDOFF:
-        if (getPosition().lt(Degrees.of(129))) {
-          desiredBeltVoltage = Volts.of(0);
+        if (getPosition().lt(Degrees.of(131))) {
+          desiredBeltVoltage = Goal.PRE_HANDOFF_ADJUST_CORAL.getBeltVoltage();
         } else {
           desiredBeltVoltage = Goal.HANDOFF.getBeltVoltage();
         }
 
-        pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
+        if (getPosition().isNear(desiredAngle, Degrees.of(3))) {
+          pivotIO.setVoltage(Volts.of(-0.1));
+        } else {
+          pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
+        }
+
+
         beltIO.setVoltage(desiredBeltVoltage);
         rollerIO.setVoltage(desiredRollerVoltage);
         break;
@@ -233,6 +238,15 @@ public class CoralIntake extends SubsystemBase {
         if (atGoal()) {
           rollerIO.setVoltage(desiredRollerVoltage);
         }
+        break;
+      case GROUND_INTAKE:
+        if (getPosition().isNear(desiredAngle, Degrees.of(3)) || getPosition().lt(desiredAngle)) {
+          pivotIO.setVoltage(Volts.of(-0.2));
+        } else {
+          pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
+        }
+        beltIO.setVoltage(desiredBeltVoltage);
+        rollerIO.setVoltage(desiredRollerVoltage);
         break;
       default:
         pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));

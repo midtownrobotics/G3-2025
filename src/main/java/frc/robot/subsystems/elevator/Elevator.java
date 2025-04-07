@@ -43,7 +43,7 @@ public class Elevator extends SubsystemBase {
     L3(Inches.of(40)),
     L4(Inches.of(65.25)),
     PROCESSOR(Inches.zero()),
-    DEALGIFY_LOW(Inches.of(13.5)),
+    DEALGIFY_LOW(Inches.of(14.5)),
     DEALGIFY_HIGH(Inches.of(30)),
     BARGE(Inches.of(68)),
     CLIMB(Inches.of(16)),
@@ -107,6 +107,7 @@ public class Elevator extends SubsystemBase {
   private @Getter Goal currentGoal = Goal.STOW;
 
   private WinchInputsAutoLogged winchInputs = new WinchInputsAutoLogged();
+  // private LockInputsAutoLogged lockInputs = new LockInputsAutoLogged();
   private @Getter WinchIO winch;
   private @Getter LockIO lock;
 
@@ -146,11 +147,15 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     double timestamp = Timer.getFPGATimestamp();
     winch.updateInputs(winchInputs);
+    // lock.updateInputs(lockInputs);
     Logger.processInputs("Elevator", winchInputs);
+    // Logger.processInputs("Lock", lockInputs);
 
     Distance constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight());
 
-    if (getCurrentGoal() == Goal.L4 || getCurrentGoal() == Goal.L3 || getCurrentGoal() == Goal.L2) {
+    if (getCurrentGoal() == Goal.L4 || getCurrentGoal() == Goal.L3 || getCurrentGoal() == Goal.L2
+        || getCurrentGoal() == Goal.DEALGIFY_HIGH || getCurrentGoal() == Goal.DEALGIFY_LOW
+        || getCurrentGoal() == Goal.BARGE || getCurrentGoal() == Goal.PROCESSOR) {
       constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight()).plus(driverOffset);
     }
 
@@ -188,6 +193,7 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput("Elevator/constrainedMaxHeight", elevatorConstraint.getUpper());
     Logger.recordOutput("Elevator/constrainedMinHeight", elevatorConstraint.getLower());
     Logger.recordOutput("Elevator/constrainedGoalHeight", constrainedHeight);
+    Logger.recordOutput("Elevator/driverOffset", driverOffset);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }

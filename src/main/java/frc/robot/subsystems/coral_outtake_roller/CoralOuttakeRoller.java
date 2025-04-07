@@ -12,7 +12,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
+import frc.robot.controls.CoralMode;
 import frc.robot.utils.LoggerUtil;
+import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -20,9 +22,12 @@ public class CoralOuttakeRoller extends SubsystemBase {
 
   public enum Goal {
     STOW(Volts.zero()),
-    SHOOT(Volts.of(8)),
+    SHOOT_L1(Volts.of(8)),
+    SHOOT_L2(Volts.of(6)),
+    SHOOT_L3(Volts.of(6)),
+    SHOOT_L4(Volts.of(8)),
     DEALGIFY(Volts.of(5.5)),
-    HANDOFF(Volts.of(4)),
+    HANDOFF(Volts.of(3.5)),
     HANDOFF_REVERSE(Volts.of(-2)),
     INTAKE(Volts.zero()),
     REVERSE_SHOOT(Volts.of(-7)),
@@ -40,6 +45,17 @@ public class CoralOuttakeRoller extends SubsystemBase {
     private Goal() {
 
     }
+
+    /** Gets the current {@link Goal} from {@link CoralMode} */
+    public static Goal fromCoralMode(CoralMode mode) {
+      return switch (mode) {
+        case L2 -> SHOOT_L2;
+        case L3 -> SHOOT_L3;
+        case L4 -> SHOOT_L4;
+        default -> STOW;
+      };
+    }
+
   }
 
   public final Trigger currentSpikeTrigger;
@@ -109,5 +125,10 @@ public class CoralOuttakeRoller extends SubsystemBase {
   /** Returns a command that sets the goal of the coral outtake and resets the goal when it ends */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));
+  }
+
+  /** Returns a command that sets the supplier goal of the coral outtake and resets the goal when it ends */
+  public Command setGoalEndCommand(Supplier<Goal> goal, Goal endGoal) {
+    return run(() -> setGoal(goal.get())).finallyDo(() -> setGoal(endGoal));
   }
 }
