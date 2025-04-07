@@ -12,22 +12,17 @@ public interface OuttakePivotIO {
 
   @AutoLog
   public class OuttakePivotInputs {
-    public Angle position = Units.Radians.zero();
+    public Angle zeroedPosition = Units.Radians.zero();
     public AngularVelocity velocity = Units.RPM.zero();
     public Voltage appliedVoltage = Units.Volts.zero();
     public Current supplyCurrent = Units.Amps.zero();
     public Current torqueCurrent = Units.Amps.zero();
     public Temperature temperature = Units.Fahrenheit.zero();
-
     public Angle absolutePosition = Units.Radians.zero();
-    public Angle encoderPosition = Units.Radians.zero();
   }
 
   /** Sets the motor voltage. */
   public void setVoltage(Voltage voltage);
-
-  /** Sets the position */
-  public void setPosition(Angle angle);
 
   /**
    * Update input class for Pivot

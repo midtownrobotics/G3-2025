@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
@@ -34,7 +33,7 @@ public class OuttakePivotIOSim implements OuttakePivotIO {
     m_sim.setInputVoltage(voltage.in(Volts));
     m_sim.update(0.02);
 
-    inputs.position = Radians.of(m_sim.getAngleRads());
+    inputs.zeroedPosition = Radians.of(m_sim.getAngleRads());
     inputs.absolutePosition = Radians.of(m_sim.getAngleRads());
     inputs.velocity = RadiansPerSecond.of(m_sim.getVelocityRadPerSec());
     inputs.supplyCurrent = Amps.of(m_sim.getCurrentDrawAmps());
@@ -44,10 +43,5 @@ public class OuttakePivotIOSim implements OuttakePivotIO {
   @Override
   public void setVoltage(Voltage voltage) {
     this.voltage.mut_replace(voltage);
-  }
-
-  @Override
-  public void setPosition(Angle angle) {
-    this.angle.mut_replace(angle);
   }
 }
