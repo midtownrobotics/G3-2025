@@ -35,7 +35,7 @@ import frc.lib.RollerIO.RollerIOSim;
 import frc.robot.commands.DriveCommands;
 import frc.robot.controls.CoralMode;
 import frc.robot.controls.MatchXboxControls;
-import frc.robot.sensors.Photoelectric;
+import frc.robot.sensors.LoggedDigitalInput;
 import frc.robot.sensors.Vision;
 import frc.robot.sensors.VisionConstants;
 import frc.robot.sensors.vision.VisionIO;
@@ -127,15 +127,17 @@ public class RobotContainer {
     // SignalLogger.start();
 
     // Elevator
-
     WinchIO winchIO;
+    LoggedDigitalInput elevatorZeroSensor = new LoggedDigitalInput(Ports.Elevator.zeroSensor);
 
     // Coral Intake
     RollerIO beltIO;
     PivotIO pivotIO;
     RollerIO coralIntakeRollerIO;
-    Photoelectric centerSensor = new Photoelectric(Ports.CoralIntake.centerSensor);
-    Photoelectric handoffSensor = new Photoelectric(Ports.CoralIntake.handoffSensor);
+    LoggedDigitalInput centerSensor = new LoggedDigitalInput(Ports.CoralIntake.centerSensor);
+    LoggedDigitalInput handoffSensor = new LoggedDigitalInput(Ports.CoralIntake.handoffSensor);
+    LoggedDigitalInput intakeUpperZeroSensor = new LoggedDigitalInput(Ports.CoralIntake.upperZeroSensor);
+    LoggedDigitalInput intakeLowerZeroSensor = new LoggedDigitalInput(Ports.CoralIntake.lowerZeroSensor);
 
     // Coral Outtake
     RollerIO rollerIO;
@@ -252,8 +254,8 @@ public class RobotContainer {
     }
 
     LockIO lockIO = new LockIORevServo(Ports.Elevator.LockServo);
-    elevator = new Elevator(winchIO, lockIO);
-    coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor);
+    elevator = new Elevator(winchIO, lockIO, elevatorZeroSensor);
+    coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor, intakeUpperZeroSensor, intakeLowerZeroSensor);
     coralOuttakePivot = new CoralOuttakePivot(outtakePivotIO);
     coralOuttakeRoller = new CoralOuttakeRoller(rollerIO);
 

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.coral_intake.pivot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
@@ -14,12 +15,16 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
+import lombok.Setter;
+
 import org.littletonrobotics.junction.Logger;
 
 public class PivotIONeo implements PivotIO {
 
   private SparkMax pivotMotor;
   private DutyCycleEncoder encoder;
+
+  private @Setter Angle zeroedAngle = Degrees.zero();
 
   /** Constructor for pivotIO for Neo motors. */
   public PivotIONeo(int pivotMotorID, int encoderID) {
@@ -40,7 +45,7 @@ public class PivotIONeo implements PivotIO {
   @Override
   public void updateInputs(PivotInputs inputs) {
     inputs.position = Rotations.of(pivotMotor.getEncoder().getPosition());
-    inputs.absolutePosition =  getAbsolutePosition();
+    inputs.absolutePosition = getAbsolutePosition();
     inputs.encoderPosition = getAbsoluteEncoderPosition();
     inputs.velocity = Units.RPM.of(pivotMotor.getEncoder().getVelocity());
     inputs.appliedVoltage = Units.Volts.of(pivotMotor.getBusVoltage() * pivotMotor.getAppliedOutput());
@@ -66,7 +71,7 @@ public class PivotIONeo implements PivotIO {
    * Gets the zeroed absolute encoder position
    */
   private Angle getZeroedAbsoluteEncoderPosition() {
-    double rads = getAbsoluteEncoderPosition().minus(CoralIntakeConstants.absoluteEncoderOffset).in(Radians);
+    double rads = getAbsoluteEncoderPosition().minus(CoralIntakeConstants.absoluteEncoderOffset).minus(zeroedAngle).in(Radians);
 
     rads = (rads + 0.5 + 2 * Math.PI) % (2 * Math.PI) - 0.5;
 

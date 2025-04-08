@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.controls.CoralMode;
+import frc.robot.sensors.LoggedDigitalInput;
 import frc.robot.subsystems.elevator.lock.LockIO;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
@@ -110,6 +111,7 @@ public class Elevator extends SubsystemBase {
   // private LockInputsAutoLogged lockInputs = new LockInputsAutoLogged();
   private @Getter WinchIO winch;
   private @Getter LockIO lock;
+  private @Getter LoggedDigitalInput zeroSensor;
 
   private SysIdRoutine routine;
 
@@ -120,10 +122,10 @@ public class Elevator extends SubsystemBase {
    *
    * @param winch
    */
-  public Elevator(WinchIO winch, LockIO lock) {
+  public Elevator(WinchIO winch, LockIO lock, LoggedDigitalInput zeroSensor) {
     this.winch = winch;
     this.lock = lock;
-
+    this.zeroSensor = zeroSensor;
     SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         winch::setVoltage,
         this::motorSysIdLog,
@@ -169,7 +171,12 @@ public class Elevator extends SubsystemBase {
 
     switch (getCurrentGoal()) {
       case ZERO:
-        winch.setVoltage(Volts.of(-1));
+        if (!zeroSensor.isTriggered()) {
+          winch.setVoltage(Volts.of(-1));
+          break;
+        }
+        winch.setVoltage(Volts.zero());
+        winch.zeroPosition();
         break;
       case CLIMB_BOTTOM:
       case CLIMB_BOTTOM_LOCK:

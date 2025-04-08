@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
 import frc.lib.dashboard.LoggedTunableNumber;
-import frc.robot.sensors.Photoelectric;
+import frc.robot.sensors.LoggedDigitalInput;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -96,8 +96,10 @@ public class CoralIntake extends SubsystemBase {
 
   private @Getter Goal currentGoal = Goal.STOW;
 
-  private final Photoelectric handoffSensor;
-  private final Photoelectric centerSensor;
+  private final LoggedDigitalInput handoffSensor;
+  private final LoggedDigitalInput centerSensor;
+  private final LoggedDigitalInput upperZeroSensor;
+  private final LoggedDigitalInput lowerZeroSensor;
 
   private final RollerIO beltIO;
   private final RollerInputsAutoLogged beltInputs = new RollerInputsAutoLogged();
@@ -122,14 +124,15 @@ public class CoralIntake extends SubsystemBase {
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO, Photoelectric centerSensor,
-      Photoelectric handoffSensor) {
+  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO, LoggedDigitalInput centerSensor, LoggedDigitalInput handoffSensor , LoggedDigitalInput upperZeroSensor, LoggedDigitalInput lowerZeroSensor) {
 
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
     this.beltIO = beltIO;
     this.centerSensor = centerSensor;
     this.handoffSensor = handoffSensor;
+    this.upperZeroSensor = upperZeroSensor;
+    this.lowerZeroSensor = lowerZeroSensor;
 
     this.handoffSensorTrigger = new Trigger(handoffSensor::isTriggered);
     this.centerSensorTrigger = new Trigger(centerSensor::isTriggered);

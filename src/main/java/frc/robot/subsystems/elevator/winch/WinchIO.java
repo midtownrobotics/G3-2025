@@ -53,4 +53,10 @@ public interface WinchIO {
    * @param inputs
    */
   public void updateInputs(WinchInputs inputs);
+
+  /** Zeros the winch position. */
+  public void zeroPosition();
+
+  /** Zeros the winch to a specified position. */
+  public void zeroPosition(Angle position);
 }

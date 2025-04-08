@@ -5,12 +5,12 @@ import frc.lib.VirtualSubsystem;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
-
-public class Photoelectric extends VirtualSubsystem {
+ 
+public class LoggedDigitalInput extends VirtualSubsystem {
     private final DigitalInput sensor;
     private final int port;
 
-    public class PhotoelectricInputs implements LoggableInputs {
+    public class DigitalInputInputs implements LoggableInputs {
         public boolean triggered;
 
         @Override
@@ -24,13 +24,13 @@ public class Photoelectric extends VirtualSubsystem {
         }
     }
 
-    private final PhotoelectricInputs inputs = new PhotoelectricInputs();
+    private final DigitalInputInputs inputs = new DigitalInputInputs();
 
     /**
-     * Constructor for a Photoelectric sensor
+     * Constructor for a logged digital input.
      * @param DIOPort
      */
-    public Photoelectric(int DIOPort) {
+    public LoggedDigitalInput(int DIOPort) {
         this.port = DIOPort;
         this.sensor = new DigitalInput(DIOPort);
     }
@@ -44,6 +44,4 @@ public class Photoelectric extends VirtualSubsystem {
     public boolean isTriggered() {
         return inputs.triggered;
     }
-
-
 }
