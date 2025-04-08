@@ -51,7 +51,7 @@ public class CoralIntake extends SubsystemBase {
     PRE_HANDOFF_ADJUST_CORAL(Degrees.of(100), Volts.of(12), Volts.of(3.5)),
     CLIMB(Degrees.of(82), Volts.of(0)),
     CLIMB_BOTTOM(Degrees.of(104), Volts.of(0)),
-    L1(Degrees.of(74), Volts.of(-7)),
+    L1(Degrees.of(74), Volts.of(-4)),
     L1_PREPARE(STOW.getAngle(), Volts.zero()),
     ALGAE_INTAKE(Degrees.of(39), Volts.of(-9.5)),
     HOLD_ALGAE(Degrees.of(49), Volts.of(-1)),

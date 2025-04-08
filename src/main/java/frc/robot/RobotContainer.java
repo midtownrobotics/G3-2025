@@ -53,12 +53,12 @@ import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOReplay;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOSim;
 import frc.robot.subsystems.coral_outtake_roller.CoralOuttakeRoller;
 import frc.robot.subsystems.drivetrain.Drive;
-import frc.robot.subsystems.drivetrain.GoldenTunerConstants;
 import frc.robot.subsystems.drivetrain.GyroIO;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon2;
 import frc.robot.subsystems.drivetrain.ModuleIO;
 import frc.robot.subsystems.drivetrain.ModuleIOSim;
 import frc.robot.subsystems.drivetrain.ModuleIOTalonFX;
+import frc.robot.subsystems.drivetrain.TunerConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.lock.LockIO;
 import frc.robot.subsystems.elevator.lock.LockIORevServo;
@@ -169,10 +169,10 @@ public class RobotContainer {
 
         // Drive
         gyroIO = new GyroIOPigeon2(driveCANBusHandler);
-        flModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.FrontLeft, driveCANBusHandler);
-        frModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.FrontRight, driveCANBusHandler);
-        blModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.BackLeft, driveCANBusHandler);
-        brModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.BackRight, driveCANBusHandler);
+        flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
+        frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
+        blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);
+        brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
 
         drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
@@ -195,10 +195,10 @@ public class RobotContainer {
 
         // Drive
         gyroIO = new GyroIOPigeon2(driveCANBusHandler);
-        flModuleIO = new ModuleIOSim(GoldenTunerConstants.FrontLeft);
-        frModuleIO = new ModuleIOSim(GoldenTunerConstants.FrontRight);
-        blModuleIO = new ModuleIOSim(GoldenTunerConstants.BackLeft);
-        brModuleIO = new ModuleIOSim(GoldenTunerConstants.BackRight);
+        flModuleIO = new ModuleIOSim(TunerConstants.FrontLeft);
+        frModuleIO = new ModuleIOSim(TunerConstants.FrontRight);
+        blModuleIO = new ModuleIOSim(TunerConstants.BackLeft);
+        brModuleIO = new ModuleIOSim(TunerConstants.BackRight);
 
         drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
@@ -221,7 +221,7 @@ public class RobotContainer {
         beltIO = new RollerIOKraken(Ports.CoralIntake.belt, rioCANBusHandler, true);
         // beltIO = new RollerIOSim();
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
-        // pivotIO = new PivotIOSim();
+      // pivotIO = new PivotIOSim();
         coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
         // coralIntakeRollerIO = new RollerIOSim();
 
@@ -232,10 +232,10 @@ public class RobotContainer {
 
         // Drive
         gyroIO = new GyroIOPigeon2(driveCANBusHandler);
-        flModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.FrontLeft, driveCANBusHandler);
-        frModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.FrontRight, driveCANBusHandler);
-        blModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.BackLeft, driveCANBusHandler);
-        brModuleIO = new ModuleIOTalonFX(GoldenTunerConstants.BackRight, driveCANBusHandler);
+        flModuleIO = new ModuleIOTalonFX(TunerConstants.FrontLeft, driveCANBusHandler);
+        frModuleIO = new ModuleIOTalonFX(TunerConstants.FrontRight, driveCANBusHandler);
+        blModuleIO = new ModuleIOTalonFX(TunerConstants.BackLeft, driveCANBusHandler);
+        brModuleIO = new ModuleIOTalonFX(TunerConstants.BackRight, driveCANBusHandler);
 
         drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
