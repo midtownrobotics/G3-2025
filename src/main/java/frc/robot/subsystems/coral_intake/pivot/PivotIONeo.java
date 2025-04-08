@@ -24,7 +24,7 @@ public class PivotIONeo implements PivotIO {
   private SparkMax pivotMotor;
   private DutyCycleEncoder encoder;
 
-  private @Setter Angle zeroedAngle = Degrees.zero();
+  private Angle zeroedAngle = Degrees.zero();
 
   /** Constructor for pivotIO for Neo motors. */
   public PivotIONeo(int pivotMotorID, int encoderID) {
@@ -83,5 +83,13 @@ public class PivotIONeo implements PivotIO {
    */
   private Angle getAbsoluteEncoderPosition() {
     return Rotations.of(encoder.get());
+  }
+
+  /**
+   * Zeros the pivot angle to the specified position.
+   * @param position
+   */
+  public void zeroPivotAngle(Angle position) {
+    zeroedAngle = getZeroedAbsoluteEncoderPosition().minus(position);
   }
 }

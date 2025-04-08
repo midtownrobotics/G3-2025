@@ -56,8 +56,9 @@ public class CoralIntake extends SubsystemBase {
     ALGAE_INTAKE(Degrees.of(39), Volts.of(-9.5)),
     HOLD_ALGAE(Degrees.of(49), Volts.of(-1)),
     ALGAE_SHOOT(Degrees.of(49), Volts.of(10)),
-    TUNING(Degrees.of(0), Volts.of(0)),
-    MANUAL(Degrees.of(0), Volts.of(0));
+    ZERO(),
+    TUNING(),
+    MANUAL();
 
     private @Getter Angle angle;
     private @Getter Voltage rollerVoltage;
@@ -74,6 +75,9 @@ public class CoralIntake extends SubsystemBase {
       this.rollerVoltage = rollerVoltage;
       this.beltVoltage = Volts.zero();
     }
+
+    private Goal() {
+    };
 
     /**
      * Goal has angle, rollerVoltage, and beltVoltage associated.
@@ -124,7 +128,8 @@ public class CoralIntake extends SubsystemBase {
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO, LoggedDigitalInput centerSensor, LoggedDigitalInput handoffSensor , LoggedDigitalInput upperZeroSensor, LoggedDigitalInput lowerZeroSensor) {
+  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO, LoggedDigitalInput centerSensor,
+      LoggedDigitalInput handoffSensor, LoggedDigitalInput upperZeroSensor, LoggedDigitalInput lowerZeroSensor) {
 
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
@@ -218,6 +223,14 @@ public class CoralIntake extends SubsystemBase {
     }
 
     switch (getCurrentGoal()) {
+      case ZERO:
+        if (!upperZeroSensor.isTriggered()) {
+          pivotIO.setVoltage(Volts.of(-1));
+          break;
+        }
+        pivotIO.zeroPivotAngle(CoralIntakeConstants.upperSensorTriggeredAngle);
+        pivotIO.setVoltage(Volts.zero());
+        break;
       case HANDOFF:
         if (getPosition().lt(Degrees.of(131))) {
           desiredBeltVoltage = Goal.PRE_HANDOFF_ADJUST_CORAL.getBeltVoltage();
@@ -230,7 +243,6 @@ public class CoralIntake extends SubsystemBase {
         } else {
           pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
         }
-
 
         beltIO.setVoltage(desiredBeltVoltage);
         rollerIO.setVoltage(desiredRollerVoltage);
