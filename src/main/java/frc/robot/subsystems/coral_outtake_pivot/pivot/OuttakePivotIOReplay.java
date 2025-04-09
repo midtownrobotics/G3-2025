@@ -13,4 +13,5 @@ public class OuttakePivotIOReplay implements OuttakePivotIO {
   public void setVoltage(Voltage voltage) {
     throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
   }
+
 }

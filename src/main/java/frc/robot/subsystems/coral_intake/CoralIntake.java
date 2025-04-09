@@ -6,8 +6,6 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -35,6 +33,7 @@ import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.Constants;
 import frc.robot.utils.LoggerUtil;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
   public SlewRateLimiter voltageRateLimiter = new SlewRateLimiter(10);

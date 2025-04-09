@@ -4,10 +4,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -26,7 +22,9 @@ import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIO;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
 import frc.robot.utils.Constants;
+import java.util.function.Supplier;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class CoralOuttakePivot extends SubsystemBase {
 

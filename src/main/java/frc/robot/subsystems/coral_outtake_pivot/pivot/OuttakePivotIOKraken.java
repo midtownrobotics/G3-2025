@@ -5,12 +5,9 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.utils.PhoenixUtil.tryUntilOk;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -20,6 +17,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.subsystems.coral_outtake_pivot.CoralOuttakePivotConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class OuttakePivotIOKraken implements OuttakePivotIO {
 

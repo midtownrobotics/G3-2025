@@ -12,16 +12,9 @@ import static frc.robot.sensors.VisionConstants.kElevatorTagCameraName;
 import static frc.robot.sensors.VisionConstants.kModuleTagCameraName;
 import static frc.robot.sensors.VisionConstants.kPoleTagCameraName;
 
-import java.util.Set;
-import java.util.function.DoubleSupplier;
-
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -80,7 +73,11 @@ import frc.robot.utils.Constants;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
+import java.util.Set;
+import java.util.function.DoubleSupplier;
 import lombok.Getter;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
 
@@ -369,6 +366,9 @@ public class RobotContainer {
     // drive::getPose));
   }
 
+  /**
+   * Periodic loop for RobotContainer. Should probably only be used for logging purposes.
+   */
   public void periodic() {
     Logger.recordOutput("Defense", defenseMode);
   }
