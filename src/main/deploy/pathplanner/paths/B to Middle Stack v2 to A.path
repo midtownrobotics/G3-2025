@@ -1,0 +1,117 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.15543402872832,
+        "y": 3.9046794395868556
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.6574340287283196,
+        "y": 3.9046794395868556
+      },
+      "isLocked": false,
+      "linkedName": "Branch B"
+    },
+    {
+      "anchor": {
+        "x": 1.9783140479902062,
+        "y": 3.8
+      },
+      "prevControl": {
+        "x": 2.3773798953862975,
+        "y": 3.654751910035604
+      },
+      "nextControl": {
+        "x": 1.646909279049534,
+        "y": 3.920621471388273
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.4194104942632364,
+        "y": 4.0
+      },
+      "prevControl": {
+        "x": 1.6671167021591353,
+        "y": 3.9098423134829368
+      },
+      "nextControl": {
+        "x": 1.153988663326819,
+        "y": 4.096605645985296
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.151691520584348,
+        "y": 4.2333989401294
+      },
+      "prevControl": {
+        "x": 2.901691520584348,
+        "y": 4.2333989401294
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Branch A"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.15268875925164468,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.7283376593338804,
+      "rotationDegrees": 70.0
+    },
+    {
+      "waypointRelativePos": 2.096573036595388,
+      "rotationDegrees": 70.0
+    },
+    {
+      "waypointRelativePos": 2.85344045538651,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.0,
+      "maxWaypointRelativePos": 2.1,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Bottom Side Coral Stacks",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": false
+}

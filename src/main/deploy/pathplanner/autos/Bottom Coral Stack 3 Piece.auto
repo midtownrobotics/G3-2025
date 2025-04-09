@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Start to Branch B"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B to Middle Stack v2 to A"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A to Top Stack to Front L1"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Bottom Side",
+  "choreoAuto": false
+}

@@ -1,0 +1,70 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.927933559479721,
+        "y": 0.8614624550909059
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.632205561531225,
+        "y": 0.7933207995113731
+      },
+      "isLocked": false,
+      "linkedName": "Cage 6 Start"
+    },
+    {
+      "anchor": {
+        "x": 2.859099460180404,
+        "y": 2.782643562593362
+      },
+      "prevControl": {
+        "x": 3.3663195031501223,
+        "y": 1.6406699557654543
+      },
+      "nextControl": {
+        "x": 2.652227491982751,
+        "y": 3.248402617166776
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.15543402872832,
+        "y": 3.9046794395868556
+      },
+      "prevControl": {
+        "x": 2.9673130162201704,
+        "y": 3.5325390717720726
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Branch B"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Bottom Side",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 45.0
+  },
+  "useDefaultConstraints": false
+}
