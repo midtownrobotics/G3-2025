@@ -546,7 +546,7 @@ public class DriveCommands {
 
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+        drive.stopCommand());
   }
 
   /** Creates a command that drives to a branch */
@@ -567,7 +567,7 @@ public class DriveCommands {
 
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier, Degrees.of(1), Inches.of(1)),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+        drive.stopCommand());
   }
 
   private static final double maxSpeedAutoIntake = 1;
@@ -653,7 +653,7 @@ public class DriveCommands {
 
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
+        drive.stopCommand());
   }
 
   /**
@@ -684,7 +684,7 @@ public class DriveCommands {
 
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
+        drive.stopCommand());
   }
 
   /** Returns the piece pose in Field Space (Cached if necessary) */
