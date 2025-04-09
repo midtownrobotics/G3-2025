@@ -476,7 +476,7 @@ public class DriveCommands {
             new DriveToPoint(drive,
                 () -> new Pose2d(
                     driveTranslation2d
-                        .nearest(Arrays.asList(new Translation2d[] { Barge.closeCage, Barge.middleCage, Barge.farCage })),
+                        .nearest(List.of(Barge.closeCage, Barge.middleCage, Barge.farCage).stream().map(AllianceFlipUtil::apply).toList()),
                     Rotation2d.k180deg)));
       }
       // TODO AGAIN Station offset probably not same as algae!!!
