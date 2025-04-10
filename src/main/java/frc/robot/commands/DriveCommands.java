@@ -50,6 +50,7 @@ import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularVelocity;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearVelocity;
+import frc.robot.controls.CoralMode;
 import frc.robot.sensors.VisionConstants;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_outtake_pivot.CoralOuttakePivot;
@@ -360,6 +361,11 @@ public class DriveCommands {
 
   private static final Set<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
 
+  private static final Transform2d kRobotPrepareOffset = new Transform2d(
+    new Translation2d(Inches.of(5), Inches.of(0)),
+    Rotation2d.kZero
+  );
+
   private static final Transform2d kRobotBranchAlignOffset = new Transform2d(
       new Translation2d(
           Inches.of(20), // F/B
@@ -434,12 +440,8 @@ public class DriveCommands {
     }, Set.of(drive));
   }
 
-  private static final List<CoralIntake.Goal> INTAKE_PROCESSOR_GOALS = Arrays.asList(new CoralIntake.Goal[] {
-      CoralIntake.Goal.ALGAE_INTAKE, CoralIntake.Goal.ALGAE_SHOOT, CoralIntake.Goal.HOLD_ALGAE });
-
-  private static final List<CoralIntake.Goal> INTAKE_L1_GOALS = Arrays.asList(new CoralIntake.Goal[] {
-      CoralIntake.Goal.L1, CoralIntake.Goal.L1_PREPARE
-  });
+  private static final List<CoralIntake.Goal> INTAKE_PROCESSOR_GOALS = List.of(CoralIntake.Goal.ALGAE_INTAKE,
+      CoralIntake.Goal.ALGAE_SHOOT, CoralIntake.Goal.HOLD_ALGAE);
 
   private static final boolean isNear(Translation2d current, Translation2d target) {
     return current.getDistance(target) < 3;
@@ -451,7 +453,8 @@ public class DriveCommands {
    */
   public static Command fieldElementLock(Drive drive, CoralIntake intake, CoralOuttakeRoller roller,
       CoralOuttakePivot pivot, Elevator elevator, LED led,
-      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper, BooleanSupplier waitingstate) {
+      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper, BooleanSupplier waitingstate,
+      Supplier<CoralMode> coralModeSupplier) {
     Supplier<Command> commandSupplier = () -> {
       Translation2d driveTranslation2d = drive.getPose().getTranslation();
       boolean elevatorClimb = elevator.getCurrentGoal() == Elevator.Goal.CLIMB;
@@ -497,7 +500,7 @@ public class DriveCommands {
         }
       }
 
-      if (INTAKE_L1_GOALS.contains(intake.getCurrentGoal())) {
+      if (coralModeSupplier.get() == CoralMode.L1) {
         Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToL1Reef");
         return alignToL1Reef(drive, led, reefFaceSupplier);
       }
