@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "AlignToBranchB"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "ScoreCoralLevel4"
           }
         },
@@ -23,9 +29,33 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "WaitForHandoff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "A to Top Stack to Front L1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel1"
           }
         }
       ]

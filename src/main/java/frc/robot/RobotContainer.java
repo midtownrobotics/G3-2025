@@ -284,6 +284,9 @@ public class RobotContainer {
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW))));
 
+    NamedCommands.registerCommand("PrepareLevel1", Commands.print("Preparing level 1 :)"));
+    NamedCommands.registerCommand("ScoreCoralLevel1", Commands.print("Scoring level 1 :)"));
+
     NamedCommands.registerCommand("DisableCameras", aprilTagVision.enableDisableCamera(false, 0));
 
     NamedCommands.registerCommand("Handoff", handoffCommand());
@@ -355,6 +358,7 @@ public class RobotContainer {
     //     coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT,
     //         CoralOuttakeRoller.Goal.STOW));
 
+    NamedCommands.registerCommand("AlignToBranchA", DriveCommands.alignToBranchReef(drive, led, 0).withTimeout(1.6));
     NamedCommands.registerCommand("AlignToBranchB", DriveCommands.alignToBranchReef(drive, led, 1).withTimeout(1.6));
     NamedCommands.registerCommand("AlignToBranchC", DriveCommands.alignToBranchReef(drive, led, 2).withTimeout(1.6));
     NamedCommands.registerCommand("AlignToBranchD", DriveCommands.alignToBranchReef(drive, led, 3).withTimeout(1.6));
@@ -366,6 +370,8 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("AlignToAlgae4", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.GH));
     NamedCommands.registerCommand("AlignToAlgae5", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.IJ));
+
+    NamedCommands.registerCommand("PrepareLevel1", Commands.runOnce(() -> coralMode = CoralMode.L1));
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", m_autoChooser);

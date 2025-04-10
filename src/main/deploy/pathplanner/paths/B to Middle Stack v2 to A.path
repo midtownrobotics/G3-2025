@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 3.151691520584348,
-        "y": 4.2333989401294
+        "x": 2.860311414930554,
+        "y": 4.241681495949074
       },
       "prevControl": {
-        "x": 2.901691520584348,
-        "y": 4.2333989401294
+        "x": 2.610311414930554,
+        "y": 4.241681495949074
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch A"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -94,7 +94,43 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeFromGround",
+      "waypointRelativePos": 0.5611491354466858,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeFromGround"
+        }
+      }
+    },
+    {
+      "name": "Handoff and PrepareScoreLevel4",
+      "waypointRelativePos": 2.5707627881844375,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Handoff"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "PrepareLevel4"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 4.0,

@@ -40,7 +40,7 @@
         "y": 5.802102376965129
       },
       "nextControl": {
-        "x": 0.6883267761127764,
+        "x": 0.6883267761127763,
         "y": 5.9614215122551215
       },
       "isLocked": false,
@@ -82,7 +82,30 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeFromGround",
+      "waypointRelativePos": 0.5011707492795394,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeFromGround"
+        }
+      }
+    },
+    {
+      "name": "PrepareLevel1",
+      "waypointRelativePos": 2.6072699027377526,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLevel1"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.0,
     "maxAcceleration": 4.0,
