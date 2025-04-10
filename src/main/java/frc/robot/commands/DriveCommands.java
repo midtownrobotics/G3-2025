@@ -65,7 +65,6 @@ import frc.robot.utils.FieldConstants.Processor;
 import frc.robot.utils.ReefFace;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;

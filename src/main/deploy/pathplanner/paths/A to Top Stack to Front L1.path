@@ -85,7 +85,7 @@
   "eventMarkers": [
     {
       "name": "IntakeFromGround",
-      "waypointRelativePos": 0.5011707492795394,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

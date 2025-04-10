@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.927933559479721,
-        "y": 0.8614624550909059
+        "x": 7.088133680555555,
+        "y": 0.7528823061342587
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.632205561531225,
-        "y": 0.7933207995113731
+        "x": 6.269172416057334,
+        "y": 1.1593043794707696
       },
       "isLocked": false,
       "linkedName": "Cage 6 Start"
@@ -20,12 +20,12 @@
         "y": 2.782643562593362
       },
       "prevControl": {
-        "x": 3.3663195031501223,
-        "y": 1.6406699557654543
+        "x": 3.276477805847901,
+        "y": 1.7459109582711951
       },
       "nextControl": {
-        "x": 2.652227491982751,
-        "y": 3.248402617166776
+        "x": 2.680700437418254,
+        "y": 3.225771686983588
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 3.9046794395868556
       },
       "prevControl": {
-        "x": 2.9673130162201704,
-        "y": 3.5325390717720726
+        "x": 2.97568043208168,
+        "y": 3.4983095302050873
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.2527692723342922,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
@@ -76,7 +90,7 @@
   "folder": "Bottom Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 45.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": false
 }

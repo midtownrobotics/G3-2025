@@ -283,8 +283,8 @@ public class RobotContainer {
             coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
             elevator.setGoalCommand(Elevator.Goal.STOW))));
 
-    NamedCommands.registerCommand("PrepareLevel1", Commands.print("Preparing level 1 :)"));
-    NamedCommands.registerCommand("ScoreCoralLevel1", Commands.print("Scoring level 1 :)"));
+    NamedCommands.registerCommand("PrepareLevel1", coralIntake.setGoalCommand(CoralIntake.Goal.L1_PREPARE));
+    NamedCommands.registerCommand("ScoreCoralLevel1", coralIntake.setGoalCommand(CoralIntake.Goal.L1));
 
     NamedCommands.registerCommand("DisableCameras", aprilTagVision.enableDisableCamera(false, 0));
 
