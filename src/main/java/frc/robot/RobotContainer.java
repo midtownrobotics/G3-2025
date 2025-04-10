@@ -638,24 +638,7 @@ public class RobotContainer {
 
     // dealgify auto
     controls.algae().and(() -> (coralMode == CoralMode.L2 || coralMode == CoralMode.L3))
-        .whileTrue(Commands.parallel(Commands.run(() -> {
-          ReefFace closestFace = null;
-          Distance closestDistance = Meters.of(Double.MAX_VALUE);
-          Pose2d currentPose = drive.getPose();
-
-          for (ReefFace face : ReefFace.values()) {
-            Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
-            Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
-            Distance distance = Meters.of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
-            if (distance.lt(closestDistance)) {
-              closestFace = face;
-              closestDistance = distance;
-            }
-          }
-
-          CoralMode newCoralMode = closestFace.ordinal() % 2 == 0 ? CoralMode.L3 : CoralMode.L2;
-          coralMode = newCoralMode;
-        }),
+        .whileTrue(Commands.parallel(
             elevator.setDealgifyGoalFromCoralMode(() -> coralMode),
             Commands.sequence(
                 Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
