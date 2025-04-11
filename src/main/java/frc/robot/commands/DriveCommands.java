@@ -522,9 +522,7 @@ public class DriveCommands {
       ReefFace face = reefFaceSupplier.get();
       boolean leftBranch = leftBranchSupplier.getAsBoolean();
 
-      if (face == null) {
-        return null;
-      }
+      if (face == null) return null;
 
       // boolean flipBranchSide = kFlippedReefFaces.contains(face);
       // boolean leftSideToDriver = flipBranchSide ^ leftBranch;
