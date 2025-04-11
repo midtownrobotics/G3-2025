@@ -311,6 +311,11 @@ public class RobotContainer {
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY, Degrees.of(4)),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)));
 
+    NamedCommands.registerCommand("PrepareIntakeAlgaeHigh", Commands.sequence(
+      elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_HIGH, Inches.of(2.5)),
+      coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY, Degrees.of(4)),
+      coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)));
+
     NamedCommands.registerCommand("IntakeAlgaeLow", Commands.sequence(
         elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_LOW),
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
