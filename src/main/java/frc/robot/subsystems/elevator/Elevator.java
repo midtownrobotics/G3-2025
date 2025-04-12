@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -17,9 +19,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.lib.dashboard.LoggedDigitalInput;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.controls.CoralMode;
-import frc.robot.sensors.LoggedDigitalInput;
 import frc.robot.subsystems.elevator.lock.LockIO;
 import frc.robot.subsystems.elevator.winch.WinchIO;
 import frc.robot.subsystems.elevator.winch.WinchInputsAutoLogged;
@@ -112,6 +114,7 @@ public class Elevator extends SubsystemBase {
   private @Getter WinchIO winch;
   private @Getter LockIO lock;
   private @Getter LoggedDigitalInput zeroSensor;
+  private final Debouncer zeroSensorDebouncer = new Debouncer(5, DebounceType.kRising);
 
   private SysIdRoutine routine;
 
@@ -171,7 +174,7 @@ public class Elevator extends SubsystemBase {
 
     switch (getCurrentGoal()) {
       case ZERO:
-        if (!zeroSensor.isTriggered()) {
+        if (!getZeroSensorDebounced()) {
           winch.setVoltage(Volts.of(-1));
           break;
         }
@@ -203,6 +206,10 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput("Elevator/driverOffset", driverOffset);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
+  }
+
+  public boolean getZeroSensorDebounced() {
+    return zeroSensorDebouncer.calculate(zeroSensor.isTriggered());
   }
 
   /** Sets the goal of the elevator. */
@@ -333,6 +340,14 @@ public class Elevator extends SubsystemBase {
    */
   public Command setGoalAndWait(Supplier<Goal> goal) {
     return run(() -> setGoal(goal.get())).until(this::atGoal);
+  }
+
+  /**
+   * zero and wait...
+   * @return comand
+   */
+  public Command zeroAndWait() {
+    return run(() -> setGoal(Goal.ZERO)).until(this::getZeroSensorDebounced);
   }
 
   /**

@@ -8,7 +8,10 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.AngleUnit;
@@ -25,8 +28,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
+import frc.lib.dashboard.LoggedDigitalInput;
 import frc.lib.dashboard.LoggedTunableNumber;
-import frc.robot.sensors.LoggedDigitalInput;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -105,6 +108,8 @@ public class CoralIntake extends SubsystemBase {
   private final LoggedDigitalInput upperZeroSensor;
   private final LoggedDigitalInput lowerZeroSensor;
 
+  private final Debouncer zeroSensorDebouncer = new Debouncer(5, DebounceType.kRising);
+
   private final RollerIO beltIO;
   private final RollerInputsAutoLogged beltInputs = new RollerInputsAutoLogged();
   private final PivotIO pivotIO;
@@ -136,6 +141,7 @@ public class CoralIntake extends SubsystemBase {
     this.beltIO = beltIO;
     this.centerSensor = centerSensor;
     this.handoffSensor = handoffSensor;
+
     this.upperZeroSensor = upperZeroSensor;
     this.lowerZeroSensor = lowerZeroSensor;
 
@@ -160,6 +166,10 @@ public class CoralIntake extends SubsystemBase {
         .voltage(pivotInputs.appliedVoltage)
         .angularPosition(pivotInputs.absolutePosition)
         .angularVelocity(pivotInputs.velocity);
+  }
+
+  public boolean getZeroSensorDebounced(boolean upper) {
+    return zeroSensorDebouncer.calculate(upper ? upperZeroSensor.isTriggered() : lowerZeroSensor.isTriggered());
   }
 
   private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralIntake/desiredAngle", 0.0);
@@ -224,7 +234,7 @@ public class CoralIntake extends SubsystemBase {
 
     switch (getCurrentGoal()) {
       case ZERO:
-        if (!upperZeroSensor.isTriggered()) {
+        if (!getZeroSensorDebounced(true)) {
           pivotIO.setVoltage(Volts.of(-1));
           break;
         }

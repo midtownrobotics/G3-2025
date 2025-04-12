@@ -1,4 +1,4 @@
-package frc.robot.sensors;
+package frc.lib.dashboard;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.lib.VirtualSubsystem;

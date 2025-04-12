@@ -32,10 +32,10 @@ import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
 import frc.lib.RollerIO.RollerIOReplay;
 import frc.lib.RollerIO.RollerIOSim;
+import frc.lib.dashboard.LoggedDigitalInput;
 import frc.robot.commands.DriveCommands;
 import frc.robot.controls.CoralMode;
 import frc.robot.controls.MatchXboxControls;
-import frc.robot.sensors.LoggedDigitalInput;
 import frc.robot.sensors.Vision;
 import frc.robot.sensors.VisionConstants;
 import frc.robot.sensors.vision.VisionIO;
@@ -77,6 +77,7 @@ import java.util.Set;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
 
@@ -401,6 +402,11 @@ public class RobotContainer {
     controls.decreaseElevatorOffset().onTrue(Commands.runOnce(() -> {
       elevator.driverOffset = elevator.driverOffset.minus(Inches.of(1));
     }));
+
+    controls.zero().onTrue(Commands.sequence(
+      elevator.zeroAndWait(),
+      coralIntake.setGoalCommand(CoralIntake.Goal.ZERO)
+    ));
 
     DoubleSupplier speedMultiplier = () -> {
       if (elevator.getPosition().gt(Inches.of(10))) {
@@ -778,5 +784,10 @@ public class RobotContainer {
     }
 
     return closestFace;
+  }
+
+  /** used for logging */
+  public void periodic() {
+    Logger.recordOutput("FinishedZeroing", coralIntake.getZeroSensorDebounced(true) && elevator.getZeroSensorDebounced());
   }
 }
