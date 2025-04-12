@@ -13,6 +13,7 @@
 
 package frc.robot.sensors;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.sensors.VisionConstants.*;
 
 import edu.wpi.first.math.Matrix;
@@ -29,11 +30,17 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.vision.VisionIO;
+import frc.robot.sensors.vision.VisionIO.PoseObservation;
 import frc.robot.sensors.vision.VisionIO.PoseObservationType;
+import frc.robot.sensors.vision.VisionIO.VisionIOInputs;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.utils.LoggerUtil;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -58,14 +65,14 @@ public class Vision extends SubsystemBase {
     // Initialize disconnected alerts
     this.disconnectedAlerts = new Alert[io.length];
     for (int i = 0; i < inputs.length; i++) {
-      disconnectedAlerts[i] =
-          new Alert(
-              "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
+      disconnectedAlerts[i] = new Alert(
+          "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
     }
   }
 
   /**
-   * Returns the X angle to the best target, which can be used for simple servoing with vision.
+   * Returns the X angle to the best target, which can be used for simple servoing
+   * with vision.
    *
    * @param cameraIndex The index of the camera to use.
    */
@@ -110,20 +117,20 @@ public class Vision extends SubsystemBase {
 
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
-        // Check whether to reject pose
-        boolean rejectPose =
-            observation.tagCount() == 0 // Must have at least one tag
-                || (observation.tagCount() == 1
-                    && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-                || Math.abs(observation.pose().getZ())
-                    > maxZError // Must have realistic Z coordinate
 
-                || observation.averageTagDistance() > Units.feetToMeters(10)
-                // Must be within the field boundaries
-                || observation.pose().getX() <= 0.0
-                || observation.pose().getX() > aprilTagLayout.getFieldLength()
-                || observation.pose().getY() <= 0.0
-                || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+        // Check whether to reject pose
+        boolean rejectPose = observation.tagCount() == 0 // Must have at least one tag
+            || (observation.tagCount() == 1
+                && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
+            || Math.abs(observation.pose().getZ()) > maxZError // Must have realistic Z coordinate
+
+            || observation.averageTagDistance() > Units.feetToMeters(10)
+            // Must be within the field boundaries
+            || observation.pose().getX() <= 0.0
+            || observation.pose().getX() > aprilTagLayout.getFieldLength()
+            || observation.pose().getY() <= 0.0
+            || observation.pose().getY() > aprilTagLayout.getFieldWidth()
+            || angleDeltaTooGreat(observation, inputs[cameraIndex]);
 
         // Add pose to log
         robotPoses.add(observation.pose());
@@ -139,8 +146,7 @@ public class Vision extends SubsystemBase {
         }
 
         // Calculate standard deviations
-        double stdDevFactor =
-            Math.pow(observation.averageTagDistance(), 3.0) / observation.tagCount();
+        double stdDevFactor = Math.pow(observation.averageTagDistance(), 3.0) / observation.tagCount();
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
         if (observation.averageTagDistance() > 1.0) {
@@ -211,4 +217,10 @@ public class Vision extends SubsystemBase {
   public Command enableDisableCamera(boolean enabled, int cameraIndex) {
     return run(() -> io[cameraIndex].setEnabled(enabled));
   };
+
+  private boolean angleDeltaTooGreat (PoseObservation observation, VisionIOInputs inputs) {
+    return observation.pose().transformBy(inputs.transformRobotToCamera)
+  .minus(aprilTagLayout.getTagPose(inputs.tagIds[0]).get())
+  .getRotation().getMeasureAngle().abs(Degrees) > 70;
+  }
 }
