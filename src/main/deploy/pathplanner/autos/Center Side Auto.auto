@@ -13,12 +13,6 @@
         {
           "type": "named",
           "data": {
-            "name": "AlignToBranchH"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "ScoreCoralLevel4"
           }
         },

@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 6.196265424020947,
+        "x": 5.86,
         "y": 4.147
       },
       "prevControl": {
-        "x": 5.863100509028621,
+        "x": 5.526835085007677,
         "y": 4.147263997673701
       },
       "nextControl": null,
@@ -34,9 +34,14 @@
   "eventMarkers": [
     {
       "name": "PrepareLevel4",
-      "waypointRelativePos": 0.9537884785091352,
+      "waypointRelativePos": 0.6225014277555683,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLevel4"
+        }
+      }
     }
   ],
   "globalConstraints": {

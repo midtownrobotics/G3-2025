@@ -182,7 +182,6 @@ public class RobotContainer {
         break;
       case SIM:
 
-
         // Elevator
         winchIO = new WinchIOSim();
 
@@ -223,7 +222,7 @@ public class RobotContainer {
         beltIO = new RollerIOKraken(Ports.CoralIntake.belt, rioCANBusHandler, true);
         // beltIO = new RollerIOSim();
         pivotIO = new PivotIONeo(Ports.CoralIntake.pivotMotor, Ports.CoralIntake.pivotEncoder);
-      // pivotIO = new PivotIOSim();
+        // pivotIO = new PivotIOSim();
         coralIntakeRollerIO = new RollerIONeo(Ports.CoralIntake.coralIntakeRoller, IdleMode.kBrake);
         // coralIntakeRollerIO = new RollerIOSim();
 
@@ -315,9 +314,9 @@ public class RobotContainer {
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)));
 
     NamedCommands.registerCommand("PrepareIntakeAlgaeHigh", Commands.sequence(
-      elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_HIGH, Inches.of(2.5)),
-      coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY, Degrees.of(4)),
-      coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)));
+        elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_HIGH, Inches.of(2.5)),
+        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY, Degrees.of(4)),
+        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)));
 
     NamedCommands.registerCommand("IntakeAlgaeLow", Commands.sequence(
         elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_LOW),
@@ -340,11 +339,11 @@ public class RobotContainer {
         elevator.setGoalAndWait(Elevator.Goal.BARGE),
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.BARGE),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
-        Commands.waitSeconds(1)));
+        Commands.waitSeconds(.5)));
 
     NamedCommands.registerCommand("Stow", Commands.runOnce(() -> {
       teleopInit();
-    }));
+    }).withTimeout(1));
 
     // barge
     // controls.algae().and(() -> (coralMode == CoralMode.L4))
@@ -369,8 +368,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("AlignToBranchI", DriveCommands.alignToBranchReef(drive, led, 8).withTimeout(1.6));
     NamedCommands.registerCommand("AlignToBranchK", DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.6));
 
-    NamedCommands.registerCommand("AlignToAlgae4", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.GH));
-    NamedCommands.registerCommand("AlignToAlgae5", DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.IJ));
+    NamedCommands.registerCommand("AlignToAlgae4",
+        DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.GH).withTimeout(1.6));
+    NamedCommands.registerCommand("AlignToAlgae5",
+        DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.IJ).withTimeout(1.6));
 
     NamedCommands.registerCommand("PrepareLevel1", Commands.runOnce(() -> coralMode = CoralMode.L1));
 
@@ -389,7 +390,7 @@ public class RobotContainer {
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode), Degrees.of(4)),
         elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode)).withTimeout(0.4),
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode)).withTimeout(0.4));
-    }
+  }
 
   private double mapInput(double input, double inputMin, double inputMax, double outputMin, double outputMax) {
     return (input - inputMin) * (outputMax - outputMin) / (inputMax - inputMin) + outputMin;

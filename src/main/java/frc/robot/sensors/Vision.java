@@ -37,10 +37,6 @@ import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.utils.LoggerUtil;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -129,8 +125,8 @@ public class Vision extends SubsystemBase {
             || observation.pose().getX() <= 0.0
             || observation.pose().getX() > aprilTagLayout.getFieldLength()
             || observation.pose().getY() <= 0.0
-            || observation.pose().getY() > aprilTagLayout.getFieldWidth()
-            || angleDeltaTooGreat(observation, inputs[cameraIndex]);
+            || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+            // || angleDeltaTooGreat(observation, inputs[cameraIndex]);
 
         // Add pose to log
         robotPoses.add(observation.pose());

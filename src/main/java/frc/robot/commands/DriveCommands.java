@@ -382,7 +382,7 @@ public class DriveCommands {
   // TODO idk man just ask someone
   private static final Transform2d kRobotL1Offset = new Transform2d(
       new Translation2d(
-          Inches.of(20), // F/B
+          Inches.of(17), // F/B
           Inches.of(-1.614)),
       Rotation2d.kCCW_90deg);
 
@@ -658,7 +658,7 @@ public class DriveCommands {
     };
 
     return Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier),
+        new DriveToPoint(drive, branchPoseSupplier, Degrees.of(1), Inches.of(1)),
         drive.stopCommand());
   }
 
