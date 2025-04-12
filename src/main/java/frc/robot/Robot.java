@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.VirtualSubsystem;
 import frc.lib.simulation.BatterySimManager;
 import frc.robot.utils.Constants;
+import frc.robot.utils.LoggedCommandScheduler;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -60,6 +62,8 @@ public class Robot extends LoggedRobot {
     // be added.
 
     m_robotContainer = new RobotContainer();
+
+    LoggedCommandScheduler.init(CommandScheduler.getInstance());
   }
 
   @Override
@@ -69,16 +73,20 @@ public class Robot extends LoggedRobot {
 
     CommandScheduler.getInstance().run();
     VirtualSubsystem.periodicAll();
+    LoggedCommandScheduler.periodic();
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+  }
 
   @Override
   public void autonomousInit() {
@@ -90,10 +98,12 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+  }
 
   @Override
   public void teleopInit() {
@@ -105,10 +115,12 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+  }
 
   @Override
   public void testInit() {
@@ -116,10 +128,12 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+  }
 
   @Override
   public void simulationInit() {
@@ -134,6 +148,5 @@ public class Robot extends LoggedRobot {
       BatterySimManager.getInstance().periodic();
     }
   }
-
 
 }
