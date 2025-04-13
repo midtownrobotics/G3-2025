@@ -9,6 +9,7 @@ public class Ports {
         public static final int RightWinchMotor = 61;
         public static final int WinchEncoder = 1;
         public static final int LockServo = 4;
+        public static final int zeroSensor = 99; // TODO
     }
 
     public static class CoralIntake {
@@ -18,6 +19,8 @@ public class Ports {
         public static final int coralIntakeRoller = 51;
         public static final int centerSensor = 4;
         public static final int handoffSensor = 2;
+        public static final int upperZeroSensor = 6;
+        public static final int lowerZeroSensor = 98; // TODO
     }
 
     public static class CoralOuttake {

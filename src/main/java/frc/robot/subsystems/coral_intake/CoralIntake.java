@@ -8,7 +8,10 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.AngleUnit;
@@ -25,8 +28,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerInputsAutoLogged;
+import frc.lib.dashboard.LoggedDigitalInput;
 import frc.lib.dashboard.LoggedTunableNumber;
-import frc.robot.sensors.Photoelectric;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
 import frc.robot.subsystems.coral_intake.pivot.PivotInputsAutoLogged;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
@@ -56,8 +59,9 @@ public class CoralIntake extends SubsystemBase {
     ALGAE_INTAKE(Degrees.of(39), Volts.of(-9.5)),
     HOLD_ALGAE(Degrees.of(49), Volts.of(-1)),
     ALGAE_SHOOT(Degrees.of(49), Volts.of(10)),
-    TUNING(Degrees.of(0), Volts.of(0)),
-    MANUAL(Degrees.of(0), Volts.of(0));
+    ZERO(),
+    TUNING(),
+    MANUAL();
 
     private @Getter Angle angle;
     private @Getter Voltage rollerVoltage;
@@ -74,6 +78,9 @@ public class CoralIntake extends SubsystemBase {
       this.rollerVoltage = rollerVoltage;
       this.beltVoltage = Volts.zero();
     }
+
+    private Goal() {
+    };
 
     /**
      * Goal has angle, rollerVoltage, and beltVoltage associated.
@@ -96,8 +103,12 @@ public class CoralIntake extends SubsystemBase {
 
   private @Getter Goal currentGoal = Goal.STOW;
 
-  private final Photoelectric handoffSensor;
-  private final Photoelectric centerSensor;
+  private final LoggedDigitalInput handoffSensor;
+  private final LoggedDigitalInput centerSensor;
+  private final LoggedDigitalInput upperZeroSensor;
+  private final LoggedDigitalInput lowerZeroSensor;
+
+  private final Debouncer zeroSensorDebouncer = new Debouncer(5, DebounceType.kRising);
 
   private final RollerIO beltIO;
   private final RollerInputsAutoLogged beltInputs = new RollerInputsAutoLogged();
@@ -122,14 +133,17 @@ public class CoralIntake extends SubsystemBase {
    * @param pivotIO
    * @param rollerIO
    */
-  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO, Photoelectric centerSensor,
-      Photoelectric handoffSensor) {
+  public CoralIntake(RollerIO beltIO, PivotIO pivotIO, RollerIO rollerIO, LoggedDigitalInput centerSensor,
+      LoggedDigitalInput handoffSensor, LoggedDigitalInput upperZeroSensor, LoggedDigitalInput lowerZeroSensor) {
 
     this.pivotIO = pivotIO;
     this.rollerIO = rollerIO;
     this.beltIO = beltIO;
     this.centerSensor = centerSensor;
     this.handoffSensor = handoffSensor;
+
+    this.upperZeroSensor = upperZeroSensor;
+    this.lowerZeroSensor = lowerZeroSensor;
 
     this.handoffSensorTrigger = new Trigger(handoffSensor::isTriggered);
     this.centerSensorTrigger = new Trigger(centerSensor::isTriggered);
@@ -152,6 +166,10 @@ public class CoralIntake extends SubsystemBase {
         .voltage(pivotInputs.appliedVoltage)
         .angularPosition(pivotInputs.absolutePosition)
         .angularVelocity(pivotInputs.velocity);
+  }
+
+  public boolean getZeroSensorDebounced(boolean upper) {
+    return zeroSensorDebouncer.calculate(upper ? upperZeroSensor.isTriggered() : lowerZeroSensor.isTriggered());
   }
 
   private LoggedTunableNumber tuningDesiredAngle = new LoggedTunableNumber("CoralIntake/desiredAngle", 0.0);
@@ -215,6 +233,14 @@ public class CoralIntake extends SubsystemBase {
     }
 
     switch (getCurrentGoal()) {
+      case ZERO:
+        if (!getZeroSensorDebounced(true)) {
+          pivotIO.setVoltage(Volts.of(-1));
+          break;
+        }
+        pivotIO.zeroPivotAngle(CoralIntakeConstants.upperSensorTriggeredAngle);
+        pivotIO.setVoltage(Volts.zero());
+        break;
       case HANDOFF:
         if (getPosition().lt(Degrees.of(131))) {
           desiredBeltVoltage = Goal.PRE_HANDOFF_ADJUST_CORAL.getBeltVoltage();
@@ -227,7 +253,6 @@ public class CoralIntake extends SubsystemBase {
         } else {
           pivotIO.setVoltage(calculateVoltageForPosition(constrainedAngle));
         }
-
 
         beltIO.setVoltage(desiredBeltVoltage);
         rollerIO.setVoltage(desiredRollerVoltage);

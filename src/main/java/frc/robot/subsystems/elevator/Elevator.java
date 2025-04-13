@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.lib.dashboard.LoggedDigitalInput;
 import frc.lib.dashboard.LoggedTunableNumber;
 import frc.robot.controls.CoralMode;
 import frc.robot.subsystems.elevator.lock.LockIO;
@@ -110,6 +113,8 @@ public class Elevator extends SubsystemBase {
   // private LockInputsAutoLogged lockInputs = new LockInputsAutoLogged();
   private @Getter WinchIO winch;
   private @Getter LockIO lock;
+  private @Getter LoggedDigitalInput zeroSensor;
+  private final Debouncer zeroSensorDebouncer = new Debouncer(5, DebounceType.kRising);
 
   private SysIdRoutine routine;
 
@@ -120,10 +125,10 @@ public class Elevator extends SubsystemBase {
    *
    * @param winch
    */
-  public Elevator(WinchIO winch, LockIO lock) {
+  public Elevator(WinchIO winch, LockIO lock, LoggedDigitalInput zeroSensor) {
     this.winch = winch;
     this.lock = lock;
-
+    this.zeroSensor = zeroSensor;
     SysIdRoutine.Mechanism sysIdMech = new SysIdRoutine.Mechanism(
         winch::setVoltage,
         this::motorSysIdLog,
@@ -169,7 +174,12 @@ public class Elevator extends SubsystemBase {
 
     switch (getCurrentGoal()) {
       case ZERO:
-        winch.setVoltage(Volts.of(-1));
+        if (!getZeroSensorDebounced()) {
+          winch.setVoltage(Volts.of(-1));
+          break;
+        }
+        winch.setVoltage(Volts.zero());
+        winch.zeroPosition();
         break;
       case CLIMB_BOTTOM:
       case CLIMB_BOTTOM_LOCK:
@@ -196,6 +206,10 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput("Elevator/driverOffset", driverOffset);
 
     LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
+  }
+
+  public boolean getZeroSensorDebounced() {
+    return zeroSensorDebouncer.calculate(zeroSensor.isTriggered());
   }
 
   /** Sets the goal of the elevator. */
@@ -326,6 +340,14 @@ public class Elevator extends SubsystemBase {
    */
   public Command setGoalAndWait(Supplier<Goal> goal) {
     return run(() -> setGoal(goal.get())).until(this::atGoal);
+  }
+
+  /**
+   * zero and wait...
+   * @return comand
+   */
+  public Command zeroAndWait() {
+    return run(() -> setGoal(Goal.ZERO)).until(this::getZeroSensorDebounced);
   }
 
   /**

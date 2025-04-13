@@ -454,6 +454,7 @@ public class DriveCommands {
       CoralOuttakePivot pivot, Elevator elevator, LED led,
       Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper, BooleanSupplier waitingstate,
       Supplier<CoralMode> coralModeSupplier) {
+
     Supplier<Command> commandSupplier = () -> {
       Translation2d driveTranslation2d = drive.getPose().getTranslation();
       boolean elevatorClimb = elevator.getCurrentGoal() == Elevator.Goal.CLIMB;

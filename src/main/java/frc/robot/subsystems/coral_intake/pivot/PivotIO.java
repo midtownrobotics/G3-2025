@@ -31,4 +31,10 @@ public interface PivotIO {
    * @param inputs
    */
   public void updateInputs(PivotInputs inputs);
+
+  /**
+   * Zeros the pivot angle to the specified position.
+   * @param position
+   */
+  public void zeroPivotAngle(Angle position);
 }

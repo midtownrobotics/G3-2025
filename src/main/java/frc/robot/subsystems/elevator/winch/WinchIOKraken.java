@@ -277,4 +277,15 @@ public class WinchIOKraken implements WinchIO {
   private Angle getAbsoluteEncoderPosition() {
     return Rotations.of(encoder.get());
   }
+
+  /** Zeros the kraken motors to the specified position. */
+  public void zeroPosition(Angle position) {
+    tryUntilOk(5, () -> leftMotor.setPosition(position));
+    tryUntilOk(5, () -> rightMotor.setPosition(position));
+  }
+
+  /** Zeros the kraken motors based on current position. */
+  public void zeroPosition() {
+    zeroPosition(Degrees.zero());
+  }
 }
