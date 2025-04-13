@@ -306,7 +306,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("IntakeFromLoadingStation",
         coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
             .until(coralIntake.pieceDetectedTrigger.debounce(0.15))
-            .withTimeout(1));
+            .withTimeout(7));
 
     NamedCommands.registerCommand("PrepareIntakeAlgaeLow", Commands.sequence(
         elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_LOW, Inches.of(2.5)),
@@ -635,7 +635,7 @@ public class RobotContainer {
         .onFalse(
             Commands.sequence(
                 coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB_BOTTOM),
-                elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2),
+                elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM).withTimeout(2.2),
                 elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)));
 
     // controls.dealgify()
@@ -737,7 +737,7 @@ public class RobotContainer {
             }),
             elevator.setGoalAndWait(Elevator.Goal.STOW),
             coralIntake.setGoalAndWait(CoralIntake.Goal.HANDOFF, Degrees.of(3.5)),
-            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF, Degrees.of(20))),
+            coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.HANDOFF, Degrees.of(20))).withTimeout(1.0),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF),
         Commands.waitUntil(coralIntake.handoffSensorTrigger).withTimeout(2), // TODO change back to 2
         Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(2),
