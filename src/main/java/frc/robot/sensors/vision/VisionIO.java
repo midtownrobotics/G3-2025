@@ -15,6 +15,7 @@ package frc.robot.sensors.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import org.littletonrobotics.junction.AutoLog;
 
 /**
@@ -68,6 +69,9 @@ public interface VisionIO {
      * A list of tag IDs detected by the vision system.
      */
     public int[] tagIds = new int[0];
+
+    /** Transform3d from the robot to the camera. */
+    public Transform3d transformRobotToCamera = new Transform3d();
   }
 
   /**

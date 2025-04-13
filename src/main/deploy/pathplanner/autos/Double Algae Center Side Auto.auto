@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "AlignToBranchH"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "ScoreCoralLevel4"
           }
         },
@@ -74,6 +80,42 @@
           "type": "path",
           "data": {
             "pathName": "Barge Right to Algae Prepare 5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareIntakeAlgaeHigh"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToAlgae5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Algae 5 to Barge Right Prepare"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareBargeShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Barge Right Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "BargeShoot"
           }
         }
       ]

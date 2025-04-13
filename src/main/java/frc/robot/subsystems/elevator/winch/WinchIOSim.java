@@ -1,7 +1,6 @@
 package frc.robot.subsystems.elevator.winch;
 
 import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -31,14 +30,14 @@ public class WinchIOSim implements WinchIO {
 
   @Override
   public void updateInputs(WinchInputs inputs) {
-    double pidVoltage = m_controller.calculate(m_sim.getPositionMeters(), height.in(Meters));
-    double ffVoltage = m_feedforward.calculate(m_controller.getSetpoint().velocity);
-    double voltage = pidVoltage + ffVoltage;
-    m_sim.setInputVoltage(voltage);
-    m_sim.update(0.02);
+    // double pidVoltage = m_controller.calculate(m_sim.getPositionMeters(), height.in(Meters));
+    // double ffVoltage = m_feedforward.calculate(m_controller.getSetpoint().velocity);
+    // double voltage = pidVoltage + ffVoltage;
+    // m_sim.setInputVoltage(voltage);
+    // m_sim.update(0.02);
 
-    inputs.left.position = Meters.of(m_sim.getPositionMeters());
-    inputs.right.position = Meters.of(m_sim.getPositionMeters());
+    inputs.left.position = height; // Meters.of(m_sim.getPositionMeters());
+    inputs.right.position = height; // Meters.of(m_sim.getPositionMeters());
     inputs.left.velocity = MetersPerSecond.of(m_sim.getVelocityMetersPerSecond());
     inputs.right.velocity = MetersPerSecond.of(m_sim.getVelocityMetersPerSecond());
   }

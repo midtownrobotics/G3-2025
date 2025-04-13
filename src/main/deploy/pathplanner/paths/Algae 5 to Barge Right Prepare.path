@@ -3,35 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.304374796542863,
-        "y": 4.966281218351872
+        "x": 5.1786885245901635,
+        "y": 5.181813524590163
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.551284209522762,
-        "y": 4.927092676889834
+        "x": 6.305532786885245,
+        "y": 5.1098872950819665
       },
       "isLocked": false,
-      "linkedName": "Barge Right Prepare"
+      "linkedName": "Face 5 Algae Intake"
     },
     {
       "anchor": {
-        "x": 7.62,
-        "y": 4.972070254809139
+        "x": 7.304374796542863,
+        "y": 4.966281218351872
       },
       "prevControl": {
-        "x": 7.3751828303479074,
-        "y": 5.022711675045329
+        "x": 6.276665881220934,
+        "y": 5.123604369897508
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Barge Right Shoot"
+      "linkedName": "Barge Right Prepare"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "AlgaeStow",
+      "waypointRelativePos": 0.3775363047653654,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.5,
     "maxAcceleration": 2.75,
@@ -47,8 +54,8 @@
   "reversed": false,
   "folder": "Center Side AA",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": true
 }

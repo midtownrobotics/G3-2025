@@ -18,7 +18,7 @@ public class Ports {
         public static final int pivotEncoder = 5;
         public static final int coralIntakeRoller = 51;
         public static final int centerSensor = 4;
-        public static final int handoffSensor = 3;
+        public static final int handoffSensor = 2;
         public static final int upperZeroSensor = 6;
         public static final int lowerZeroSensor = 98; // TODO
     }

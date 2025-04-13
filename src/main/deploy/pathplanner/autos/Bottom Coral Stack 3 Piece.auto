@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start Center to Branch H"
+            "pathName": "Bottom Start to Branch B"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchB"
           }
         },
         {
@@ -19,67 +25,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Branch H to Algae Prepare 4"
+            "pathName": "B to Middle Stack v2 to A"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PrepareIntakeAlgaeLow"
+            "name": "WaitForHandoff"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AlignToAlgae4"
+            "name": "AlignToBranchA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Algae 4 to Barge Right Prepare"
+            "pathName": "A to Top Stack to Front L1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PrepareBargeShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Barge Right Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "BargeShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Barge Right Reverse"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stow"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Barge Right to Algae Prepare 5"
+            "name": "ScoreCoralLevel1"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Center Side",
+  "folder": "Bottom Side",
   "choreoAuto": false
 }
