@@ -185,7 +185,6 @@ public class RobotContainer {
         break;
       case SIM:
 
-
         // Elevator
         winchIO = new WinchIOSim();
 
@@ -258,7 +257,8 @@ public class RobotContainer {
 
     LockIO lockIO = new LockIORevServo(Ports.Elevator.LockServo);
     elevator = new Elevator(winchIO, lockIO, elevatorZeroSensor);
-    coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor, intakeUpperZeroSensor, intakeLowerZeroSensor);
+    coralIntake = new CoralIntake(beltIO, pivotIO, coralIntakeRollerIO, centerSensor, handoffSensor,
+        intakeUpperZeroSensor, intakeLowerZeroSensor);
     coralOuttakePivot = new CoralOuttakePivot(outtakePivotIO);
     coralOuttakeRoller = new CoralOuttakeRoller(rollerIO);
 
@@ -336,14 +336,14 @@ public class RobotContainer {
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD)));
 
     NamedCommands.registerCommand("PrepareBargeShoot", Commands.sequence(
-        elevator.setGoalAndWait(Elevator.Goal.BARGE),
+        elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(4)),
         coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)));
 
     NamedCommands.registerCommand("BargeShoot", Commands.sequence(
         elevator.setGoalAndWait(Elevator.Goal.BARGE),
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.BARGE),
         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
-        Commands.waitSeconds(.5)));
+        Commands.waitSeconds(.25)));
 
     NamedCommands.registerCommand("Stow", Commands.runOnce(() -> {
       teleopInit();
@@ -393,7 +393,6 @@ public class RobotContainer {
         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode)).withTimeout(0.4));
   }
 
-
   private double mapInput(double input, double inputMin, double inputMax, double outputMin, double outputMax) {
     return (input - inputMin) * (outputMax - outputMin) / (inputMax - inputMin) + outputMin;
   }
@@ -411,9 +410,8 @@ public class RobotContainer {
     }));
 
     controls.zero().onTrue(Commands.sequence(
-      elevator.zeroAndWait(),
-      coralIntake.setGoalCommand(CoralIntake.Goal.ZERO)
-    ));
+        elevator.zeroAndWait(),
+        coralIntake.setGoalCommand(CoralIntake.Goal.ZERO)));
 
     DoubleSupplier speedMultiplier = () -> {
       if (elevator.getPosition().gt(Inches.of(10))) {
@@ -763,10 +761,8 @@ public class RobotContainer {
   public Command prepareScoreCoralCommand() {
     return Commands.parallel(
         elevator.setGoalEndCommand(() -> Elevator.Goal.fromCoralMode(coralMode), Elevator.Goal.STOW),
-        Commands.sequence(
-            Commands.waitUntil(() -> elevator.getPosition().gt(Inches.of(5)) && elevator.atGoal(Inches.of(10))),
-            coralOuttakePivot.setGoalEndCommand(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode),
-                CoralOuttakePivot.Goal.STOW)))
+        coralOuttakePivot.setGoalEndCommand(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode),
+            CoralOuttakePivot.Goal.STOW))
         .finallyDo(() -> coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.STOW));
   }
 
@@ -801,6 +797,7 @@ public class RobotContainer {
 
   /** used for logging */
   public void periodic() {
-    Logger.recordOutput("FinishedZeroing", coralIntake.getZeroSensorDebounced(true) && elevator.getZeroSensorDebounced());
+    Logger.recordOutput("FinishedZeroing",
+        coralIntake.getZeroSensorDebounced(true) && elevator.getZeroSensorDebounced());
   }
 }

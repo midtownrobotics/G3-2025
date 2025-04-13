@@ -5,7 +5,7 @@ import frc.lib.VirtualSubsystem;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
- 
+
 public class LoggedDigitalInput extends VirtualSubsystem {
     private final DigitalInput sensor;
     private final int port;

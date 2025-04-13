@@ -15,8 +15,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.subsystems.coral_intake.CoralIntakeConstants;
-import lombok.Setter;
-
 import org.littletonrobotics.junction.Logger;
 
 public class PivotIONeo implements PivotIO {

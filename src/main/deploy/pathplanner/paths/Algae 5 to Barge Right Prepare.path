@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.305532786885245,
-        "y": 5.1098872950819665
+        "x": 5.733,
+        "y": 6.00425
       },
       "isLocked": false,
       "linkedName": "Face 5 Algae Intake"
     },
     {
       "anchor": {
-        "x": 7.304374796542863,
-        "y": 4.966281218351872
+        "x": 7.36125,
+        "y": 5.7995
       },
       "prevControl": {
-        "x": 6.276665881220934,
-        "y": 5.123604369897508
+        "x": 6.48375,
+        "y": 5.77025
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Barge Right Prepare"
+      "linkedName": "Barge Middle Prepare"
     }
   ],
   "rotationTargets": [],
@@ -33,10 +33,15 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "AlgaeStow",
-      "waypointRelativePos": 0.3775363047653654,
+      "name": "PrepareBargeShoot",
+      "waypointRelativePos": 0.9042553191489318,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareBargeShoot"
+        }
+      }
     }
   ],
   "globalConstraints": {

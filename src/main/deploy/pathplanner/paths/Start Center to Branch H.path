@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.86,
-        "y": 4.147
+        "x": 5.821200061469312,
+        "y": 4.144129616738715
       },
       "prevControl": {
-        "x": 5.526835085007677,
-        "y": 4.147263997673701
+        "x": 5.488035146476988,
+        "y": 4.144393614412415
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Branch H"
     }
   ],
   "rotationTargets": [],
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 2.75,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -62,5 +62,5 @@
     "velocity": 0.0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

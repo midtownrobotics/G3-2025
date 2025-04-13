@@ -17,31 +17,31 @@
     {
       "anchor": {
         "x": 2.106,
-        "y": 3.9
+        "y": 4.0
       },
       "prevControl": {
         "x": 2.5255859909559177,
-        "y": 3.8344396889131374
+        "y": 3.9344396889131374
       },
       "nextControl": {
         "x": 1.7939999999999996,
-        "y": 3.94875
+        "y": 4.04875
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.4194104942632364,
+        "x": 1.1,
         "y": 4.2
       },
       "prevControl": {
-        "x": 1.6671167021591353,
-        "y": 4.109842313482937
+        "x": 1.2489367713656636,
+        "y": 3.999206976876257
       },
       "nextControl": {
-        "x": 1.153988663326819,
-        "y": 4.296605645985296
+        "x": 0.9317276535956134,
+        "y": 4.4268607868483185
       },
       "isLocked": false,
       "linkedName": null
@@ -67,11 +67,11 @@
     },
     {
       "waypointRelativePos": 0.4337863116197187,
-      "rotationDegrees": 80.0
+      "rotationDegrees": 90.0
     },
     {
       "waypointRelativePos": 2.096573036595388,
-      "rotationDegrees": 80.0
+      "rotationDegrees": 85.0
     },
     {
       "waypointRelativePos": 2.85344045538651,
@@ -84,7 +84,7 @@
       "minWaypointRelativePos": 0.8897872340425504,
       "maxWaypointRelativePos": 2.1,
       "constraints": {
-        "maxVelocity": 0.41,
+        "maxVelocity": 0.35,
         "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -107,8 +107,8 @@
       }
     },
     {
-      "name": "Handoff and PrepareScoreLevel4",
-      "waypointRelativePos": 2.5707627881844375,
+      "name": "Handoff",
+      "waypointRelativePos": 2.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
@@ -118,12 +118,6 @@
               "type": "named",
               "data": {
                 "name": "Handoff"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "PrepareLevel4"
               }
             }
           ]
