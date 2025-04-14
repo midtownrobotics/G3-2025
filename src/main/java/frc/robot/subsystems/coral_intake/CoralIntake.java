@@ -167,6 +167,7 @@ public class CoralIntake extends SubsystemBase {
         .angularVelocity(pivotInputs.velocity);
   }
 
+  /** Gets the debounced value of the sensors. */
   public boolean getZeroSensorDebounced(boolean upper) {
     return zeroSensorDebouncer.calculate(upper ? upperZeroSensor.isTriggered() : lowerZeroSensor.isTriggered());
   }
