@@ -15,6 +15,7 @@ package frc.robot.sensors.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import lombok.RequiredArgsConstructor;
 import edu.wpi.first.math.geometry.Transform3d;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -88,13 +89,14 @@ public interface VisionIO {
    * the number of tags detected, the average tag distance, and the type of the
    * observation.
    */
-  public static record PoseObservation(
-      double timestamp,
-      Pose3d pose,
-      double ambiguity,
-      int tagCount,
-      double averageTagDistance,
-      PoseObservationType type) {
+  @RequiredArgsConstructor
+  public static class PoseObservation {
+    public final double timestamp;
+    public final Pose3d pose;
+    public final double ambiguity;
+    public final int tagCount;
+    public final double averageTagDistance;
+    public final PoseObservationType type;
   }
 
   /**

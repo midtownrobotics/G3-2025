@@ -34,9 +34,11 @@ import frc.robot.sensors.vision.VisionIO.PoseObservation;
 import frc.robot.sensors.vision.VisionIO.PoseObservationType;
 import frc.robot.sensors.vision.VisionIO.VisionIOInputs;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
+import java.util.Arrays;
 import frc.robot.utils.LoggerUtil;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -111,44 +113,63 @@ public class Vision extends SubsystemBase {
         }
       }
 
+      List<PoseObservation> poseObservationList = Arrays.asList(inputs[cameraIndex].poseObservations);
+
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
 
-        // Check whether to reject pose
-        boolean rejectPose = observation.tagCount() == 0 // Must have at least one tag
-            || (observation.tagCount() == 1
-                && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-            || Math.abs(observation.pose().getZ()) > maxZError // Must have realistic Z coordinate
-
-            || observation.averageTagDistance() > Units.feetToMeters(10)
-            // Must be within the field boundaries
-            || observation.pose().getX() <= 0.0
-            || observation.pose().getX() > aprilTagLayout.getFieldLength()
-            || observation.pose().getY() <= 0.0
-            || observation.pose().getY() > aprilTagLayout.getFieldWidth();
-            // || angleDeltaTooGreat(observation, inputs[cameraIndex]);
-
         // Add pose to log
-        robotPoses.add(observation.pose());
-        if (rejectPose) {
-          robotPosesRejected.add(observation.pose());
-        } else {
-          robotPosesAccepted.add(observation.pose());
-        }
+        robotPoses.add(observation.pose);
+        
+//         if (angleDeltaTooGreat(observation, inputs[cameraIndex])) {
+//           robotPosesRejected.add(observation.pose);
+//           continue;
+//         }
 
-        // Skip if rejected
-        if (rejectPose) {
+        if (observation.tagCount == 0) {
+          robotPosesRejected.add(observation.pose);
           continue;
         }
 
+        if (observation.tagCount == 1 && observation.ambiguity > maxAmbiguity) {
+          robotPosesRejected.add(observation.pose);
+          continue;
+        }
+
+        if (Math.abs(observation.pose.getZ()) > maxZError) {
+          robotPosesRejected.add(observation.pose);
+          continue;
+        }
+
+        if (observation.averageTagDistance > Units.feetToMeters(10)) {
+          robotPosesRejected.add(observation.pose);
+          continue;
+        }
+
+        if (observation.pose.getX() <= 0.0 || observation.pose.getX() > aprilTagLayout.getFieldLength()
+            || observation.pose.getY() <= 0.0 || observation.pose.getY() > aprilTagLayout.getFieldWidth()) {
+          robotPosesRejected.add(observation.pose);
+          continue;
+        }
+
+        if (observation.type == PoseObservationType.MEGATAG_2 && poseObservationList.stream()
+            .anyMatch((o) -> o.type == PoseObservationType.MEGATAG_1 && o.pose.toPose2d().getRotation()
+                .minus(observation.pose.toPose2d().getRotation()).getMeasure().gt(Degrees.of(10)))) {
+          robotPosesRejected.add(observation.pose);
+          continue;
+        }
+
+        robotPosesAccepted.add(observation.pose);
+
         // Calculate standard deviations
-        double stdDevFactor = Math.pow(observation.averageTagDistance(), 3.0) / observation.tagCount();
+        double stdDevFactor = Math.pow(observation.averageTagDistance, 3.0) / observation.tagCount;
+        
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
-        if (observation.averageTagDistance() > 1.0) {
+        if (observation.averageTagDistance > 1.0) {
           angularStdDev *= 2.4;
         }
-        if (observation.type() == PoseObservationType.MEGATAG_2) {
+        if (observation.type == PoseObservationType.MEGATAG_2) {
           linearStdDev *= linearStdDevMegatag2Factor;
           angularStdDev *= angularStdDevMegatag2Factor;
         }
@@ -159,8 +180,8 @@ public class Vision extends SubsystemBase {
 
         // Send vision observation
         consumer.accept(
-            observation.pose().toPose2d(),
-            observation.timestamp(),
+            observation.pose.toPose2d(),
+            observation.timestamp,
             VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
       }
 
