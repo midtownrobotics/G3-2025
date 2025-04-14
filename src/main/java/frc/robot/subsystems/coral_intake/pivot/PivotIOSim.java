@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -37,5 +38,11 @@ public class PivotIOSim implements PivotIO {
   @Override
   public void setVoltage(Voltage voltage) {
     this.voltage.mut_replace(voltage);
+  }
+
+  @Override
+  public void zeroPivotAngle(Angle position) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'zeroPivotAngle'");
   }
 }

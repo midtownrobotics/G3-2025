@@ -22,7 +22,9 @@ public class LoggedTunableNumber implements DoubleSupplier {
   private static final String tableKey = "/Tuning";
 
   private final String key;
-  private final LoggedNetworkNumber dashboardNumber;
+  private boolean hasDefault = false;
+  private double defaultValue;
+  private LoggedNetworkNumber dashboardNumber;
   private Map<Integer, Double> lastHasChangedValues = new HashMap<>();
 
   /**
@@ -31,7 +33,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
    * @param dashboardKey Key on dashboard
    */
   public LoggedTunableNumber(String dashboardKey) {
-    this(dashboardKey, 0.0);
+    this.key = tableKey + "/" + dashboardKey;
   }
 
   /**
@@ -41,8 +43,23 @@ public class LoggedTunableNumber implements DoubleSupplier {
    * @param defaultValue Default value
    */
   public LoggedTunableNumber(String dashboardKey, double defaultValue) {
-    this.key = tableKey + "/" + dashboardKey;
-    this.dashboardNumber = new LoggedNetworkNumber(key, defaultValue);
+    this(dashboardKey);
+    initDefault(defaultValue);
+  }
+
+  /**
+   * Set the default value of the number. The default value can only be set once.
+   *
+   * @param defaultValue The default value
+   */
+  public void initDefault(double defaultValue) {
+    if (!hasDefault) {
+      hasDefault = true;
+      this.defaultValue = defaultValue;
+      if (frc.robot.utils.Constants.tuningMode.get()) {
+        dashboardNumber = new LoggedNetworkNumber(key, defaultValue);
+      }
+    }
   }
 
   /**
@@ -51,7 +68,11 @@ public class LoggedTunableNumber implements DoubleSupplier {
    * @return The current value
    */
   public double get() {
-    return dashboardNumber.get();
+    if (!hasDefault) {
+      return 0.0;
+    } else {
+      return frc.robot.utils.Constants.tuningMode.get() ? dashboardNumber.get() : defaultValue;
+    }
   }
 
   /**

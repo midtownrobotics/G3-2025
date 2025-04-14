@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.VirtualSubsystem;
@@ -66,6 +67,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     m_robotContainer.getDriveCANBusHandler().refreshSignals();
     m_robotContainer.getElevatorCANBusHandler().refreshSignals();
+    m_robotContainer.periodic();
 
     CommandScheduler.getInstance().run();
     VirtualSubsystem.periodicAll();
@@ -133,6 +135,11 @@ public class Robot extends LoggedRobot {
     if (Constants.Mode.SIM.equals(Constants.MODE)) {
       BatterySimManager.getInstance().periodic();
     }
+  }
+
+  @Override
+  public void driverStationConnected() {
+    Threads.setCurrentThreadPriority(true, 10);
   }
 
 

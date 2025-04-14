@@ -26,14 +26,16 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.vision.VisionIO;
 import frc.robot.sensors.vision.VisionIO.PoseObservation;
 import frc.robot.sensors.vision.VisionIO.PoseObservationType;
+import frc.robot.sensors.vision.VisionIO.VisionIOInputs;
 import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
-
 import java.util.Arrays;
+import frc.robot.utils.LoggerUtil;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,6 +80,8 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double timestamp = Timer.getFPGATimestamp();
+
     for (int i = 0; i < io.length; i++) {
       io[i].updateInputs(inputs[i]);
       Logger.processInputs("Vision/Camera/" + io[i].getName(), inputs[i]);
@@ -116,6 +120,11 @@ public class Vision extends SubsystemBase {
 
         // Add pose to log
         robotPoses.add(observation.pose);
+        
+//         if (angleDeltaTooGreat(observation, inputs[cameraIndex])) {
+//           robotPosesRejected.add(observation.pose);
+//           continue;
+//         }
 
         if (observation.tagCount == 0) {
           robotPosesRejected.add(observation.pose);
@@ -154,6 +163,7 @@ public class Vision extends SubsystemBase {
 
         // Calculate standard deviations
         double stdDevFactor = Math.pow(observation.averageTagDistance, 3.0) / observation.tagCount;
+        
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
         if (observation.averageTagDistance > 1.0) {
@@ -205,6 +215,8 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+
+    LoggerUtil.recordLatencyOutput(getName(), timestamp, Timer.getFPGATimestamp());
   }
 
   @FunctionalInterface
@@ -222,4 +234,10 @@ public class Vision extends SubsystemBase {
   public Command enableDisableCamera(boolean enabled, int cameraIndex) {
     return run(() -> io[cameraIndex].setEnabled(enabled));
   };
+
+  private boolean angleDeltaTooGreat (PoseObservation observation, VisionIOInputs inputs) {
+    return observation.pose().transformBy(inputs.transformRobotToCamera)
+  .minus(aprilTagLayout.getTagPose(inputs.tagIds[0]).get())
+  .getRotation().getMeasureAngle().abs(Degrees) > 70;
+  }
 }
