@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevator.winch;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 
@@ -23,5 +24,17 @@ public class WinchIOReplay implements WinchIO {
   public void setVoltage(Voltage voltage) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
+  }
+
+  @Override
+  public void zeroPosition() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'zeroPosition'");
+  }
+
+  @Override
+  public void zeroPosition(Angle position) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'zeroPosition'");
   }
 }

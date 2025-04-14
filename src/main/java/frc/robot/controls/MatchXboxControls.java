@@ -356,7 +356,7 @@ public class MatchXboxControls implements Controls {
   }
 
   @Override
-  public Trigger zeroElevator() {
+  public Trigger zero() {
       return driverController.a();
   }
 

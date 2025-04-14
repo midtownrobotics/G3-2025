@@ -29,13 +29,13 @@ public class OuttakePivotIOSim implements OuttakePivotIO {
 
   @Override
   public void updateInputs(OuttakePivotInputs inputs) {
-    voltage.mut_replace(Volts.of(m_controller.calculate(m_sim.getAngleRads(), angle.in(Radians))));
+    // voltage.mut_replace(Volts.of(m_controller.calculate(m_sim.getAngleRads(), angle.in(Radians))));
 
     m_sim.setInputVoltage(voltage.in(Volts));
     m_sim.update(0.02);
 
-    inputs.position = Radians.of(m_sim.getAngleRads());
-    inputs.absolutePosition = Radians.of(m_sim.getAngleRads());
+    inputs.position = angle; // Radians.of(m_sim.getAngleRads());
+    inputs.absolutePosition = angle; // Radians.of(m_sim.getAngleRads());
     inputs.velocity = RadiansPerSecond.of(m_sim.getVelocityRadPerSec());
     inputs.supplyCurrent = Amps.of(m_sim.getCurrentDrawAmps());
     inputs.appliedVoltage = voltage;

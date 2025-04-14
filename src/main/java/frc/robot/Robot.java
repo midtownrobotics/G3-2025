@@ -67,6 +67,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     m_robotContainer.getDriveCANBusHandler().refreshSignals();
     m_robotContainer.getElevatorCANBusHandler().refreshSignals();
+    m_robotContainer.periodic();
 
     CommandScheduler.getInstance().run();
     VirtualSubsystem.periodicAll();

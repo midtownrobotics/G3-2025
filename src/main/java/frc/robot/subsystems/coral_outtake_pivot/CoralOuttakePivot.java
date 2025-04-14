@@ -34,13 +34,13 @@ public class CoralOuttakePivot extends SubsystemBase {
         L2(Degrees.of(-30)),
         L3(Degrees.of(-30)),
         L4(Degrees.of(-37.5)),
-        HANDOFF(Degrees.of(1.5)),
+        HANDOFF(Degrees.of(4)),
         INTAKE(STOW.getAngle()),
         DEALGIFY(Degrees.of(-42)),
-        DEALGIFY_STOW(Degrees.of(-42)),
+        DEALGIFY_STOW(Degrees.of(-52)),
         CLIMB(Degrees.of(-60)),
         PROCESSOR_SCORE(Degrees.of(-42)),
-        BARGE(Degrees.zero()),
+        BARGE(Degrees.of(-6)),
         TUNING(),
         MANUAL();
 

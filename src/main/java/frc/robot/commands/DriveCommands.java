@@ -41,7 +41,6 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.AllianceFlipUtil;
@@ -51,6 +50,7 @@ import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularVelocity;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableLinearVelocity;
+import frc.robot.controls.CoralMode;
 import frc.robot.sensors.VisionConstants;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_outtake_pivot.CoralOuttakePivot;
@@ -65,7 +65,6 @@ import frc.robot.utils.FieldConstants.Processor;
 import frc.robot.utils.ReefFace;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -361,6 +360,11 @@ public class DriveCommands {
 
   private static final Set<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
 
+  private static final Transform2d kRobotPrepareOffset = new Transform2d(
+    new Translation2d(Inches.of(5), Inches.of(0)),
+    Rotation2d.kZero
+  );
+
   private static final Transform2d kRobotBranchAlignOffset = new Transform2d(
       new Translation2d(
           Inches.of(20), // F/B
@@ -369,28 +373,24 @@ public class DriveCommands {
       Rotation2d.k180deg);
 
   private static final Transform2d kRobotBeforeHandoffBranchAlignOffset = new Transform2d(
-    new Translation2d(
-        Inches.of(25), // F/B
-        Inches.of(-1.614) // L/R
-    ),
-    Rotation2d.k180deg);
-
+      new Translation2d(
+          Inches.of(25), // F/B
+          Inches.of(-1.614) // L/R
+      ),
+      Rotation2d.k180deg);
 
   // TODO idk man just ask someone
   private static final Transform2d kRobotL1Offset = new Transform2d(
-    new Translation2d(
-      Inches.of(20), // F/B
-      Inches.of(-1.614)),
-    Rotation2d.kCCW_90deg
-  );
+      new Translation2d(
+          Inches.of(17), // F/B
+          Inches.of(-1.614)),
+      Rotation2d.kCCW_90deg);
 
   private static final Transform2d kStationOffset = new Transform2d(
-    new Translation2d(
-      Inches.of(20),
-      Inches.of(-1.614)
-    ),
-    Rotation2d.k180deg
-  );
+      new Translation2d(
+          Inches.of(20),
+          Inches.of(-1.614)),
+      Rotation2d.k180deg);
 
   private static final Transform2d kRobotAlgaeAlignOffset = new Transform2d(
       new Translation2d(
@@ -439,12 +439,8 @@ public class DriveCommands {
     }, Set.of(drive));
   }
 
-  private static final List<CoralIntake.Goal> INTAKE_PROCESSOR_GOALS = Arrays.asList(new CoralIntake.Goal[] {
-      CoralIntake.Goal.ALGAE_INTAKE, CoralIntake.Goal.ALGAE_SHOOT, CoralIntake.Goal.HOLD_ALGAE });
-
-  private static final List<CoralIntake.Goal> INTAKE_L1_GOALS = Arrays.asList(new CoralIntake.Goal[] {
-    CoralIntake.Goal.L1, CoralIntake.Goal.L1_PREPARE
-  });
+  private static final List<CoralIntake.Goal> INTAKE_PROCESSOR_GOALS = List.of(CoralIntake.Goal.ALGAE_INTAKE,
+      CoralIntake.Goal.ALGAE_SHOOT, CoralIntake.Goal.HOLD_ALGAE);
 
   private static final boolean isNear(Translation2d current, Translation2d target) {
     return current.getDistance(target) < 3;
@@ -456,7 +452,9 @@ public class DriveCommands {
    */
   public static Command fieldElementLock(Drive drive, CoralIntake intake, CoralOuttakeRoller roller,
       CoralOuttakePivot pivot, Elevator elevator, LED led,
-      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper, BooleanSupplier waitingstate) {
+      Supplier<ReefFace> reefFaceSupplier, BooleanSupplier leftBumper, BooleanSupplier waitingstate,
+      Supplier<CoralMode> coralModeSupplier) {
+
     Supplier<Command> commandSupplier = () -> {
       Translation2d driveTranslation2d = drive.getPose().getTranslation();
       boolean elevatorClimb = elevator.getCurrentGoal() == Elevator.Goal.CLIMB;
@@ -476,25 +474,33 @@ public class DriveCommands {
             new DriveToPoint(drive,
                 () -> new Pose2d(
                     driveTranslation2d
-                        .nearest(Arrays.asList(new Translation2d[] { Barge.closeCage, Barge.middleCage, Barge.farCage })),
-                    Rotation2d.k180deg)));
+                        .nearest(List.of(Barge.closeCage, Barge.middleCage, Barge.farCage).stream()
+                            .map(AllianceFlipUtil::apply).toList()),
+                    AllianceFlipUtil.apply(Rotation2d.kZero))
+                    .transformBy(new Transform2d(Inches.of(6), Inches.zero(), Rotation2d.k180deg))));
       }
       // TODO AGAIN Station offset probably not same as algae!!!
       if (intake.getCurrentGoal() == CoralIntake.Goal.STATION_INTAKE) {
         if (isNear(driveTranslation2d, CoralStation.leftCenterFace.getTranslation())) {
           Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToCoralStationLeft");
           return Commands.sequence(
-              new DriveToPoint(drive, () -> CoralStation.leftCenterFace.rotateAround(CoralStation.leftCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
+              new DriveToPoint(drive,
+                  () -> CoralStation.leftCenterFace
+                      .rotateAround(CoralStation.leftCenterFace.getTranslation(), Rotation2d.kCCW_90deg)
+                      .transformBy(kStationOffset)),
               drive.stopCommand());
         } else if (isNear(driveTranslation2d, CoralStation.rightCenterFace.getTranslation())) {
           Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToCoralStationRight");
           return Commands.sequence(
-              new DriveToPoint(drive, () -> CoralStation.rightCenterFace.rotateAround(CoralStation.rightCenterFace.getTranslation(), Rotation2d.kCCW_90deg).transformBy(kStationOffset)),
+              new DriveToPoint(drive,
+                  () -> CoralStation.rightCenterFace
+                      .rotateAround(CoralStation.rightCenterFace.getTranslation(), Rotation2d.kCCW_90deg)
+                      .transformBy(kStationOffset)),
               drive.stopCommand());
         }
       }
 
-      if (INTAKE_L1_GOALS.contains(intake.getCurrentGoal())) {
+      if (coralModeSupplier.get() == CoralMode.L1) {
         Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToL1Reef");
         return alignToL1Reef(drive, led, reefFaceSupplier);
       }
@@ -517,9 +523,7 @@ public class DriveCommands {
       ReefFace face = reefFaceSupplier.get();
       boolean leftBranch = leftBranchSupplier.getAsBoolean();
 
-      if (face == null) {
-        return null;
-      }
+      if (face == null) return null;
 
       // boolean flipBranchSide = kFlippedReefFaces.contains(face);
       // boolean leftSideToDriver = flipBranchSide ^ leftBranch;
@@ -527,7 +531,8 @@ public class DriveCommands {
 
       int branchPoseIndex = face.ordinal() * 2 + (leftBranch ? 0 : 1);
 
-      Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotBeforeHandoffBranchAlignOffset : kRobotBranchAlignOffset;
+      Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotBeforeHandoffBranchAlignOffset
+          : kRobotBranchAlignOffset;
 
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
           .transformBy(robotTransform2d);
@@ -546,7 +551,7 @@ public class DriveCommands {
 
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+        drive.stopCommand());
   }
 
   /** Creates a command that drives to a branch */
@@ -567,7 +572,7 @@ public class DriveCommands {
 
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier, Degrees.of(1), Inches.of(1)),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kGreen).withTimeout(1.0).asProxy()));
+        drive.stopCommand());
   }
 
   private static final double maxSpeedAutoIntake = 1;
@@ -596,8 +601,8 @@ public class DriveCommands {
     Supplier<Translation2d> getTranslation = () -> {
       // 2d Vector of Driver Desired in Field Space (MPS)
       Translation2d driverDesired = new Translation2d(
-        (driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)),
-        (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
+          (driverDesiredXSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)),
+          (driverDesiredYSupplier.get() * kMaxLinearVelocity.get().in(MetersPerSecond)));
 
       // 2d Pose of Piece in FieldSpace
       Pose2d piecePose = getPiecePose(drive.getPose(), gamePiecePoseReference, coral.get());
@@ -616,10 +621,12 @@ public class DriveCommands {
       if (Math.abs(poseError.getAngle().minus(driverDesired.getAngle()).getDegrees()) < 20) {
         Translation2d driverMagnitudeButPoseErrorDirectionVector = new Translation2d(driverDesired.getNorm(),
             poseError.getAngle());
-        return driverMagnitudeButPoseErrorDirectionVector.interpolate(poseError, interpolationFactorSupplier.get() * interpolationFactorSupplier.get());
+        return driverMagnitudeButPoseErrorDirectionVector.interpolate(poseError,
+            interpolationFactorSupplier.get() * interpolationFactorSupplier.get());
       }
 
-      return driverDesired.interpolate(poseError, interpolationFactorSupplier.get() * interpolationFactorSupplier.get());
+      return driverDesired.interpolate(poseError,
+          interpolationFactorSupplier.get() * interpolationFactorSupplier.get());
     };
 
     Logger.recordOutput("GRAYCORAL/FINALS_TRANSLATION", getTranslation.get());
@@ -652,8 +659,8 @@ public class DriveCommands {
     };
 
     return Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
+        new DriveToPoint(drive, branchPoseSupplier, Degrees.of(1), Inches.of(1)),
+        drive.stopCommand());
   }
 
   /**
@@ -669,7 +676,6 @@ public class DriveCommands {
         return null;
       }
 
-
       // TODO Might have to be 90 CCW?
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
           .transformBy(kRobotL1Offset);
@@ -684,7 +690,7 @@ public class DriveCommands {
 
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand().alongWith(led.blinkCommand(Color.kBlue).withTimeout(1.0).asProxy()));
+        drive.stopCommand());
   }
 
   /** Returns the piece pose in Field Space (Cached if necessary) */
@@ -696,7 +702,8 @@ public class DriveCommands {
 
     Distance cameraHeight = cameraPose3d.getTranslation().getMeasureZ();
     Angle cameraAngle = VisionConstants.kIntakeClassifierRobotToCamera.getRotation().getMeasureY().times(-1);
-    Angle cameraXAngle = Degrees.of(90).minus(VisionConstants.kIntakeClassifierRobotToCamera.getRotation().getMeasureZ());
+    Angle cameraXAngle = Degrees.of(90)
+        .minus(VisionConstants.kIntakeClassifierRobotToCamera.getRotation().getMeasureZ());
     // cameraXAngle = Degrees.zero();
 
     Distance targetHeight = Inches.of(2.25);
@@ -733,7 +740,6 @@ public class DriveCommands {
     Logger.recordOutput("AlignToGamePiece/CameraPose", cameraPose3d);
     Logger.recordOutput("AlignToGamePiece/CameraAngle", cameraAngle.in(Degrees));
     Logger.recordOutput("AlignToGamePiece/CameraXAngle", cameraXAngle.in(Degrees));
-
 
     return gamePiecePoseReference.get();
   };
