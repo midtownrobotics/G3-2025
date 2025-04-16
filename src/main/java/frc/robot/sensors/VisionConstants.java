@@ -28,7 +28,7 @@ public class VisionConstants {
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // Camera names, must match names configured on coprocessor
-  public static final String kModuleTagCameraName = "limelight-rohan";
+  public static final String kModuleTagCameraName = "limelight-erik";
   public static final String kElevatorTagCameraName = "limelight-nick";
   public static final String kPoleTagCameraName = "limelight-gray";
   public static final String kIntakeClassifierCameraName = "limelight-ankit";
@@ -67,7 +67,7 @@ public class VisionConstants {
   public static double[] cameraStdDevFactors =
       new double[] {
         1.0, // gray
-        2.5, // rohan
+        1.0, // erik
         1.0 // nick
       };
 
