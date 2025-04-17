@@ -287,7 +287,7 @@ public class RobotContainer {
                 prepareScoreCoral(CoralMode.L4),
                 coralOuttakeRoller
                         .setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT_L4, CoralOuttakeRoller.Goal.STOW)
-                        .withTimeout(0.5),
+                        .withTimeout(0.3),
                 Commands.parallel(
                         coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
                         elevator.setGoalCommand(Elevator.Goal.STOW))));
