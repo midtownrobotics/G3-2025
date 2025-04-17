@@ -15,6 +15,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -100,7 +102,7 @@ public class OuttakePivotIOKraken implements OuttakePivotIO {
     Voltage ffvoltage = Volts.of(CoralOuttakePivotConstants.PID.g.get() * Math.cos(currentAngle.plus(Degrees.of(95)).in(Radians)));
     Logger.recordOutput("CoralOuttakePivot/ffvoltage", ffvoltage);
     Logger.recordOutput("CoralOuttakePivot/pidvoltage", pivotPID.calculate(getZeroedAbsoluteEncoderPosition().in(Radians)));
-    setVoltage(Volts.of(pivotPID.calculate(getZeroedAbsoluteEncoderPosition().in(Radians))).plus(ffvoltage));
+    setVoltage(Volts.of(MathUtil.clamp(pivotPID.calculate(getZeroedAbsoluteEncoderPosition().in(Radians)) + ffvoltage.in(Volts), -CoralOuttakePivotConstants.PID.maxVoltage.get(), CoralOuttakePivotConstants.PID.maxVoltage.get())));
   }
 
   @Override
