@@ -432,7 +432,8 @@ public class RobotContainer {
         DoubleSupplier speedMultiplier = () -> {
             if (elevator.getPosition().gt(Inches.of(10))) {
                 double elevatorHeight = elevator.getPosition().in(Inches);
-                return 1.0 - mapInput(elevatorHeight, 10, 60, 0, 0.8);
+                double maxSpeed = coralOuttakePivot.getCurrentGoal() == CoralOuttakePivot.Goal.BARGE ? 0.6 : 0.8;
+                return 1.0 - mapInput(elevatorHeight, 10, 60, 0, maxSpeed);
             }
 
             return 1.0;
