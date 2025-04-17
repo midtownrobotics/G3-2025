@@ -403,7 +403,7 @@ public class RobotContainer {
 
     private Command prepareScoreCoral(CoralMode mode) {
         return Commands.sequence(
-                elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode), Inches.of(4)),
+                elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode), Inches.of(5)),
                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode), Degrees.of(4)),
                 elevator.setGoalAndWait(Elevator.Goal.fromCoralMode(mode)).withTimeout(0.4),
                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.fromCoralMode(mode)).withTimeout(0.4));
