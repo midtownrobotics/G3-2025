@@ -311,9 +311,12 @@ public class RobotContainer {
         NamedCommands.registerCommand("IntakeFromGround", coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE));
 
         NamedCommands.registerCommand("IntakeFromLoadingStation",
+                Commands.parallel(
                 coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
                         .until(coralIntake.pieceDetectedTrigger.debounce(0.15))
-                        .withTimeout(7));
+                        .withTimeout(7)
+                ,
+                DriveCommands.robotRelativeDrive(drive, () -> 0, () -> 0.2, () -> 0)));
 
         NamedCommands.registerCommand("PrepareIntakeAlgaeLow", Commands.sequence(
                 elevator.setGoalAndWait(Elevator.Goal.DEALGIFY_LOW, Inches.of(2.5)),
