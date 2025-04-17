@@ -338,6 +338,10 @@ public class RobotContainer {
                 elevator.setGoalCommand(Elevator.Goal.STOW),
                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD)));
 
+        NamedCommands.registerCommand("AlgaeHold", coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD));
+
+        
+
         NamedCommands.registerCommand("PrepareBargeShoot", Commands.sequence(
                 elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(4)),
                 coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)));

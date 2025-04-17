@@ -63,6 +63,17 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "AlgaeHold",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AlgaeHold"
+        }
+      }
+    },
+    {
       "name": "PrepareBargeShoot",
       "waypointRelativePos": 0.85,
       "endWaypointRelativePos": null,
