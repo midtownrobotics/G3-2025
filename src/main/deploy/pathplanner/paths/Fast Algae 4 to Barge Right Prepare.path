@@ -77,6 +77,17 @@
           "name": "PrepareBargeShoot"
         }
       }
+    },
+    {
+      "name": "BargeShoot",
+      "waypointRelativePos": 1.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "BargeShoot"
+        }
+      }
     }
   ],
   "globalConstraints": {

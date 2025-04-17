@@ -15,6 +15,7 @@ import static frc.robot.sensors.VisionConstants.kModuleTagRobotToCamera;
 import static frc.robot.sensors.VisionConstants.kPoleTagCameraName;
 import static frc.robot.sensors.VisionConstants.kPoleTagRobotToCamera;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -128,6 +129,7 @@ public class RobotContainer {
     /** RobotContainer initialization */
     public RobotContainer() {
         // SignalLogger.start();
+        SignalLogger.enableAutoLogging(false);
 
         // Elevator
         WinchIO winchIO;

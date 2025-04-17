@@ -55,19 +55,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Algae 5 to Barge Right Prepare"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PrepareBargeShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Barge Middle Shoot"
+            "pathName": "Fast Algae 5 to Barge Right Prepare"
           }
         },
         {
