@@ -340,17 +340,14 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("AlgaeHold", coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD));
 
-        
+
 
         NamedCommands.registerCommand("PrepareBargeShoot", Commands.sequence(
                 elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(4)),
                 coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)));
 
         NamedCommands.registerCommand("BargeShoot", Commands.sequence(
-                elevator.setGoalAndWait(Elevator.Goal.BARGE),
-                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.BARGE),
-                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
-                Commands.waitSeconds(.25)));
+                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT)));
 
         NamedCommands.registerCommand("Stow", Commands.runOnce(() -> {
             teleopInit();
