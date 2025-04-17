@@ -3,35 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.7,
-        "y": 4.972
+        "x": 7.127,
+        "y": 6.128
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.981560886272594,
-        "y": 4.968807935739896
+        "x": 6.027340886551489,
+        "y": 6.169452467140246
       },
       "isLocked": false,
-      "linkedName": "Barge Right Shoot"
+      "linkedName": "Start Top"
     },
     {
       "anchor": {
-        "x": 7.304374796542863,
-        "y": 4.966281218351872
+        "x": 5.1285,
+        "y": 5.546
       },
       "prevControl": {
-        "x": 7.054376431987071,
-        "y": 4.965376939949128
+        "x": 5.619815176698758,
+        "y": 5.933810910844584
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Barge Right Prepare"
+      "linkedName": "Branch J - AA"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "PrepareLevel4",
+      "waypointRelativePos": 0.6635730858468654,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLevel4"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.5,
     "maxAcceleration": 2.75,
@@ -42,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Center Side AA",
+  "folder": "Top Side AA",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start to Branch I - AA"
+            "pathName": "Start to Branch J - AA"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AlignToBranchI"
+            "name": "AlignToBranchJ"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Branch I to Loading Station"
+            "pathName": "Branch J to Loading Station"
           }
         },
         {
@@ -43,7 +43,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loading Station to 6th Face"
+            "pathName": "Loading Station to Branch K - AA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitForHandoff"
           }
         },
         {
@@ -68,6 +74,42 @@
           "type": "path",
           "data": {
             "pathName": "Branch K to Loading Station"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeFromLoadingStation"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Loading Station to Branch L - AA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitForHandoff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
           }
         }
       ]

@@ -57,9 +57,14 @@
   "eventMarkers": [
     {
       "name": "PrepareLoadingStationIntake",
-      "waypointRelativePos": 0.35174013921112995,
+      "waypointRelativePos": 0.5113689095127587,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLoadingStationIntake"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -75,7 +80,7 @@
     "rotation": 35.0
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Top Side AA",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -119.99999999999999

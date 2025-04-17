@@ -35,7 +35,7 @@
     {
       "name": "PrepareLevel4",
       "waypointRelativePos": 0.8941415172082642,
-      "endWaypointRelativePos": null,
+      "endWaypointRelativePos": 1.0,
       "command": {
         "type": "named",
         "data": {
@@ -57,7 +57,7 @@
     "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Top Side AA",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9877499999999997,
-        "y": 5.26325
+        "x": 4.017,
+        "y": 5.273
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4729785879629618,
-        "y": 5.9852693142361115
+        "x": 3.5022285879629624,
+        "y": 5.995019314236111
       },
       "isLocked": false,
       "linkedName": "Branch K"
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Top Loading Station"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -71,7 +71,7 @@
     "rotation": 35.0
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Top Side AA",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -59.99999999999999

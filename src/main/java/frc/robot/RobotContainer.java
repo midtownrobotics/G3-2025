@@ -378,12 +378,18 @@ public class RobotContainer {
                 DriveCommands.alignToBranchReef(drive, led, 4).withTimeout(1.6));
         NamedCommands.registerCommand("AlignToBranchF",
                 DriveCommands.alignToBranchReef(drive, led, 5).withTimeout(1.6));
+        NamedCommands.registerCommand("AlignToBranchG",
+                DriveCommands.alignToBranchReef(drive, led, 6).withTimeout(1.6));
         NamedCommands.registerCommand("AlignToBranchH",
                 DriveCommands.alignToBranchReef(drive, led, 7).withTimeout(1.6));
         NamedCommands.registerCommand("AlignToBranchI",
                 DriveCommands.alignToBranchReef(drive, led, 8).withTimeout(1.6));
+        NamedCommands.registerCommand("AlignToBranchJ",
+                DriveCommands.alignToBranchReef(drive, led, 9).withTimeout(1.6));
         NamedCommands.registerCommand("AlignToBranchK",
                 DriveCommands.alignToBranchReef(drive, led, 10).withTimeout(1.6));
+        NamedCommands.registerCommand("AlignToBranchL",
+                DriveCommands.alignToBranchReef(drive, led, 11).withTimeout(1.6));
 
         NamedCommands.registerCommand("AlignToAlgae4",
                 DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.GH).withTimeout(1.6));
