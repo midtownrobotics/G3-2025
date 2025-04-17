@@ -75,7 +75,7 @@
     },
     {
       "name": "PrepareBargeShoot",
-      "waypointRelativePos": 0.85,
+      "waypointRelativePos": 0.78,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

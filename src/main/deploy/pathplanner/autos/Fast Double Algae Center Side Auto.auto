@@ -23,12 +23,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Fast Algae 4 to Barge Right Prepare"
@@ -44,12 +38,6 @@
           "type": "path",
           "data": {
             "pathName": "Barge Right to Algae Prepare 5"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
           }
         },
         {
