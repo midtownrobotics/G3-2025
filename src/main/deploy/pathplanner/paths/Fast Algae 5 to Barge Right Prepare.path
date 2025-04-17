@@ -3,45 +3,56 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.66,
-        "y": 4.972070254809139
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 6.63975,
-        "y": 5.0195
-      },
-      "isLocked": false,
-      "linkedName": "Barge Right Shoot"
-    },
-    {
-      "anchor": {
         "x": 5.1786885245901635,
         "y": 5.181813524590163
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.733,
+        "y": 6.00425
+      },
+      "isLocked": false,
+      "linkedName": "Face 5 Algae Intake"
+    },
+    {
+      "anchor": {
+        "x": 7.36125,
+        "y": 5.7995
+      },
       "prevControl": {
-        "x": 5.653184967635083,
-        "y": 6.062070944631437
+        "x": 7.11125,
+        "y": 5.7995
+      },
+      "nextControl": {
+        "x": 7.61125,
+        "y": 5.7995
+      },
+      "isLocked": false,
+      "linkedName": "Barge Middle Prepare"
+    },
+    {
+      "anchor": {
+        "x": 7.67,
+        "y": 5.8
+      },
+      "prevControl": {
+        "x": 6.792012635341487,
+        "y": 5.8
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Face 5 Algae Intake"
+      "linkedName": "Barge Middle Shoot"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5255788702713816,
-      "rotationDegrees": -119.99999999999999
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.87,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 0.4619359621573921,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
-        "maxVelocity": 2.4,
-        "maxAcceleration": 2.0,
+        "maxVelocity": 2.0,
+        "maxAcceleration": 1.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -52,24 +63,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stow",
-      "waypointRelativePos": 0,
+      "name": "PrepareBargeShoot",
+      "waypointRelativePos": 0.85,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Stow"
-        }
-      }
-    },
-    {
-      "name": "PrepareIntakeAlgaeHigh",
-      "waypointRelativePos": 0.3731914893617023,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareIntakeAlgaeHigh"
+          "name": "PrepareBargeShoot"
         }
       }
     }
@@ -84,13 +84,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Center Side AA",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": true
 }
