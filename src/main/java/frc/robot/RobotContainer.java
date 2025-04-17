@@ -311,7 +311,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("IntakeFromGround", coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE));
 
         NamedCommands.registerCommand("IntakeFromLoadingStation",
-                Commands.parallel(
+                Commands.race(
                 coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_INTAKE, CoralIntake.Goal.STOW)
                         .until(coralIntake.pieceDetectedTrigger.debounce(0.15))
                         .withTimeout(7)
