@@ -27,7 +27,7 @@ public interface OuttakePivotIO {
   public void setVoltage(Voltage voltage);
 
   /** Sets the position */
-  public void setPosition(Angle angle);
+  public void setPosition(Angle angle, Angle currentAngle);
 
   /**
    * Update input class for Pivot

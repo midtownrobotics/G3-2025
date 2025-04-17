@@ -73,8 +73,6 @@ public class CoralOuttakePivot extends SubsystemBase {
         this.pivotIO = pivotIO;
     }
 
-    private LoggedTunableNumber tuningPosition = new LoggedTunableNumber("CoralOuttake/tuningPosition", 40.0);
-
     @Override
     public void periodic() {
         pivotIO.updateInputs(pivotInputs);
@@ -88,7 +86,7 @@ public class CoralOuttakePivot extends SubsystemBase {
             constrainedAngle = coralOuttakeConstraint.getClampedValue(currentGoal.getAngle());
         }
 
-        pivotIO.setPosition(constrainedAngle);
+        pivotIO.setPosition(constrainedAngle, pivotInputs.position);
 
         Logger.recordOutput("CoralOuttake/currentGoal", getCurrentGoal());
         Logger.recordOutput("CoralOuttake/goalAngle", currentGoal.getAngle());

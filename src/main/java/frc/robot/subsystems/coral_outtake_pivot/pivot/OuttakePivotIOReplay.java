@@ -16,7 +16,7 @@ public class OuttakePivotIOReplay implements OuttakePivotIO {
   }
 
   @Override
-  public void setPosition(Angle angle) {
+  public void setPosition(Angle angle, Angle other) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
   }
