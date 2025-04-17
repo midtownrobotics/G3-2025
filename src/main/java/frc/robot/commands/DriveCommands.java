@@ -152,9 +152,8 @@ public class DriveCommands {
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
     return Commands.run(() -> {
-      drive.runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(
-          new ChassisSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), omegaSupplier.getAsDouble()),
-          drive.getRotation()));
+      drive.runVelocity(
+          new ChassisSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), omegaSupplier.getAsDouble()));
     }, drive);
   }
 
