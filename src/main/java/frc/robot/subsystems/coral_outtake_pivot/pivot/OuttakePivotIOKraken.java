@@ -15,8 +15,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -29,8 +27,6 @@ import frc.robot.subsystems.coral_outtake_pivot.CoralOuttakePivotConstants;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import lombok.Getter;
-import lombok.extern.java.Log;
-
 import org.littletonrobotics.junction.Logger;
 
 public class OuttakePivotIOKraken implements OuttakePivotIO {

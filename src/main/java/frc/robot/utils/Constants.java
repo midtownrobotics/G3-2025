@@ -12,7 +12,7 @@ public class Constants {
   public static final Current NEO_CURRENT_LIMIT = Units.Amp.of(60);
   public static final Current BAG_CURRENT_LIMIT = Units.Amp.of(70);
 
-  public static final LoggedNetworkBoolean tuningMode = new LoggedNetworkBoolean("TuningMode", false);
+  public static final LoggedNetworkBoolean tuningMode = new LoggedNetworkBoolean("TuningMode", true);
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
 
   public enum Mode {
