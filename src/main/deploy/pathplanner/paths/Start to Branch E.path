@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.261,
-        "y": 2.935
+        "x": 4.981466339398911,
+        "y": 2.7662455138103734
       },
       "prevControl": {
-        "x": 5.761,
-        "y": 2.0689745962155612
+        "x": 5.481466339398911,
+        "y": 1.9002201100259346
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch F"
+      "linkedName": "Branch E"
     }
   ],
   "rotationTargets": [],
