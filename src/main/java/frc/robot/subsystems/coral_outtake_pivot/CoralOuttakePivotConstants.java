@@ -15,7 +15,7 @@ public class CoralOuttakePivotConstants {
 
     public static final double coralOuttakePivotGearRatio = 1.0/50.0;
 
-    public static final Angle absoluteEncoderOffset = Degrees.of(195.1);
+    public static final Angle absoluteEncoderOffset = Degrees.of(245);
 
     public final class PID {
         public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralOuttake/s", 0.0);
