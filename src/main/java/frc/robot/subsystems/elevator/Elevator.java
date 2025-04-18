@@ -158,11 +158,11 @@ public class Elevator extends SubsystemBase {
 
     Distance constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight());
 
-    if (getCurrentGoal() == Goal.L4 || getCurrentGoal() == Goal.L3 || getCurrentGoal() == Goal.L2
-        || getCurrentGoal() == Goal.DEALGIFY_HIGH || getCurrentGoal() == Goal.DEALGIFY_LOW
-        || getCurrentGoal() == Goal.BARGE || getCurrentGoal() == Goal.PROCESSOR) {
-      constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight()).plus(driverOffset);
-    }
+    // if (getCurrentGoal() == Goal.L4 || getCurrentGoal() == Goal.L3 || getCurrentGoal() == Goal.L2
+    //     || getCurrentGoal() == Goal.DEALGIFY_HIGH || getCurrentGoal() == Goal.DEALGIFY_LOW
+    //     || getCurrentGoal() == Goal.BARGE || getCurrentGoal() == Goal.PROCESSOR) {
+    //   constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight()).plus(driverOffset);
+    // }
 
     Distance desiredTuningHeight = Inches.of(tuningDesiredHeight.get());
 
@@ -183,13 +183,13 @@ public class Elevator extends SubsystemBase {
         break;
       case CLIMB_BOTTOM:
       case CLIMB_BOTTOM_LOCK:
-        winch.setClimbPosition(constrainedHeight);
+        winch.setClimbPosition(constrainedHeight.minus(driverOffset));
         break;
       case TUNING:
         break;
       case MANUAL:
       default:
-        winch.setScorePosition(constrainedHeight);
+        winch.setScorePosition(constrainedHeight.minus(driverOffset));
         break;
     }
 
@@ -222,7 +222,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Distance getPosition() {
-    return winchInputs.left.position;
+    return winchInputs.left.position.plus(driverOffset);
   }
 
   public LinearVelocity getVelocity() {

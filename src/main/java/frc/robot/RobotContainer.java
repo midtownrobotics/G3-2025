@@ -424,11 +424,11 @@ public class RobotContainer {
         // Driver
 
         controls.increaseElevatorOffset().onTrue(Commands.runOnce(() -> {
-            elevator.driverOffset = elevator.driverOffset.plus(Inches.of(1));
+            elevator.driverOffset = elevator.driverOffset.plus(Inches.of(0.5));
         }));
 
         controls.decreaseElevatorOffset().onTrue(Commands.runOnce(() -> {
-            elevator.driverOffset = elevator.driverOffset.minus(Inches.of(1));
+            elevator.driverOffset = elevator.driverOffset.minus(Inches.of(0.5));
         }));
 
         controls.zero().onTrue(Commands.sequence(
