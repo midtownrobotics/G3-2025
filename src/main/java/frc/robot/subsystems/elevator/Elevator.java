@@ -183,13 +183,13 @@ public class Elevator extends SubsystemBase {
         break;
       case CLIMB_BOTTOM:
       case CLIMB_BOTTOM_LOCK:
-        winch.setClimbPosition(constrainedHeight.minus(driverOffset));
+        winch.setClimbPosition(constrainedHeight.plus(driverOffset));
         break;
       case TUNING:
         break;
       case MANUAL:
       default:
-        winch.setScorePosition(constrainedHeight.minus(driverOffset));
+        winch.setScorePosition(constrainedHeight.plus(driverOffset));
         break;
     }
 
@@ -222,7 +222,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Distance getPosition() {
-    return winchInputs.left.position.plus(driverOffset);
+    return winchInputs.left.position.minus(driverOffset);
   }
 
   public LinearVelocity getVelocity() {
