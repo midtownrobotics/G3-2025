@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Start to Branch B"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchB"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B to Middle Stack v3 "
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle Stack v3 to A"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Bottom Side",
+  "choreoAuto": false
+}

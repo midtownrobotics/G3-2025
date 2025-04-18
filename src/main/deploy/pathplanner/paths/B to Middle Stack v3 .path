@@ -1,0 +1,109 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.15543402872832,
+        "y": 3.9046794395868556
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9431378270683395,
+        "y": 3.7285986835835168
+      },
+      "isLocked": false,
+      "linkedName": "Branch B"
+    },
+    {
+      "anchor": {
+        "x": 1.9119440827546286,
+        "y": 3.403936880606192
+      },
+      "prevControl": {
+        "x": 2.312990877374743,
+        "y": 3.5287392532407336
+      },
+      "nextControl": {
+        "x": 1.6732353357553953,
+        "y": 3.329652736227623
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.244,
+        "y": 3.284
+      },
+      "prevControl": {
+        "x": 1.4559773336392254,
+        "y": 3.4165353161357546
+      },
+      "nextControl": {
+        "x": 1.0320226663607746,
+        "y": 3.151464683864245
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.08,
+        "y": 3.018792764169198
+      },
+      "prevControl": {
+        "x": 1.291977333639225,
+        "y": 3.151328080304953
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Middle Stack v3"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 21.038832700027633
+    },
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 21.04
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.1,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 2.75,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.75,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Bottom Side Coral Stacks",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

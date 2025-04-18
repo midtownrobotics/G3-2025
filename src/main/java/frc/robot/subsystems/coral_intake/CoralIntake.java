@@ -58,6 +58,7 @@ public class CoralIntake extends SubsystemBase {
     ALGAE_INTAKE(Degrees.of(39), Volts.of(-9.5)),
     HOLD_ALGAE(Degrees.of(49), Volts.of(-1)),
     ALGAE_SHOOT(Degrees.of(49), Volts.of(10)),
+    KNOCK_ALGAE(Degrees.of(30), Volts.zero()),
     ZERO(),
     TUNING(),
     MANUAL();

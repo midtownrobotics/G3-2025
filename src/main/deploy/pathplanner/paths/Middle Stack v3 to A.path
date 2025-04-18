@@ -1,0 +1,84 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.08,
+        "y": 3.018792764169198
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.0855115402998419,
+        "y": 3.4442493919624866
+      },
+      "isLocked": false,
+      "linkedName": "Middle Stack v3"
+    },
+    {
+      "anchor": {
+        "x": 1.08,
+        "y": 4.22
+      },
+      "prevControl": {
+        "x": 0.9706042117322783,
+        "y": 3.8623569356057863
+      },
+      "nextControl": {
+        "x": 1.1775736575656455,
+        "y": 4.538993468108
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.151691520584348,
+        "y": 4.2333989401294
+      },
+      "prevControl": {
+        "x": 2.7776915205843484,
+        "y": 4.2333989401294
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Branch A"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 2.75,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.75,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Bottom Side Coral Stacks",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}
