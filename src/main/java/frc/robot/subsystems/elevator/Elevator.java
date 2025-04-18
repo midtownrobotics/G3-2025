@@ -42,9 +42,8 @@ public class Elevator extends SubsystemBase {
   public enum Goal {
     STOW(Feet.zero()),
     HANDOFF(Inches.of(0.5)),
-    L2(Inches.of(24)),
-    L3(Inches.of(39
-    )),
+    L2(Inches.of(23.5)),
+    L3(Inches.of(39)),
     L4(Inches.of(65.25)),
     PROCESSOR(Inches.zero()),
     DEALGIFY_LOW(Inches.of(14.5)),
