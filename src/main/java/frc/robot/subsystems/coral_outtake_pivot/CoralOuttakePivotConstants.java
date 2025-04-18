@@ -20,12 +20,12 @@ public class CoralOuttakePivotConstants {
     public final class PID {
         public static final LoggedTunableNumber s = new LoggedTunableNumber("CoralOuttake/s", 0.0);
         public static final LoggedTunableNumber v = new LoggedTunableNumber("CoralOuttake/v", 0.0);
-        public static final LoggedTunableNumber g = new LoggedTunableNumber("CoralOuttake/g", 0.51);
+        public static final LoggedTunableNumber g = new LoggedTunableNumber("CoralOuttake/g", 0.5);
         public static final LoggedTunableNumber p = new LoggedTunableNumber("CoralOuttake/p", 7.75);
         public static final LoggedTunableNumber i = new LoggedTunableNumber("CoralOuttake/i", 0.0);
-        public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralOuttake/d", .5);
+        public static final LoggedTunableNumber d = new LoggedTunableNumber("CoralOuttake/d", 2);
 
-        public static final LoggedTunableNumber maxVoltage = new LoggedTunableNumber("CoralOuttake/maxVoltage", 5);
+        public static final LoggedTunableNumber maxVoltage = new LoggedTunableNumber("CoralOuttake/maxVoltage", 4);
 
         public static final AngularVelocity maxPivotV = DegreesPerSecond.of(0);
         public static final AngularAcceleration maxPivotA = DegreesPerSecondPerSecond.of(0);

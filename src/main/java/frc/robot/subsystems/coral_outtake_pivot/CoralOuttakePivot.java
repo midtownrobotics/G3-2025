@@ -131,7 +131,7 @@ public class CoralOuttakePivot extends SubsystemBase {
      * specified goal.
      */
     public boolean atGoal(Goal goal) {
-        return atGoal(goal, Degrees.of(2.5));
+        return atGoal(goal, Degrees.of(3.5));
     }
 
     /**
