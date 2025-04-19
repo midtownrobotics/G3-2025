@@ -37,13 +37,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Barge Right to Algae Prepare 5"
+            "pathName": "Barge Right to Algae Prepare 3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Fast Algae 5 to Barge Right Prepare"
+            "pathName": "Algae 3 to Barge Right Shoot"
           }
         },
         {
@@ -55,7 +55,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Barge Middle Taxi"
+            "pathName": "Barge Right - Lower to Algae Prepare 5"
           }
         }
       ]
