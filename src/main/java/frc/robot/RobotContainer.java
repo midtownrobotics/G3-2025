@@ -282,6 +282,21 @@ public class RobotContainer {
                 .and(() -> coralMode != CoralMode.L1)
                 .debounce(0.25)
                 .onTrue(handoffCommand());
+        
+        NamedCommands.registerCommand("PrepareClimb", Commands.parallel(
+                elevator.setGoalCommand(Elevator.Goal.CLIMB),
+                coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.CLIMB),
+                coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB)
+        ));
+
+        NamedCommands.registerCommand("Climb", Commands.sequence(
+                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.CLIMB),
+                coralIntake.setGoalAndWait(CoralIntake.Goal.CLIMB),
+                Commands.sequence(
+                        elevator.setGoalAndWait(Elevator.Goal.CLIMB_BOTTOM),
+                        elevator.setGoalCommand(Elevator.Goal.CLIMB_BOTTOM_LOCK)
+                )
+        ));
 
         NamedCommands.registerCommand("ScoreCoralLevel4", Commands.sequence(
                 prepareScoreCoral(CoralMode.L4),
