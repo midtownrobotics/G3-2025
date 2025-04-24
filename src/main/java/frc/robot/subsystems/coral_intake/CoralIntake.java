@@ -243,7 +243,7 @@ public class CoralIntake extends SubsystemBase {
         break;
       case HANDOFF:
         if (getPosition().lt(Degrees.of(131))) {
-          desiredBeltVoltage = Goal.HANDOFF.getBeltVoltage();
+          desiredBeltVoltage = Goal.PRE_HANDOFF_ADJUST_CORAL.getBeltVoltage();
         } else {
           desiredBeltVoltage = Goal.HANDOFF.getBeltVoltage();
         }
