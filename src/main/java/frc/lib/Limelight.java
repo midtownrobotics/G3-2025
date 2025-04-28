@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
 import frc.robot.sensors.VisionObservation;
+import java.util.Arrays;
 import java.util.HashSet;
 
 /**
@@ -55,7 +56,7 @@ public class Limelight {
    * @param data The array of doubles containing pose data.
    * @return A Pose2d object representing the pose.
    */
-  public static Pose2d toPose2d(double[] data) {
+  public static Pose2d toPose2d(double... data) {
     if (data.length < 6) {
       return new Pose2d();
     }
@@ -94,13 +95,29 @@ public class Limelight {
   }
 
   /**
+   * Returns a double[] of a fixed length that doesn't necessarily
+   * matter filled with 0.0 that represents a default value.
+   *
+   * @return The default double[]
+   */
+  private static double[] defaultDoubleArray() {
+    double[] res = new double[19];
+    Arrays.fill(res, 0);
+    return res;
+  }
+
+  private static boolean isAbsent(double[] arr) {
+    return Arrays.equals(arr, defaultDoubleArray());
+  }
+
+  /**
    * Retrieves the estimated bot pose from the Limelight system.
    *
    * @return A VisionObservation containing the pose and associated data, or null if no pose data is
    *     available.
    */
   public VisionObservation getBotPoseEstimate() {
-    DoubleArrayEntry poseEntry = table.getDoubleArrayTopic("botpose_wpiblue").getEntry(null);
+    DoubleArrayEntry poseEntry = table.getDoubleArrayTopic("botpose_wpiblue").getEntry(defaultDoubleArray());
 
     TimestampedDoubleArray tsValue = poseEntry.getAtomic();
     double[] poseArray = tsValue.value;
@@ -111,7 +128,7 @@ public class Limelight {
       return null;
     }
 
-    var pose = toPose2d(poseArray);
+    Pose2d pose = toPose2d(poseArray);
     double latency = poseArray[6];
     int tagCount = (int) poseArray[7];
     double tagDist = poseArray[9];
@@ -139,7 +156,8 @@ public class Limelight {
     stddevMatrix.set(0, 1, stddevs.y);
     stddevMatrix.set(0, 2, Math.toRadians(stddevs.yaw));
     return new VisionObservation(
-        pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix);
+      pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix
+    );
   }
 
   /**
@@ -149,7 +167,7 @@ public class Limelight {
    *     available.
    */
   public VisionObservation getBotPoseEstimateMegatag2() {
-    DoubleArrayEntry poseEntry = table.getDoubleArrayTopic("botpose_orb_wpiblue").getEntry(null);
+    DoubleArrayEntry poseEntry = table.getDoubleArrayTopic("botpose_orb_wpiblue").getEntry(defaultDoubleArray());
 
     TimestampedDoubleArray tsValue = poseEntry.getAtomic();
     double[] poseArray = tsValue.value;
@@ -188,7 +206,8 @@ public class Limelight {
     stddevMatrix.set(0, 1, stddevs.y);
     stddevMatrix.set(0, 2, Math.toRadians(stddevs.yaw));
     return new VisionObservation(
-        pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix);
+      pose, adjustedTimestamp, tagCount, tagDist, rawFiducialIds, stddevMatrix
+    );
   }
 
 
@@ -240,35 +259,13 @@ public class Limelight {
   }
 
   /**
-   * Retrieves a long array value from the network table for a given key.
-   *
-   * @param key The key for the network table entry.
-   * @return The long array value from the network table.
-   */
-  @SuppressWarnings("unused")
-  private long[] getLongArray(String key) {
-    return get(key).getIntegerArray((long[]) null);
-  }
-
-  /**
    * Retrieves a double array value from the network table for a given key.
    *
    * @param key The key for the network table entry.
    * @return The double array value from the network table.
    */
   private double[] getDoubleArray(String key) {
-    return get(key).getDoubleArray(new double[20]);
-  }
-
-  /**
-   * Retrieves a string array value from the network table for a given key.
-   *
-   * @param key The key for the network table entry.
-   * @return The string array value from the network table.
-   */
-  @SuppressWarnings("unused")
-  private String[] getStringArray(String key) {
-    return get(key).getStringArray(null);
+    return get(key).getDoubleArray(defaultDoubleArray());
   }
 
   /**
@@ -323,19 +320,6 @@ public class Limelight {
   }
 
   /**
-   * Sets a Long array value in the network table for a given key.
-   *
-   * @param key The key for the network table entry.
-   * @param value The array of Long values to set.
-   * @return The array that was set.
-   */
-  @SuppressWarnings("unused")
-  private Long[] set(String key, Long[] value) {
-    get(key).setIntegerArray(value);
-    return value;
-  }
-
-  /**
    * Sets a double array value in the network table for a given key.
    *
    * @param key The key for the network table entry.
@@ -343,19 +327,6 @@ public class Limelight {
    * @return The array that was set.
    */
   private double[] set(String key, double[] value) {
-    get(key).setDoubleArray(value);
-    return value;
-  }
-
-  /**
-   * Sets a Double array value in the network table for a given key.
-   *
-   * @param key The key for the network table entry.
-   * @param value The array of Double values to set.
-   * @return The array that was set.
-   */
-  @SuppressWarnings("unused")
-  private Double[] set(String key, Double[] value) {
     get(key).setDoubleArray(value);
     return value;
   }
@@ -492,15 +463,16 @@ public class Limelight {
   /**
    * Retrieves corners of the target box.
    *
-   * @return Corner XYs in the form {{x0, y0}, ... , {x4, y4}}
+   * @return Corner XYs in the form {{x0, y0}, ..., {x3, y3}}
    */
   public double[][] getCorners() {
     double[] tcornxy = getDoubleArray("tcornxy");
-    if (tcornxy == null) return null;
+    if (isAbsent(tcornxy)) return new double[4][2];
 
-    double[][] res = new double[tcornxy.length/2][2];
-    for (int i = 0; i < tcornxy.length; i += 2) {
-      res[i>>1][i&1] = tcornxy[i];
+    double[][] res = new double[4][];
+    assert tcornxy.length == 8;
+    for (int i = 0; i < 4; i++) {
+      res[i] = new double[] {tcornxy[2*i], tcornxy[2*i+1]};
     }
     return res;
   }
@@ -638,7 +610,7 @@ public class Limelight {
    *
    * @param ids The array of valid fiducial IDs.
    */
-  public void setValidFiducialIds(double[] ids) {
+  public void setValidFiducialIds(double... ids) {
     set("fiducial_id_filters_set", ids);
   }
 
@@ -673,7 +645,7 @@ public class Limelight {
    *
    * @param x0x1y0y1 The array representing the crop area in the format [x0, x1, y0, y1].
    */
-  public void setCrop(double[] x0x1y0y1) {
+  public void setCrop(double... x0x1y0y1) {
     set("crop", x0x1y0y1);
   }
 
