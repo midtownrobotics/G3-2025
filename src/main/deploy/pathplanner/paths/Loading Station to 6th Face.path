@@ -75,14 +75,19 @@
               "data": {
                 "name": "Handoff"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "PrepareLevel4"
-              }
             }
           ]
+        }
+      }
+    },
+    {
+      "name": "PrepareLoadingStationIntake",
+      "waypointRelativePos": 0.8306264501160132,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareLoadingStationIntake"
         }
       }
     }
@@ -100,7 +105,7 @@
     "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Top Side AA",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 35.0

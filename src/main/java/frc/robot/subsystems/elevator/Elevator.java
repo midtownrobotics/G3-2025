@@ -42,8 +42,8 @@ public class Elevator extends SubsystemBase {
   public enum Goal {
     STOW(Feet.zero()),
     HANDOFF(Inches.of(0.5)),
-    L2(Inches.of(24)),
-    L3(Inches.of(40)),
+    L2(Inches.of(23.5)),
+    L3(Inches.of(39)),
     L4(Inches.of(65.25)),
     PROCESSOR(Inches.zero()),
     DEALGIFY_LOW(Inches.of(14.5)),
@@ -158,11 +158,11 @@ public class Elevator extends SubsystemBase {
 
     Distance constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight());
 
-    if (getCurrentGoal() == Goal.L4 || getCurrentGoal() == Goal.L3 || getCurrentGoal() == Goal.L2
-        || getCurrentGoal() == Goal.DEALGIFY_HIGH || getCurrentGoal() == Goal.DEALGIFY_LOW
-        || getCurrentGoal() == Goal.BARGE || getCurrentGoal() == Goal.PROCESSOR) {
-      constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight()).plus(driverOffset);
-    }
+    // if (getCurrentGoal() == Goal.L4 || getCurrentGoal() == Goal.L3 || getCurrentGoal() == Goal.L2
+    //     || getCurrentGoal() == Goal.DEALGIFY_HIGH || getCurrentGoal() == Goal.DEALGIFY_LOW
+    //     || getCurrentGoal() == Goal.BARGE || getCurrentGoal() == Goal.PROCESSOR) {
+    //   constrainedHeight = elevatorConstraint.getClampedValue(getCurrentGoal().getHeight()).plus(driverOffset);
+    // }
 
     Distance desiredTuningHeight = Inches.of(tuningDesiredHeight.get());
 
@@ -183,13 +183,13 @@ public class Elevator extends SubsystemBase {
         break;
       case CLIMB_BOTTOM:
       case CLIMB_BOTTOM_LOCK:
-        winch.setClimbPosition(constrainedHeight);
+        winch.setClimbPosition(constrainedHeight.plus(driverOffset));
         break;
       case TUNING:
         break;
       case MANUAL:
       default:
-        winch.setScorePosition(constrainedHeight);
+        winch.setScorePosition(constrainedHeight.plus(driverOffset));
         break;
     }
 
@@ -222,7 +222,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Distance getPosition() {
-    return winchInputs.left.position;
+    return winchInputs.left.position.minus(driverOffset);
   }
 
   public LinearVelocity getVelocity() {

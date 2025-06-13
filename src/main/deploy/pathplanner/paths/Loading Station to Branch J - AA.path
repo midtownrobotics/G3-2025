@@ -16,24 +16,19 @@
     },
     {
       "anchor": {
-        "x": 3.9877499999999997,
-        "y": 5.26325
+        "x": 5.15775,
+        "y": 5.516749999999999
       },
       "prevControl": {
-        "x": 3.4877499999999992,
-        "y": 6.129275403784439
+        "x": 5.657749999999999,
+        "y": 6.382775403784438
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch K"
+      "linkedName": "Branch J"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.4124824026278862,
-      "rotationDegrees": -61.09871186671859
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
@@ -42,22 +37,9 @@
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "sequential",
+        "type": "named",
         "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Handoff"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "PrepareLevel4"
-              }
-            }
-          ]
+          "name": "Handoff"
         }
       }
     }
@@ -72,10 +54,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Top Side AA",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 35.0

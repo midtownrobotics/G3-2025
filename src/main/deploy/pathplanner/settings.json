@@ -7,7 +7,8 @@
         "Bottom Side AA",
         "Bottom Side Coral Stacks",
         "Center Side AA",
-        "Top Side"
+        "Top Side",
+        "Top Side AA"
     ],
     "autoFolders": [
         "Bottom Side",
@@ -19,7 +20,7 @@
     "defaultMaxAngVel": 540.0,
     "defaultMaxAngAccel": 720.0,
     "defaultNominalVoltage": 12.0,
-    "robotMass": 66.3,
+    "robotMass": 64.274,
     "robotMOI": 6.883,
     "robotTrackwidth": 0.546,
     "driveWheelRadius": 0.05,

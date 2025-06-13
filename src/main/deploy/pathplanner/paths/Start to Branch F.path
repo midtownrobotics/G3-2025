@@ -48,7 +48,7 @@
   "eventMarkers": [
     {
       "name": "PrepareLevel4",
-      "waypointRelativePos": 0.46030839520275235,
+      "waypointRelativePos": 0.7174013921113661,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

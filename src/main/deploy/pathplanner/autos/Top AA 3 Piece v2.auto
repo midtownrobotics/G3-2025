@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start Center to Branch H"
+            "pathName": "Start to Branch J - AA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchJ"
           }
         },
         {
@@ -19,85 +31,91 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Branch H to Algae Prepare 4"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Algae 4 to Barge Right Prepare"
+            "pathName": "Branch J to Loading Station"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PrepareBargeShoot"
+            "name": "IntakeFromLoadingStation"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Barge Right Shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Barge Right to Algae Prepare 5"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Algae 5 to Barge Right Prepare"
+            "pathName": "Loading Station to Branch K - AA"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PrepareBargeShoot"
+            "name": "WaitForHandoff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchK"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Barge Middle Shoot"
+            "pathName": "Branch K to Loading Station"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.25
+            "name": "IntakeFromLoadingStation"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Barge Middle Taxi"
+            "pathName": "Loading Station to Branch L - AA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitForHandoff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralLevel4"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Center Side",
+  "folder": "Top Side",
   "choreoAuto": false
 }

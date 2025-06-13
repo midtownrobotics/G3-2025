@@ -38,7 +38,7 @@ public class LoggedDigitalInput extends VirtualSubsystem {
     @Override
     public void periodic() {
         inputs.triggered = !sensor.get();
-        Logger.processInputs("Photoelectric_" + port, inputs);
+        Logger.processInputs("DIO_" + port, inputs);
     }
 
     public boolean isTriggered() {

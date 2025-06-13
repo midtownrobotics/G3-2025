@@ -23,33 +23,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Algae 4 to Barge Right Prepare"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PrepareBargeShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Barge Right Shoot"
+            "pathName": "Fast Algae 4 to Barge Right Prepare"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.5
           }
         },
         {
@@ -59,33 +41,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Algae 5 to Barge Right Prepare"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PrepareBargeShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Barge Middle Shoot"
+            "pathName": "Fast Algae 5 to Barge Right Prepare"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.5
           }
         },
         {

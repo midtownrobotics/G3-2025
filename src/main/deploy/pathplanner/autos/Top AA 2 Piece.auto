@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start to Branch I"
+            "pathName": "Start to Branch I - AA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareLevel4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToBranchI"
           }
         },
         {
@@ -32,6 +44,12 @@
           "type": "path",
           "data": {
             "pathName": "Loading Station to 6th Face"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareLevel4"
           }
         },
         {

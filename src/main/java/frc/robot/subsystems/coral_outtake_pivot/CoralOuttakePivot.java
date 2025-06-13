@@ -33,11 +33,11 @@ public class CoralOuttakePivot extends SubsystemBase {
         L1(Degrees.of(-40)),
         L2(Degrees.of(-30)),
         L3(Degrees.of(-30)),
-        L4(Degrees.of(-37.5)),
+        L4(Degrees.of(-39)),
         HANDOFF(Degrees.of(4)),
         INTAKE(STOW.getAngle()),
         DEALGIFY(Degrees.of(-42)),
-        DEALGIFY_STOW(Degrees.of(-52)),
+        DEALGIFY_STOW(Degrees.of(-60)),
         CLIMB(Degrees.of(-60)),
         PROCESSOR_SCORE(Degrees.of(-42)),
         BARGE(Degrees.of(-6)),
@@ -73,8 +73,6 @@ public class CoralOuttakePivot extends SubsystemBase {
         this.pivotIO = pivotIO;
     }
 
-    private LoggedTunableNumber tuningPosition = new LoggedTunableNumber("CoralOuttake/tuningPosition", 40.0);
-
     @Override
     public void periodic() {
         pivotIO.updateInputs(pivotInputs);
@@ -88,7 +86,7 @@ public class CoralOuttakePivot extends SubsystemBase {
             constrainedAngle = coralOuttakeConstraint.getClampedValue(currentGoal.getAngle());
         }
 
-        pivotIO.setPosition(constrainedAngle);
+        pivotIO.setPosition(constrainedAngle, pivotInputs.position);
 
         Logger.recordOutput("CoralOuttake/currentGoal", getCurrentGoal());
         Logger.recordOutput("CoralOuttake/goalAngle", currentGoal.getAngle());
@@ -133,7 +131,7 @@ public class CoralOuttakePivot extends SubsystemBase {
      * specified goal.
      */
     public boolean atGoal(Goal goal) {
-        return atGoal(goal, Degrees.of(2.5));
+        return atGoal(goal, Degrees.of(3.5));
     }
 
     /**

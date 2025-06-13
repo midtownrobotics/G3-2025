@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 3.7245000000000004,
-        "y": 5.10725
+        "x": 3.6075,
+        "y": 5.4095
       },
       "prevControl": {
-        "x": 3.5833268919876264,
-        "y": 5.313575358533861
+        "x": 3.466326891987626,
+        "y": 5.615825358533862
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Branch L"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -75,7 +75,7 @@
     "rotation": -59.381394591090576
   },
   "reversed": false,
-  "folder": "Top Side",
+  "folder": "Top Side AA",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 35.0

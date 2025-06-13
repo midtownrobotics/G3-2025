@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -18,7 +17,7 @@ public class OuttakePivotIOSim implements OuttakePivotIO {
   private final SingleJointedArmSim m_sim;
   private final MutVoltage voltage = Volts.mutable(0);
   private final MutAngle angle = Radians.mutable(0);
-  private final PIDController m_controller = new PIDController(2.0, 0, 0);
+  // private final PIDController m_controller = new PIDController(2.0, 0, 0);
 
   /**
    * Creates a new PivotIOSim.
@@ -47,7 +46,7 @@ public class OuttakePivotIOSim implements OuttakePivotIO {
   }
 
   @Override
-  public void setPosition(Angle angle) {
+  public void setPosition(Angle angle, Angle jeethree) {
     this.angle.mut_replace(angle);
   }
 }

@@ -1,0 +1,123 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.812578577340942,
+        "y": 3.9660914949264026
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.788394712767606,
+        "y": 4.678967004299043
+      },
+      "isLocked": false,
+      "linkedName": "Face 4 Algae Intake"
+    },
+    {
+      "anchor": {
+        "x": 7.304374796542863,
+        "y": 4.972
+      },
+      "prevControl": {
+        "x": 6.275860385591499,
+        "y": 4.750044519117848
+      },
+      "nextControl": {
+        "x": 7.548749226848253,
+        "y": 5.024736494128034
+      },
+      "isLocked": false,
+      "linkedName": "Barge Right Prepare"
+    },
+    {
+      "anchor": {
+        "x": 7.66,
+        "y": 4.972
+      },
+      "prevControl": {
+        "x": 7.41,
+        "y": 4.972
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Barge Right Shoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.95,
+      "maxWaypointRelativePos": 2,
+      "constraints": {
+        "maxVelocity": 1.25,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "AlgaeHold",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AlgaeHold"
+        }
+      }
+    },
+    {
+      "name": "PrepareBargeShoot",
+      "waypointRelativePos": 0.8,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareBargeShoot"
+        }
+      }
+    },
+    {
+      "name": "BargeShoot",
+      "waypointRelativePos": 1.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "BargeShoot"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.75,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Center Side AA",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": false
+}
