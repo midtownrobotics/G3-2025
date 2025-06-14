@@ -133,4 +133,8 @@ public class SingleDriverControls {
     return () -> groundIntakeMode;
   }
 
+  public Trigger handoffCoral() {
+    return controller.povRight();
+  }
+
 }

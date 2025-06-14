@@ -457,10 +457,8 @@ public class RobotContainer {
                 .and(() -> coralMode == CoralMode.L2 || coralMode == CoralMode.L3 || coralMode == CoralMode.L4)
                 .whileTrue(Commands.parallel(
                         DriveCommands.alignToAlgaeReef(drive, led, () -> getClosestReefFace(), () -> true).andThen(
-                            DriveCommands.alignToAlgaeReef(drive, led, () -> getClosestReefFace(), () -> false)
-                        ),
-                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY))
-                    )
+                                DriveCommands.alignToAlgaeReef(drive, led, () -> getClosestReefFace(), () -> false)),
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)))
                 .onFalse(
                         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW));
 
@@ -476,14 +474,19 @@ public class RobotContainer {
                         Commands.parallel(
                                 DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(),
                                         controls.leftBranchSelectedSupplier(), () -> false),
-                                elevator.setGoalEndCommand(() -> Elevator.Goal.fromCoralMode(coralMode), Elevator.Goal.STOW),
-                                coralOuttakeRoller.setGoalEndCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode), CoralOuttakeRoller.Goal.STOW),
-                                coralOuttakePivot.setGoalEndCommand(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode), CoralOuttakePivot.Goal.STOW)));
+                                elevator.setGoalEndCommand(() -> Elevator.Goal.fromCoralMode(coralMode),
+                                        Elevator.Goal.STOW),
+                                coralOuttakeRoller.setGoalEndCommand(
+                                        () -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
+                                        CoralOuttakeRoller.Goal.STOW),
+                                coralOuttakePivot.setGoalEndCommand(
+                                        () -> CoralOuttakePivot.Goal.fromCoralMode(coralMode),
+                                        CoralOuttakePivot.Goal.STOW)));
 
         controls.manualShoot().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()))
                 .whileTrue(
-                    coralOuttakeRoller.setGoalEndCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode), CoralOuttakeRoller.Goal.STOW));
-
+                        coralOuttakeRoller.setGoalEndCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
+                                CoralOuttakeRoller.Goal.STOW));
 
         controls.intake().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
@@ -522,6 +525,9 @@ public class RobotContainer {
                 .onTrue(Commands.runOnce(() -> {
                     elevator.driverOffset = elevator.driverOffset.minus(Inches.of(0.5));
                 }));
+
+        controls.handoffCoral().onTrue(handoffCommand());
+
     }
 
     /** Called when the robot enters teleop */
