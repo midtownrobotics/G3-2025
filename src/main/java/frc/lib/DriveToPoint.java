@@ -111,6 +111,9 @@ public class DriveToPoint extends Command {
     Pose2d targetPose = m_targetPose.get();
     Pose2d currentPose = m_drive.getPose();
 
+    Logger.recordOutput("DriveToPoint/LinearAtGoal", m_driveController.atGoal());
+    Logger.recordOutput("DriveToPoint/HeadingAtGoal", m_headingController.atGoal());
+
     if (targetPose == null) {
       m_drive.stopWithX();
       return;
@@ -171,6 +174,8 @@ public class DriveToPoint extends Command {
 
   @Override
   public boolean isFinished() {
-    return m_driveController.atGoal() && m_headingController.atGoal();
+    boolean finished = m_driveController.atGoal() && m_headingController.atGoal();
+    Logger.recordOutput("DriveToPoint/AtGoal", finished);
+    return finished;
   }
 }

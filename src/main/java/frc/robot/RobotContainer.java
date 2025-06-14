@@ -473,16 +473,23 @@ public class RobotContainer {
 
         controls.coralAutoAlign()
                 .whileTrue(
-                        Commands.sequence(
-                                DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(), controls.leftBranchSelectedSupplier(), () -> false, Degrees.of(180), Feet.of(2)),
-                                Commands.parallel(
-                                    DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(), controls.leftBranchSelectedSupplier(), () -> false),
-                                    Commands.sequence(
-                                        elevator.setGoalAndWait(() -> Elevator.Goal.fromCoralMode(coralMode)),
-                                        coralOuttakePivot.setGoalAndWait(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode)),
-                                        coralOuttakeRoller.setGoalCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode))
-                                    )
+                        Commands.parallel(
+                                DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(), controls.leftBranchSelectedSupplier(), () -> false),
+
+                                Commands.sequence(
+                                    Commands.waitUntil(() -> drive.isWithinToleranceToPose(DriveCommands.getRobotAlignBranchPoseFromReefFace(this::getClosestReefFace, controls.leftBranchSelectedSupplier()), Feet.of(3), Degrees.of(180))),
+                                    elevator.setGoalAndWait(() -> Elevator.Goal.fromCoralMode(coralMode)),
+                                    coralOuttakePivot.setGoalAndWait(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode)),
+                                    coralOuttakeRoller.setGoalCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode))
                                 )
+                                // Commands.parallel(
+                                //     DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(), controls.leftBranchSelectedSupplier(), () -> false),
+                                //     Commands.sequence(
+                                //         elevator.setGoalAndWait(() -> Elevator.Goal.fromCoralMode(coralMode)),
+                                //         coralOuttakePivot.setGoalAndWait(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode)),
+                                //         coralOuttakeRoller.setGoalCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode))
+                                //     )
+                                // )
                         ))
                 .onFalse(
                     Commands.sequence(

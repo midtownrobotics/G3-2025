@@ -524,13 +524,13 @@ public class DriveCommands {
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
       BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState) {
     return alignToBranchReef(drive, led, reefFaceSupplier, leftBranchSupplier, waitingState, Degrees.of(0.3),
-        Inches.of(0.2));
+        Inches.of(0.2), true);
   }
 
   /** Creates a command that drives to a reef position based on POV */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
       BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState, Angle angularThreshold,
-      Distance linearThreshold) {
+      Distance linearThreshold, boolean dOStopCommand) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
       boolean leftBranch = leftBranchSupplier.getAsBoolean();
@@ -542,29 +542,34 @@ public class DriveCommands {
       // boolean leftSideToDriver = flipBranchSide ^ leftBranch;
       // int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
 
-      int branchPoseIndex = face.ordinal() * 2 + (leftBranch ? 0 : 1);
-
       Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotBeforeHandoffBranchAlignOffset
           : kRobotBranchAlignOffset;
 
-      Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
-          .transformBy(robotTransform2d);
-
-      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
+      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(getRobotAlignBranchPoseFromReefFace(() -> face, () -> leftBranch, robotTransform2d));
 
       Logger.recordOutput("PathfindToReef/ReefFace", face);
-      Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
       Logger.recordOutput("PathfindToReef/TargetPose", allianceAppliedTarget);
       Logger.recordOutput("PathfindToReef/ReefFace", face);
-      Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
       Logger.recordOutput("PathfindToReef/TargetPose", allianceAppliedTarget);
 
       return allianceAppliedTarget;
     };
 
-    return Commands.sequence(
+    return dOStopCommand ? Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold),
-        drive.stopCommand());
+        drive.stopCommand()) :
+        new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold);
+  }
+
+  public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, BooleanSupplier leftBranch, Transform2d offset) {
+    int branchPoseIndex = reefFace.get().ordinal() * 2 + (leftBranch.getAsBoolean() ? 0 : 1);
+
+    return FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
+        .transformBy(offset);
+  }
+
+  public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, BooleanSupplier leftBranch) {
+    return getRobotAlignBranchPoseFromReefFace(reefFace, leftBranch, kRobotBranchAlignOffset);
   }
 
   /** Creates a command that drives to a branch */
