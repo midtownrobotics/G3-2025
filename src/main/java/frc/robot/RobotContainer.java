@@ -397,9 +397,9 @@ public class RobotContainer {
                 DriveCommands.alignToBranchReef(drive, led, 11).withTimeout(1.6));
 
         NamedCommands.registerCommand("AlignToAlgae4",
-                DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.GH).withTimeout(1.6));
+                DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.GH, () -> false).withTimeout(1.6));
         NamedCommands.registerCommand("AlignToAlgae5",
-                DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.IJ).withTimeout(1.6));
+                DriveCommands.alignToAlgaeReef(drive, led, () -> ReefFace.IJ, () -> false).withTimeout(1.6));
 
         NamedCommands.registerCommand("PrepareLevel1", Commands.runOnce(() -> coralMode = CoralMode.L1));
 
@@ -456,8 +456,11 @@ public class RobotContainer {
         controls.algaeAutoAlign()
                 .and(() -> coralMode == CoralMode.L2 || coralMode == CoralMode.L3 || coralMode == CoralMode.L4)
                 .whileTrue(Commands.parallel(
-                        DriveCommands.alignToAlgaeReef(drive, led, () -> getClosestReefFace()),
-                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)))
+                        DriveCommands.alignToAlgaeReef(drive, led, () -> getClosestReefFace(), () -> true).andThen(
+                            DriveCommands.alignToAlgaeReef(drive, led, () -> getClosestReefFace(), () -> false)
+                        ),
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY))
+                    )
                 .onFalse(
                         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW));
 
@@ -473,34 +476,29 @@ public class RobotContainer {
                         Commands.parallel(
                                 DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(),
                                         controls.leftBranchSelectedSupplier(), () -> false),
-                                elevator.setGoalCommand(Elevator.Goal.fromCoralMode(coralMode)),
-                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.fromCoralMode(coralMode)),
-                                coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.fromCoralMode(coralMode))))
-                .onFalse(
-                        Commands.parallel(
-                                coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
-                                elevator.setGoalCommand(Elevator.Goal.STOW),
-                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)));
+                                elevator.setGoalEndCommand(() -> Elevator.Goal.fromCoralMode(coralMode), Elevator.Goal.STOW),
+                                coralOuttakeRoller.setGoalEndCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode), CoralOuttakeRoller.Goal.STOW),
+                                coralOuttakePivot.setGoalEndCommand(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode), CoralOuttakePivot.Goal.STOW)));
 
         controls.manualShoot().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()))
                 .whileTrue(
-                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.fromCoralMode(coralMode)))
-                .onFalse(
-                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW));
+                    coralOuttakeRoller.setGoalEndCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode), CoralOuttakeRoller.Goal.STOW));
+
 
         controls.intake().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
-                        coralIntake.setGoalCommand(controls.isGroundIntakeMode() ? CoralIntake.Goal.GROUND_INTAKE
-                                : CoralIntake.Goal.STATION_INTAKE))
+                        Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
+                                coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
+                                controls.coralIntakeModeSupplier()))
                 .onFalse(indexCoralAndStowCommand());
 
         controls.intakeL1().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
                         Commands.sequence(
-                                Commands.run(() -> coralMode = CoralMode.L1),
-                                coralIntake
-                                        .setGoalCommand(controls.isGroundIntakeMode() ? CoralIntake.Goal.GROUND_INTAKE
-                                                : CoralIntake.Goal.STATION_INTAKE)))
+                                Commands.runOnce(() -> coralMode = CoralMode.L1),
+                                Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
+                                        coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
+                                        controls.coralIntakeModeSupplier())))
                 .onFalse(indexCoralAndStowCommand());
 
         controls.climb()

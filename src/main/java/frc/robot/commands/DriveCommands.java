@@ -398,6 +398,13 @@ public class DriveCommands {
       ),
       Rotation2d.k180deg);
 
+  public static final Transform2d kRobotAlgaeAlignFurtherOffset = new Transform2d(
+    new Translation2d(
+        Inches.of(25), // F/B
+        Inches.of(-1.614 - 6.5) // L/R
+    ),
+    Rotation2d.k180deg);
+
   private static final Transform2d pathPlannerOffset = new Transform2d(
       new Translation2d(Inches.of(33), Inches.of(-1.5)), Rotation2d.k180deg);
 
@@ -506,7 +513,7 @@ public class DriveCommands {
 
       if (pivot.getCurrentGoal() == CoralOuttakePivot.Goal.DEALGIFY) {
         Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToAlgaeReef");
-        return alignToAlgaeReef(drive, led, reefFaceSupplier);
+        return alignToAlgaeReef(drive, led, reefFaceSupplier, () -> false);
       }
 
       Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToBranchReef");
@@ -638,7 +645,7 @@ public class DriveCommands {
    * Creates a command that drives to reef position, aligned to the center of the
    * face.
    */
-  public static Command alignToAlgaeReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier) {
+  public static Command alignToAlgaeReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier waitingState) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
 
@@ -646,8 +653,11 @@ public class DriveCommands {
         return null;
       }
 
+      Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotAlgaeAlignFurtherOffset
+      : kRobotAlgaeAlignOffset;
+
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
-          .transformBy(kRobotAlgaeAlignOffset);
+          .transformBy(robotTransform2d);
 
       Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
 

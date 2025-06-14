@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.IOProtectionXboxController;
 import java.util.function.BooleanSupplier;
-import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class SingleDriverControls {
@@ -15,7 +14,7 @@ public class SingleDriverControls {
   public static double DRIVER_JOYSTICK_THRESHHOLD = 0.1;
   public static double DRIVER_TRIGGER_PRESSED_THRESHHOLD = 0.5;
 
-  @Getter
+  @AutoLogOutput
   private boolean groundIntakeMode = true;
 
   boolean isDriverControlInDeadzone(double driveX, double driveY, double driveOmega) {
@@ -27,7 +26,7 @@ public class SingleDriverControls {
   public SingleDriverControls(int port) {
     controller = new IOProtectionXboxController(port);
 
-    controller.start().onTrue(Commands.run(() -> groundIntakeMode = !groundIntakeMode));
+    controller.start().onTrue(Commands.runOnce(() -> groundIntakeMode = !groundIntakeMode));
   }
 
   @AutoLogOutput
@@ -94,7 +93,7 @@ public class SingleDriverControls {
     return controller.leftBumper().and(controller.rightBumper().negate()).or(controller.rightBumper().and(controller.leftBumper().negate()));
   }
 
-  /** Whether the left branch is selected. Otherwise, right is assumed selected. */
+  /** Whether the left branch is selected. Otherwise, right is assumed. */
   public BooleanSupplier leftBranchSelectedSupplier() {
     return controller.leftBumper().and(controller.rightBumper().negate());
   }
@@ -128,4 +127,10 @@ public class SingleDriverControls {
   public Trigger decreaseElevatorOffset() {
     return controller.povDown();
   }
+
+  /** Whether ground intake is selected. Otherwise, source intake is assumed. */
+  public BooleanSupplier coralIntakeModeSupplier() {
+    return () -> groundIntakeMode;
+  }
+
 }
