@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.sensors.VisionConstants.kElevatorTagCameraName;
@@ -472,17 +473,24 @@ public class RobotContainer {
 
         controls.coralAutoAlign()
                 .whileTrue(
-                        Commands.parallel(
-                                DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(),
-                                        controls.leftBranchSelectedSupplier(), () -> false),
-                                elevator.setGoalEndCommand(() -> Elevator.Goal.fromCoralMode(coralMode),
-                                        Elevator.Goal.STOW),
-                                coralOuttakeRoller.setGoalEndCommand(
-                                        () -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
-                                        CoralOuttakeRoller.Goal.STOW),
-                                coralOuttakePivot.setGoalEndCommand(
-                                        () -> CoralOuttakePivot.Goal.fromCoralMode(coralMode),
-                                        CoralOuttakePivot.Goal.STOW)));
+                        Commands.sequence(
+                                DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(), controls.leftBranchSelectedSupplier(), () -> false, Degrees.of(180), Feet.of(2)),
+                                Commands.parallel(
+                                    DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(), controls.leftBranchSelectedSupplier(), () -> false),
+                                    Commands.sequence(
+                                        elevator.setGoalAndWait(() -> Elevator.Goal.fromCoralMode(coralMode)),
+                                        coralOuttakePivot.setGoalAndWait(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode)),
+                                        coralOuttakeRoller.setGoalCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode))
+                                    )
+                                )
+                        ))
+                .onFalse(
+                    Commands.sequence(
+                        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
+                        elevator.setGoalCommand(Elevator.Goal.STOW),
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)
+                    )
+                );
 
         controls.manualShoot().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()))
                 .whileTrue(

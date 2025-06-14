@@ -360,9 +360,8 @@ public class DriveCommands {
   private static final Set<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
 
   private static final Transform2d kRobotPrepareOffset = new Transform2d(
-    new Translation2d(Inches.of(5), Inches.of(0)),
-    Rotation2d.kZero
-  );
+      new Translation2d(Inches.of(5), Inches.of(0)),
+      Rotation2d.kZero);
 
   private static final Transform2d kRobotBranchAlignOffset = new Transform2d(
       new Translation2d(
@@ -399,11 +398,11 @@ public class DriveCommands {
       Rotation2d.k180deg);
 
   public static final Transform2d kRobotAlgaeAlignFurtherOffset = new Transform2d(
-    new Translation2d(
-        Inches.of(25), // F/B
-        Inches.of(-1.614 - 6.5) // L/R
-    ),
-    Rotation2d.k180deg);
+      new Translation2d(
+          Inches.of(25), // F/B
+          Inches.of(-1.614 - 6.5) // L/R
+      ),
+      Rotation2d.k180deg);
 
   private static final Transform2d pathPlannerOffset = new Transform2d(
       new Translation2d(Inches.of(33), Inches.of(-1.5)), Rotation2d.k180deg);
@@ -522,14 +521,22 @@ public class DriveCommands {
     return Commands.defer(commandSupplier, Set.of());
   }
 
-  /** Creates a command that drives to a reef position based on POV */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
       BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState) {
+    return alignToBranchReef(drive, led, reefFaceSupplier, leftBranchSupplier, waitingState, Degrees.of(0.3),
+        Inches.of(0.2));
+  }
+
+  /** Creates a command that drives to a reef position based on POV */
+  public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
+      BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState, Angle angularThreshold,
+      Distance linearThreshold) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
       boolean leftBranch = leftBranchSupplier.getAsBoolean();
 
-      if (face == null) return null;
+      if (face == null)
+        return null;
 
       // boolean flipBranchSide = kFlippedReefFaces.contains(face);
       // boolean leftSideToDriver = flipBranchSide ^ leftBranch;
@@ -556,7 +563,7 @@ public class DriveCommands {
     };
 
     return Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier),
+        new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold),
         drive.stopCommand());
   }
 
@@ -645,7 +652,8 @@ public class DriveCommands {
    * Creates a command that drives to reef position, aligned to the center of the
    * face.
    */
-  public static Command alignToAlgaeReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier, BooleanSupplier waitingState) {
+  public static Command alignToAlgaeReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
+      BooleanSupplier waitingState) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
 
@@ -654,7 +662,7 @@ public class DriveCommands {
       }
 
       Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotAlgaeAlignFurtherOffset
-      : kRobotAlgaeAlignOffset;
+          : kRobotAlgaeAlignOffset;
 
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
           .transformBy(robotTransform2d);
