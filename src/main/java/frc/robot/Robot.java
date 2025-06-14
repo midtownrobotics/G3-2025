@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.VirtualSubsystem;
 import frc.lib.simulation.BatterySimManager;
 import frc.robot.utils.Constants;
-import frc.robot.utils.LoggedCommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -62,7 +61,6 @@ public class Robot extends LoggedRobot {
     // be added.
 
     m_robotContainer = new RobotContainer();
-    LoggedCommandScheduler.init(CommandScheduler.getInstance());
   }
 
   @Override
@@ -73,7 +71,6 @@ public class Robot extends LoggedRobot {
 
     CommandScheduler.getInstance().run();
     VirtualSubsystem.periodicAll();
-    LoggedCommandScheduler.periodic();
   }
 
   @Override

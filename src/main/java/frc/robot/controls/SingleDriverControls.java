@@ -138,7 +138,7 @@ public class SingleDriverControls {
     return controller.povRight();
   }
 
-  /* Reset all subsystems to STOW. */
+  /** Reset all subsystems to STOW. */
   public Trigger reset() {
     return controller.back();
   }

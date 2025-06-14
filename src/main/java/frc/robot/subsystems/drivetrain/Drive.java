@@ -360,6 +360,9 @@ public class Drive extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  /**
+   * Chekcs if the robot is close enough to a specified pose
+   */
   @AutoLogOutput
   public boolean isWithinToleranceToPose(Pose2d pose, Distance linearTolerance, Angle anglularTolerance) {
     return Units.Meters.of(pose.minus(getPose()).getTranslation().getNorm()).lte(linearTolerance) &&

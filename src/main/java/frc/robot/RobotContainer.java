@@ -507,7 +507,8 @@ public class RobotContainer {
         controls.intake().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
                         Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
-                                coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
+                                Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
+                                                  DriveCommands.alignToStation(drive, led)),
                                 controls.coralIntakeModeSupplier()))
                 .onFalse(indexCoralAndStowCommand());
 

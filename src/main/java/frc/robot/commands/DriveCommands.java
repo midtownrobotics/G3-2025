@@ -521,6 +521,9 @@ public class DriveCommands {
     return Commands.defer(commandSupplier, Set.of());
   }
 
+  /**
+   * Returns a command that aligns to the specified reef face
+   */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
       BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState) {
     return alignToBranchReef(drive, led, reefFaceSupplier, leftBranchSupplier, waitingState, Degrees.of(0.3),
@@ -561,6 +564,9 @@ public class DriveCommands {
         new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold);
   }
 
+  /**
+   * Returns the pose that the robot should go to given a branch
+   */
   public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, BooleanSupplier leftBranch, Transform2d offset) {
     int branchPoseIndex = reefFace.get().ordinal() * 2 + (leftBranch.getAsBoolean() ? 0 : 1);
 
@@ -568,6 +574,9 @@ public class DriveCommands {
         .transformBy(offset);
   }
 
+  /**
+   * Uses default offset
+   */
   public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, BooleanSupplier leftBranch) {
     return getRobotAlignBranchPoseFromReefFace(reefFace, leftBranch, kRobotBranchAlignOffset);
   }
@@ -713,6 +722,19 @@ public class DriveCommands {
     return Commands.sequence(
         new DriveToPoint(drive, branchPoseSupplier),
         drive.stopCommand());
+  }
+
+
+  public static Command alignToStation(Drive drive, LED led) {
+    Supplier<Pose2d> stationPoseSupplier = () -> {
+      Pose2d nearestStationPose = new Pose2d(Meters.of(1.548), Meters.of(0.767), new Rotation2d(Units.degreesToRadians(50)));
+      return AllianceFlipUtil.apply(nearestStationPose);
+    };
+
+    return Commands.sequence(
+      new DriveToPoint(drive, stationPoseSupplier),
+      drive.stopCommand()
+    );
   }
 
   /** Returns the piece pose in Field Space (Cached if necessary) */
