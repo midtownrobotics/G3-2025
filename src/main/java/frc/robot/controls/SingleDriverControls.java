@@ -136,5 +136,9 @@ public class SingleDriverControls {
   public Trigger handoffCoral() {
     return controller.povRight();
   }
+  
+  public Trigger reset() {
+    return controller.back();
+  }
 
 }
