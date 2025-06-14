@@ -391,7 +391,7 @@ public class DriveCommands {
           Inches.of(-1.614)),
       Rotation2d.k180deg);
 
-  private static final Transform2d kRobotAlgaeAlignOffset = new Transform2d(
+  public static final Transform2d kRobotAlgaeAlignOffset = new Transform2d(
       new Translation2d(
           Inches.of(19.5), // F/B
           Inches.of(-1.614 - 6.5) // L/R
