@@ -529,7 +529,7 @@ public class RobotContainer {
 
         controls.handoffCoral().onTrue(handoffCommand());
 
-        controls.panic().whileTrue(new InstantCommand(() -> {
+        controls.reset().whileTrue(new InstantCommand(() -> {
             teleopInit();
         }, coralOuttakePivot, coralOuttakeRoller, coralIntake, elevator));
 
