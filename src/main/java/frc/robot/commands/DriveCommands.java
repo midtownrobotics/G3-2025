@@ -727,7 +727,7 @@ public class DriveCommands {
 
   public static Command alignToStation(Drive drive, LED led) {
     Supplier<Pose2d> stationPoseSupplier = () -> {
-      Pose2d nearestStationPose = new Pose2d(Meters.of(1.548), Meters.of(0.767), new Rotation2d(Units.degreesToRadians(50)));
+      Pose2d nearestStationPose = new Pose2d(Meters.of(1.548), Meters.of(0.767), new Rotation2d(Units.degreesToRadians(140)));
       return AllianceFlipUtil.apply(nearestStationPose);
     };
 
