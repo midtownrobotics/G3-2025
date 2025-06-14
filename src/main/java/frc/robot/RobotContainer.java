@@ -459,9 +459,10 @@ public class RobotContainer {
                                 DriveCommands.alignToAlgaeReef(drive, led, () -> getClosestReefFace(), () -> false)),
                         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY)))
                 .onFalse(
-                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW))
-                .onFalse(
-                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW));
+                    Commands.parallel(
+                        elevator.setGoalCommand(Elevator.Goal.STOW),
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)
+                    ));
 
         controls.algaeAutoAlign()
             .and(() -> coralMode == CoralMode.L1)
