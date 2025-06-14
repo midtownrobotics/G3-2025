@@ -170,6 +170,7 @@ public class DriveToPoint extends Command {
     Logger.recordOutput("DriveToPoint/DriveVelocityScalar", driveVelocityScalar);
 
     Logger.recordOutput("DriveToPoint/DriveSpeeds", targetChassisSpeeds);
+    Logger.recordOutput("DriveToPoint/LastCylce", Logger.getTimestamp());
   }
 
   @Override

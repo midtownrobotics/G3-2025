@@ -475,24 +475,22 @@ public class RobotContainer {
                 .whileTrue(
                         Commands.parallel(
                                 DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(), controls.leftBranchSelectedSupplier(), () -> false),
-
                                 Commands.sequence(
+                                    Commands.waitUntil(waitForHandoffTrigger),
                                     Commands.waitUntil(() -> drive.isWithinToleranceToPose(DriveCommands.getRobotAlignBranchPoseFromReefFace(this::getClosestReefFace, controls.leftBranchSelectedSupplier()), Feet.of(3), Degrees.of(180))),
-                                    elevator.setGoalAndWait(() -> Elevator.Goal.fromCoralMode(coralMode)),
-                                    coralOuttakePivot.setGoalAndWait(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode)),
-                                    coralOuttakeRoller.setGoalCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode))
+                                    Commands.defer(() ->
+                                        Commands.sequence(
+                                            elevator.setGoalAndWait(() -> Elevator.Goal.fromCoralMode(coralMode)),
+                                            coralOuttakePivot.setGoalAndWait(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode)),
+                                            coralOuttakeRoller.setGoalCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode))
+                                        ), Set.of()
+                                    )
                                 )
-                                // Commands.parallel(
-                                //     DriveCommands.alignToBranchReef(drive, led, () -> getClosestReefFace(), controls.leftBranchSelectedSupplier(), () -> false),
-                                //     Commands.sequence(
-                                //         elevator.setGoalAndWait(() -> Elevator.Goal.fromCoralMode(coralMode)),
-                                //         coralOuttakePivot.setGoalAndWait(() -> CoralOuttakePivot.Goal.fromCoralMode(coralMode)),
-                                //         coralOuttakeRoller.setGoalCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode))
-                                //     )
-                                // )
-                        ))
+                            )
+                        )
                 .onFalse(
                     Commands.sequence(
+                        Commands.waitUntil(waitForHandoffTrigger),
                         coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
                         elevator.setGoalCommand(Elevator.Goal.STOW),
                         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)
@@ -590,12 +588,11 @@ public class RobotContainer {
                                 Degrees.of(20)))
                         .withTimeout(1.0),
                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF),
-                Commands.waitUntil(coralIntake.handoffSensorTrigger).withTimeout(2), // TODO change back
-                                                                                     // to 2
+                Commands.waitUntil(coralIntake.handoffSensorTrigger).withTimeout(2),
                 Commands.waitUntil(coralIntake.handoffSensorTrigger.negate()).withTimeout(2),
                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.HANDOFF_REVERSE),
-                Commands.waitSeconds(0.1),
-                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)).finallyDo(() -> {
+                Commands.waitSeconds(0.1)
+        ).finallyDo(() -> {
                     elevator.setGoal(Elevator.Goal.STOW);
                     coralIntake.setGoal(CoralIntake.Goal.STOW);
                     coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.STOW);

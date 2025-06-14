@@ -558,10 +558,12 @@ public class DriveCommands {
       return allianceAppliedTarget;
     };
 
-    return dOStopCommand ? Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold),
-        drive.stopCommand()) :
-        new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold);
+    return dOStopCommand ?
+      Commands.sequence(
+          new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold),
+          drive.stopCommand()
+      ) :
+      new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold);
   }
 
   /**
