@@ -133,10 +133,12 @@ public class SingleDriverControls {
     return () -> groundIntakeMode;
   }
 
+  /** Manual handoff coral. */
   public Trigger handoffCoral() {
     return controller.povRight();
   }
-  
+
+  /* Reset all subsystems to STOW. */
   public Trigger reset() {
     return controller.back();
   }
