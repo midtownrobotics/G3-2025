@@ -138,6 +138,11 @@ public class SingleDriverControls {
     return controller.povRight();
   }
 
+  /** Eject coral or algae from the outtake */
+  public Trigger eject() {
+    return controller.povLeft();
+  }
+
   /** Reset all subsystems to STOW. */
   public Trigger reset() {
     return controller.back();

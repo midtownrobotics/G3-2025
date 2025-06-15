@@ -82,6 +82,7 @@ import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.coral_intake.CoralIntake;
 
 public class RobotContainer {
 
@@ -542,6 +543,10 @@ public class RobotContainer {
                 }));
 
         controls.handoffCoral().onTrue(handoffCommand());
+
+        controls.eject().onTrue(Commands.either(coralIntake.setGoalEndCommand(CoralIntake.Goal.GROUND_VOMIT, CoralIntake.Goal.STOW),
+                                                coralIntake.setGoalEndCommand(CoralIntake.Goal.STATION_VOMIT, CoralIntake.Goal.STOW),
+                                                controls.coralIntakeModeSupplier()));
 
         controls.reset().whileTrue(new InstantCommand(() -> {
             teleopInit();
