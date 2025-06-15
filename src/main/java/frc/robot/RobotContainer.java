@@ -580,10 +580,13 @@ public class RobotContainer {
 
         controls.climb()
                 .onTrue(
-                        Commands.parallel(
-                                elevator.setGoalCommand(Elevator.Goal.CLIMB),
-                                coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB),
-                                coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.CLIMB)))
+                        Commands.sequence(
+                                Commands.parallel(
+                                        elevator.setGoalCommand(Elevator.Goal.CLIMB),
+                                        coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB),
+                                        coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.CLIMB))),
+                                DriveCommands.
+                        )
                 .onFalse(
                         Commands.sequence(
                                 coralIntake.setGoalCommand(CoralIntake.Goal.CLIMB_BOTTOM),

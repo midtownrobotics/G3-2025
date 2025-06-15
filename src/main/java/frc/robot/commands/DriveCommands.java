@@ -523,6 +523,12 @@ public class DriveCommands {
   }
 
   /**
+   * Aligns to cage
+   */
+
+  public static Command alignToCage(Drive drive, Supplier)
+
+  /**
    * Returns a command that aligns to the specified reef face
    */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
