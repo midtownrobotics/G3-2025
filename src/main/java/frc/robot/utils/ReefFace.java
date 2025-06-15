@@ -52,4 +52,17 @@ public enum ReefFace {
                 return false;
         }
     }
+
+    public int toIndex() {
+        switch (this) {
+            case AB: return 0;
+            case CD: return 1;
+            case EF: return 2;
+            case GH: return 3;
+            case IJ: return 4;
+            case KL: return 5;
+            default: return 5;
+        }
+    }
+    
 }
