@@ -547,7 +547,7 @@ public class RobotContainer {
                                 Commands.runOnce(() -> coralMode = CoralMode.L1),
                                 Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
                                                 Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
-                                                                  DriveCommands.alignToStation(drive, led)),
+                                                                  DriveCommands.alignToStation(drive, led, this::getClosestStation)),
                                         controls.coralIntakeModeSupplier())))
                 .onFalse(indexCoralAndStowCommand());
 
