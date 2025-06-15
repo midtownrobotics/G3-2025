@@ -21,6 +21,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -76,6 +77,7 @@ import frc.robot.utils.Constants;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
+import frc.robot.utils.StationSide;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
@@ -121,6 +123,8 @@ public class RobotContainer {
 
     @AutoLogOutput
     public CoralMode coralMode = CoralMode.L4;
+    @AutoLogOutput
+    private CoralMode preL1CoralMode = coralMode;
 
     private boolean isHandoffInterruptible = true;
     private Trigger waitForHandoffTrigger = new Trigger(() -> isHandoffInterruptible);
@@ -503,6 +507,7 @@ public class RobotContainer {
         // .onFalse(coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW));
 
         controls.coralAutoAlign()
+                .and(() -> coralMode != CoralMode.L1)
                 .and(() -> canStartCoralAlign)
                 .debounce(0.05)
                 .whileTrue(
@@ -526,6 +531,20 @@ public class RobotContainer {
                                 elevator.setGoalCommand(Elevator.Goal.STOW),
                                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)));
 
+        controls.coralAutoAlign().and(() -> coralMode == CoralMode.L1)
+            .whileTrue(
+                Commands.parallel(
+                    DriveCommands.alignToL1Reef(drive, led, this::getClosestReefFace),
+                    Commands.sequence(
+                        Commands.waitUntil(() -> drive.isWithinToleranceToPose(DriveCommands.getRobotAlignL1FacePoseFromReefFace(this::getClosestReefFace), Feet.of(0.2), Degrees.of(15))),
+                        coralIntake.setGoalAndWait(CoralIntake.Goal.L1)
+                    )
+                )
+            ).onFalse(
+                coralIntake.setGoalCommand(CoralIntake.Goal.STOW)
+            );
+
+
         controls.manualShoot().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()))
                 .whileTrue(
                         coralOuttakeRoller.setGoalEndCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
@@ -533,19 +552,29 @@ public class RobotContainer {
 
         controls.intake().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
-                        Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
-                                Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
-                                                  DriveCommands.alignToStation(drive, led)),
-                                controls.coralIntakeModeSupplier()))
+                        Commands.sequence(
+                                Commands.runOnce(() -> {if (coralMode == CoralMode.L1){
+                                                        coralMode = preL1CoralMode;
+                                                }
+                                                preL1CoralMode = coralMode;
+                                        }),
+                                Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
+                                                Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
+                                                                  DriveCommands.alignToStation(drive, led, this::getClosestStation)),
+                                        controls.coralIntakeModeSupplier()))
+                        )
                 .onFalse(indexCoralAndStowCommand());
 
         controls.intakeL1().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
                         Commands.sequence(
-                                Commands.runOnce(() -> coralMode = CoralMode.L1),
+                                Commands.runOnce(() -> {
+                                        preL1CoralMode = (coralMode != CoralMode.L1) ? coralMode : preL1CoralMode;
+                                        coralMode = CoralMode.L1;
+                                }),
                                 Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
                                                 Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
-                                                                  DriveCommands.alignToStation(drive, led)),
+                                                                  DriveCommands.alignToStation(drive, led, this::getClosestStation)),
                                         controls.coralIntakeModeSupplier())))
                 .onFalse(indexCoralAndStowCommand());
 
@@ -571,7 +600,12 @@ public class RobotContainer {
                     elevator.driverOffset = elevator.driverOffset.minus(Inches.of(0.5));
                 }));
 
-        controls.handoffCoral().onTrue(handoffCommand());
+        controls.handoffCoral().onTrue(
+                Commands.sequence(
+                        Commands.runOnce(() -> coralMode = preL1CoralMode),
+                        handoffCommand()
+                )
+        );
 
         controls.eject().and(() -> isHandoffInterruptible)
                 .onTrue(
@@ -684,6 +718,36 @@ public class RobotContainer {
         }
 
         return closestFace;
+    }
+
+    private StationSide getClosestStation() {
+        StationSide closestStation = null;
+        Distance closestDistance = Meters.of(Double.MAX_VALUE);
+
+        for (StationSide side : StationSide.values()) {
+                Pose2d stationPose;
+
+                switch (side) {
+                        case RIGHT:
+                                stationPose = new Pose2d(Meters.of(1.548), Meters.of(0.767), new Rotation2d(edu.wpi.first.math.util.Units.degreesToRadians(140)));
+                                break;
+                        case LEFT:
+                                stationPose = new Pose2d(Meters.of(1.336), Meters.of(7.116), new Rotation2d(edu.wpi.first.math.util.Units.degreesToRadians(220)));
+                                break;
+                        default:
+                                stationPose = null;
+                }
+
+                Distance distance = Meters.of(stationPose.getTranslation().getDistance(drive.getPose().getTranslation()));
+                if (distance.lt(closestDistance)) {
+                        closestDistance = distance;
+                        closestStation = side;
+                }
+        }
+
+        Logger.recordOutput("/closestStation", closestStation);
+
+        return closestStation;
     }
 
     /** used for logging */
