@@ -85,12 +85,12 @@ public class SingleDriverControls {
 
   /** Aligns to processor or algae. */
   public Trigger algaeAutoAlign() {
-    return controller.leftBumper().and(controller.rightBumper());
+    return new Trigger(() -> controller.leftBumper().getAsBoolean() && controller.rightBumper().getAsBoolean());
   }
 
   /** Aligns to left or right branch and shoots coral. */
   public Trigger coralAutoAlign() {
-    return controller.leftBumper().and(controller.rightBumper().negate()).or(controller.rightBumper().and(controller.leftBumper().negate()));
+    return new Trigger(() -> (controller.leftBumper().getAsBoolean() ^ controller.rightBumper().getAsBoolean()));
   }
 
   /** Whether the left branch is selected. Otherwise, right is assumed. */
