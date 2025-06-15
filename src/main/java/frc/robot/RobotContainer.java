@@ -506,6 +506,7 @@ public class RobotContainer {
         // .onFalse(coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW));
 
         controls.coralAutoAlign()
+                .and(() -> coralMode != CoralMode.L1)
                 .and(() -> canStartCoralAlign)
                 .debounce(0.05)
                 .whileTrue(
@@ -529,6 +530,20 @@ public class RobotContainer {
                                 elevator.setGoalCommand(Elevator.Goal.STOW),
                                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW)));
 
+        controls.coralAutoAlign().and(() -> coralMode == CoralMode.L1)
+            .whileTrue(
+                Commands.parallel(
+                    DriveCommands.alignToL1Reef(drive, led, this::getClosestReefFace),
+                    Commands.sequence(
+                        Commands.waitUntil(() -> drive.isWithinToleranceToPose(DriveCommands.getRobotAlignL1FacePoseFromReefFace(this::getClosestReefFace), Feet.of(0.2), Degrees.of(15))),
+                        coralIntake.setGoalAndWait(CoralIntake.Goal.L1)
+                    )
+                )
+            ).onFalse(
+                coralIntake.setGoalCommand(CoralIntake.Goal.STOW)
+            );
+
+
         controls.manualShoot().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()))
                 .whileTrue(
                         coralOuttakeRoller.setGoalEndCommand(() -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
@@ -537,7 +552,11 @@ public class RobotContainer {
         controls.intake().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
                         Commands.sequence(
-                                Commands.runOnce(() -> preL1CoralMode = coralMode),
+                                Commands.runOnce(() -> {if (coralMode == CoralMode.L1){
+                                                        coralMode = preL1CoralMode;
+                                                }
+                                                preL1CoralMode = coralMode;
+                                        }),
                                 Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
                                                 Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
                                                                   DriveCommands.alignToStation(drive, led, this::getClosestStation)),
@@ -577,7 +596,12 @@ public class RobotContainer {
                     elevator.driverOffset = elevator.driverOffset.minus(Inches.of(0.5));
                 }));
 
-        controls.handoffCoral().onTrue(handoffCommand());
+        controls.handoffCoral().onTrue(
+                Commands.sequence(
+                        Commands.runOnce(() -> coralMode = preL1CoralMode),
+                        handoffCommand()
+                )
+        );
 
         controls.eject().and(() -> isHandoffInterruptible)
                 .onTrue(
@@ -620,7 +644,6 @@ public class RobotContainer {
 
     private Command handoffCommand() {
         return Commands.sequence(
-                Commands.runOnce(() -> coralMode = preL1CoralMode),
                 Commands.parallel(
                         Commands.runOnce(() -> {
                             isHandoffInterruptible = false;
