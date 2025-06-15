@@ -577,6 +577,20 @@ public class DriveCommands {
   }
 
   /**
+   *  Returns the pose that the robot should go to for L1 given a reef face
+   */
+
+   public static Pose2d getRobotAlignL1FacePoseFromReefFace(Supplier<ReefFace> reefFace) {
+
+      Pose2d target = FieldConstants.Reef.branchPositions2d.get(reefFace.get().ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
+          .transformBy(kRobotL1Offset);
+
+      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
+
+    return allianceAppliedTarget;
+   }
+
+  /**
    * Uses default offset
    */
   public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, BooleanSupplier leftBranch) {

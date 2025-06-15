@@ -82,7 +82,6 @@ import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import frc.robot.subsystems.coral_intake.CoralIntake;
 
 public class RobotContainer {
 
@@ -500,9 +499,12 @@ public class RobotContainer {
 
         controls.coralAutoAlign().and(() -> coralMode == CoralMode.L1)
             .whileTrue(
-                Commands.sequence(
+                Commands.parallel(
                     DriveCommands.alignToL1Reef(drive, led, this::getClosestReefFace),
-                    coralIntake.setGoalAndWait(CoralIntake.Goal.L1)
+                    Commands.sequence(
+                        Commands.waitUntil(() -> drive.isWithinToleranceToPose(DriveCommands.getRobotAlignL1FacePoseFromReefFace(this::getClosestReefFace), Feet.of(0.2), Degrees.of(15))),
+                        coralIntake.setGoalAndWait(CoralIntake.Goal.L1)
+                    )
                 )
             ).onFalse(
                 coralIntake.setGoalCommand(CoralIntake.Goal.STOW)
