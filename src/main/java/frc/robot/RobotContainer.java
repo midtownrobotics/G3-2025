@@ -20,6 +20,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -77,6 +78,7 @@ import frc.robot.utils.FieldConstants;
 import frc.robot.utils.FieldConstants.Processor;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.RobotViz;
+import frc.robot.utils.StationSide;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
@@ -506,7 +508,7 @@ public class RobotContainer {
                 .whileTrue(
                         Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
                                 Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
-                                                  DriveCommands.alignToStation(drive, led)),
+                                                  DriveCommands.alignToStation(drive, led, this::getClosestStation)),
                                 controls.coralIntakeModeSupplier()))
                 .onFalse(indexCoralAndStowCommand());
 
@@ -652,6 +654,36 @@ public class RobotContainer {
         }
 
         return closestFace;
+    }
+
+    private StationSide getClosestStation() {
+        StationSide closestStation = null;
+        Distance closestDistance = Meters.of(Double.MAX_VALUE);
+
+        for (StationSide side : StationSide.values()) {
+                Pose2d stationPose;
+
+                switch (side) {
+                        case RIGHT:
+                                stationPose = new Pose2d(Meters.of(1.548), Meters.of(0.767), new Rotation2d(edu.wpi.first.math.util.Units.degreesToRadians(140)));
+                                break;
+                        case LEFT:
+                                stationPose = new Pose2d(Meters.of(1.336), Meters.of(7.116), new Rotation2d(edu.wpi.first.math.util.Units.degreesToRadians(220)));
+                                break;
+                        default:
+                                stationPose = null;
+                }
+
+                Distance distance = Meters.of(stationPose.getTranslation().getDistance(drive.getPose().getTranslation()));
+                if (distance.lt(closestDistance)) {
+                        closestDistance = distance;
+                        closestStation = side;
+                }
+        }
+
+        Logger.recordOutput("/closestStation", closestStation);
+
+        return closestStation;
     }
 
     /** used for logging */
