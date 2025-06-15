@@ -63,6 +63,7 @@ import frc.robot.utils.FieldConstants.Barge;
 import frc.robot.utils.FieldConstants.CoralStation;
 import frc.robot.utils.FieldConstants.Processor;
 import frc.robot.utils.ReefFace;
+import frc.robot.utils.StationSide;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.EnumSet;
@@ -741,10 +742,19 @@ public class DriveCommands {
   }
 
 
-  public static Command alignToStation(Drive drive, LED led) {
+  public static Command alignToStation(Drive drive, LED led, Supplier<StationSide> stationSideSupplier) {
     Supplier<Pose2d> stationPoseSupplier = () -> {
-      Pose2d nearestStationPose = new Pose2d(Meters.of(1.548), Meters.of(0.767), new Rotation2d(Units.degreesToRadians(140)));
-      return AllianceFlipUtil.apply(nearestStationPose);
+      Pose2d stationPose;
+      switch (stationSideSupplier.get()) {
+        case RIGHT:
+          stationPose = new Pose2d(Meters.of(1.548), Meters.of(0.767), new Rotation2d(Units.degreesToRadians(140)));
+          break;
+        case LEFT:
+        default:
+          stationPose = new Pose2d(Meters.of(1.336), Meters.of(7.116), new Rotation2d(Units.degreesToRadians(40)));
+          break;
+      }
+      return AllianceFlipUtil.apply(stationPose);
     };
 
     return Commands.sequence(
