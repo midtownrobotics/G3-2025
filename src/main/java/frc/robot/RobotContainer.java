@@ -82,7 +82,6 @@ import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import frc.robot.subsystems.coral_intake.CoralIntake;
 
 public class RobotContainer {
 
