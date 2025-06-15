@@ -123,6 +123,7 @@ public class RobotContainer {
 
     @AutoLogOutput
     public CoralMode coralMode = CoralMode.L4;
+    private CoralMode preL1CoralMode = coralMode;
 
     private boolean isHandoffInterruptible = true;
     private Trigger waitForHandoffTrigger = new Trigger(() -> isHandoffInterruptible);
@@ -535,16 +536,19 @@ public class RobotContainer {
 
         controls.intake().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
-                        Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
-                                Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
-                                                  DriveCommands.alignToStation(drive, led, this::getClosestStation)),
-                                controls.coralIntakeModeSupplier()))
+                        Commands.sequence(
+                                Commands.runOnce(() -> preL1CoralMode = coralMode),
+                                Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
+                                                Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
+                                                                  DriveCommands.alignToStation(drive, led, this::getClosestStation)),
+                                        controls.coralIntakeModeSupplier()))
+                        )
                 .onFalse(indexCoralAndStowCommand());
 
         controls.intakeL1().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
                         Commands.sequence(
-                                Commands.runOnce(() -> coralMode = CoralMode.L1),
+                                Commands.runOnce(() -> {preL1CoralMode = coralMode; coralMode = CoralMode.L1;}),
                                 Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
                                                 Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
                                                                   DriveCommands.alignToStation(drive, led, this::getClosestStation)),
@@ -616,6 +620,7 @@ public class RobotContainer {
 
     private Command handoffCommand() {
         return Commands.sequence(
+                Commands.runOnce(() -> coralMode = preL1CoralMode),
                 Commands.parallel(
                         Commands.runOnce(() -> {
                             isHandoffInterruptible = false;
