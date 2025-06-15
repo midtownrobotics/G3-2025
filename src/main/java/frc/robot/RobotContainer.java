@@ -123,6 +123,7 @@ public class RobotContainer {
 
     @AutoLogOutput
     public CoralMode coralMode = CoralMode.L4;
+    @AutoLogOutput
     private CoralMode preL1CoralMode = coralMode;
 
     private boolean isHandoffInterruptible = true;
@@ -567,7 +568,10 @@ public class RobotContainer {
         controls.intakeL1().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
                 .whileTrue(
                         Commands.sequence(
-                                Commands.runOnce(() -> {preL1CoralMode = coralMode; coralMode = CoralMode.L1;}),
+                                Commands.runOnce(() -> {
+                                        preL1CoralMode = (coralMode != CoralMode.L1) ? coralMode : preL1CoralMode;
+                                        coralMode = CoralMode.L1;
+                                }),
                                 Commands.either(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE),
                                                 Commands.parallel(coralIntake.setGoalCommand(CoralIntake.Goal.STATION_INTAKE),
                                                                   DriveCommands.alignToStation(drive, led, this::getClosestStation)),
