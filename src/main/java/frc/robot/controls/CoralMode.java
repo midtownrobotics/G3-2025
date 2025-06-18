@@ -4,13 +4,14 @@ public enum CoralMode {
   L1,
   L2,
   L3,
-  L4;
+  L4,
+  AUTO;
 
   /** Increments the coral level. */
   public CoralMode increment() {
     int nextOrdinal = this.ordinal() + 1;
 
-    if (nextOrdinal >= CoralMode.values().length) {
+    if (nextOrdinal >= 4) {
       nextOrdinal = this.ordinal();
     }
 
