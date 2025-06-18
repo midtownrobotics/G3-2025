@@ -64,5 +64,5 @@ public enum ReefFace {
             default: return 5;
         }
     }
-    
+
 }
