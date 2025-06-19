@@ -5,7 +5,9 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.IOProtectionXboxController;
+import frc.robot.utils.ReefFaceSide;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class SingleDriverControls {
@@ -64,8 +66,8 @@ public class SingleDriverControls {
     : 0;
   }
 
-  /** Sets coralMode to L1. */
-  public Trigger prepareScoreCoralL1() {
+  /** Sets coralMode to AUTO. */
+  public Trigger setAutoCoralMode() {
     return controller.b();
   }
 
@@ -95,8 +97,8 @@ public class SingleDriverControls {
   }
 
   /** Whether the left branch is selected. Otherwise, right is assumed. */
-  public BooleanSupplier leftBranchSelectedSupplier() {
-    return controller.leftBumper().and(controller.rightBumper().negate());
+  public Supplier<ReefFaceSide> branchSelectedSupplier() {
+    return () -> controller.leftBumper().getAsBoolean() && !controller.rightBumper().getAsBoolean() ? ReefFaceSide.LEFT : ReefFaceSide.RIGHT;
   }
 
   /** Manually shoots piece. Required for algae. */

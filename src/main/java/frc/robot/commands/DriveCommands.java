@@ -63,6 +63,7 @@ import frc.robot.utils.FieldConstants.Barge;
 import frc.robot.utils.FieldConstants.CoralStation;
 import frc.robot.utils.FieldConstants.Processor;
 import frc.robot.utils.ReefFace;
+import frc.robot.utils.ReefFaceSide;
 import frc.robot.utils.StationSide;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -517,7 +518,7 @@ public class DriveCommands {
       }
 
       Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToBranchReef");
-      return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper, waitingstate);
+      return alignToBranchReef(drive, led, reefFaceSupplier, () -> leftBumper.getAsBoolean() ? ReefFaceSide.LEFT : ReefFaceSide.RIGHT, waitingstate);
     };
     return Commands.defer(commandSupplier, Set.of());
   }
@@ -526,18 +527,17 @@ public class DriveCommands {
    * Returns a command that aligns to the specified reef face
    */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
-      BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState) {
-    return alignToBranchReef(drive, led, reefFaceSupplier, leftBranchSupplier, waitingState, Degrees.of(0.3),
+      Supplier<ReefFaceSide> branchSelectedSupplier, BooleanSupplier waitingState) {
+    return alignToBranchReef(drive, led, reefFaceSupplier, branchSelectedSupplier, waitingState, Degrees.of(0.3),
         Inches.of(0.2), true);
   }
 
   /** Creates a command that drives to a reef position based on POV */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
-      BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState, Angle angularThreshold,
+  Supplier<ReefFaceSide> branchSelectedSupplier, BooleanSupplier waitingState, Angle angularThreshold,
       Distance linearThreshold, boolean dOStopCommand) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
-      boolean leftBranch = leftBranchSupplier.getAsBoolean();
 
       if (face == null)
         return null;
@@ -549,7 +549,7 @@ public class DriveCommands {
       Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotBeforeHandoffBranchAlignOffset
           : kRobotBranchAlignOffset;
 
-      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(getRobotAlignBranchPoseFromReefFace(() -> face, () -> leftBranch, robotTransform2d));
+      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(getRobotAlignBranchPoseFromReefFace(() -> face, branchSelectedSupplier, robotTransform2d));
 
       Logger.recordOutput("PathfindToReef/ReefFace", face);
       Logger.recordOutput("PathfindToReef/TargetPose", allianceAppliedTarget);
@@ -570,8 +570,8 @@ public class DriveCommands {
   /**
    * Returns the pose that the robot should go to given a branch
    */
-  public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, BooleanSupplier leftBranch, Transform2d offset) {
-    int branchPoseIndex = reefFace.get().ordinal() * 2 + (leftBranch.getAsBoolean() ? 0 : 1);
+  public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, Supplier<ReefFaceSide> branch, Transform2d offset) {
+    int branchPoseIndex = reefFace.get().ordinal() * 2 + (branch.get().equals(ReefFaceSide.LEFT) ? 0 : 1);
 
     return FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
         .transformBy(offset);
@@ -594,8 +594,8 @@ public class DriveCommands {
   /**
    * Uses default offset
    */
-  public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, BooleanSupplier leftBranch) {
-    return getRobotAlignBranchPoseFromReefFace(reefFace, leftBranch, kRobotBranchAlignOffset);
+  public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, Supplier<ReefFaceSide> branch) {
+    return getRobotAlignBranchPoseFromReefFace(reefFace, branch, kRobotBranchAlignOffset);
   }
 
   /** Creates a command that drives to a branch */
