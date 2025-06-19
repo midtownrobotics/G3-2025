@@ -617,6 +617,11 @@ public class RobotContainer {
             teleopInit();
         }, coralOuttakePivot, coralOuttakeRoller, coralIntake, elevator));
 
+        RobotModeTriggers.teleop().and(coralIntake.centerSensorTrigger.debounce(0.15)).onTrue(
+                Commands.runOnce(() -> controls.setRumble(1))
+        ).onFalse(
+                Commands.runOnce(() -> controls.setRumble(0))
+        );
     }
 
     /** Called when the robot enters teleop */

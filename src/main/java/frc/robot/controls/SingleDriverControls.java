@@ -1,6 +1,7 @@
 package frc.robot.controls;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.IOProtectionXboxController;
@@ -146,6 +147,11 @@ public class SingleDriverControls {
   /** Reset all subsystems to STOW. */
   public Trigger reset() {
     return controller.back();
+  }
+
+  /** sets the rumble on the controller */
+  public void setRumble(double rumbliness) {
+    controller.setRumble(RumbleType.kBothRumble, rumbliness);
   }
 
 }
