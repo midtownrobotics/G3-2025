@@ -87,7 +87,7 @@ public class SingleDriverControls {
   }
 
   /** Aligns to processor or algae. */
-  public Trigger algaeAutoAlign() {
+  public Trigger algaeAndL1CenterAutoAlign() {
     return new Trigger(() -> controller.leftBumper().getAsBoolean() && controller.rightBumper().getAsBoolean());
   }
 
