@@ -122,6 +122,13 @@ public class CoralOuttakeRoller extends SubsystemBase {
     return runOnce(() -> setGoal(goal));
   }
 
+  /**
+   * Returns a command that sets the goal of the coral outtake.
+   */
+  public Command setGoalCommand(Supplier<Goal> goal) {
+    return runOnce(() -> setGoal(goal.get()));
+  }
+
   /** Returns a command that sets the goal of the coral outtake and resets the goal when it ends */
   public Command setGoalEndCommand(Goal goal, Goal endGoal) {
     return run(() -> setGoal(goal)).finallyDo(() -> setGoal(endGoal));

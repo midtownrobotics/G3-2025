@@ -40,4 +40,29 @@ public enum ReefFace {
                 return null;
         }
     }
+
+    /** Is the algae on this face high or low? */
+    public boolean isAlgaePositionHigh() {
+        switch (this) {
+            case AB:
+            case EF:
+            case IJ:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public int toIndex() {
+        switch (this) {
+            case AB: return 0;
+            case CD: return 1;
+            case EF: return 2;
+            case GH: return 3;
+            case IJ: return 4;
+            case KL: return 5;
+            default: return 5;
+        }
+    }
+
 }

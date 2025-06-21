@@ -15,6 +15,7 @@ public class CoralIntakeConstants {
 
     public static final Angle absoluteEncoderOffset = Degrees.of(200);
 
+
     public static final Angle upperSensorTriggeredAngle = Degrees.of(135);
     public static final Angle lowerSensorTriggeredAngle = Degrees.of(-14);
 

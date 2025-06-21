@@ -150,6 +150,14 @@ public class CoralOuttakePivot extends SubsystemBase {
         return run(() -> setGoal(goal)).until(this::atGoal);
     }
 
+    /**
+     * Returns a command that sets the goal of the intake and waits until it is at
+     * the goal.
+     */
+    public Command setGoalAndWait(Supplier<Goal> goal) {
+        return run(() -> setGoal(goal.get())).until(this::atGoal);
+    }
+
         /**
      * Returns a command that sets the goal of the intake and waits until it is at
      * the goal.
@@ -161,6 +169,11 @@ public class CoralOuttakePivot extends SubsystemBase {
     /** Sets the goal of the coral outtake pivot. */
     public Command setGoalCommand(Goal goal) {
         return runOnce(() -> setGoal(goal));
+    }
+
+    /** Sets the goal of the coral outtake pivot. */
+    public Command setGoalCommand(Supplier<Goal> goal) {
+        return runOnce(() -> setGoal(goal.get()));
     }
 
     /**
