@@ -11,7 +11,7 @@ public enum L1Alignment {
     LEFT(new Transform2d(
             new Translation2d(
                     Inches.of(20),
-                    Inches.of(-13.614)
+                    Inches.of(-7.614)
             ),
             Rotation2d.kCCW_90deg)),
 
@@ -25,7 +25,7 @@ public enum L1Alignment {
     RIGHT(new Transform2d(
             new Translation2d(
                     Inches.of(20),
-                    Inches.of(9.614) 
+                    Inches.of(12.614)
             ),
             Rotation2d.kCCW_90deg));
 

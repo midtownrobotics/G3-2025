@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
@@ -730,9 +731,11 @@ public class RobotContainer {
         }, coralOuttakePivot, coralOuttakeRoller, coralIntake, elevator));
 
         RobotModeTriggers.teleop().and(coralIntake.centerSensorTrigger.debounce(0.15)).onTrue(
-                Commands.runOnce(() -> controls.setRumble(1))
-        ).onFalse(
-                Commands.runOnce(() -> controls.setRumble(0))
+                Commands.sequence(
+                        Commands.runOnce(() -> controls.setRumble(1)),
+                        new WaitCommand(0.312),
+                        Commands.runOnce(() -> controls.setRumble(0))
+                )
         );
     }
 
