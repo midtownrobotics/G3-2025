@@ -62,6 +62,7 @@ import frc.robot.utils.FieldConstants;
 import frc.robot.utils.FieldConstants.Barge;
 import frc.robot.utils.FieldConstants.CoralStation;
 import frc.robot.utils.FieldConstants.Processor;
+import frc.robot.utils.L1Alignment;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.ReefFaceSide;
 import frc.robot.utils.StationSide;
@@ -379,9 +380,8 @@ public class DriveCommands {
       ),
       Rotation2d.k180deg);
 
-  // TODO idk man just ask someone
-  private static final Transform2d kRobotL1Offset = new Transform2d(
-      new Translation2d(
+  private static final Transform2d kRobotL1RightOffset = new Transform2d(
+    new Translation2d(
           Inches.of(17), // F/B
           Inches.of(-1.614)),
       Rotation2d.kCCW_90deg);
@@ -509,7 +509,7 @@ public class DriveCommands {
 
       if (coralModeSupplier.get() == CoralMode.L1) {
         Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToL1Reef");
-        return alignToL1Reef(drive, led, reefFaceSupplier);
+        return alignToL1Reef(drive, led, reefFaceSupplier, () -> L1Alignment.CENTER);
       }
 
       if (pivot.getCurrentGoal() == CoralOuttakePivot.Goal.DEALGIFY) {
@@ -581,10 +581,10 @@ public class DriveCommands {
    *  Returns the pose that the robot should go to for L1 given a reef face
    */
 
-   public static Pose2d getRobotAlignL1FacePoseFromReefFace(Supplier<ReefFace> reefFace) {
+   public static Pose2d getRobotAlignL1FacePoseFromReefFace(Supplier<ReefFace> reefFace, Supplier<L1Alignment> L1Alignment) {
 
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(reefFace.get().ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
-          .transformBy(kRobotL1Offset);
+          .transformBy(L1Alignment.get().getTransform());
 
       Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
 
@@ -716,28 +716,9 @@ public class DriveCommands {
    * face.
    */
 
-  public static Command alignToL1Reef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier) {
-    Supplier<Pose2d> branchPoseSupplier = () -> {
-      ReefFace face = reefFaceSupplier.get();
-
-      if (face == null) {
-        return null;
-      }
-
-      // TODO Might have to be 90 CCW?
-      Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
-          .transformBy(kRobotL1Offset);
-
-      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
-
-      Logger.recordOutput("PathfindToReefALGAE/ReefFace", face);
-      Logger.recordOutput("PathfindToReefALGAE/TargetPose", allianceAppliedTarget);
-
-      return allianceAppliedTarget;
-    };
-
+  public static Command alignToL1Reef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier, Supplier<L1Alignment> L1alignment) {
     return Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier),
+        new DriveToPoint(drive, () -> getRobotAlignL1FacePoseFromReefFace(reefFaceSupplier, L1alignment)),
         drive.stopCommand());
   }
 

@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.AllianceFlipUtil;
@@ -76,7 +77,9 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
 import frc.robot.utils.FieldConstants;
+import frc.robot.utils.L1Alignment;
 import frc.robot.utils.ReefFace;
+import frc.robot.utils.ReefFaceSide;
 import frc.robot.utils.ReefScoreHeight;
 import frc.robot.utils.RobotViz;
 import frc.robot.utils.StationSide;
@@ -469,7 +472,8 @@ public class RobotContainer {
         controls.prepareScoreCoralL3().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L3));
         controls.prepareScoreCoralL4().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L4));
 
-        controls.algaeAutoAlign()
+        controls.algaeAndL1CenterAutoAlign()
+                .and(() -> coralMode != CoralMode.L1)
                 .debounce(0.05)
                 .whileTrue(Commands.parallel(
                         elevator.setGoalCommand(
@@ -617,17 +621,18 @@ public class RobotContainer {
                                         CoralOuttakeRoller.Goal.STOW)));
 
         controls.coralAutoAlign()
+                .or(controls.algaeAndL1CenterAutoAlign())
                 .and(() -> coralMode == CoralMode.L1)
                 .and(() -> canStartCoralAlign)
                 .whileTrue(
                         Commands.parallel(
                                 DriveCommands.alignToL1Reef(drive, led,
-                                        this::getClosestReefFace),
+                                        this::getClosestReefFace, this::getIndicatedL1Alignment),
                                 Commands.sequence(
                                         Commands.waitUntil(
                                                 () -> drive.isWithinToleranceToPose(
                                                         DriveCommands.getRobotAlignL1FacePoseFromReefFace(
-                                                                this::getClosestReefFace),
+                                                                this::getClosestReefFace, this::getIndicatedL1Alignment),
                                                         Feet.of(0.2),
                                                         Degrees.of(15))),
                                         coralIntake.setGoalAndWait(
@@ -635,13 +640,13 @@ public class RobotContainer {
                 .onFalse(
                         coralIntake.setGoalCommand(CoralIntake.Goal.STOW));
 
-        controls.manualShoot().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()))
+        controls.manualShoot().and(controls.coralAutoAlign().or(controls.algaeAndL1CenterAutoAlign()))
                 .whileTrue(
                         coralOuttakeRoller.setGoalEndCommand(
                                 () -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
                                 CoralOuttakeRoller.Goal.STOW));
 
-        controls.intake().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
+        controls.intake().and(controls.coralAutoAlign().or(controls.algaeAndL1CenterAutoAlign()).negate())
                 .whileTrue(
                         Commands.sequence(
                                 Commands.runOnce(() -> {
@@ -661,7 +666,7 @@ public class RobotContainer {
                                         controls.coralIntakeModeSupplier())))
                 .onFalse(indexCoralAndStowCommand());
 
-        controls.intakeL1().and(controls.coralAutoAlign().or(controls.algaeAutoAlign()).negate())
+        controls.intakeL1().and(controls.coralAutoAlign().or(controls.algaeAndL1CenterAutoAlign()).negate())
                 .whileTrue(
                         Commands.sequence(
                                 Commands.runOnce(() -> {
@@ -726,9 +731,11 @@ public class RobotContainer {
         }, coralOuttakePivot, coralOuttakeRoller, coralIntake, elevator));
 
         RobotModeTriggers.teleop().and(coralIntake.centerSensorTrigger.debounce(0.15)).onTrue(
-                Commands.runOnce(() -> controls.setRumble(1))
-        ).onFalse(
-                Commands.runOnce(() -> controls.setRumble(0))
+                Commands.sequence(
+                        Commands.runOnce(() -> controls.setRumble(1)),
+                        new WaitCommand(0.312),
+                        Commands.runOnce(() -> controls.setRumble(0))
+                )
         );
     }
 
@@ -865,6 +872,14 @@ public class RobotContainer {
         Logger.recordOutput("/closestStation", closestStation);
 
         return closestStation;
+    }
+
+    @AutoLogOutput
+    private L1Alignment getIndicatedL1Alignment() {
+        if (controls.algaeAndL1CenterAutoAlign().getAsBoolean()) { return L1Alignment.CENTER; }
+        if (controls.branchSelectedSupplier().get() == ReefFaceSide.LEFT) { return L1Alignment.LEFT; }
+        if (controls.branchSelectedSupplier().get() == ReefFaceSide.RIGHT ) { return L1Alignment.RIGHT; }
+        return L1Alignment.CENTER;
     }
 
     /** used for logging */
