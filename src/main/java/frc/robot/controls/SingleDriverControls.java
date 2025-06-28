@@ -66,31 +66,37 @@ public class SingleDriverControls {
     : 0;
   }
 
+  @AutoLogOutput
   /** Sets coralMode to AUTO. */
   public Trigger setAutoCoralMode() {
     return controller.b();
   }
 
+  @AutoLogOutput
   /** Sets coralMode to L2. */
   public Trigger prepareScoreCoralL2() {
     return controller.a();
   }
 
+  @AutoLogOutput
   /** Sets coralMode to L3. */
   public Trigger prepareScoreCoralL3() {
     return controller.x();
   }
 
+  @AutoLogOutput
   /** Sets coralMode to L4. */
   public Trigger prepareScoreCoralL4() {
     return controller.y();
   }
 
+  @AutoLogOutput
   /** Aligns to processor or algae. */
   public Trigger algaeAndL1CenterAutoAlign() {
     return new Trigger(() -> controller.leftBumper().getAsBoolean() && controller.rightBumper().getAsBoolean());
   }
 
+  @AutoLogOutput
   /** Aligns to left or right branch and shoots coral. */
   public Trigger coralAutoAlign() {
     return new Trigger(() -> (controller.leftBumper().getAsBoolean() ^ controller.rightBumper().getAsBoolean()));
@@ -101,31 +107,37 @@ public class SingleDriverControls {
     return () -> controller.leftBumper().getAsBoolean() && !controller.rightBumper().getAsBoolean() ? ReefFaceSide.LEFT : ReefFaceSide.RIGHT;
   }
 
+  @AutoLogOutput
   /** Manually shoots piece. Required for algae. */
   public Trigger manualShoot() {
     return controller.rightTrigger().and(controller.leftTrigger().negate());
   }
 
+  @AutoLogOutput
   /** Intakes coral from the source or the ground and puts coralMode to L1. */
   public Trigger intakeL1() {
     return controller.leftTrigger().and(controller.rightTrigger().negate());
   }
 
+  @AutoLogOutput
   /** Intakes coral from the source or the ground and puts coralMode. */
   public Trigger intake() {
     return controller.rightTrigger().and(controller.leftTrigger().negate());
   }
 
+  @AutoLogOutput
   /** Climbs!! */
   public Trigger climb() {
     return controller.rightTrigger().and(controller.leftTrigger());
   }
 
+  @AutoLogOutput
   /** Increases elevator offset. */
   public Trigger increaseElevatorOffset() {
     return controller.povUp();
   }
 
+  @AutoLogOutput
   /** Decreases elevator offset. */
   public Trigger decreaseElevatorOffset() {
     return controller.povDown();
@@ -136,16 +148,19 @@ public class SingleDriverControls {
     return () -> groundIntakeMode;
   }
 
+  @AutoLogOutput
   /** Manual handoff coral. */
   public Trigger handoffCoral() {
     return controller.povRight();
   }
 
+  @AutoLogOutput
   /** Eject coral or algae from the outtake */
   public Trigger eject() {
     return controller.povLeft();
   }
 
+  @AutoLogOutput
   /** Reset all subsystems to STOW. */
   public Trigger reset() {
     return controller.back();
