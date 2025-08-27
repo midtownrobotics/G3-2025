@@ -2,6 +2,7 @@ package frc.robot.subsystems.coral_intake;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Time;
@@ -13,7 +14,7 @@ public class CoralIntakeConstants {
     public static final Angle coralIntakeMaxAngle = Degrees.of(135);
     public static final Angle coralIntakeMinAngle = Degrees.of(-14);
 
-    public static final Angle absoluteEncoderOffset = Degrees.of(200);
+    public static final Angle absoluteEncoderOffset = Radians.of(-0.240);
 
     public static final Angle upperSensorTriggeredAngle = Degrees.of(135);
     public static final Angle lowerSensorTriggeredAngle = Degrees.of(-14);
