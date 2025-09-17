@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.DriveToPoint;
+import frc.lib.DriveToX;
 import frc.lib.LimelightHelpers;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularVelocity;
@@ -805,5 +806,25 @@ public class DriveCommands {
     }
 
     return targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle().plus(offset);
+  }
+
+  public static Command alignToBarge(Drive drive, Supplier<Double> joySupplierY, Command afterInitialAlignment) {
+    Distance x = Meters.of(7.7);
+
+    Supplier<Pose2d> bargePoseSupplier = () -> AllianceFlipUtil.apply(
+      new Pose2d(
+        x,
+        Meters.of(6.2),
+        new Rotation2d()
+      )
+    );
+
+    return Commands.sequence(
+      new DriveToPoint(drive, bargePoseSupplier, Degrees.of(0.5), Inches.of(0.2)),
+      Commands.parallel(
+        new DriveToX(drive, () -> x, joySupplierY, () -> Degrees.of(0), Degrees.of(0.5), Inches.of(0.2)),
+        afterInitialAlignment
+      )
+    );
   }
 }
