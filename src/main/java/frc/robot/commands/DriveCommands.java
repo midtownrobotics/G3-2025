@@ -827,4 +827,16 @@ public class DriveCommands {
       )
     );
   }
+
+  public static Command alignToProcessor(Drive drive) {
+    return new DriveToPoint(drive, () -> Processor.centerFace.transformBy(
+      new Transform2d(
+        new Translation2d(
+            Inches.of(19.5), // F/B
+            Inches.of(-1.614 - 6.5) // L/R
+        ),
+        Rotation2d.k180deg)
+      )
+    );
+  }
 }

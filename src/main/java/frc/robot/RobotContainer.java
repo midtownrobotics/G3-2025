@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.DriveToPoint;
 import frc.lib.DriveToX;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOKraken;
@@ -77,6 +78,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.AlgaeAction;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
+import frc.robot.utils.FieldConstants.Processor;
 import frc.robot.utils.L1Alignment;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.ReefFaceSide;
@@ -537,6 +539,22 @@ public class RobotContainer {
                         )
                 );
 
+        controls.algaeAndL1CenterAutoAlign()
+                .and(() -> AlgaeAction.PROCESSOR.shouldDo(drive, coralOuttakeRoller, () -> coralMode))
+                .debounce(0.05)
+                .whileTrue(Commands.sequence(
+                        Commands.parallel(
+                                DriveCommands.alignToProcessor(drive),
+                                elevator.setGoalAndWait(Elevator.Goal.PROCESSOR)
+                        ),
+                        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.PROCESSOR_SCORE),
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT)
+                ))
+                .onFalse(Commands.parallel(
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW),
+                        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW)
+                ));
+
         controls.coralAutoAlign()
                 .and(() -> coralMode != CoralMode.L1)
                 .and(() -> canStartCoralAlign)
@@ -629,6 +647,7 @@ public class RobotContainer {
         controls.coralAutoAlign()
                 .or(controls.algaeAndL1CenterAutoAlign())
                 .and(() -> coralMode == CoralMode.L1)
+                .and(() -> AlgaeAction.NONE.shouldDo(drive, coralOuttakeRoller, () -> coralMode))
                 .and(() -> canStartCoralAlign)
                 .whileTrue(
                         Commands.parallel(

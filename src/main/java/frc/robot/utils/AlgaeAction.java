@@ -15,6 +15,13 @@ public enum AlgaeAction {
     PROCESSOR,
     NONE;
 
+    /**
+     * Based on physical context, should this {@link AlgaeAction} be done?
+     * @param drive
+     * @param coralOuttakeRoller
+     * @param coralModeSupplier
+     * @return `true` or `false`
+     */
     public boolean shouldDo(Drive drive, CoralOuttakeRoller coralOuttakeRoller, Supplier<CoralMode> coralModeSupplier) {
         return shouldDo(this, drive, coralOuttakeRoller, coralModeSupplier);
     }
