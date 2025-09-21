@@ -174,7 +174,7 @@ public class DriveToX extends Command {
   @Override
   public boolean isFinished() {
     boolean finished = (
-      m_targetPose.get().getMeasureX().minus(m_drive.getPose().getMeasureX()).abs(Meters) <= linearThreshold.in(Meters) && 
+      m_targetPose.get().getMeasureX().minus(m_drive.getPose().getMeasureX()).abs(Meters) <= linearThreshold.in(Meters) &&
       m_headingController.atGoal()
     );
     Logger.recordOutput("DriveToX/AtGoal", finished);

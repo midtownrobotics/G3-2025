@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.DriveToPoint;
 import frc.lib.DriveToX;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOKraken;
@@ -78,7 +77,6 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.utils.AlgaeAction;
 import frc.robot.utils.CANBusStatusSignalRegistration;
 import frc.robot.utils.Constants;
-import frc.robot.utils.FieldConstants.Processor;
 import frc.robot.utils.L1Alignment;
 import frc.robot.utils.ReefFace;
 import frc.robot.utils.ReefFaceSide;
@@ -477,7 +475,7 @@ public class RobotContainer {
         controls.algaeAndL1CenterAutoAlign()
                 .and(() -> AlgaeAction.REEF.shouldDo(drive, coralOuttakeRoller, () -> coralMode))
                 .debounce(0.05)
-                .whileTrue(Commands.parallel(
+                .onTrue(Commands.parallel(
                         elevator.setGoalCommand(
                                 () -> ReefFace.getClosestReefFace(drive).isAlgaePositionHigh()
                                         ? Elevator.Goal.DEALGIFY_HIGH
@@ -520,7 +518,7 @@ public class RobotContainer {
         controls.algaeAndL1CenterAutoAlign()
                 .and(() -> AlgaeAction.BARGE.shouldDo(drive, coralOuttakeRoller, () -> coralMode))
                 .debounce(0.05)
-                .whileTrue(
+                .onTrue(
                         DriveCommands.alignToBarge(drive, controls::getDriveLeft,
                                 elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2))
                         )
