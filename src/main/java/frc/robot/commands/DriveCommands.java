@@ -116,6 +116,7 @@ public class DriveCommands {
       DoubleSupplier speedMultiplier) {
     return Commands.run(
         () -> {
+          Logger.recordOutput("JoyStickDriveLastSeen", Logger.getTimestamp());
           // Get linear velocity
           Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
               ySupplier.getAsDouble());
@@ -402,7 +403,7 @@ public class DriveCommands {
 
   public static final Transform2d kRobotAlgaeAlignFurtherOffset = new Transform2d(
       new Translation2d(
-          Inches.of(35), // F/B
+          Inches.of(38), // F/B
           Inches.of(-1.614 - 6.5) // L/R
       ),
       Rotation2d.k180deg);
@@ -809,34 +810,39 @@ public class DriveCommands {
   }
 
   public static Command alignToBarge(Drive drive, Supplier<Double> joySupplierY, Command afterInitialAlignment) {
-    Distance x = Meters.of(7.7);
+    Distance x = Meters.of(6.7);
 
     Supplier<Pose2d> bargePoseSupplier = () -> AllianceFlipUtil.apply(
       new Pose2d(
         x,
-        Meters.of(6.2),
+        Meters.of(5.5),
         new Rotation2d()
       )
     );
 
     return Commands.sequence(
-      new DriveToPoint(drive, bargePoseSupplier, Degrees.of(0.5), Inches.of(0.2)),
+      new DriveToPoint(drive, bargePoseSupplier, Degrees.of(5), Inches.of(2)),
       Commands.parallel(
-        new DriveToX(drive, () -> x, joySupplierY, () -> Degrees.of(0), Degrees.of(0.5), Inches.of(0.2)),
+        new DriveToX(drive, () -> x, joySupplierY, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)),
         afterInitialAlignment
       )
     );
   }
 
   public static Command alignToProcessor(Drive drive) {
-    return new DriveToPoint(drive, () -> Processor.centerFace.transformBy(
-      new Transform2d(
-        new Translation2d(
-            Inches.of(19.5), // F/B
-            Inches.of(-1.614 - 6.5) // L/R
-        ),
-        Rotation2d.k180deg)
-      )
+    Pose2d pose = AllianceFlipUtil.apply(new Pose2d(
+      new Translation2d(
+          Meters.of(5.93), // F/B
+          Meters.of(0.67) // L/R
+      ),
+      Rotation2d.k180deg
+    ));
+
+    Logger.recordOutput("GrayTesting/ProcPose", pose);
+
+    return new DriveToPoint(drive, () -> pose,
+      Degrees.of(2),
+      Inches.of(2)
     );
   }
 }

@@ -26,6 +26,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -473,80 +474,97 @@ public class RobotContainer {
         controls.prepareScoreCoralL4().onTrue(Commands.runOnce(() -> coralMode = CoralMode.L4));
 
         controls.algaeAndL1CenterAutoAlign()
-                .and(() -> AlgaeAction.REEF.shouldDo(drive, coralOuttakeRoller, () -> coralMode))
+                .and(() -> AlgaeAction.REEF.shouldDo(drive, () -> coralMode))
                 .debounce(0.05)
-                .onTrue(Commands.parallel(
-                        elevator.setGoalCommand(
-                                () -> ReefFace.getClosestReefFace(drive).isAlgaePositionHigh()
-                                        ? Elevator.Goal.DEALGIFY_HIGH
-                                        : Elevator.Goal.DEALGIFY_LOW),
-                        Commands.sequence(
+                .onTrue(Commands.sequence(
+                        Commands.parallel(
+                                elevator.setGoalCommand(
+                                        () -> ReefFace.getClosestReefFace(drive).isAlgaePositionHigh()
+                                                ? Elevator.Goal.DEALGIFY_HIGH
+                                                : Elevator.Goal.DEALGIFY_LOW),
+                                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
+                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY),
                                 DriveCommands.alignToAlgaeReef(drive, led,
-                                        () -> ReefFace.getClosestReefFace(drive), () -> false)
-                                        .until(coralOuttakeRoller.currentSpikeTrigger),
-                                DriveCommands.alignToAlgaeReef(drive, led,
-                                        () -> ReefFace.getClosestReefFace(drive),
-                                        () -> true)),
-                        Commands.sequence(
-                                Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
-                                coralOuttakePivot.setGoalAndWait(
-                                        CoralOuttakePivot.Goal.DEALGIFY),
-                                coralOuttakeRoller.setGoalCommand(
-                                        CoralOuttakeRoller.Goal.DEALGIFY),
-                                Commands.waitSeconds(0.2),
-                                Commands.waitUntil(
-                                        coralOuttakeRoller.currentSpikeTrigger).withTimeout(0.5),
-                                coralOuttakeRoller.setGoalCommand(
-                                        CoralOuttakeRoller.Goal.ALGAE_HOLD)))
-                        .finallyDo(() -> {
-                            coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.DEALGIFY_STOW);
-                        }))
-                .onFalse(
+                                () -> ReefFace.getClosestReefFace(drive),
+                                () -> true)
+                        ),
+                        Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
+                        DriveCommands.alignToAlgaeReef(drive, led,
+                                () -> ReefFace.getClosestReefFace(drive),
+                                () -> false).withInterruptBehavior(InterruptionBehavior.kCancelSelf),
+                        Commands.waitSeconds(2).until(coralOuttakeRoller.currentSpikeTrigger),
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_HOLD),
+                        DriveCommands.alignToAlgaeReef(drive, led,
+                                () -> ReefFace.getClosestReefFace(drive),
+                                () -> true)
+                ).finallyDo(() -> {
+                        coralOuttakeRoller.setGoal(CoralOuttakeRoller.Goal.ALGAE_HOLD);
+                        coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.DEALGIFY_STOW);
+                        elevator.setGoal(Elevator.Goal.DEALGIFY_LOW);
+                }))
+                .onFalse(Commands.sequence(
+                        DriveCommands.alignToAlgaeReef(drive, led,
+                                () -> ReefFace.getClosestReefFace(drive),
+                                () -> true),
+                        AlgaeAction.setHasAlgae(true),
                         Commands.parallel(
                                 coralOuttakePivot.setGoalCommand(
                                         CoralOuttakePivot.Goal.DEALGIFY_STOW),
-                                elevator.setGoalCommand(Elevator.Goal.STOW),
-                                coralOuttakeRoller.setGoalCommand(
-                                        CoralOuttakeRoller.Goal.ALGAE_HOLD),
+                                // coralOuttakeRoller.setGoalCommand(
+                                //         CoralOuttakeRoller.Goal.ALGAE_HOLD),
                                 Commands.sequence(
                                         Commands.runOnce(
                                                 () -> canStartCoralAlign = false),
                                         Commands.waitTime(Milliseconds.of(500)),
                                         Commands.runOnce(
-                                                () -> canStartCoralAlign = true))));
+                                                () -> canStartCoralAlign = true)))));
 
-        controls.algaeAndL1CenterAutoAlign()
-                .and(() -> AlgaeAction.BARGE.shouldDo(drive, coralOuttakeRoller, () -> coralMode))
+        controls.bargeInitialAlign()
+                .and(() -> AlgaeAction.BARGE.shouldDo(drive, () -> coralMode))
                 .debounce(0.05)
-                .onTrue(
+                .whileTrue(
                         DriveCommands.alignToBarge(drive, controls::getDriveLeft,
-                                elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2))
-                        )
-                )
-                .onFalse(
-                        Commands.sequence(
-                                new DriveToX(drive, () -> Meters.of(8), () -> 0.0, () -> Degrees.of(0), Degrees.of(0.5), Inches.of(0.2)),
-                                elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2)),
-                                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.BARGE),
-                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
-                                Commands.waitSeconds(2),
-                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW),
-                                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
-                                new DriveToX(drive, () -> Meters.of(7.7), () -> 0.0, () -> Degrees.of(0), Degrees.of(0.5), Inches.of(0.2)),
-                                elevator.setGoalCommand(Elevator.Goal.STOW)
+                                Commands.sequence(
+                                        elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2)),
+                                        coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)
+                                )
                         )
                 );
 
         controls.algaeAndL1CenterAutoAlign()
-                .and(() -> AlgaeAction.PROCESSOR.shouldDo(drive, coralOuttakeRoller, () -> coralMode))
+                .and(() -> AlgaeAction.BARGE.shouldDo(drive, () -> coralMode))
+                .debounce(0.05)
+                .whileTrue(
+                        Commands.sequence(
+                                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.BARGE),
+                                new DriveToX(drive, () -> Meters.of(8.05), () -> 0.0, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)),
+                                new InstantCommand(() -> drive.stop(), drive),
+                                elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2)),
+                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
+                                Commands.waitSeconds(2)
+                        )
+                )
+                .onFalse(
+                        Commands.sequence(
+                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW),
+                                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
+                                new DriveToX(drive, () -> Meters.of(7), () -> 0.0, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming),
+                                elevator.setGoalCommand(Elevator.Goal.STOW),
+                                AlgaeAction.setHasAlgae(false)
+                        )
+                );
+
+        controls.algaeAndL1CenterAutoAlign()
+                .and(() -> AlgaeAction.PROCESSOR.shouldDo(drive, () -> coralMode))
                 .debounce(0.05)
                 .whileTrue(Commands.sequence(
                         Commands.parallel(
                                 DriveCommands.alignToProcessor(drive),
-                                elevator.setGoalAndWait(Elevator.Goal.PROCESSOR)
+                                elevator.setGoalAndWait(Elevator.Goal.PROCESSOR),
+                                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.PROCESSOR_SCORE)
                         ),
-                        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.PROCESSOR_SCORE),
-                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT)
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
+                        AlgaeAction.setHasAlgae(false)
                 ))
                 .onFalse(Commands.parallel(
                         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW),
@@ -555,6 +573,7 @@ public class RobotContainer {
 
         controls.coralAutoAlign()
                 .and(() -> coralMode != CoralMode.L1)
+                .and(() -> AlgaeAction.NONE.shouldDo(drive, () -> coralMode))
                 .and(() -> canStartCoralAlign)
                 .debounce(0.05)
                 .whileTrue(
@@ -645,7 +664,7 @@ public class RobotContainer {
         controls.coralAutoAlign()
                 .or(controls.algaeAndL1CenterAutoAlign())
                 .and(() -> coralMode == CoralMode.L1)
-                .and(() -> AlgaeAction.NONE.shouldDo(drive, coralOuttakeRoller, () -> coralMode))
+                .and(() -> AlgaeAction.NONE.shouldDo(drive, () -> coralMode))
                 .and(() -> canStartCoralAlign)
                 .whileTrue(
                         Commands.parallel(
@@ -741,6 +760,7 @@ public class RobotContainer {
                         handoffCommand()));
 
         controls.eject().and(() -> isHandoffInterruptible)
+                .and(() -> !AlgaeAction.hasAlgae)
                 .onTrue(
                         Commands.parallel(
                                 coralIntake.setGoalEndCommand(
@@ -748,6 +768,17 @@ public class RobotContainer {
                                         CoralIntake.Goal.STOW),
                                 coralOuttakeRoller.setGoalCommand(
                                         CoralOuttakeRoller.Goal.SHOOT_L4)));
+
+        controls.eject()
+                .and(() -> AlgaeAction.hasAlgae)
+                .onTrue(
+                        Commands.parallel(
+                                coralIntake.setGoalEndCommand(
+                                        CoralIntake.Goal.STATION_VOMIT,
+                                        CoralIntake.Goal.STOW),
+                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
+                                AlgaeAction.setHasAlgae(false)
+                        ));
 
         controls.reset().whileTrue(new InstantCommand(() -> {
             teleopInit();
@@ -766,7 +797,7 @@ public class RobotContainer {
     public void teleopInit() {
         elevator.setGoal(Elevator.Goal.STOW);
         coralIntake.setGoal(CoralIntake.Goal.STOW);
-        coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.STOW);
+        coralOuttakePivot.setGoal(AlgaeAction.hasAlgae ? CoralOuttakePivot.Goal.DEALGIFY_STOW : CoralOuttakePivot.Goal.STOW);
         coralOuttakeRoller.setGoal(CoralOuttakeRoller.Goal.STOW);
     }
 
@@ -892,6 +923,6 @@ public class RobotContainer {
                 coralIntake.getZeroSensorDebounced(true) && elevator.getZeroSensorDebounced());
 
         Logger.recordOutput("CoralTracker/ScoredCorals", Arrays.deepToString(coralTracker.scoredCorals));
-        Logger.recordOutput("GrayTesting/AlgaeAction", AlgaeAction.getBestContexually(drive, coralOuttakeRoller, () -> coralMode));
+        Logger.recordOutput("GrayTesting/AlgaeAction", AlgaeAction.getBestContexually(drive, () -> coralMode));
     }
 }

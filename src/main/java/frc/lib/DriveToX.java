@@ -72,7 +72,6 @@ public class DriveToX extends Command {
     m_headingController.getController().enableContinuousInput(-Math.PI, Math.PI);
     m_headingController.getController().setTolerance(angularThreshold.in(Radians));
 
-    Logger.recordOutput("DriveToX/TargetPose", m_targetPose.get());
   }
 
   @Override
@@ -169,6 +168,9 @@ public class DriveToX extends Command {
 
     Logger.recordOutput("DriveToX/DriveSpeeds", targetChassisSpeeds);
     Logger.recordOutput("DriveToX/LastCylce", Logger.getTimestamp());
+
+    Logger.recordOutput("DriveToX/TargetPose", m_targetPose.get());
+
   }
 
   @Override
@@ -177,6 +179,7 @@ public class DriveToX extends Command {
       m_targetPose.get().getMeasureX().minus(m_drive.getPose().getMeasureX()).abs(Meters) <= linearThreshold.in(Meters) &&
       m_headingController.atGoal()
     );
+    Logger.recordOutput("DriveToX/Distance", m_targetPose.get().getMeasureX().minus(m_drive.getPose().getMeasureX()).abs(Meters));
     Logger.recordOutput("DriveToX/AtGoal", finished);
     return finished;
   }

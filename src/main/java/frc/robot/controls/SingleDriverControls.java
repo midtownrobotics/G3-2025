@@ -97,6 +97,12 @@ public class SingleDriverControls {
   }
 
   @AutoLogOutput
+  /** */
+  public Trigger bargeInitialAlign() {
+    return new Trigger(() -> controller.leftBumper().getAsBoolean() && !controller.rightBumper().getAsBoolean());
+  }
+
+  @AutoLogOutput
   /** Aligns to left or right branch and shoots coral. */
   public Trigger coralAutoAlign() {
     return new Trigger(() -> (controller.leftBumper().getAsBoolean() ^ controller.rightBumper().getAsBoolean()));

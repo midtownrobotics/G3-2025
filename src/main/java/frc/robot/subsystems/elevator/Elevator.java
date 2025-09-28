@@ -48,7 +48,7 @@ public class Elevator extends SubsystemBase {
     PROCESSOR(Inches.zero()),
     DEALGIFY_LOW(Inches.of(14.5)),
     DEALGIFY_HIGH(Inches.of(30)),
-    BARGE(Inches.of(68)),
+    BARGE(Inches.of(69)),
     CLIMB(Inches.of(16)),
     CLIMB_BOTTOM(Feet.zero(), false),
     CLIMB_BOTTOM_LOCK(CLIMB_BOTTOM.getHeight(), true),
