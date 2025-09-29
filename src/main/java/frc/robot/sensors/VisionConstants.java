@@ -35,7 +35,7 @@ public class VisionConstants {
 
       public static final Transform3d kModuleTagRobotToCamera = new Transform3d(
         new Translation3d(Inches.of(9.551), Inches.of(11.970), Inches.of(7.981)),
-        new Rotation3d(Degrees.zero(), Degrees.of(-15), Degrees.of(35))
+        new Rotation3d(Degrees.of(180), Degrees.of(-15), Degrees.of(-35))
     );
 
       public static final Transform3d kElevatorTagRobotToCamera = new Transform3d(

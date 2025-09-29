@@ -559,21 +559,26 @@ public class RobotContainer {
                 .debounce(0.05)
                 .whileTrue(Commands.sequence(
                         Commands.parallel(
-                                DriveCommands.alignToProcessor(drive),
+                                DriveCommands.alignToProcessor(drive, true),
                                 elevator.setGoalAndWait(Elevator.Goal.PROCESSOR),
                                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.PROCESSOR_SCORE)
                         ),
-                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
-                        AlgaeAction.setHasAlgae(false)
+                        Commands.parallel(
+                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
+                                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW)
+                        ),
+                        DriveCommands.alignToProcessor(drive, false)
                 ))
                 .onFalse(Commands.parallel(
                         coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW),
-                        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW)
+                        // DriveCommands.alignToProcessor(drive, true),
+                        coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
+                        AlgaeAction.setHasAlgae(false)
                 ));
 
         controls.coralAutoAlign()
                 .and(() -> coralMode != CoralMode.L1)
-                .and(() -> AlgaeAction.NONE.shouldDo(drive, () -> coralMode))
+                .and(() -> !AlgaeAction.BARGE.shouldDo(drive, () -> coralMode))
                 .and(() -> canStartCoralAlign)
                 .debounce(0.05)
                 .whileTrue(
@@ -763,11 +768,17 @@ public class RobotContainer {
                 .and(() -> !AlgaeAction.hasAlgae)
                 .onTrue(
                         Commands.parallel(
-                                coralIntake.setGoalEndCommand(
-                                        CoralIntake.Goal.STATION_VOMIT,
+                                coralIntake.setGoalCommand(
+                                        CoralIntake.Goal.STATION_VOMIT),
+                                coralOuttakeRoller.setGoalCommand(
+                                        CoralOuttakeRoller.Goal.SHOOT_L4)))
+                .onFalse(
+                        Commands.parallel(
+                                coralIntake.setGoalCommand(
                                         CoralIntake.Goal.STOW),
                                 coralOuttakeRoller.setGoalCommand(
-                                        CoralOuttakeRoller.Goal.SHOOT_L4)));
+                                        CoralOuttakeRoller.Goal.STOW))
+                );
 
         controls.eject()
                 .and(() -> AlgaeAction.hasAlgae)
@@ -776,9 +787,11 @@ public class RobotContainer {
                                 coralIntake.setGoalEndCommand(
                                         CoralIntake.Goal.STATION_VOMIT,
                                         CoralIntake.Goal.STOW),
-                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
-                                AlgaeAction.setHasAlgae(false)
-                        ));
+                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT)
+                        ))
+                .onFalse(
+                        AlgaeAction.setHasAlgae(false)
+                );
 
         controls.reset().whileTrue(new InstantCommand(() -> {
             teleopInit();

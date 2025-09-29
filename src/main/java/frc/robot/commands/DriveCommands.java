@@ -829,19 +829,19 @@ public class DriveCommands {
     );
   }
 
-  public static Command alignToProcessor(Drive drive) {
+  public static Command alignToProcessor(Drive drive, boolean waiting) {
     Pose2d pose = AllianceFlipUtil.apply(new Pose2d(
       new Translation2d(
-          Meters.of(5.93), // F/B
-          Meters.of(0.67) // L/R
+          Meters.of(6).plus(Inches.of(12)), // F/B
+          waiting ? Meters.of(0.7).minus(Inches.of(6)) : Meters.of(0.7) // L/R
       ),
-      Rotation2d.k180deg
+      Rotation2d.kCW_90deg
     ));
 
     Logger.recordOutput("GrayTesting/ProcPose", pose);
 
     return new DriveToPoint(drive, () -> pose,
-      Degrees.of(2),
+      Degrees.of(3),
       Inches.of(2)
     );
   }

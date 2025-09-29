@@ -88,12 +88,10 @@ public class Superstructure extends SubsystemBase {
 
       if (AlgaeAction.hasAlgae) {
         if (!(elevator.atGoal() && elevator.getCurrentGoal() == Elevator.Goal.BARGE)) {
-          coralOuttakeConstraints.setUpper(Degrees.of(-42).plus(Degrees.of(5)));
+          coralOuttakeConstraints.setUpper(Degrees.of(-35));
         } else {
           coralOuttakeConstraints.setUpper(Degrees.of(5));
         }
-
-
       }
     }
 
