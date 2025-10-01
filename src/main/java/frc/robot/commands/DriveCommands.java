@@ -832,8 +832,8 @@ public class DriveCommands {
   public static Command alignToProcessor(Drive drive, boolean waiting) {
     Pose2d pose = AllianceFlipUtil.apply(new Pose2d(
       new Translation2d(
-          Meters.of(6).plus(Inches.of(12)), // F/B
-          waiting ? Meters.of(0.7).minus(Inches.of(6)) : Meters.of(0.7) // L/R
+          Meters.of(6),//.plus(Inches.of(12)), // F/B
+          waiting ? Meters.of(0.7).minus(Inches.of(6)) : Meters.of(0.7).minus(Inches.of(12)) // L/R
       ),
       Rotation2d.kCW_90deg
     ));

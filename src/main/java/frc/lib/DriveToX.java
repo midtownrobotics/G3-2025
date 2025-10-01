@@ -60,6 +60,10 @@ public class DriveToX extends Command {
   private Supplier<Double> joystickY;
 
   public DriveToX(Drive drive, Supplier<Distance> targetX, Supplier<Double> joystickY, Supplier<Angle> targetRot, Angle angularThreshold, Distance linearThreshold) {
+    this(drive, targetX, joystickY, targetRot, angularThreshold, linearThreshold, false);
+  }
+
+  public DriveToX(Drive drive, Supplier<Distance> targetX, Supplier<Double> joystickY, Supplier<Angle> targetRot, Angle angularThreshold, Distance linearThreshold, boolean persistCommand) {
     m_drive = drive;
     this.joystickY = joystickY;
     m_targetPose = () -> new Pose2d(targetX.get(), Meters.of(0), new Rotation2d(targetRot.get()));

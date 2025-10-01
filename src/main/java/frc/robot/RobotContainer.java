@@ -199,7 +199,7 @@ public class RobotContainer {
 
                 drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
-                aprilTagVision = new Vision(drive::addVisionMeasurement, new VisionIO[0]);
+                aprilTagVision = new Vision(drive::addVisionMeasurement, drive::setPose, new VisionIO[0]);
                 break;
             case SIM:
 
@@ -230,7 +230,7 @@ public class RobotContainer {
                                 drive::getPose)
                 };
 
-                aprilTagVision = new Vision(drive::addVisionMeasurement, aprilTagVisionIOs);
+                aprilTagVision = new Vision(drive::addVisionMeasurement, drive::setPose, aprilTagVisionIOs);
                 break;
             default:
                 // Elevator
@@ -275,7 +275,7 @@ public class RobotContainer {
                                 kElevatorTagRobotToCamera)
                 };
 
-                aprilTagVision = new Vision(drive::addVisionMeasurement, aprilTagVisionIOs);
+                aprilTagVision = new Vision(drive::addVisionMeasurement, drive::setPose, aprilTagVisionIOs);
                 break;
         }
 
@@ -563,10 +563,10 @@ public class RobotContainer {
                                 elevator.setGoalAndWait(Elevator.Goal.PROCESSOR),
                                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.PROCESSOR_SCORE)
                         ),
-                        Commands.parallel(
-                                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
-                                coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW)
-                        ),
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
+                        Commands.waitSeconds(0.25),
+                        coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW),
+                        coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.STOW),
                         DriveCommands.alignToProcessor(drive, false)
                 ))
                 .onFalse(Commands.parallel(

@@ -26,6 +26,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,6 +38,7 @@ import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.utils.LoggerUtil;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -44,13 +46,15 @@ public class Vision extends SubsystemBase {
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+  private final Consumer<Pose2d> resetPoseConsumer;
 
   /**
    * Creates a new Vision subsystem.
    */
-  public Vision(VisionConsumer consumer, VisionIO... io) {
+  public Vision(VisionConsumer consumer, Consumer<Pose2d> resetPoseConsumer, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
+    this.resetPoseConsumer = resetPoseConsumer;
 
     // Initialize inputs
     this.inputs = new VisionIOInputsAutoLogged[io.length];
@@ -116,6 +120,7 @@ public class Vision extends SubsystemBase {
 
         // Check whether to reject pose
         boolean rejectPose = observation.tagCount() == 0 // Must have at least one tag
+            || (observation.type() == VisionIO.PoseObservationType.MEGATAG_2 && RobotState.isDisabled())
             || (observation.tagCount() == 1
                 && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
             || Math.abs(observation.pose().getZ()) > maxZError // Must have realistic Z coordinate
@@ -126,7 +131,7 @@ public class Vision extends SubsystemBase {
             || observation.pose().getX() > aprilTagLayout.getFieldLength()
             || observation.pose().getY() <= 0.0
             || observation.pose().getY() > aprilTagLayout.getFieldWidth();
-            // || angleDeltaTooGreat(observation, inputs[cameraIndex]);
+        // || angleDeltaTooGreat(observation, inputs[cameraIndex]);
 
         // Add pose to log
         robotPoses.add(observation.pose());
@@ -162,6 +167,11 @@ public class Vision extends SubsystemBase {
             observation.pose().toPose2d(),
             observation.timestamp(),
             VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+
+        if (RobotState.isDisabled() && observation.type() == VisionIO.PoseObservationType.MEGATAG_1) {
+          resetPoseConsumer.accept(observation.pose().toPose2d());
+          Logger.recordOutput("ThisThingWasLastSeenAt", Logger.getTimestamp());
+        }
       }
 
       // Log camera datadata
@@ -214,9 +224,9 @@ public class Vision extends SubsystemBase {
     return run(() -> io[cameraIndex].setEnabled(enabled));
   };
 
-  private boolean angleDeltaTooGreat (PoseObservation observation, VisionIOInputs inputs) {
+  private boolean angleDeltaTooGreat(PoseObservation observation, VisionIOInputs inputs) {
     return observation.pose().transformBy(inputs.transformRobotToCamera)
-  .minus(aprilTagLayout.getTagPose(inputs.tagIds[0]).get())
-  .getRotation().getMeasureAngle().abs(Degrees) > 70;
+        .minus(aprilTagLayout.getTagPose(inputs.tagIds[0]).get())
+        .getRotation().getMeasureAngle().abs(Degrees) > 70;
   }
 }
