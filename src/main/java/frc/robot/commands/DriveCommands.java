@@ -812,18 +812,11 @@ public class DriveCommands {
   public static Command alignToBarge(Drive drive, Supplier<Double> joySupplierY, Command afterInitialAlignment) {
     Distance x = Meters.of(6.7);
 
-    Supplier<Pose2d> bargePoseSupplier = () -> AllianceFlipUtil.apply(
-      new Pose2d(
-        x,
-        Meters.of(5.5),
-        new Rotation2d()
-      )
-    );
+    return Commands.parallel(
+      new DriveToX(drive, () -> x, joySupplierY, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)),
 
-    return Commands.sequence(
-      new DriveToPoint(drive, bargePoseSupplier, Degrees.of(5), Inches.of(2)),
-      Commands.parallel(
-        new DriveToX(drive, () -> x, joySupplierY, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)),
+      Commands.sequence(
+        Commands.waitUntil(() -> drive.getPose().getMeasureX().isNear(x, Inches.of(3))),
         afterInitialAlignment
       )
     );

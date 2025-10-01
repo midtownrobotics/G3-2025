@@ -22,6 +22,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.DriveToPoint;
 import frc.lib.DriveToX;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOKraken;
@@ -537,7 +539,19 @@ public class RobotContainer {
                 .whileTrue(
                         Commands.sequence(
                                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.BARGE),
-                                new DriveToX(drive, () -> Meters.of(8.05), () -> 0.0, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)),
+                                new DriveToPoint(
+                                        drive, 
+                                        () -> new Pose2d(
+                                                new Translation2d(
+                                                        Meters.of(8.05),
+                                                        drive.getPose().getMeasureY()
+                                                ), 
+                                                new Rotation2d()
+                                        ), 
+                                        Degrees.of(5), 
+                                        Inches.of(2)
+                                ),
+                                // new DriveToX(drive, () -> Meters.of(8.05), () -> 0.0, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)),
                                 new InstantCommand(() -> drive.stop(), drive),
                                 elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2)),
                                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
@@ -548,7 +562,18 @@ public class RobotContainer {
                         Commands.sequence(
                                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW),
                                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
-                                new DriveToX(drive, () -> Meters.of(7), () -> 0.0, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming),
+                                new DriveToPoint(
+                                        drive, 
+                                        () -> new Pose2d(
+                                                new Translation2d(
+                                                        Meters.of(7),
+                                                        drive.getPose().getMeasureY()
+                                                ), 
+                                                new Rotation2d()
+                                        ), 
+                                        Degrees.of(5), 
+                                        Inches.of(2)
+                                ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming),                                
                                 elevator.setGoalCommand(Elevator.Goal.STOW),
                                 AlgaeAction.setHasAlgae(false)
                         )
