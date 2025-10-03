@@ -21,8 +21,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -170,7 +170,7 @@ public class RobotContainer {
         ModuleIO flModuleIO;
         ModuleIO frModuleIO;
         ModuleIO blModuleIO;
-        ModuleIO brModuleIO;
+ModuleIO brModuleIO;
 
         VisionIO[] aprilTagVisionIOs;
 
@@ -522,11 +522,15 @@ public class RobotContainer {
                 .and(() -> AlgaeAction.BARGE.shouldDo(drive, () -> coralMode))
                 .debounce(0.05)
                 .whileTrue(
-                        DriveCommands.alignToBarge(drive, controls::getDriveLeft,
-                                Commands.sequence(
-                                        elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2)),
-                                        coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)
-                                )
+                        // DriveCommands.alignToBarge(drive, controls::getDriveLeft,
+                        //         Commands.sequence(
+                        //                 elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2)),
+                        //                 coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)
+                        //         )
+                        // )
+                        Commands.parallel(
+                                elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2)),
+                                coralOuttakePivot.setGoalCommand(CoralOuttakePivot.Goal.BARGE)
                         )
                 );
 
@@ -536,20 +540,20 @@ public class RobotContainer {
                 .whileTrue(
                         Commands.sequence(
                                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.BARGE),
-                                new DriveToPoint(
-                                        drive,
-                                        () -> new Pose2d(
-                                                new Translation2d(
-                                                        Meters.of(7.85),
-                                                        drive.getPose().getMeasureY()
-                                                ),
-                                                new Rotation2d()
-                                        ),
-                                        Degrees.of(5),
-                                        Inches.of(2)
-                                ),
+                                // new DriveToPoint(
+                                //         drive,
+                                //         () -> new Pose2d(
+                                //                 new Translation2d(
+                                //                         Meters.of(7.85),
+                                //                         drive.getPose().getMeasureY()
+                                //                 ),
+                                //                 new Rotation2d()
+                                //         ),
+                                //         Degrees.of(5),
+                                //         Inches.of(2)
+                                // ),
                                 // new DriveToX(drive, () -> Meters.of(8.05), () -> 0.0, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)),
-                                new InstantCommand(() -> drive.stop(), drive),
+                                // new InstantCommand(() -> drive.stop(), drive),
                                 elevator.setGoalAndWait(Elevator.Goal.BARGE, Inches.of(2)),
                                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.ALGAE_SHOOT),
                                 Commands.waitSeconds(2)
@@ -559,18 +563,18 @@ public class RobotContainer {
                         Commands.sequence(
                                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW),
                                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
-                                new DriveToPoint(
-                                        drive,
-                                        () -> new Pose2d(
-                                                new Translation2d(
-                                                        Meters.of(7),
-                                                        drive.getPose().getMeasureY()
-                                                ),
-                                                new Rotation2d()
-                                        ),
-                                        Degrees.of(5),
-                                        Inches.of(2)
-                                ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming),
+                                // new DriveToPoint(
+                                //         drive,
+                                //         () -> new Pose2d(
+                                //                 new Translation2d(
+                                //                         Meters.of(7),
+                                //                         drive.getPose().getMeasureY()
+                                //                 ),
+                                //                 new Rotation2d()
+                                //         ),
+                                //         Degrees.of(5),
+                                //         Inches.of(2)
+                                // ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming),
                                 elevator.setGoalCommand(Elevator.Goal.STOW),
                                 AlgaeAction.setHasAlgae(false)
                         )

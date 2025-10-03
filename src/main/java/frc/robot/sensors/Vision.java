@@ -21,6 +21,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -126,27 +127,29 @@ public class Vision extends SubsystemBase {
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
 
+        Pose3d pose = observation.pose();
+
         // Check whether to reject pose
         boolean rejectPose = observation.tagCount() == 0 // Must have at least one tag
-            || (observation.type() == VisionIO.PoseObservationType.MEGATAG_2 && RobotState.isDisabled())
+            || (observation.type() == VisionIO.PoseObservationType.MEGATAG_2) //&&RobotState.isDisabled())
             || (observation.tagCount() == 1
                 && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-            || Math.abs(observation.pose().getZ()) > maxZError // Must have realistic Z coordinate
+            || Math.abs(pose.getZ()) > maxZError // Must have realistic Z coordinate
 
             || observation.averageTagDistance() > Units.feetToMeters(12)
             // Must be within the field boundaries
-            || observation.pose().getX() <= 0.0
-            || observation.pose().getX() > aprilTagLayout.getFieldLength()
-            || observation.pose().getY() <= 0.0
-            || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+            || pose.getX() <= 0.0
+            || pose.getX() > aprilTagLayout.getFieldLength()
+            || pose.getY() <= 0.0
+            || pose.getY() > aprilTagLayout.getFieldWidth();
         // || angleDeltaTooGreat(observation, inputs[cameraIndex]);
 
         // Add pose to log
-        robotPoses.add(observation.pose());
+        robotPoses.add(pose);
         if (rejectPose) {
-          robotPosesRejected.add(observation.pose());
+          robotPosesRejected.add(pose);
         } else {
-          robotPosesAccepted.add(observation.pose());
+          robotPosesAccepted.add(pose);
         }
 
         // Skip if rejected
@@ -170,14 +173,23 @@ public class Vision extends SubsystemBase {
           angularStdDev *= cameraStdDevFactors[cameraIndex];
         }
 
+        if (cameraIndex == 0) {
+          Logger.recordOutput("Vision/Camera/" + name + "/preRotationLog", pose.toPose2d());
+          pose = pose.rotateAround(pose.getTranslation(), new Rotation3d(0, 0, Math.PI));
+          Logger.recordOutput("Vision/Camera/" + name + "/postRotationLog", pose.toPose2d());
+          Logger.recordOutput("SEENPLEASE", Logger.getTimestamp());
+        }
+
+        Logger.recordOutput("Vision/Camera/" + name + "/rightBeforeAcception", pose.toPose2d());
+
         // Send vision observation
         consumer.accept(
-            observation.pose().toPose2d(),
+            pose.toPose2d(),
             observation.timestamp(),
             VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
 
         if (RobotState.isDisabled() && observation.type() == VisionIO.PoseObservationType.MEGATAG_1) {
-          resetPoseConsumer.accept(observation.pose().toPose2d());
+          resetPoseConsumer.accept(pose.toPose2d());
           Logger.recordOutput("ThisThingWasLastSeenAt", Logger.getTimestamp());
         }
       }
