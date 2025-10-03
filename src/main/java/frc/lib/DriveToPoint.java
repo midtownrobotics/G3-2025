@@ -69,8 +69,6 @@ public class DriveToPoint extends Command {
 
     m_headingController.getController().enableContinuousInput(-Math.PI, Math.PI);
     m_headingController.getController().setTolerance(angularThreshold.in(Radians));
-
-    Logger.recordOutput("DriveToPoint/TargetPose", m_targetPose.get());
   }
 
   public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose) {
@@ -171,6 +169,8 @@ public class DriveToPoint extends Command {
 
     Logger.recordOutput("DriveToPoint/DriveSpeeds", targetChassisSpeeds);
     Logger.recordOutput("DriveToPoint/LastCylce", Logger.getTimestamp());
+
+    Logger.recordOutput("DriveToPoint/TargetPose", m_targetPose.get());
   }
 
   @Override

@@ -217,6 +217,11 @@ public class Elevator extends SubsystemBase {
     currentGoal = goal;
   }
 
+  /** Sets the goal of the elevator. */
+  public void setGoal(Supplier<Goal> goal) {
+    currentGoal = goal.get();
+  }
+
   public void setConstraints(LinearConstraint<DistanceUnit, Distance> constraints) {
     elevatorConstraint = constraints;
   }

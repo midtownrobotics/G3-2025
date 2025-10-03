@@ -125,7 +125,7 @@ public class Vision extends SubsystemBase {
                 && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
             || Math.abs(observation.pose().getZ()) > maxZError // Must have realistic Z coordinate
 
-            || observation.averageTagDistance() > Units.feetToMeters(10)
+            || observation.averageTagDistance() > Units.feetToMeters(12)
             // Must be within the field boundaries
             || observation.pose().getX() <= 0.0
             || observation.pose().getX() > aprilTagLayout.getFieldLength()
@@ -147,11 +147,11 @@ public class Vision extends SubsystemBase {
         }
 
         // Calculate standard deviations
-        double stdDevFactor = Math.pow(observation.averageTagDistance(), 3.0) / observation.tagCount();
+        double stdDevFactor = Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
         if (observation.averageTagDistance() > 1.0) {
-          angularStdDev *= 2.4;
+          angularStdDev *= 1.5;
         }
         if (observation.type() == PoseObservationType.MEGATAG_2) {
           linearStdDev *= linearStdDevMegatag2Factor;

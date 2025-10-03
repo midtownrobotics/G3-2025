@@ -34,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.DriveToPoint;
-import frc.lib.DriveToX;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
@@ -502,12 +501,14 @@ public class RobotContainer {
                 ).finallyDo(() -> {
                         coralOuttakeRoller.setGoal(CoralOuttakeRoller.Goal.ALGAE_HOLD);
                         coralOuttakePivot.setGoal(CoralOuttakePivot.Goal.DEALGIFY_STOW);
-                        elevator.setGoal(Elevator.Goal.DEALGIFY_LOW);
+                        elevator.setGoal(() -> ReefFace.getClosestReefFace(drive).isAlgaePositionHigh()
+                                ? Elevator.Goal.DEALGIFY_HIGH
+                                : Elevator.Goal.DEALGIFY_LOW);
                 }))
                 .onFalse(Commands.sequence(
                         DriveCommands.alignToAlgaeReef(drive, led,
-                                () -> ReefFace.getClosestReefFace(drive),
-                                () -> true),
+                        () -> ReefFace.getClosestReefFace(drive),
+                        () -> true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming),
                         AlgaeAction.setHasAlgae(true),
                         Commands.parallel(
                                 coralOuttakePivot.setGoalCommand(
@@ -540,15 +541,15 @@ public class RobotContainer {
                         Commands.sequence(
                                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.BARGE),
                                 new DriveToPoint(
-                                        drive, 
+                                        drive,
                                         () -> new Pose2d(
                                                 new Translation2d(
-                                                        Meters.of(8.05),
+                                                        Meters.of(7.85),
                                                         drive.getPose().getMeasureY()
-                                                ), 
+                                                ),
                                                 new Rotation2d()
-                                        ), 
-                                        Degrees.of(5), 
+                                        ),
+                                        Degrees.of(5),
                                         Inches.of(2)
                                 ),
                                 // new DriveToX(drive, () -> Meters.of(8.05), () -> 0.0, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)),
@@ -563,17 +564,17 @@ public class RobotContainer {
                                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.STOW),
                                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.STOW),
                                 new DriveToPoint(
-                                        drive, 
+                                        drive,
                                         () -> new Pose2d(
                                                 new Translation2d(
                                                         Meters.of(7),
                                                         drive.getPose().getMeasureY()
-                                                ), 
+                                                ),
                                                 new Rotation2d()
-                                        ), 
-                                        Degrees.of(5), 
+                                        ),
+                                        Degrees.of(5),
                                         Inches.of(2)
-                                ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming),                                
+                                ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming),
                                 elevator.setGoalCommand(Elevator.Goal.STOW),
                                 AlgaeAction.setHasAlgae(false)
                         )
