@@ -48,6 +48,14 @@ public class Vision extends SubsystemBase {
   private final Alert[] disconnectedAlerts;
   private final Consumer<Pose2d> resetPoseConsumer;
 
+  // public static void main(String[] args) {
+  //   Pose3d desiredPose = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded).getTagPose(19).get().transformBy(new Transform3d(new Translation3d(Inches.of(37).div(2), Inches.of(4.5), Inches.of(-12.13)), Rotation3d.kZero));
+  //   // X: 3.75m, Y: 5.09m, Z: -0.02m, Roll: -2.63°, Pitch: 0.98°, Yaw: -59.12°
+  //   Pose3d observedPose = new Pose3d(3.75, 5.09, -0.02, new Rotation3d(Degrees.of(-2.63), Degrees.of(0.98), Degrees.of(-59.12)));
+
+  //   System.out.println(observedPose.minus(desiredPose));
+  // }
+
   /**
    * Creates a new Vision subsystem.
    */
