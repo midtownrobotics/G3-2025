@@ -22,7 +22,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.DriveToPoint;
 import frc.lib.RollerIO.RollerIO;
 import frc.lib.RollerIO.RollerIOKraken;
 import frc.lib.RollerIO.RollerIONeo;
@@ -200,7 +198,7 @@ ModuleIO brModuleIO;
 
                 drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
-                aprilTagVision = new Vision(drive::addVisionMeasurement, drive::setPose, new VisionIO[0]);
+                aprilTagVision = new Vision(drive::getPose, drive::addVisionMeasurement, drive::setPose, new VisionIO[0]);
                 break;
             case SIM:
 
@@ -231,7 +229,7 @@ ModuleIO brModuleIO;
                                 drive::getPose)
                 };
 
-                aprilTagVision = new Vision(drive::addVisionMeasurement, drive::setPose, aprilTagVisionIOs);
+                aprilTagVision = new Vision(drive::getPose, drive::addVisionMeasurement, drive::setPose, aprilTagVisionIOs);
                 break;
             default:
                 // Elevator
@@ -272,7 +270,7 @@ ModuleIO brModuleIO;
                                 kTagCameraOnAStickRobotToCamera, new Transform3d())
                 };
 
-                aprilTagVision = new Vision(drive::addVisionMeasurement, drive::setPose, aprilTagVisionIOs);
+                aprilTagVision = new Vision(drive::getPose, drive::addVisionMeasurement, drive::setPose, aprilTagVisionIOs);
                 break;
         }
 
@@ -449,6 +447,8 @@ ModuleIO brModuleIO;
     /** Configures bindings to oi */
     private void configureBindings() {
 
+        // DriveToPoint.overrideTriggger = controls.manualOverride();
+
         DoubleSupplier speedMultiplier = () -> {
             if (elevator.getPosition().gt(Inches.of(10))) {
                 double elevatorHeight = elevator.getPosition().in(Inches);
@@ -482,8 +482,8 @@ ModuleIO brModuleIO;
                                 coralOuttakePivot.setGoalAndWait(CoralOuttakePivot.Goal.DEALGIFY),
                                 coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal.DEALGIFY),
                                 DriveCommands.alignToAlgaeReef(drive, led,
-                                () -> ReefFace.getClosestReefFace(drive),
-                                () -> true)
+                                        () -> ReefFace.getClosestReefFace(drive),
+                                        () -> true)
                         ),
                         Commands.waitUntil(() -> elevator.atGoal(Inches.of(2))),
                         DriveCommands.alignToAlgaeReef(drive, led,

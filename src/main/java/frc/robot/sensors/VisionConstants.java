@@ -56,7 +56,7 @@ public class VisionConstants {
       .inverse();
 
   // Basic filtering thresholds
-  public static double maxAmbiguity = 0.15;
+  public static double maxAmbiguity = 0.5;
   public static double maxZError = 0.2;
 
   // Standard deviation baselines, for 1 meter distance and 1 tag

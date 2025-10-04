@@ -100,7 +100,7 @@ public class VisionIOLimelight implements VisionIO {
               rawSample.timestamp * 1.0e-6 - rawSample.value[6] * 1.0e-3,
 
               // 3D pose estimate
-              parsePose(rawSample.value).transformBy(cameraPositionCorrection),
+              parsePose(rawSample.value),//transformBy(cameraPositionCorrection),
 
               // Ambiguity, using only the first tag because ambiguity isn't applicable for multitag
               rawSample.value.length >= 18 ? rawSample.value[17] : 0.0,

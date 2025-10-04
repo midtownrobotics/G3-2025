@@ -69,7 +69,7 @@ public class SingleDriverControls {
   @AutoLogOutput
   /** Sets coralMode to AUTO. */
   public Trigger setAutoCoralMode() {
-    return controller.b();
+    return new Trigger(() -> false);//controller.b();
   }
 
   @AutoLogOutput
@@ -82,6 +82,11 @@ public class SingleDriverControls {
   /** Sets coralMode to L3. */
   public Trigger prepareScoreCoralL3() {
     return controller.x();
+  }
+
+  @AutoLogOutput
+  public Trigger manualOverride() {
+    return controller.b();
   }
 
   @AutoLogOutput

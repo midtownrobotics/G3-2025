@@ -40,6 +40,7 @@ import frc.robot.utils.LoggerUtil;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -48,6 +49,7 @@ public class Vision extends SubsystemBase {
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
   private final Consumer<Pose2d> resetPoseConsumer;
+  private final Supplier<Pose2d> poseSupplier;
 
   // public static void main(String[] args) {
   //   Pose3d desiredPose = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded).getTagPose(19).get().transformBy(new Transform3d(new Translation3d(Inches.of(37).div(2), Inches.of(4.5), Inches.of(-12.13)), Rotation3d.kZero));
@@ -60,8 +62,9 @@ public class Vision extends SubsystemBase {
   /**
    * Creates a new Vision subsystem.
    */
-  public Vision(VisionConsumer consumer, Consumer<Pose2d> resetPoseConsumer, VisionIO... io) {
+  public Vision(Supplier<Pose2d> poseSupplier, VisionConsumer consumer, Consumer<Pose2d> resetPoseConsumer, VisionIO... io) {
     this.consumer = consumer;
+    this.poseSupplier = poseSupplier;
     this.io = io;
     this.resetPoseConsumer = resetPoseConsumer;
 
@@ -131,7 +134,7 @@ public class Vision extends SubsystemBase {
 
         // Check whether to reject pose
         boolean rejectPose = observation.tagCount() == 0 // Must have at least one tag
-            || (observation.type() == VisionIO.PoseObservationType.MEGATAG_2) //&&RobotState.isDisabled())
+            // || (observation.type() == VisionIO.PoseObservationType.MEGATAG_2) //&&RobotState.isDisabled())
             || (observation.tagCount() == 1
                 && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
             || Math.abs(pose.getZ()) > maxZError // Must have realistic Z coordinate
@@ -174,10 +177,11 @@ public class Vision extends SubsystemBase {
         }
 
         if (cameraIndex == 0) {
-          Logger.recordOutput("Vision/Camera/" + name + "/preRotationLog", pose.toPose2d());
-          pose = pose.rotateAround(pose.getTranslation(), new Rotation3d(0, 0, Math.PI));
-          Logger.recordOutput("Vision/Camera/" + name + "/postRotationLog", pose.toPose2d());
-          Logger.recordOutput("SEENPLEASE", Logger.getTimestamp());
+          // Logger.recordOutput("Vision/Camera/" + name + "/preRotationLog", pose.toPose2d());
+          // pose = pose.rotateAround(pose.getTranslation(), new Rotation3d(0, 0, Math.PI));
+          // Logger.recordOutput("Vision/Camera/" + name + "/postRotationLog", pose.toPose2d());
+          // Logger.recordOutput("SEENPLEASE", Logger.getTimestamp());
+          pose = new Pose3d(pose.getTranslation(), new Rotation3d(poseSupplier.get().getRotation()));
         }
 
         Logger.recordOutput("Vision/Camera/" + name + "/rightBeforeAcception", pose.toPose2d());

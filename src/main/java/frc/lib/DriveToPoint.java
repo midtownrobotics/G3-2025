@@ -23,11 +23,8 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.dashboard.LTAngularProfiledPIDController;
 import frc.lib.dashboard.LTLinearProfiledPIDController;
-import frc.robot.Ports;
 import frc.robot.subsystems.drivetrain.Drive;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -60,13 +57,13 @@ public class DriveToPoint extends Command {
 
   private double m_ffMinRadius = 0.1, m_ffMaxRadius = 1.2;
 
-  private final Trigger overrideTriggger = new CommandXboxController(0).b();
+  // public static Trigger overrideTriggger;
 
   public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose, Angle angularThreshold, Distance linearThreshold) {
     m_drive = drive;
     m_targetPose = targetPose;
-    this.angularThreshold = angularThreshold;
-    this.linearThreshold = linearThreshold;
+    this.angularThreshold = Degrees.of(6);
+    this.linearThreshold = Inches.of(5);
     addRequirements(m_drive);
 
     m_driveController.getController().setTolerance(linearThreshold.in(Meters), Units.inchesToMeters(0.5));
@@ -179,7 +176,11 @@ public class DriveToPoint extends Command {
 
   @Override
   public boolean isFinished() {
-    boolean finished = (m_driveController.atGoal() && m_headingController.atGoal()) || overrideTriggger.getAsBoolean();
+    boolean finished =
+      m_drive.getPose().getTranslation().getDistance(m_targetPose.get().getTranslation()) < linearThreshold.in(Meters)
+      && m_drive.getPose().getRotation().getMeasure().isNear(m_targetPose.get().getRotation().getMeasure(), angularThreshold);
+
+    //|| overrideTriggger.getAsBoolean();
     Logger.recordOutput("DriveToPoint/AtGoal", finished);
     return finished;
   }
