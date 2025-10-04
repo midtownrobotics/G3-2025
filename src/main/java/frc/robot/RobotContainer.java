@@ -719,6 +719,26 @@ ModuleIO brModuleIO;
                                 () -> CoralOuttakeRoller.Goal.fromCoralMode(coralMode),
                                 CoralOuttakeRoller.Goal.STOW));
 
+        controls.manualOverride().whileTrue(
+                Commands.sequence(
+                        elevator.setGoalAndWait(
+                                                () -> Elevator.Goal
+                                                        .fromCoralMode(coralMode)),
+                                        coralOuttakePivot
+                                                .setGoalAndWait(() -> CoralOuttakePivot.Goal
+                                                        .fromCoralMode(coralMode)),
+                                        coralOuttakeRoller.setGoalCommand(
+                                                () -> CoralOuttakeRoller.Goal
+                                                        .fromCoralMode(coralMode))
+                )
+        ).onFalse(Commands.sequence(
+                elevator.setGoalCommand(Elevator.Goal.STOW),
+                coralOuttakePivot
+                        .setGoalCommand(CoralOuttakePivot.Goal.STOW),
+                coralOuttakeRoller.setGoalCommand(CoralOuttakeRoller.Goal
+                                .STOW)
+        ));
+
         controls.intake().and(controls.coralAutoAlign().or(controls.algaeAndL1CenterAutoAlign()).negate())
                 .whileTrue(
                         Commands.sequence(
