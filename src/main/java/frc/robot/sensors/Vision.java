@@ -21,11 +21,13 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,6 +39,8 @@ import frc.robot.sensors.vision.VisionIOInputsAutoLogged;
 import frc.robot.utils.LoggerUtil;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -44,13 +48,25 @@ public class Vision extends SubsystemBase {
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+  private final Consumer<Pose2d> resetPoseConsumer;
+  private final Supplier<Pose2d> poseSupplier;
+
+  // public static void main(String[] args) {
+  //   Pose3d desiredPose = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded).getTagPose(19).get().transformBy(new Transform3d(new Translation3d(Inches.of(37).div(2), Inches.of(4.5), Inches.of(-12.13)), Rotation3d.kZero));
+  //   // X: 3.75m, Y: 5.09m, Z: -0.02m, Roll: -2.63°, Pitch: 0.98°, Yaw: -59.12°
+  //   Pose3d observedPose = new Pose3d(3.75, 5.09, -0.02, new Rotation3d(Degrees.of(-2.63), Degrees.of(0.98), Degrees.of(-59.12)));
+
+  //   System.out.println(observedPose.minus(desiredPose));
+  // }
 
   /**
    * Creates a new Vision subsystem.
    */
-  public Vision(VisionConsumer consumer, VisionIO... io) {
+  public Vision(Supplier<Pose2d> poseSupplier, VisionConsumer consumer, Consumer<Pose2d> resetPoseConsumer, VisionIO... io) {
     this.consumer = consumer;
+    this.poseSupplier = poseSupplier;
     this.io = io;
+    this.resetPoseConsumer = resetPoseConsumer;
 
     // Initialize inputs
     this.inputs = new VisionIOInputsAutoLogged[io.length];
@@ -114,26 +130,29 @@ public class Vision extends SubsystemBase {
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
 
+        Pose3d pose = observation.pose();
+
         // Check whether to reject pose
         boolean rejectPose = observation.tagCount() == 0 // Must have at least one tag
+            // || (observation.type() == VisionIO.PoseObservationType.MEGATAG_2) //&&RobotState.isDisabled())
             || (observation.tagCount() == 1
                 && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-            || Math.abs(observation.pose().getZ()) > maxZError // Must have realistic Z coordinate
+            || Math.abs(pose.getZ()) > maxZError // Must have realistic Z coordinate
 
-            || observation.averageTagDistance() > Units.feetToMeters(10)
+            || observation.averageTagDistance() > Units.feetToMeters(12)
             // Must be within the field boundaries
-            || observation.pose().getX() <= 0.0
-            || observation.pose().getX() > aprilTagLayout.getFieldLength()
-            || observation.pose().getY() <= 0.0
-            || observation.pose().getY() > aprilTagLayout.getFieldWidth();
-            // || angleDeltaTooGreat(observation, inputs[cameraIndex]);
+            || pose.getX() <= 0.0
+            || pose.getX() > aprilTagLayout.getFieldLength()
+            || pose.getY() <= 0.0
+            || pose.getY() > aprilTagLayout.getFieldWidth();
+        // || angleDeltaTooGreat(observation, inputs[cameraIndex]);
 
         // Add pose to log
-        robotPoses.add(observation.pose());
+        robotPoses.add(pose);
         if (rejectPose) {
-          robotPosesRejected.add(observation.pose());
+          robotPosesRejected.add(pose);
         } else {
-          robotPosesAccepted.add(observation.pose());
+          robotPosesAccepted.add(pose);
         }
 
         // Skip if rejected
@@ -142,11 +161,11 @@ public class Vision extends SubsystemBase {
         }
 
         // Calculate standard deviations
-        double stdDevFactor = Math.pow(observation.averageTagDistance(), 3.0) / observation.tagCount();
+        double stdDevFactor = Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
         if (observation.averageTagDistance() > 1.0) {
-          angularStdDev *= 2.4;
+          angularStdDev *= 1.5;
         }
         if (observation.type() == PoseObservationType.MEGATAG_2) {
           linearStdDev *= linearStdDevMegatag2Factor;
@@ -157,11 +176,26 @@ public class Vision extends SubsystemBase {
           angularStdDev *= cameraStdDevFactors[cameraIndex];
         }
 
+        if (cameraIndex == 0) {
+          // Logger.recordOutput("Vision/Camera/" + name + "/preRotationLog", pose.toPose2d());
+          // pose = pose.rotateAround(pose.getTranslation(), new Rotation3d(0, 0, Math.PI));
+          // Logger.recordOutput("Vision/Camera/" + name + "/postRotationLog", pose.toPose2d());
+          // Logger.recordOutput("SEENPLEASE", Logger.getTimestamp());
+          pose = new Pose3d(pose.getTranslation(), new Rotation3d(poseSupplier.get().getRotation()));
+        }
+
+        Logger.recordOutput("Vision/Camera/" + name + "/rightBeforeAcception", pose.toPose2d());
+
         // Send vision observation
         consumer.accept(
-            observation.pose().toPose2d(),
+            pose.toPose2d(),
             observation.timestamp(),
             VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+
+        if (RobotState.isDisabled() && observation.type() == VisionIO.PoseObservationType.MEGATAG_1) {
+          resetPoseConsumer.accept(pose.toPose2d());
+          Logger.recordOutput("ThisThingWasLastSeenAt", Logger.getTimestamp());
+        }
       }
 
       // Log camera datadata
@@ -214,9 +248,9 @@ public class Vision extends SubsystemBase {
     return run(() -> io[cameraIndex].setEnabled(enabled));
   };
 
-  private boolean angleDeltaTooGreat (PoseObservation observation, VisionIOInputs inputs) {
+  private boolean angleDeltaTooGreat(PoseObservation observation, VisionIOInputs inputs) {
     return observation.pose().transformBy(inputs.transformRobotToCamera)
-  .minus(aprilTagLayout.getTagPose(inputs.tagIds[0]).get())
-  .getRotation().getMeasureAngle().abs(Degrees) > 70;
+        .minus(aprilTagLayout.getTagPose(inputs.tagIds[0]).get())
+        .getRotation().getMeasureAngle().abs(Degrees) > 70;
   }
 }

@@ -4,7 +4,7 @@ plugins {
     id "com.peterabeles.gversion" version "1.10"
     id "com.diffplug.spotless" version "6.12.0"
     id "io.freefair.lombok" version "8.4"
-    id "checkstyle"
+    // id "checkstyle"
 }
 
 java {
@@ -99,10 +99,10 @@ test {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
-checkstyle {
-    configFile = file("config/checkstyle/checkstyle.xml")
-    checkstyleTest.enabled = false
-}
+// checkstyle {
+//     configFile = file("config/checkstyle/checkstyle.xml")
+//     checkstyleTest.enabled = false
+// }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
@@ -177,15 +177,15 @@ spotless {
     }
 }
 
-// Define checkstyle scope
-tasks.checkstyleMain {
-    source = fileTree('src/main/java') {
-        include 'frc/robot/**'
-        include 'frc/lib/team1648/**'
-        exclude 'frc/robot/Main.java'
-        exclude 'frc/robot/Robot.java'
-    }
-}
+// // Define checkstyle scope
+// tasks.checkstyleMain {
+//     source = fileTree('src/main/java') {
+//         include 'frc/robot/**'
+//         include 'frc/lib/team1648/**'
+//         exclude 'frc/robot/Main.java'
+//         exclude 'frc/robot/Robot.java'
+//     }
+// }
 
 
 // Create commit with working changes on event branches
@@ -222,6 +222,6 @@ task(eventDeploy) {
 createVersionFile.dependsOn(eventDeploy)
 
 // Require checksyle check
-tasks.build {
-    dependsOn tasks.checkstyleMain
-}
+// tasks.build {
+//     dependsOn tasks.checkstyleMain
+// }

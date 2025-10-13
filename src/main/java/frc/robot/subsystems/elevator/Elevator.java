@@ -48,7 +48,7 @@ public class Elevator extends SubsystemBase {
     PROCESSOR(Inches.zero()),
     DEALGIFY_LOW(Inches.of(14.5)),
     DEALGIFY_HIGH(Inches.of(30)),
-    BARGE(Inches.of(68)),
+    BARGE(Inches.of(69)),
     CLIMB(Inches.of(16)),
     CLIMB_BOTTOM(Feet.zero(), false),
     CLIMB_BOTTOM_LOCK(CLIMB_BOTTOM.getHeight(), true),
@@ -94,9 +94,9 @@ public class Elevator extends SubsystemBase {
      * @param mode
      * @return
      */
-    public static Goal dealgifyFromCoralMode(CoralMode mode) {
+    public static Goal algaeFromCoralMode(CoralMode mode) {
       return switch (mode) {
-        case L1 -> Goal.DEALGIFY_LOW;
+        case L1 -> Goal.PROCESSOR;
         case L2 -> Goal.DEALGIFY_LOW;
         case L3 -> Goal.DEALGIFY_HIGH;
         case L4 -> Goal.DEALGIFY_HIGH;
@@ -215,6 +215,11 @@ public class Elevator extends SubsystemBase {
   /** Sets the goal of the elevator. */
   public void setGoal(Goal goal) {
     currentGoal = goal;
+  }
+
+  /** Sets the goal of the elevator. */
+  public void setGoal(Supplier<Goal> goal) {
+    currentGoal = goal.get();
   }
 
   public void setConstraints(LinearConstraint<DistanceUnit, Distance> constraints) {
@@ -353,7 +358,7 @@ public class Elevator extends SubsystemBase {
   /**
    * Converts a CoralMode to an Elevator dealgify Goal.
    */
-  public Command setDealgifyGoalFromCoralMode(Supplier<CoralMode> mode) {
-    return Commands.run(() -> setGoal(Goal.dealgifyFromCoralMode(mode.get())), this);
+  public Command setAlgaeGoalFromCoralMode(Supplier<CoralMode> mode) {
+    return Commands.run(() -> setGoal(Goal.algaeFromCoralMode(mode.get())), this);
   }
 }

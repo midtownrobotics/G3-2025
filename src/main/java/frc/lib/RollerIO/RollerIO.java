@@ -18,6 +18,7 @@ public interface RollerIO {
     public Current supplyCurrent = Units.Amps.zero();
     public Current torqueCurrent = Units.Amps.zero();
     public Temperature temperature = Units.Fahrenheit.zero();
+    public Voltage lastAssignedVoltage = Units.Volts.zero();
   }
 
   /**

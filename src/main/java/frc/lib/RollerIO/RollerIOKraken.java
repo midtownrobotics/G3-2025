@@ -29,6 +29,11 @@ public class RollerIOKraken implements RollerIO {
   private StatusSignal<Current> torqueCurrent;
   private StatusSignal<Temperature> temperature;
 
+  private Voltage lastAssignedVoltage;
+
+  private final CANBusStatusSignalRegistration bus;
+
+
   /** Constructor for rollerIO for kraken motors. */
   public RollerIOKraken(int motorID, CANBusStatusSignalRegistration bus) {
     this(motorID, bus, false);
@@ -36,6 +41,8 @@ public class RollerIOKraken implements RollerIO {
 
   /** Constructor for rollerIO for kraken motors with an invert. */
   public RollerIOKraken(int motorID, CANBusStatusSignalRegistration bus, boolean invert) {
+    this.bus = bus;
+
     motor = new TalonFX(motorID, bus.getCanBusId());
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 
@@ -83,6 +90,7 @@ public class RollerIOKraken implements RollerIO {
   public void setVoltage(Voltage voltage) {
     ControlRequest request = new VoltageOut(voltage);
     motor.setControl(request);
+    lastAssignedVoltage = voltage;
   }
 
   @Override
@@ -92,6 +100,8 @@ public class RollerIOKraken implements RollerIO {
 
   @Override
   public void updateInputs(RollerInputs inputs) {
+    bus.refreshSignals();
+
     inputs.connected = motor.isConnected();
     inputs.position = position.getValue();
     inputs.velocity = velocity.getValue();
@@ -99,5 +109,6 @@ public class RollerIOKraken implements RollerIO {
     inputs.supplyCurrent = supplyCurrent.getValue();
     inputs.torqueCurrent = torqueCurrent.getValue();
     inputs.temperature = temperature.getValue();
+    inputs.lastAssignedVoltage = lastAssignedVoltage;
   }
 }

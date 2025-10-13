@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.AllianceFlipUtil;
 import frc.lib.DriveToPoint;
+import frc.lib.DriveToX;
 import frc.lib.LimelightHelpers;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularAcceleration;
 import frc.lib.dashboard.LoggedTunableMeasures.LoggedTunableAngularVelocity;
@@ -62,7 +63,10 @@ import frc.robot.utils.FieldConstants;
 import frc.robot.utils.FieldConstants.Barge;
 import frc.robot.utils.FieldConstants.CoralStation;
 import frc.robot.utils.FieldConstants.Processor;
+import frc.robot.utils.L1Alignment;
 import frc.robot.utils.ReefFace;
+import frc.robot.utils.ReefFaceSide;
+import frc.robot.utils.StationSide;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.EnumSet;
@@ -112,6 +116,7 @@ public class DriveCommands {
       DoubleSupplier speedMultiplier) {
     return Commands.run(
         () -> {
+          Logger.recordOutput("JoyStickDriveLastSeen", Logger.getTimestamp());
           // Get linear velocity
           Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
               ySupplier.getAsDouble());
@@ -360,9 +365,8 @@ public class DriveCommands {
   private static final Set<ReefFace> kFlippedReefFaces = EnumSet.of(ReefFace.EF, ReefFace.GH, ReefFace.IJ);
 
   private static final Transform2d kRobotPrepareOffset = new Transform2d(
-    new Translation2d(Inches.of(5), Inches.of(0)),
-    Rotation2d.kZero
-  );
+      new Translation2d(Inches.of(5), Inches.of(0)),
+      Rotation2d.kZero);
 
   private static final Transform2d kRobotBranchAlignOffset = new Transform2d(
       new Translation2d(
@@ -378,9 +382,8 @@ public class DriveCommands {
       ),
       Rotation2d.k180deg);
 
-  // TODO idk man just ask someone
-  private static final Transform2d kRobotL1Offset = new Transform2d(
-      new Translation2d(
+  private static final Transform2d kRobotL1RightOffset = new Transform2d(
+    new Translation2d(
           Inches.of(17), // F/B
           Inches.of(-1.614)),
       Rotation2d.kCCW_90deg);
@@ -391,9 +394,16 @@ public class DriveCommands {
           Inches.of(-1.614)),
       Rotation2d.k180deg);
 
-  private static final Transform2d kRobotAlgaeAlignOffset = new Transform2d(
+  public static final Transform2d kRobotAlgaeAlignOffset = new Transform2d(
       new Translation2d(
           Inches.of(19.5), // F/B
+          Inches.of(-1.614 - 6.5) // L/R
+      ),
+      Rotation2d.k180deg);
+
+  public static final Transform2d kRobotAlgaeAlignFurtherOffset = new Transform2d(
+      new Translation2d(
+          Inches.of(38), // F/B
           Inches.of(-1.614 - 6.5) // L/R
       ),
       Rotation2d.k180deg);
@@ -501,56 +511,93 @@ public class DriveCommands {
 
       if (coralModeSupplier.get() == CoralMode.L1) {
         Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToL1Reef");
-        return alignToL1Reef(drive, led, reefFaceSupplier);
+        return alignToL1Reef(drive, led, reefFaceSupplier, () -> L1Alignment.CENTER);
       }
 
       if (pivot.getCurrentGoal() == CoralOuttakePivot.Goal.DEALGIFY) {
         Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToAlgaeReef");
-        return alignToAlgaeReef(drive, led, reefFaceSupplier);
+        return alignToAlgaeReef(drive, led, reefFaceSupplier, () -> false);
       }
 
       Logger.recordOutput("FieldElementLock/CurrentCommand", "alignToBranchReef");
-      return alignToBranchReef(drive, led, reefFaceSupplier, leftBumper, waitingstate);
+      return alignToBranchReef(drive, led, reefFaceSupplier, () -> leftBumper.getAsBoolean() ? ReefFaceSide.LEFT : ReefFaceSide.RIGHT, waitingstate);
     };
     return Commands.defer(commandSupplier, Set.of());
   }
 
+  /**
+   * Returns a command that aligns to the specified reef face
+   */
+  public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
+      Supplier<ReefFaceSide> branchSelectedSupplier, BooleanSupplier waitingState) {
+    return alignToBranchReef(drive, led, reefFaceSupplier, branchSelectedSupplier, waitingState, Degrees.of(0.3),
+        Inches.of(0.2), true);
+  }
+
   /** Creates a command that drives to a reef position based on POV */
   public static Command alignToBranchReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
-      BooleanSupplier leftBranchSupplier, BooleanSupplier waitingState) {
+  Supplier<ReefFaceSide> branchSelectedSupplier, BooleanSupplier waitingState, Angle angularThreshold,
+      Distance linearThreshold, boolean dOStopCommand) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
-      boolean leftBranch = leftBranchSupplier.getAsBoolean();
 
-      if (face == null) return null;
+      if (face == null)
+        return null;
 
       // boolean flipBranchSide = kFlippedReefFaces.contains(face);
       // boolean leftSideToDriver = flipBranchSide ^ leftBranch;
       // int branchPoseIndex = face.ordinal() * 2 + (leftSideToDriver ? 0 : 1);
 
-      int branchPoseIndex = face.ordinal() * 2 + (leftBranch ? 0 : 1);
-
       Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotBeforeHandoffBranchAlignOffset
           : kRobotBranchAlignOffset;
 
-      Pose2d target = FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
-          .transformBy(robotTransform2d);
-
-      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
+      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(getRobotAlignBranchPoseFromReefFace(() -> face, branchSelectedSupplier, robotTransform2d));
 
       Logger.recordOutput("PathfindToReef/ReefFace", face);
-      Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
       Logger.recordOutput("PathfindToReef/TargetPose", allianceAppliedTarget);
       Logger.recordOutput("PathfindToReef/ReefFace", face);
-      Logger.recordOutput("PathfindToReef/BranchIndex", branchPoseIndex);
       Logger.recordOutput("PathfindToReef/TargetPose", allianceAppliedTarget);
 
       return allianceAppliedTarget;
     };
 
-    return Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand());
+    return dOStopCommand ?
+      Commands.sequence(
+          new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold),
+          drive.stopCommand()
+      ) :
+      new DriveToPoint(drive, branchPoseSupplier, angularThreshold, linearThreshold);
+  }
+
+  /**
+   * Returns the pose that the robot should go to given a branch
+   */
+  public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, Supplier<ReefFaceSide> branch, Transform2d offset) {
+    int branchPoseIndex = reefFace.get().ordinal() * 2 + (branch.get().equals(ReefFaceSide.LEFT) ? 0 : 1);
+
+    return FieldConstants.Reef.branchPositions2d.get(branchPoseIndex).get(FieldConstants.ReefLevel.L1)
+        .transformBy(offset);
+  }
+
+  /**
+   *  Returns the pose that the robot should go to for L1 given a reef face
+   */
+
+   public static Pose2d getRobotAlignL1FacePoseFromReefFace(Supplier<ReefFace> reefFace, Supplier<L1Alignment> L1Alignment) {
+
+      Pose2d target = FieldConstants.Reef.branchPositions2d.get(reefFace.get().ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
+          .transformBy(L1Alignment.get().getTransform());
+
+      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
+
+    return allianceAppliedTarget;
+   }
+
+  /**
+   * Uses default offset
+   */
+  public static Pose2d getRobotAlignBranchPoseFromReefFace(Supplier<ReefFace> reefFace, Supplier<ReefFaceSide> branch) {
+    return getRobotAlignBranchPoseFromReefFace(reefFace, branch, kRobotBranchAlignOffset);
   }
 
   /** Creates a command that drives to a branch */
@@ -638,7 +685,8 @@ public class DriveCommands {
    * Creates a command that drives to reef position, aligned to the center of the
    * face.
    */
-  public static Command alignToAlgaeReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier) {
+  public static Command alignToAlgaeReef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier,
+      BooleanSupplier waitingState) {
     Supplier<Pose2d> branchPoseSupplier = () -> {
       ReefFace face = reefFaceSupplier.get();
 
@@ -646,8 +694,11 @@ public class DriveCommands {
         return null;
       }
 
+      Transform2d robotTransform2d = waitingState.getAsBoolean() ? kRobotAlgaeAlignFurtherOffset
+          : kRobotAlgaeAlignOffset;
+
       Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
-          .transformBy(kRobotAlgaeAlignOffset);
+          .transformBy(robotTransform2d);
 
       Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
 
@@ -658,7 +709,7 @@ public class DriveCommands {
     };
 
     return Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier, Degrees.of(1), Inches.of(1)),
+        new DriveToPoint(drive, branchPoseSupplier, Degrees.of(5), Inches.of(2)),
         drive.stopCommand());
   }
 
@@ -667,29 +718,32 @@ public class DriveCommands {
    * face.
    */
 
-  public static Command alignToL1Reef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier) {
-    Supplier<Pose2d> branchPoseSupplier = () -> {
-      ReefFace face = reefFaceSupplier.get();
+  public static Command alignToL1Reef(Drive drive, LED led, Supplier<ReefFace> reefFaceSupplier, Supplier<L1Alignment> L1alignment) {
+    return Commands.sequence(
+        new DriveToPoint(drive, () -> getRobotAlignL1FacePoseFromReefFace(reefFaceSupplier, L1alignment)),
+        drive.stopCommand());
+  }
 
-      if (face == null) {
-        return null;
+
+  public static Command alignToStation(Drive drive, LED led, Supplier<StationSide> stationSideSupplier) {
+    Supplier<Pose2d> stationPoseSupplier = () -> {
+      Pose2d stationPose;
+      switch (stationSideSupplier.get()) {
+        case RIGHT:
+          stationPose = new Pose2d(Meters.of(1.548), Meters.of(0.767), new Rotation2d(Units.degreesToRadians(140)));
+          break;
+        case LEFT:
+        default:
+          stationPose = new Pose2d(Meters.of(1.336), Meters.of(7.116), new Rotation2d(Units.degreesToRadians(40)));
+          break;
       }
-
-      // TODO Might have to be 90 CCW?
-      Pose2d target = FieldConstants.Reef.branchPositions2d.get(face.ordinal() * 2 + 1).get(FieldConstants.ReefLevel.L1)
-          .transformBy(kRobotL1Offset);
-
-      Pose2d allianceAppliedTarget = AllianceFlipUtil.apply(target);
-
-      Logger.recordOutput("PathfindToReefALGAE/ReefFace", face);
-      Logger.recordOutput("PathfindToReefALGAE/TargetPose", allianceAppliedTarget);
-
-      return allianceAppliedTarget;
+      return AllianceFlipUtil.apply(stationPose);
     };
 
     return Commands.sequence(
-        new DriveToPoint(drive, branchPoseSupplier),
-        drive.stopCommand());
+      new DriveToPoint(drive, stationPoseSupplier),
+      drive.stopCommand()
+    );
   }
 
   /** Returns the piece pose in Field Space (Cached if necessary) */
@@ -753,5 +807,35 @@ public class DriveCommands {
     }
 
     return targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle().plus(offset);
+  }
+
+  public static Command alignToBarge(Drive drive, Supplier<Double> joySupplierY, Command afterInitialAlignment) {
+    Distance x = Meters.of(6.7);
+
+    return Commands.parallel(
+      new DriveToX(drive, () -> x, joySupplierY, () -> Degrees.of(0), Degrees.of(5), Inches.of(2)),
+
+      Commands.sequence(
+        Commands.waitUntil(() -> drive.getPose().getMeasureX().isNear(x, Inches.of(3))),
+        afterInitialAlignment
+      )
+    );
+  }
+
+  public static Command alignToProcessor(Drive drive, boolean waiting) {
+    Pose2d pose = AllianceFlipUtil.apply(new Pose2d(
+      new Translation2d(
+          Meters.of(6.03),//.plus(Inches.of(12)), // F/B
+          waiting ? Meters.of(0.8) : Meters.of(0.7) // L/R
+      ),
+      Rotation2d.kCW_90deg
+    ));
+
+    Logger.recordOutput("GrayTesting/ProcPose", pose);
+
+    return new DriveToPoint(drive, () -> pose,
+      Degrees.of(3),
+      Inches.of(2)
+    );
   }
 }

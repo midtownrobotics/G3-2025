@@ -43,6 +43,7 @@ public class VisionIOLimelight implements VisionIO {
   private final DoubleArraySubscriber megatag1Subscriber;
   private final DoubleArraySubscriber megatag2Subscriber;
   private final Transform3d transformRobotToCamera;
+  private final Transform3d cameraPositionCorrection;
   private boolean enabled = true;
 
   /**
@@ -51,8 +52,9 @@ public class VisionIOLimelight implements VisionIO {
    * @param name The configured name of the Limelight.
    * @param rotationSupplier Supplier for the current estimated rotation, used for MegaTag 2.
    */
-  public VisionIOLimelight(String name, Supplier<Rotation2d> rotationSupplier, Transform3d transformRobotToCamera) {
+  public VisionIOLimelight(String name, Supplier<Rotation2d> rotationSupplier, Transform3d transformRobotToCamera, Transform3d cameraPositionCorrection) {
     this.transformRobotToCamera = transformRobotToCamera;
+    this.cameraPositionCorrection = cameraPositionCorrection;
     this.name = name;
     var table = NetworkTableInstance.getDefault().getTable(name);
     this.rotationSupplier = rotationSupplier;
@@ -98,7 +100,7 @@ public class VisionIOLimelight implements VisionIO {
               rawSample.timestamp * 1.0e-6 - rawSample.value[6] * 1.0e-3,
 
               // 3D pose estimate
-              parsePose(rawSample.value),
+              parsePose(rawSample.value),//transformBy(cameraPositionCorrection),
 
               // Ambiguity, using only the first tag because ambiguity isn't applicable for multitag
               rawSample.value.length >= 18 ? rawSample.value[17] : 0.0,

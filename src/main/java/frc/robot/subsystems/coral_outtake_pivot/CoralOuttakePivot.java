@@ -39,7 +39,7 @@ public class CoralOuttakePivot extends SubsystemBase {
         DEALGIFY(Degrees.of(-42)),
         DEALGIFY_STOW(Degrees.of(-60)),
         CLIMB(Degrees.of(-60)),
-        PROCESSOR_SCORE(Degrees.of(-42)),
+        PROCESSOR_SCORE(Degrees.of(-55)),
         BARGE(Degrees.of(-6)),
         TUNING(),
         MANUAL();
@@ -150,6 +150,14 @@ public class CoralOuttakePivot extends SubsystemBase {
         return run(() -> setGoal(goal)).until(this::atGoal);
     }
 
+    /**
+     * Returns a command that sets the goal of the intake and waits until it is at
+     * the goal.
+     */
+    public Command setGoalAndWait(Supplier<Goal> goal) {
+        return run(() -> setGoal(goal.get())).until(this::atGoal);
+    }
+
         /**
      * Returns a command that sets the goal of the intake and waits until it is at
      * the goal.
@@ -161,6 +169,11 @@ public class CoralOuttakePivot extends SubsystemBase {
     /** Sets the goal of the coral outtake pivot. */
     public Command setGoalCommand(Goal goal) {
         return runOnce(() -> setGoal(goal));
+    }
+
+    /** Sets the goal of the coral outtake pivot. */
+    public Command setGoalCommand(Supplier<Goal> goal) {
+        return runOnce(() -> setGoal(goal.get()));
     }
 
     /**

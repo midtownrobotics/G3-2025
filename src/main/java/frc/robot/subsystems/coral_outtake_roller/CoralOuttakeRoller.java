@@ -31,7 +31,7 @@ public class CoralOuttakeRoller extends SubsystemBase {
     HANDOFF_REVERSE(Volts.of(-2)),
     INTAKE(Volts.zero()),
     REVERSE_SHOOT(Volts.of(-7)),
-    ALGAE_HOLD(Volts.of(2.5)),
+    ALGAE_HOLD(Volts.of(1.5)),
     ALGAE_SHOOT(Volts.of(-12)),
     TUNING(),
     MANUAL();
@@ -74,7 +74,7 @@ public class CoralOuttakeRoller extends SubsystemBase {
   public CoralOuttakeRoller(RollerIO rollerIO) {
     this.rollerIO = rollerIO;
 
-    currentSpikeTrigger = new Trigger(this::currentSpikeFiltered);
+    currentSpikeTrigger = new Trigger(this::currentSpikeFiltered).debounce(0.075);
   }
 
   private LinearFilter currentSpikeFilter = LinearFilter.movingAverage(3);
@@ -120,6 +120,13 @@ public class CoralOuttakeRoller extends SubsystemBase {
    */
   public Command setGoalCommand(Goal goal) {
     return runOnce(() -> setGoal(goal));
+  }
+
+  /**
+   * Returns a command that sets the goal of the coral outtake.
+   */
+  public Command setGoalCommand(Supplier<Goal> goal) {
+    return runOnce(() -> setGoal(goal.get()));
   }
 
   /** Returns a command that sets the goal of the coral outtake and resets the goal when it ends */

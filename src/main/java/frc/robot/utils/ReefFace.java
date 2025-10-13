@@ -1,5 +1,12 @@
 package frc.robot.utils;
 
+import static edu.wpi.first.units.Units.Meters;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.measure.Distance;
+import frc.lib.AllianceFlipUtil;
+import frc.robot.subsystems.drivetrain.Drive;
+
 public enum ReefFace {
     /** The face closest to the driver */
     AB,
@@ -40,4 +47,65 @@ public enum ReefFace {
                 return null;
         }
     }
+
+    /** Is the algae on this face high or low? */
+    public boolean isAlgaePositionHigh() {
+        switch (this) {
+            case AB:
+            case EF:
+            case IJ:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public int toIndex() {
+        switch (this) {
+            case AB: return 0;
+            case CD: return 1;
+            case EF: return 2;
+            case GH: return 3;
+            case IJ: return 4;
+            case KL: return 5;
+            default: return 5;
+        }
+    }
+
+    public static ReefFace getClosestReefFace(Drive drive) {
+        ReefFace closestFace = null;
+        Distance closestDistance = Meters.of(Double.MAX_VALUE);
+        Pose2d currentPose = drive.getPose();
+
+        for (ReefFace face : ReefFace.values()) {
+            Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+            Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+            Distance distance = Meters
+                    .of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
+            if (distance.lt(closestDistance)) {
+                closestFace = face;
+                closestDistance = distance;
+            }
+        }
+
+        return closestFace;
+    }
+
+    public static Distance getClosestReefFaceDistance(Drive drive) {
+        Distance closestDistance = Meters.of(Double.MAX_VALUE);
+        Pose2d currentPose = drive.getPose();
+
+        for (ReefFace face : ReefFace.values()) {
+            Pose2d rawReefFacePose = FieldConstants.Reef.centerFaces[face.ordinal()];
+            Pose2d reefFacePose = AllianceFlipUtil.apply(rawReefFacePose);
+            Distance distance = Meters
+                    .of(reefFacePose.getTranslation().getDistance(currentPose.getTranslation()));
+            if (distance.lt(closestDistance)) {
+                closestDistance = distance;
+            }
+        }
+
+        return closestDistance;
+    }
+
 }

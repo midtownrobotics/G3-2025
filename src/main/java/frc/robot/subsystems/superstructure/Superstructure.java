@@ -16,6 +16,7 @@ import frc.robot.subsystems.coral_outtake_pivot.CoralOuttakePivotConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.superstructure.Constraints.LinearConstraint;
+import frc.robot.utils.AlgaeAction;
 import frc.robot.utils.LoggerUtil;
 
 public class Superstructure extends SubsystemBase {
@@ -82,6 +83,14 @@ public class Superstructure extends SubsystemBase {
           coralIntakeConstraints.setLower(Degrees.of(133));
         } else {
           coralIntakeConstraints.setUpper(Degrees.of(110));
+        }
+      }
+
+      if (AlgaeAction.hasAlgae) {
+        if (!(elevator.atGoal() && elevator.getCurrentGoal() == Elevator.Goal.BARGE)) {
+          coralOuttakeConstraints.setUpper(Degrees.of(-35));
+        } else {
+          coralOuttakeConstraints.setUpper(Degrees.of(5));
         }
       }
     }

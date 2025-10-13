@@ -1,6 +1,5 @@
 package frc.lib;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
@@ -29,7 +28,7 @@ import frc.robot.subsystems.drivetrain.Drive;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
-public class DriveToPoint extends Command {
+public class DriveToX extends Command {
   public static final LinearVelocity kMaxLinearVelocity = MetersPerSecond.of(3.0);
   public static final LinearAcceleration kMaxLinearAcceleration = MetersPerSecondPerSecond.of(4.0);
   public static final Distance kTrackWidthX = Inches.of(15.25);
@@ -45,35 +44,34 @@ public class DriveToPoint extends Command {
 
   private LTLinearProfiledPIDController m_driveController =
       new LTLinearProfiledPIDController(
-          "DriveToPoint/DriveController",
+          "DriveToX/DriveController",
           3.5,
           0.0,
           0.01,
           kMaxLinearVelocity,
           kMaxLinearAcceleration);
 
+
   private LTAngularProfiledPIDController m_headingController =
-      new LTAngularProfiledPIDController("DriveToPoint/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
+      new LTAngularProfiledPIDController("DriveToX/HeadingController", 5, 0, .1, kMaxAngularVelocity, kMaxAngularAcceleration);
 
   private double m_ffMinRadius = 0.1, m_ffMaxRadius = 1.2;
 
-  // public static Trigger overrideTriggger;
+  private Supplier<Double> joystickY;
 
-  public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose, Angle angularThreshold, Distance linearThreshold) {
+  public DriveToX(Drive drive, Supplier<Distance> targetX, Supplier<Double> joystickY, Supplier<Angle> targetRot, Angle angularThreshold, Distance linearThreshold) {
     m_drive = drive;
-    m_targetPose = targetPose;
-    this.angularThreshold = Degrees.of(6);
-    this.linearThreshold = Inches.of(5);
+    this.joystickY = joystickY;
+    m_targetPose = () -> new Pose2d(targetX.get(), Meters.of(0), new Rotation2d(targetRot.get()));
+    this.angularThreshold = angularThreshold;
+    this.linearThreshold = linearThreshold;
     addRequirements(m_drive);
 
     m_driveController.getController().setTolerance(linearThreshold.in(Meters), Units.inchesToMeters(0.5));
 
     m_headingController.getController().enableContinuousInput(-Math.PI, Math.PI);
     m_headingController.getController().setTolerance(angularThreshold.in(Radians));
-  }
 
-  public DriveToPoint(Drive drive, Supplier<Pose2d> targetPose) {
-    this(drive, targetPose, Degrees.of(0.3), Inches.of(0.2));
   }
 
   @Override
@@ -110,8 +108,8 @@ public class DriveToPoint extends Command {
     Pose2d targetPose = m_targetPose.get();
     Pose2d currentPose = m_drive.getPose();
 
-    Logger.recordOutput("DriveToPoint/LinearAtGoal", m_driveController.atGoal());
-    Logger.recordOutput("DriveToPoint/HeadingAtGoal", m_headingController.atGoal());
+    Logger.recordOutput("DriveToX/LinearAtGoal", m_driveController.atGoal());
+    Logger.recordOutput("DriveToX/HeadingAtGoal", m_headingController.atGoal());
 
     if (targetPose == null) {
       m_drive.stopWithX();
@@ -151,37 +149,27 @@ public class DriveToPoint extends Command {
 
     ChassisSpeeds targetChassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            targetLinearVelocity.getX(), targetLinearVelocity.getY(), targetAngularVelocity, currentPose.getRotation());
+            targetLinearVelocity.getX(), joystickY.get() * m_drive.getMaxLinearSpeedMetersPerSec(), targetAngularVelocity, currentPose.getRotation());
 
     m_drive.runVelocity(targetChassisSpeeds);
 
-    Logger.recordOutput("DriveToPoint/Target/Pose", targetPose);
-    Logger.recordOutput("DriveToPoint/Target/HeadingVelocity", targetAngularVelocity);
-    Logger.recordOutput("DriveToPoint/Target/VelocityX", targetLinearVelocity.getX());
-    Logger.recordOutput("DriveToPoint/Target/VelocityY", targetLinearVelocity.getY());
+    Logger.recordOutput("DriveToX/Target/Pose", targetPose);
+    Logger.recordOutput("DriveToX/Target/HeadingVelocity", targetAngularVelocity);
+    Logger.recordOutput("DriveToX/Target/VelocityX", targetLinearVelocity.getX());
+    Logger.recordOutput("DriveToX/Target/VelocityY", targetLinearVelocity.getY());
 
-    Logger.recordOutput("DriveToPoint/Error/HeadingAngle", headingError);
-    Logger.recordOutput("DriveToPoint/Error/HeadingVelocity", headingVelocityError);
-    Logger.recordOutput("DriveToPoint/Error/DistanceX", linearError.getX());
-    Logger.recordOutput("DriveToPoint/Error/DistanceY", linearError.getY());
-    Logger.recordOutput("DriveToPoint/Error/TotalDistance", distanceFromTarget);
+    Logger.recordOutput("DriveToX/Error/HeadingAngle", headingError);
+    Logger.recordOutput("DriveToX/Error/HeadingVelocity", headingVelocityError);
+    Logger.recordOutput("DriveToX/Error/DistanceX", linearError.getX());
+    Logger.recordOutput("DriveToX/Error/DistanceY", linearError.getY());
+    Logger.recordOutput("DriveToX/Error/TotalDistance", distanceFromTarget);
 
-    Logger.recordOutput("DriveToPoint/DriveVelocityScalar", driveVelocityScalar);
+    Logger.recordOutput("DriveToX/DriveVelocityScalar", driveVelocityScalar);
 
-    Logger.recordOutput("DriveToPoint/DriveSpeeds", targetChassisSpeeds);
-    Logger.recordOutput("DriveToPoint/LastCylce", Logger.getTimestamp());
+    Logger.recordOutput("DriveToX/DriveSpeeds", targetChassisSpeeds);
+    Logger.recordOutput("DriveToX/LastCylce", Logger.getTimestamp());
 
-    Logger.recordOutput("DriveToPoint/TargetPose", m_targetPose.get());
-  }
+    Logger.recordOutput("DriveToX/TargetPose", m_targetPose.get());
 
-  @Override
-  public boolean isFinished() {
-    boolean finished =
-      m_drive.getPose().getTranslation().getDistance(m_targetPose.get().getTranslation()) < linearThreshold.in(Meters)
-      && m_drive.getPose().getRotation().getMeasure().isNear(m_targetPose.get().getRotation().getMeasure(), angularThreshold);
-
-    //|| overrideTriggger.getAsBoolean();
-    Logger.recordOutput("DriveToPoint/AtGoal", finished);
-    return finished;
   }
 }

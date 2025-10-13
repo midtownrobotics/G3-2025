@@ -51,6 +51,7 @@ public class PivotIONeo implements PivotIO {
     inputs.temperature = Units.Celsius.of(pivotMotor.getMotorTemperature());
 
     Logger.recordOutput("CoralIntake/ZeroedAbsoluteEncoder", getZeroedAbsoluteEncoderPosition());
+    Logger.recordOutput("CoralIntake/UseThisForZeroing", getAngleToUseForZeroing());
   }
 
   @Override
@@ -70,6 +71,17 @@ public class PivotIONeo implements PivotIO {
    */
   private Angle getZeroedAbsoluteEncoderPosition() {
     double rads = getAbsoluteEncoderPosition().minus(CoralIntakeConstants.absoluteEncoderOffset).minus(zeroedAngle).in(Radians);
+
+    rads = (rads + 0.5 + 2 * Math.PI) % (2 * Math.PI) - 0.5;
+
+    return Radians.of(rads);
+  }
+
+  /**
+   * is this too much voodoo for the next ten centries?
+   */
+  private Angle getAngleToUseForZeroing() {
+    double rads = getAbsoluteEncoderPosition().in(Radians);
 
     rads = (rads + 0.5 + 2 * Math.PI) % (2 * Math.PI) - 0.5;
 
