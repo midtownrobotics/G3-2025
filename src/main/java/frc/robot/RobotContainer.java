@@ -9,10 +9,6 @@ import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Milliseconds;
-import static frc.robot.sensors.VisionConstants.kModuleTagCameraName;
-import static frc.robot.sensors.VisionConstants.kModuleTagCameraPositionCorrection;
-import static frc.robot.sensors.VisionConstants.kModuleTagRobotToCamera;
-import static frc.robot.sensors.VisionConstants.kTagCameraOnAStickCameraName;
 import static frc.robot.sensors.VisionConstants.kTagCameraOnAStickRobotToCamera;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -21,7 +17,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,7 +40,7 @@ import frc.robot.controls.SingleDriverControls;
 import frc.robot.sensors.Vision;
 import frc.robot.sensors.VisionConstants;
 import frc.robot.sensors.vision.VisionIO;
-import frc.robot.sensors.vision.VisionIOLimelight;
+import frc.robot.sensors.vision.VisionIOPhotonVision;
 import frc.robot.sensors.vision.VisionIOSim;
 import frc.robot.subsystems.coral_intake.CoralIntake;
 import frc.robot.subsystems.coral_intake.pivot.PivotIO;
@@ -264,10 +259,11 @@ ModuleIO brModuleIO;
                 drive = new Drive(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
 
                 aprilTagVisionIOs = new VisionIO[] {
-                        new VisionIOLimelight(kModuleTagCameraName, drive::getRotation,
-                                kModuleTagRobotToCamera, kModuleTagCameraPositionCorrection),
-                        new VisionIOLimelight(kTagCameraOnAStickCameraName, drive::getRotation,
-                                kTagCameraOnAStickRobotToCamera, new Transform3d())
+                        new VisionIOPhotonVision("Intake_Module_Cam", kTagCameraOnAStickRobotToCamera),
+                        // new VisionIOLimelight(kModuleTagCameraName, drive::getRotation,
+                                // kModuleTagRobotToCamera, kModuleTagCameraPositionCorrection),
+                        // new VisionIOLimelight(kTagCameraOnAStickCameraName, drive::getRotation,
+                                // kTagCameraOnAStickRobotToCamera, new Transform3d())
                 };
 
                 aprilTagVision = new Vision(drive::getPose, drive::addVisionMeasurement, drive::setPose, aprilTagVisionIOs);
