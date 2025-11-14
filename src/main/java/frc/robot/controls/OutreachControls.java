@@ -1,0 +1,194 @@
+package frc.robot.controls;
+
+ 
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.IOProtectionXboxController;
+import frc.robot.utils.ReefFaceSide;
+
+public class OutreachControls {
+    private final IOProtectionXboxController overrideController;
+    private final IOProtectionXboxController restrictedController;
+
+    private IOProtectionXboxController currentSelectedController;
+
+    public static double DRIVER_JOYSTICK_THRESHHOLD = 0.1;
+    public static double DRIVER_TRIGGER_PRESSED_THRESHHOLD = 0.5;
+
+    @AutoLogOutput
+    private boolean groundIntakeMode = true;
+
+    boolean isDriverControlInDeadzone(double driveX, double driveY, double driveOmega) {
+        return Math.sqrt(Math.pow(driveX, 2) + Math.pow(driveY, 2) + Math.pow(driveOmega, 2))
+            > DRIVER_JOYSTICK_THRESHHOLD;
+    }
+
+    public OutreachControls(int overrideControllerPort, int restrictedControllerPort) {
+        overrideController = new IOProtectionXboxController(overrideControllerPort);
+        restrictedController = new IOProtectionXboxController(restrictedControllerPort);
+
+        overrideController.rightStick().onTrue(Commands.runOnce(() -> currentSelectedController = currentSelectedController == overrideController ? restrictedController : overrideController));
+        overrideController.start().onTrue(Commands.runOnce(() -> groundIntakeMode = !groundIntakeMode));
+        restrictedController.start().onTrue(Commands.runOnce(() -> groundIntakeMode = !groundIntakeMode));
+
+    }
+
+
+        @AutoLogOutput
+    /** Determines if the driver joystick is in the controller deadzone. */
+    public boolean isDriverControlInDeadzone() {
+        return isDriverControlInDeadzone(
+        currentSelectedController.getLeftX(), currentSelectedController.getLeftY(), currentSelectedController.getRightX());
+    }
+
+    /** Gets the drive forward axis. */
+    public double getDriveForward() {
+        double deadzoneApplied = MathUtil.applyDeadband(currentSelectedController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
+        return (isDriverControlInDeadzone()
+        ? -Math.signum(deadzoneApplied)
+        * Math.abs(Math.pow(deadzoneApplied, 1))
+        : 0);
+    }
+
+    /** Gets the drive left/right axis. */
+    public double getDriveLeft() {
+        double deadzoneApplied = MathUtil.applyDeadband(currentSelectedController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
+        return (isDriverControlInDeadzone()
+        ? -Math.signum(deadzoneApplied)
+        * Math.abs(Math.pow(deadzoneApplied, 1))
+        : 0);
+    }
+
+    /** Gets the drive rotation axis. */
+    public double getDriveRotation() {
+        double deadzoneApplied = MathUtil.applyDeadband(currentSelectedController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
+        return isDriverControlInDeadzone()
+        ? -Math.signum(deadzoneApplied)
+        * Math.abs(Math.pow(deadzoneApplied, 2))
+        : 0;
+    }
+
+    @AutoLogOutput
+    /** Sets coralMode to AUTO. */
+    public Trigger setAutoCoralMode() {
+        return new Trigger(() -> false);//currentSelectedController.b();
+    }
+
+    @AutoLogOutput
+    /** Sets coralMode to L2. */
+    public Trigger prepareScoreCoralL2() {
+        return currentSelectedController.a();
+    }
+
+    @AutoLogOutput
+    /** Sets coralMode to L3. */
+    public Trigger prepareScoreCoralL3() {
+        return currentSelectedController.x();
+    }
+
+    @AutoLogOutput
+    public Trigger manualOverride() {
+        return currentSelectedController.b();
+    }
+
+    @AutoLogOutput
+    /** Sets coralMode to L4. */
+    public Trigger prepareScoreCoralL4() {
+        return currentSelectedController.y();
+    }
+
+    @AutoLogOutput
+    /** Aligns to processor or algae. */
+    public Trigger algaeAndL1CenterAutoAlign() {
+        return new Trigger(() -> currentSelectedController.leftBumper().getAsBoolean() && currentSelectedController.rightBumper().getAsBoolean());
+    }
+
+    @AutoLogOutput
+    /** */
+    public Trigger bargeInitialAlign() {
+        return new Trigger(() -> currentSelectedController.leftBumper().getAsBoolean() && !currentSelectedController.rightBumper().getAsBoolean());
+    }
+
+    @AutoLogOutput
+    /** Aligns to left or right branch and shoots coral. */
+    public Trigger coralAutoAlign() {
+        return new Trigger(() -> (currentSelectedController.leftBumper().getAsBoolean() ^ currentSelectedController.rightBumper().getAsBoolean()));
+    }
+
+    /** Whether the left branch is selected. Otherwise, right is assumed. */
+    public Supplier<ReefFaceSide> branchSelectedSupplier() {
+        return () -> currentSelectedController.leftBumper().getAsBoolean() && !currentSelectedController.rightBumper().getAsBoolean() ? ReefFaceSide.LEFT : ReefFaceSide.RIGHT;
+    }
+
+    @AutoLogOutput
+    /** Manually shoots piece. Required for algae. */
+    public Trigger manualShoot() {
+        return currentSelectedController.rightTrigger().and(currentSelectedController.leftTrigger().negate());
+    }
+
+    @AutoLogOutput
+    /** Intakes coral from the source or the ground and puts coralMode to L1. */
+    public Trigger intakeL1() {
+        return currentSelectedController.leftTrigger().and(currentSelectedController.rightTrigger().negate());
+    }
+
+    @AutoLogOutput
+    /** Intakes coral from the source or the ground and puts coralMode. */
+    public Trigger intake() {
+        return currentSelectedController.rightTrigger().and(currentSelectedController.leftTrigger().negate());
+    }
+
+    @AutoLogOutput
+    /** Climbs!! */
+    public Trigger climb() {
+        return currentSelectedController.rightTrigger().and(currentSelectedController.leftTrigger());
+    }
+
+    @AutoLogOutput
+    /** Increases elevator offset. */
+    public Trigger increaseElevatorOffset() {
+        return currentSelectedController.povUp();
+    }
+
+    @AutoLogOutput
+    /** Decreases elevator offset. */
+    public Trigger decreaseElevatorOffset() {
+        return currentSelectedController.povDown();
+    }
+
+    /** Whether ground intake is selected. Otherwise, source intake is assumed. */
+    public BooleanSupplier coralIntakeModeSupplier() {
+        return () -> groundIntakeMode;
+    }
+
+    @AutoLogOutput
+    /** Manual handoff coral. */
+    public Trigger handoffCoral() {
+        return currentSelectedController.povRight();
+    }
+
+    @AutoLogOutput
+    /** Eject coral or algae from the outtake */
+    public Trigger eject() {
+        return currentSelectedController.povLeft();
+    }
+
+    @AutoLogOutput
+    /** Reset all subsystems to STOW. */
+    public Trigger reset() {
+        return currentSelectedController.back();
+    }
+
+    /** sets the rumble on the currentSelectedController */
+    public void setRumble(double rumbliness) {
+        currentSelectedController.setRumble(RumbleType.kBothRumble, rumbliness);
+    }
+
+}
