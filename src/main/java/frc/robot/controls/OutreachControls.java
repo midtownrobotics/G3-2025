@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 public class OutreachControls {
     private final IOProtectionXboxController overrideController;
     private final IOProtectionXboxController restrictedController;
+    private final IOProtectionXboxController restrictedOperatorController;
 
     @AutoLogOutput
     private boolean allowRestrictedControls = false;
@@ -24,9 +25,10 @@ public class OutreachControls {
         return Math.sqrt(Math.pow(driveX, 2) + Math.pow(driveY, 2) + Math.pow(driveOmega, 2)) > DRIVER_JOYSTICK_THRESHHOLD;
     }
 
-    public OutreachControls(int overrideControllerPort, int restrictedControllerPort) {
+    public OutreachControls(int overrideControllerPort, int restrictedControllerPort, int restrictedOperatorControllerPort) {
         overrideController = new IOProtectionXboxController(overrideControllerPort);
         restrictedController = new IOProtectionXboxController(restrictedControllerPort);
+        restrictedOperatorController = new IOProtectionXboxController(restrictedOperatorControllerPort);
 
         overrideController.rightTrigger().onTrue(Commands.runOnce(() -> allowRestrictedControls = true))
                 .onFalse(Commands.runOnce(() -> allowRestrictedControls = false));
@@ -87,19 +89,19 @@ public class OutreachControls {
 
     @AutoLogOutput
     public Trigger raiseElevator() {
-        return restrictedController.a().and(() -> allowRestrictedControls)
+        return restrictedOperatorController.a().and(() -> allowRestrictedControls)
                .or(overrideController.a().and(() -> !allowRestrictedControls));
     }
 
     @AutoLogOutput
     public Trigger shoot() {
-        return restrictedController.leftTrigger().and(() -> allowRestrictedControls)
+        return restrictedOperatorController.leftTrigger().and(() -> allowRestrictedControls)
                .or(overrideController.leftTrigger().and(() -> !allowRestrictedControls));
     }
 
     @AutoLogOutput
     public Trigger intake() {
-        return restrictedController.leftBumper().and(() -> allowRestrictedControls)
+        return restrictedOperatorController.leftBumper().and(() -> allowRestrictedControls)
                .or(overrideController.leftBumper().and(() -> !allowRestrictedControls));
     }
 

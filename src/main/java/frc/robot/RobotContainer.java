@@ -53,7 +53,6 @@ import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIO;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOKraken;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOReplay;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOSim;
-import frc.robot.subsystems.coral_outtake_roller.CoralOuttakeConstants;
 import frc.robot.subsystems.coral_outtake_roller.CoralOuttakeRoller;
 import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.drivetrain.GyroIO;
@@ -282,7 +281,7 @@ public class RobotContainer {
 
         new RobotViz(drive::getPose, coralIntake::getPosition, elevator::getPosition);
 
-        controls = new OutreachControls(0,1);
+        controls = new OutreachControls(0,1,3);
         configureBindings();
 
         coralIntakeAtStowGoal = coralIntake.atGoalTrigger(CoralIntake.Goal.STOW, Degrees.of(1.5));
