@@ -21,7 +21,7 @@ public class OutreachControls {
     private boolean groundIntakeMode = true;
 
     boolean isDriverControlInDeadzone(double driveX, double driveY, double driveOmega) {
-        return Math.sqrt(Math.pow(driveX, 2) + Math.pow(driveY, 2) + Math.pow(driveOmega, 2)) < DRIVER_JOYSTICK_THRESHHOLD;
+        return Math.sqrt(Math.pow(driveX, 2) + Math.pow(driveY, 2) + Math.pow(driveOmega, 2)) > DRIVER_JOYSTICK_THRESHHOLD;
     }
 
     public OutreachControls(int overrideControllerPort, int restrictedControllerPort) {
@@ -44,7 +44,7 @@ public class OutreachControls {
 
     @AutoLogOutput
     public double getDriveForward() {
-        double deadzoneApplied = MathUtil.applyDeadband(restrictedController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
+        double deadzoneApplied = MathUtil.applyDeadband(overrideController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
         if (allowRestrictedControls) {
             deadzoneApplied = MathUtil.applyDeadband(restrictedController.getLeftY(), DRIVER_JOYSTICK_THRESHHOLD);
         }
@@ -57,11 +57,10 @@ public class OutreachControls {
 
     @AutoLogOutput
     public double getDriveLeft() {
-        double deadzoneApplied = MathUtil.applyDeadband(restrictedController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
+        double deadzoneApplied = MathUtil.applyDeadband(overrideController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
         if (allowRestrictedControls) {
             deadzoneApplied = MathUtil.applyDeadband(restrictedController.getLeftX(), DRIVER_JOYSTICK_THRESHHOLD);
         }
-
         return (isDriverControlInDeadzone()
                 ? -Math.signum(deadzoneApplied)
                         * Math.abs(Math.pow(deadzoneApplied, 1))
@@ -70,7 +69,7 @@ public class OutreachControls {
 
     @AutoLogOutput
     public double getDriveRotation() {
-        double deadzoneApplied = MathUtil.applyDeadband(restrictedController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
+        double deadzoneApplied = MathUtil.applyDeadband(overrideController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
         if (allowRestrictedControls) {
             deadzoneApplied = MathUtil.applyDeadband(restrictedController.getRightX(), DRIVER_JOYSTICK_THRESHHOLD);
         }
@@ -90,6 +89,18 @@ public class OutreachControls {
     public Trigger raiseElevator() {
         return restrictedController.a().and(() -> allowRestrictedControls)
                .or(overrideController.a().and(() -> !allowRestrictedControls));
+    }
+
+    @AutoLogOutput
+    public Trigger shoot() {
+        return restrictedController.leftTrigger().and(() -> allowRestrictedControls)
+               .or(overrideController.leftTrigger().and(() -> !allowRestrictedControls));
+    }
+
+    @AutoLogOutput
+    public Trigger intake() {
+        return restrictedController.leftBumper().and(() -> allowRestrictedControls)
+               .or(overrideController.leftBumper().and(() -> !allowRestrictedControls));
     }
 
 }

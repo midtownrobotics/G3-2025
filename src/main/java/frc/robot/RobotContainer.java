@@ -53,6 +53,7 @@ import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIO;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOKraken;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOReplay;
 import frc.robot.subsystems.coral_outtake_pivot.pivot.OuttakePivotIOSim;
+import frc.robot.subsystems.coral_outtake_roller.CoralOuttakeConstants;
 import frc.robot.subsystems.coral_outtake_roller.CoralOuttakeRoller;
 import frc.robot.subsystems.drivetrain.Drive;
 import frc.robot.subsystems.drivetrain.GyroIO;
@@ -458,8 +459,12 @@ public class RobotContainer {
                 DriveCommands.joystickDrive(drive, controls::getDriveForward, controls::getDriveLeft,
                         controls::getDriveRotation, speedMultiplier));
 
-
-
+        controls.shoot().whileTrue(coralOuttakeRoller.setGoalEndCommand(CoralOuttakeRoller.Goal.SHOOT_L4, CoralOuttakeRoller.Goal.STOW));
+        controls.intake().whileTrue(coralIntake.setGoalCommand(CoralIntake.Goal.GROUND_INTAKE)).onFalse(indexCoralAndStowCommand());
+        controls.raiseElevator().whileTrue(
+                Commands.parallel(coralOuttakePivot.setGoalEndCommand(CoralOuttakePivot.Goal.L4, CoralOuttakePivot.Goal.STOW),
+                                  elevator.setGoalEndCommand(Elevator.Goal.L4, Elevator.Goal.STOW))
+        );
 
         RobotModeTriggers.teleop().and(coralIntake.centerSensorTrigger.debounce(0.15)).onTrue(
                 Commands.sequence(
