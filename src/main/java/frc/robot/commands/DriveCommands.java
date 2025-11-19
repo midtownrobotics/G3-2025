@@ -116,6 +116,7 @@ public class DriveCommands {
       DoubleSupplier speedMultiplier) {
     return Commands.run(
         () -> {
+          System.out.println("Running!");
           Logger.recordOutput("JoyStickDriveLastSeen", Logger.getTimestamp());
           // Get linear velocity
           Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
